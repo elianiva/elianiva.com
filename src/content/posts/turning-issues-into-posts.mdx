@@ -6,9 +6,9 @@ tags:
     - website
 ---
 
-If you don't know already, I'm using [Astro](https://astro.build/) to build this website. The code is hosted publicly at [elianiva/elianiva.my.id](https://github.com/elianiva/elianiva.my.id) if you want to check it out.
+If you don't know already, I'm using [Astro](https://astro.build/) to build this website. The code is hosted publicly at [elianiva/elianiva.com](https://github.com/elianiva/elianiva.com) if you want to check it out.
 
-The posts are written in [markdown (.mdx) files](https://github.com/elianiva/elianiva.my.id/blob/master/src/content/posts/) so if I want to add a new post, I have to create a new file, make a commit, and then push it to trigger the deployment. Unlike a traditional CMS where you have this fancy dashboard that you can use, this one is pretty barebones, and I like it this way. It allows me to use any text editors I want to edit the contents--oh, I use [Neovim](https://neovim.io), btw.
+The posts are written in [markdown (.mdx) files](https://github.com/elianiva/elianiva.com/blob/master/src/content/posts/) so if I want to add a new post, I have to create a new file, make a commit, and then push it to trigger the deployment. Unlike a traditional CMS where you have this fancy dashboard that you can use, this one is pretty barebones, and I like it this way. It allows me to use any text editors I want to edit the contents--oh, I use [Neovim](https://neovim.io), btw.
 
 Now, the problem is that not all of my posts are long-form. I have a few bookmarks / TILs. They're basically just small notes that don't warrant a full blog post.
 
@@ -185,7 +185,7 @@ An example issue content would look something like this:
 ```markdown
 This is the content body, nothing too special about it.
 ---
-https://elianiva.my.id/posts/today-i-learned
+https://elianiva.com/posts/today-i-learned
 ```
 
 It will take the first part as the content body and parse the second part as an array of links.
@@ -303,11 +303,11 @@ Honestly, I don't really like the way it looks because there's a piece of Javasc
 
 Initially, I wanted to separate it into its own file--docs says you can--but kept getting errors about `module is not defined` or something like that :p
 
-[fail-1]: https://github.com/elianiva/elianiva.my.id/issues/42
-[fail-2]: https://github.com/elianiva/elianiva.my.id/issues/43
-[fail-3]: https://github.com/elianiva/elianiva.my.id/issues/44
-[fail-4]: https://github.com/elianiva/elianiva.my.id/issues/45
-[fail-5]: https://github.com/elianiva/elianiva.my.id/issues/46
+[fail-1]: https://github.com/elianiva/elianiva.com/issues/42
+[fail-2]: https://github.com/elianiva/elianiva.com/issues/43
+[fail-3]: https://github.com/elianiva/elianiva.com/issues/44
+[fail-4]: https://github.com/elianiva/elianiva.com/issues/45
+[fail-5]: https://github.com/elianiva/elianiva.com/issues/46
 
 It actually [took][fail-1] [me][fail-2] [5][fail-3] [failed][fail-4] [attempts][fail-5] before finally got it working. I just gave up and inline the script to the YAML file. It works, and I'm not going to touch it anyway once I get it working.
 
@@ -321,7 +321,7 @@ Anyway, if you want to do something similar, here are some links that might help
 
 - [Github Actions Documentation](https://docs.github.com/en/actions)
 - [Github Actions Script Documentation](https://github.com/actions/github-script)
-- [My Workflow File](https://github.com/elianiva/elianiva.my.id/blob/master/.github/workflows/bookmark-til.yml)
+- [My Workflow File](https://github.com/elianiva/elianiva.com/blob/master/.github/workflows/bookmark-til.yml)
 
 There are maybe a few missing stuff that I don't really talk about in this post, in that case, feel free to leave a comment :)
 

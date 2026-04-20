@@ -3,13 +3,13 @@ export default {
 	siteName: "elianiva's home row",
 	siteUrl: import.meta.env.DEV
 		? "http://localhost:4321"
-		: "https://elianiva.my.id",
+		: "https://elianiva.com",
 	github: "https://github.com/elianiva",
-	bluesky: "https://bsky.app/profile/elianiva.my.id",
+	bluesky: "https://bsky.app/profile/elianiva.com",
 	twitter: "https://x.com/elianiva_",
 	linkedin: "https://www.linkedin.com/in/dichaa",
 	cv: "/assets/cv_dicha.pdf",
-	email: "contact@elianiva.my.id",
+	email: "contact@elianiva.com",
 	description: "elianiva's home row",
 	keywords: ["personal", "website", "blog", "article", "portfolio", "elianiva"],
 } as const;

@@ -1,4 +1,4 @@
-# elianiva.my.id
+# elianiva.com
 
 Personal website built with Astro 5, Svelte 5, and Tailwind CSS 4.
 

@@ -9,9 +9,6 @@ import remarkGfm from "remark-gfm";
 import remarkWikiLink from "@flowershow/remark-wiki-link";
 
 export default defineConfig({
-	experimental: {
-		liveContentCollections: true,
-	},
 	output: "server",
 	prefetch: true,
 	adapter: cloudflare({
@@ -36,7 +33,7 @@ export default defineConfig({
 			],
 		}),
 	],
-	site: "https://elianiva.my.id",
+	site: "https://elianiva.com",
 	markdown: {
 		shikiConfig: {
 			theme: "rose-pine-dawn",

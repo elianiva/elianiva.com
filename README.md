@@ -1,4 +1,4 @@
-# elianiva.my.id
+# elianiva.com
 
 Always a WIP :)
 

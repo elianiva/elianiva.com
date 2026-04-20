@@ -14,7 +14,7 @@ const LOCAL_NOTES_DIR = join(
 );
 
 const REPO_OWNER = "elianiva";
-const REPO_NAME = "elianiva.my.id";
+const REPO_NAME = "elianiva.com";
 const NOTES_REPO_NAME = "notes";
 const BRANCH = "master";
 const INDEX_PATH = "notes-index.json";
