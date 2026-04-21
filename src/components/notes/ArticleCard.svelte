@@ -1,28 +1,28 @@
 <script lang="ts">
-	interface Props {
-		id: string;
-		title: string;
-		description?: string;
-		tags: string[];
-		created_at: string;
-		url?: string;
-		author?: string;
-	}
+interface Props {
+	id: string;
+	title: string;
+	description?: string;
+	tags: string[];
+	created_at: string;
+	url?: string;
+	author?: string;
+}
 
-	let props: Props = $props();
-	// svelte-ignore state_referenced_locally
-	let { id, title, description, tags, created_at, url, author } = props;
+let props: Props = $props();
+// svelte-ignore state_referenced_locally
+let { id, title, description, tags, created_at, url, author } = props;
 
-	const date = new Date(created_at).toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-	});
+const date = new Date(created_at).toLocaleDateString("en-US", {
+	year: "numeric",
+	month: "short",
+	day: "numeric",
+});
 
-	const domain = url ? new URL(url).hostname.replace(/^www\./, "") : "";
-	const displayTags = tags
-		.filter((t) => t !== "public" && t !== "article")
-		.slice(0, 3);
+const domain = url ? new URL(url).hostname.replace(/^www\./, "") : "";
+const displayTags = tags
+	.filter((t) => t !== "public" && t !== "article")
+	.slice(0, 3);
 </script>
 
 <article class="group" style="view-transition-name: note-card-{id}">

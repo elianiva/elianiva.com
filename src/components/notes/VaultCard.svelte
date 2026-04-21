@@ -9,7 +9,7 @@ interface Props {
 
 let props: Props = $props();
 // svelte-ignore state_referenced_locally
-let { id, title, description, tags, created_at } = props
+let { id, title, description, tags, created_at } = props;
 
 const date = new Date(created_at).toLocaleDateString("en-US", {
 	year: "numeric",

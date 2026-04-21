@@ -1,20 +1,20 @@
 <script lang="ts">
-	interface Props {
-		id: string;
-		title: string;
-		artist?: string;
-		album?: string;
-		year?: string[];
-		tags: string[];
-		description?: string;
-	}
+interface Props {
+	id: string;
+	title: string;
+	artist?: string;
+	album?: string;
+	year?: string[];
+	tags: string[];
+	description?: string;
+}
 
-	let props: Props = $props();
-	// svelte-ignore state_referenced_locally
-	let { id, title, artist, album, year = [], description = "-" } = props;
+let props: Props = $props();
+// svelte-ignore state_referenced_locally
+let { id, title, artist, album, year = [], description = "-" } = props;
 
-	const displayYear =
-		year.length > 1 ? `${year[0]}-${year[year.length - 1]}` : year[0];
+const displayYear =
+	year.length > 1 ? `${year[0]}-${year[year.length - 1]}` : year[0];
 </script>
 
 <article class="group" style="view-transition-name: note-card-{id}">

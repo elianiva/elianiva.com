@@ -1,8 +1,8 @@
-import { z } from "astro/zod";
 import { GH_TOKEN } from "astro:env/server";
 import { readFile, stat } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import type { Loader } from "astro/loaders";
+import { z } from "astro/zod";
 import { glob } from "glob";
 import matter from "gray-matter";
 import { slugify } from "~/lib/utils";

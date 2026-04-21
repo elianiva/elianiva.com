@@ -8,7 +8,7 @@ interface Props {
 
 let props: Props = $props();
 // svelte-ignore state_referenced_locally
-let { id, title, tags, backlink_count = 0 } = props
+let { id, title, tags, backlink_count = 0 } = props;
 
 const initial = title.charAt(0).toUpperCase();
 const displayTags = tags
