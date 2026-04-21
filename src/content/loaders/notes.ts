@@ -1,4 +1,4 @@
-import { z } from "astro:content";
+import { z } from "astro/zod";
 import { GH_TOKEN } from "astro:env/server";
 import { readFile, stat } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
