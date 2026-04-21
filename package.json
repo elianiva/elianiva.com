@@ -6,7 +6,7 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"dev": "elianiva astro dev",
+		"dev": "astro dev",
 		"build": "astro build",
 		"preview": "wrangler pages dev ./dist",
 		"astro": "astro",
