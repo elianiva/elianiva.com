@@ -11,4 +11,12 @@
 			"invocation_logs": true,
 		},
 	},
+	"assets": {
+		"directory": "./dist/client/",
+	},
+	"vars": {
+		"BUN_VERSION": "1.2.15",
+		"NODE_VERSION": "22",
+		"SKIP_DEPENDENCY_INSTALL": true,
+	},
 }
