@@ -1,9 +1,11 @@
 import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { githubLoader } from "./content/loaders/github.ts";
 import { notesLoader } from "./content/loaders/notes.ts";
 
-const postCollection = defineCollection({
+const posts = defineCollection({
+    loader: glob({ base: "./src/content/posts", pattern: "*.mdx" }),
     schema: z.object({
         draft: z.boolean().optional().default(false),
         title: z.string(),
@@ -13,7 +15,8 @@ const postCollection = defineCollection({
     }),
 });
 
-const projectCollection = defineCollection({
+const projects = defineCollection({
+    loader: glob({ base: "./src/content/projects", pattern: "*.mdx" }),
     schema: z.object({
         title: z.string(),
         hasImage: z.boolean().default(true),
@@ -27,20 +30,20 @@ const projectCollection = defineCollection({
     }),
 });
 
-const githubCollection = defineCollection({
+const github = defineCollection({
     loader: githubLoader({
         username: "elianiva",
         minStars: 5000,
     }),
 });
 
-const notesCollection = defineCollection({
+const notes = defineCollection({
     loader: notesLoader(),
 });
 
 export const collections = {
-    projects: projectCollection,
-    posts: postCollection,
-    notes: notesCollection,
-    github: githubCollection,
+    projects,
+    posts,
+    notes,
+    github,
 };

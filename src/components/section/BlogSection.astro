@@ -1,6 +1,7 @@
 ---
 import PostCard from "~/components/card/PostCard.svelte";
 import ViewAllButton from "~/components/ViewAllButton.astro";
+import { slugify } from "~/lib/utils";
 import type { Post } from "~/models/post.ts";
 
 interface Props {
@@ -27,7 +28,7 @@ const { posts } = Astro.props;
 			posts
 				.slice(0, 6)
 				.map((post) => (
-					<PostCard {...post.data} href={`/posts/${post.slug}`} />
+					<PostCard {...post.data} href={`/posts/${slugify(post.data.title)}`} />
 				))
 		}
 	</div>

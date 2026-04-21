@@ -13,7 +13,6 @@ interface Props {
 		full_name: string;
 		url: string;
 		stargazerCount: number;
-		owner: string;
 	};
 	prs: GitHubPullRequest[];
 	defaultOpen?: boolean;

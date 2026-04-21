@@ -1,29 +1,31 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import { getCollection, getEntry, render } from "astro:content";
 import PostLayout from "~/layouts/PostLayout.astro";
+import { slugify } from "~/lib/utils";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
 	const postEntries = await getCollection("posts");
 	return postEntries.map((entry) => ({
-		params: { slug: entry.slug },
+		params: { slug: slugify(entry.data.title) },
 		props: { entry },
 	}));
 }
 
-type Props = {
-	entry: CollectionEntry<"posts">;
-};
+const { slug } = Astro.params;
+const entry = await getEntry("posts", slug);
+if (!entry) {
+	return Astro.redirect(`/posts`);
+}
 
-const { entry } = Astro.props;
-const { Content } = await entry.render();
-
-const contentWithoutHeaders = entry.body.replace(/^(#+\s*)/gm, "");
-const wordCount = contentWithoutHeaders.split(/\s+/).length;
+const contentWithoutHeaders = entry?.body?.replace(/^(#+\s*)/gm, "");
+const wordCount = contentWithoutHeaders?.split(/\s+/).length ?? 0;
 const readingTime = Math.ceil(wordCount / 200);
+
+const { Content } = await render(entry);
 ---
 
-<PostLayout frontmatter={entry.data} slug={entry.slug} wordCount={wordCount} readingTime={readingTime}>
+<PostLayout frontmatter={entry.data} slug={slugify(entry.data.title)} wordCount={wordCount} readingTime={readingTime}>
 	<Content />
 </PostLayout>

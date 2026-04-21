@@ -5,6 +5,7 @@ import { join, relative, sep } from "node:path";
 import type { Loader } from "astro/loaders";
 import { glob } from "glob";
 import matter from "gray-matter";
+import { slugify } from "~/lib/utils";
 
 const LOCAL_NOTES_DIR = join(
 	process.env.HOME ?? "",
@@ -59,15 +60,6 @@ export const noteSchema = frontmatterSchema.extend({
 
 type NoteFrontmatter = z.infer<typeof frontmatterSchema>;
 type Note = z.infer<typeof noteSchema>;
-
-function slugify(text: string): string {
-	return text
-		.toLowerCase()
-		.replace(/[^\w\s-]/g, "")
-		.replace(/\s+/g, "-")
-		.replace(/-+/g, "-")
-		.replace(/^-|-$/g, "");
-}
 
 function extractTitle(content: string, frontmatterId?: string): string {
 	if (frontmatterId) return frontmatterId;

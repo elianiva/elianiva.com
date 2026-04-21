@@ -1,25 +1,30 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import { getEntry } from "astro:content";
+import { render } from "astro:content";
+import { getCollection } from "astro:content";
 import ProjectLayout from "~/layouts/ProjectLayout.astro";
+import { slugify } from "~/lib/utils";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
 	const postEntries = await getCollection("projects");
 	return postEntries.map((entry) => ({
-		params: { slug: entry.slug },
+		params: { slug: slugify(entry.data.title) },
 		props: { entry },
 	}));
 }
 
-type Props = {
-	entry: CollectionEntry<"projects">;
-};
+const { slug } = Astro.params;
 
-const { entry } = Astro.props;
-const { Content } = await entry.render();
+const entry = await getEntry("projects", slug);
+if (!entry) {
+	return Astro.redirect(`/projects`);
+}
+
+const { Content } = await render(entry);
 ---
 
-<ProjectLayout frontmatter={entry.data} slug={entry.slug}>
+<ProjectLayout frontmatter={entry.data} slug={slugify(entry.data.title)}>
 	<Content />
 </ProjectLayout>

@@ -1,6 +1,7 @@
 ---
 import ProjectCard from "~/components/card/ProjectCard.astro";
 import ViewAllButton from "~/components/ViewAllButton.astro";
+import { slugify } from "~/lib/utils";
 import type { Project } from "~/models/project.ts";
 
 interface Props {
@@ -26,16 +27,19 @@ const { projects, title, description, seeMoreUrl } = Astro.props;
 		class="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd"
 	>
 		{
-			projects.map((project) => (
-				<ProjectCard
-					slug={project.slug}
-					title={project.data.title}
-					description={project.data.description}
-					href={`/projects/${project.slug}`}
-					stack={project.data.stack}
-					hasImage={project.data.hasImage}
-				/>
-			))
+			projects.map((project) => {
+				const slug = slugify(project.data.title);
+				return (
+					<ProjectCard
+						slug={slug}
+						title={project.data.title}
+						description={project.data.description}
+						href={`/projects/${slug}`}
+						stack={project.data.stack}
+						hasImage={project.data.hasImage}
+					/>
+				)
+			})
 		}
 	</div>
 	{
