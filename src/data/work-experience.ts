@@ -5,7 +5,7 @@ export const workExperiences: WorkExperience[] = [
 		company: "Aerotalon",
 		position: "Frontend Web Developer",
 		location: "australia",
-		time: "contract",
+		time: "full-time",
 		period: [new Date(2026, 0), null],
 		details: [
 			"Developed and maintained Aviation information system using React and TypeScript.",

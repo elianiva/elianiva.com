@@ -1,19 +1,19 @@
 <script lang="ts">
-import CalendarIcon from "~icons/ph/calendar-blank";
+	import CalendarIcon from "~icons/ph/calendar-blank";
 
-interface Props {
-	title: string;
-	description: string;
-	href: string;
-	date: Date;
-	tags: string[];
-}
+	interface Props {
+		title: string;
+		description: string;
+		href: string;
+		date: Date;
+		tags: string[];
+	}
 
-const { title, description, href, date, tags }: Props = $props();
+	const { title, description, href, date, tags }: Props = $props();
 </script>
 
 <div
-	class="bg-white/50 rounded-xl text-left transition-all border-[0.5px] border-pink-200/50 hover:border-pink-200 group hover:bg-pink-50/50"
+	class="bg-white/60 text-left transition-all group hover:bg-white"
 	role="article"
 	aria-labelledby="post-title"
 	style="view-transition-name: post-card-{href.split('/').pop()}"
@@ -22,7 +22,7 @@ const { title, description, href, date, tags }: Props = $props();
 		data-astro-prefetch
 		rel="prefetch"
 		{href}
-		class="grid grid-rows-[auto_2rem_auto_2rem] p-4 h-full focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2 rounded-lg"
+		class="grid grid-rows-[auto_2rem_auto_2rem] p-4 h-full focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
 		aria-labelledby="post-title"
 	>
 		<h3
@@ -48,7 +48,9 @@ const { title, description, href, date, tags }: Props = $props();
 		</p>
 		<div class="flex gap-1 self-end flex-wrap">
 			{#each tags as tag}
-				<span class="text-xs font-mono text-pink-950/70 bg-pink-50/80 px-2 py-0.5 rounded-full">
+				<span
+					class="text-xs font-mono text-pink-950/70 bg-pink-50/80 px-2 py-0.5"
+				>
 					#{tag}
 				</span>
 			{/each}

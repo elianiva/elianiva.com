@@ -1,15 +1,13 @@
 ---
 import { getCollection, getEntry, render } from "astro:content";
 import ProjectLayout from "~/layouts/ProjectLayout.astro";
-import { slugify } from "~/lib/utils";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-	const postEntries = await getCollection("projects");
-	return postEntries.map((entry) => ({
-		params: { slug: slugify(entry.data.title) },
-		props: { entry },
+	const projects = await getCollection("projects");
+	return projects.map((project) => ({
+		params: { slug: project.id },
 	}));
 }
 
@@ -23,6 +21,6 @@ if (!entry) {
 const { Content } = await render(entry);
 ---
 
-<ProjectLayout frontmatter={entry.data} slug={slugify(entry.data.title)}>
+<ProjectLayout frontmatter={entry.data} slug={entry.id}>
 	<Content />
 </ProjectLayout>

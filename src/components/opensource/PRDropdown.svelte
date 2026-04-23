@@ -90,12 +90,12 @@ $effect(() => {
 </script>
 
 <div
-	class="bg-blur-xl bg-white/50 focus:outline-none rounded-xl border-[0.5px] border-pink-200/50"
+	class="bg-blur-xl bg-white/60 focus:outline-none border-pink-200/50"
 	data-open={isOpen}
 >
 	<button
 		type="button"
-		class="list-none w-full px-4 py-3 cursor-pointer focus:outline-none rounded-lg text-left"
+		class="list-none w-full px-4 py-3 cursor-pointer focus:outline-none text-left"
 		onclick={toggleOpen}
 		aria-expanded={isOpen}
 	>

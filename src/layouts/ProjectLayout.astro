@@ -29,7 +29,7 @@ const { frontmatter, slug } = Astro.props as Props;
 			<section class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4" transition:name={`project-content-${slug}`}>
 				<div class="space-y-6">
 					{frontmatter.hasImage && (
-						<div class="rounded-2xl overflow-hidden border-[0.5px] border-pink-200/50">
+						<div class="overflow-hidden border-[0.5px] border-pink-200/50">
 							<img
 								src={`/assets/projects/${slug}/cover.webp`}
 								alt={frontmatter.title}
@@ -48,7 +48,7 @@ const { frontmatter, slug } = Astro.props as Props;
 						</h1>
 							<div class="flex gap-2">
 								<a
-									class="flex gap-2 items-center bg-white/50 hover:bg-pink-50 border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2"
+									class="flex gap-2 items-center bg-white/60 hover:bg-white border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
 									href={frontmatter.source} target="_blank" rel="noopener noreferrer"
 								>
 									<GithubIcon class="w-5 h-5" />
@@ -57,7 +57,7 @@ const { frontmatter, slug } = Astro.props as Props;
 								{
 									frontmatter.demo !== null && (
 										<a
-											class="flex gap-2 items-center bg-pink-50/80 hover:bg-pink-50 border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2"
+											class="flex gap-2 items-center bg-pink-50/80 hover:bg-pink-50 border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
 											href={frontmatter.demo} target="_blank" rel="noopener noreferrer"
 										>
 											<GlobeIcon class="w-5 h-5" />
@@ -82,7 +82,7 @@ const { frontmatter, slug } = Astro.props as Props;
 							{
 								frontmatter.stack.map(([stackName, stackHomepage]) => (
 									<div class="flex items-center gap-3 group">
-										<div class="flex items-center justify-center p-2 bg-pink-50/80 rounded-lg border-[0.5px] border-pink-200/50 w-12 h-12 shrink-0">
+										<div class="flex items-center justify-center p-2 bg-pink-50/80 border-[0.5px] border-pink-200/50 w-12 h-12 shrink-0">
 											<img
 												class={`w-full h-full object-contain ${stackName.toLowerCase() === "nextjs" ? "filter invert" : ""}`}
 												src={`/assets/logo/${stackName.toLowerCase().replace(/\s+/g, "-")}.png`}
@@ -91,7 +91,7 @@ const { frontmatter, slug } = Astro.props as Props;
 										</div>
 										<a
 											href={stackHomepage}
-											class="text-sm font-body text-pink-950 hover:text-pink-700 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-1 rounded"
+											class="text-sm font-body text-pink-950 hover:text-pink-700 transition-colors focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-1"
 											target="_blank"
 											rel="noopener noreferrer"
 										>

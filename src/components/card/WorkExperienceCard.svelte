@@ -102,12 +102,12 @@ $effect(() => {
 </script>
 
 <div
-	class="work-experience-card group rounded-2xl transition-colors hover:bg-pink-50/30"
+	class="work-experience-card group rounded-2xl transition-colors"
 	data-open={isOpen}
 >
 	<button
 		type="button"
-		class="list-none w-full cursor-pointer focus:outline-none rounded-2xl p-2 text-left"
+		class="list-none w-full cursor-pointer focus:ring-0 focus:outline-none p-2 text-left"
 		onclick={toggleOpen}
 		aria-expanded={isOpen}
 	>
@@ -135,12 +135,12 @@ $effect(() => {
 				</p>
 				<div class="flex flex-wrap items-center gap-1 py-1">
 					<span
-						class="text-[10px] px-2 py-0.5 rounded-full bg-pink-50 font-mono uppercase border border-pink-100 whitespace-nowrap text-pink-700"
+						class="text-[10px] px-2 py-0.5 bg-pink-50 font-mono uppercase whitespace-nowrap text-pink-700"
 					>
 						{location}
 					</span>
 					<span
-						class="text-[10px] px-2 py-0.5 rounded-full bg-pink-50 font-mono uppercase border border-pink-100 whitespace-nowrap text-pink-700"
+						class="text-[10px] px-2 py-0.5 bg-pink-50 font-mono uppercase whitespace-nowrap text-pink-700"
 					>
 						{time}
 					</span>
@@ -169,7 +169,7 @@ $effect(() => {
 		<div
 			class="hidden md:flex md:flex-row items-start md:justify-between gap-4 -ml-8"
 		>
-			<div class="flex items-start gap-3 flex-1">
+			<div class="flex items-start gap-3">
 				<div
 					class="text-pink-600 transition-transform duration-200 shrink-0"
 					class:rotate-180={isOpen}
@@ -188,29 +188,29 @@ $effect(() => {
 				</div>
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-row items-center gap-3">
-						<h3 class="font-bold font-display md:text-lg text-pink-950 whitespace-nowrap">
+						<h3 class="font-bold font-display text-pink-950 whitespace-nowrap">
 							{company}
 						</h3>
 						<div class="flex items-center gap-2">
 							<span
-								class="text-xs px-3 py-1 rounded-full bg-pink-50 font-mono uppercase border border-pink-100 whitespace-nowrap"
+								class="text-xs px-3 py-1 bg-pink-100/60 font-mono uppercase whitespace-nowrap"
 							>
 								{location}
 							</span>
 							<span
-								class="text-xs px-3 py-1 rounded-full bg-pink-50 font-mono uppercase border border-pink-100 whitespace-nowrap"
+								class="text-xs px-3 py-1 bg-pink-100/60 font-mono uppercase whitespace-nowrap"
 							>
 								{time}
 							</span>
 						</div>
 					</div>
-					<span class="text-sm md:text-base font-mono text-pink-950 block">
+					<span class="text-sm font-mono text-pink-950 block">
 						{position}
 					</span>
 				</div>
 			</div>
-			<div class="flex-1 border-t border-pink-200/50 mt-[0.5lh] mx-4"></div>
-			<span class="text-pink-950/80 font-mono text-sm md:text-base whitespace-nowrap shrink-0">
+			<div class="flex-1 border-t border-pink-200/50 mt-[0.5lh] mx-0"></div>
+			<span class="text-pink-950/80 font-mono text-sm whitespace-nowrap shrink-0">
 				{period[0].toLocaleDateString("en-GB", {
 					month: "short",
 					year: "numeric",
@@ -239,7 +239,7 @@ $effect(() => {
 			<ul class="flex flex-wrap items-center pt-2 gap-1">
 				{#each technologies as technology}
 					<li
-						class="font-mono uppercase text-pink-950 text-xs rounded-full border border-dashed border-pink-400/60 py-1 px-3 stitch-border"
+						class="font-mono uppercase text-pink-950 text-xs border border-dashed border-pink-400/60 py-1 px-3 stitch-border"
 					>
 						{technology}
 					</li>

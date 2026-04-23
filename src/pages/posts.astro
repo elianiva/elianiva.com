@@ -18,6 +18,6 @@ posts.sort((a, b) => (a.data.date > b.data.date ? -1 : 1));
 		>
 			All Posts
 		</h1>
-		<PostList client:load posts={posts.map(({ data, slug }) => ({ ...data, slug }))} />
+			<PostList client:load posts={posts.map(({ data, id }) => ({ ...data, id }))} />
 	</section>
 </MainLayout>

@@ -1,10 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Hepta+Slab:wght@1..900&display=swap');
+
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @theme {
 	--font-sans: "Varela Round", sans-serif;
-	--font-display: "Chonburi", serif;
-	--font-heading: "Chonburi", serif;
+	--font-display: "Hepta Slab", serif;
+	--font-heading: "Hepta Slab", serif;
 	--font-body: "Varela Round", sans-serif;
 	--font-mono: "IBM Plex Mono", monospace;
 
@@ -121,23 +123,23 @@
 	}
 
 	.prose :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-		@apply text-pink-800 my-2 leading-loose text-3xl font-heading;
+		@apply text-pink-800 my-2 leading-loose text-3xl font-heading font-semibold;
 	}
 
 	.prose :where(h2):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-		@apply text-pink-800 my-2 leading-loose text-2xl font-heading;
+		@apply text-pink-800 my-2 leading-loose text-2xl font-heading font-semibold;
 	}
 
 	.prose :where(h3):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-		@apply text-pink-800 my-2 leading-loose text-xl font-heading;
+		@apply text-pink-800 my-2 leading-loose text-xl font-heading font-semibold;
 	}
 
 	.prose :where(h4):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-		@apply text-pink-800 my-2 leading-loose text-lg font-heading;
+		@apply text-pink-800 my-2 leading-loose text-lg font-heading font-semibold;
 	}
 
 	.prose :where(h5):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-		@apply text-pink-800 my-2 leading-loose text-base font-heading;
+		@apply text-pink-800 my-2 leading-loose text-base font-heading font-semibold;
 	}
 
 	.prose :where(li) p:first-child {
@@ -158,4 +160,14 @@
 
 .wiki-link:hover {
 	@apply text-pink-800 border-pink-600;
+}
+
+.with-box-underline {
+	@apply after:content-[""]
+			after:absolute
+			after:bottom-0
+			after:w-dvw
+			after:left-1/2
+			after:-translate-x-1/2
+			after:bg-pink-200/50 after:h-px;
 }

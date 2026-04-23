@@ -1,15 +1,13 @@
 ---
 import { getCollection, getEntry, render } from "astro:content";
 import PostLayout from "~/layouts/PostLayout.astro";
-import { slugify } from "~/lib/utils";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
 	const postEntries = await getCollection("posts");
 	return postEntries.map((entry) => ({
-		params: { slug: slugify(entry.data.title) },
-		props: { entry },
+		params: { slug: entry.id },
 	}));
 }
 
@@ -26,6 +24,6 @@ const readingTime = Math.ceil(wordCount / 200);
 const { Content } = await render(entry);
 ---
 
-<PostLayout frontmatter={entry.data} slug={slugify(entry.data.title)} wordCount={wordCount} readingTime={readingTime}>
+<PostLayout frontmatter={entry.data} slug={entry.id} wordCount={wordCount} readingTime={readingTime}>
 	<Content />
 </PostLayout>

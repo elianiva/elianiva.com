@@ -107,7 +107,7 @@ onMount(() => {
 			<button
 				onclick={() => setTab(cat)}
 				class="tab-btn relative flex items-center gap-2 text-sm font-medium transition-colors pb-1 cursor-pointer
-					outline-none focus-visible:ring-2 focus-visible:ring-pink-400/40 rounded px-2 py-1
+					outline-none focus-visible:ring focus-visible:ring-pink-400/40 rounded px-2 py-1
 					{isActive ? 'text-pink-600' : 'text-pink-950/50 hover:text-pink-950/80'}"
 				aria-pressed={isActive}
 				style={isActive ? 'anchor-name: --active-tab' : ''}
