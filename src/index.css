@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Hepta+Slab:wght@1..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Hepta+Slab:wght@1..900&display=swap");
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -163,11 +163,5 @@
 }
 
 .with-box-underline {
-	@apply after:content-[""]
-			after:absolute
-			after:bottom-0
-			after:w-dvw
-			after:left-1/2
-			after:-translate-x-1/2
-			after:bg-pink-200/50 after:h-px;
+	@apply after:content-[""] after:absolute after:bottom-0 after:w-dvw after:left-1/2 after:-translate-x-1/2 after:bg-pink-200/50 after:h-px;
 }

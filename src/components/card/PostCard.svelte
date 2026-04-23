@@ -1,15 +1,15 @@
 <script lang="ts">
-	import CalendarIcon from "~icons/ph/calendar-blank";
+import CalendarIcon from "~icons/ph/calendar-blank";
 
-	interface Props {
-		title: string;
-		description: string;
-		href: string;
-		date: Date;
-		tags: string[];
-	}
+interface Props {
+	title: string;
+	description: string;
+	href: string;
+	date: Date;
+	tags: string[];
+}
 
-	const { title, description, href, date, tags }: Props = $props();
+const { title, description, href, date, tags }: Props = $props();
 </script>
 
 <div

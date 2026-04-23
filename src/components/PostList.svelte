@@ -1,124 +1,120 @@
 <script lang="ts">
-	import { fly } from "svelte/transition";
-	import PostCard from "~/components/card/PostCard.svelte";
-	import type { PostMeta } from "~/models/post";
+import { fly } from "svelte/transition";
+import PostCard from "~/components/card/PostCard.svelte";
+import type { PostMeta } from "~/models/post";
 
-	type Props = {
-		posts: (PostMeta & { id: string })[];
-	};
+type Props = {
+	posts: (PostMeta & { id: string })[];
+};
 
-	const { posts }: Props = $props();
+const { posts }: Props = $props();
 
-	let inputBox: HTMLInputElement | null = null;
-	let searchQuery = $state("");
-	let tagSearchQuery = $state("");
-	const selectedTags = $state<string[]>([]);
-	let isCompletionVisible = $state(false);
-	let activeOptionIndex = $state(-1);
-	let listboxId = "tag-listbox";
-	let announcementText = $state("");
+let inputBox: HTMLInputElement | null = null;
+let searchQuery = $state("");
+let tagSearchQuery = $state("");
+const selectedTags = $state<string[]>([]);
+let isCompletionVisible = $state(false);
+let activeOptionIndex = $state(-1);
+let listboxId = "tag-listbox";
+let announcementText = $state("");
 
-	const allPostTags = posts.flatMap((post) => post.tags);
-	const tagCounts = allPostTags.reduce(
-		(acc, curr) => {
-			acc[curr] = (acc[curr] || 0) + 1;
-			return acc;
-		},
-		{} as Record<string, number>,
-	);
+const allPostTags = posts.flatMap((post) => post.tags);
+const tagCounts = allPostTags.reduce(
+	(acc, curr) => {
+		acc[curr] = (acc[curr] || 0) + 1;
+		return acc;
+	},
+	{} as Record<string, number>,
+);
 
-	const filteredPosts = $derived(
-		posts.filter((post) => {
-			const slug = post.id;
-			const query = searchQuery.toLowerCase();
-			const matchesSearch =
-				searchQuery === "" ||
-				post.title.toLowerCase().includes(query) ||
-				slug.toLowerCase().includes(query);
-			const matchesTags = selectedTags.every((tag) =>
-				post.tags.includes(tag),
-			);
-			return matchesSearch && matchesTags;
-		}),
-	);
+const filteredPosts = $derived(
+	posts.filter((post) => {
+		const slug = post.id;
+		const query = searchQuery.toLowerCase();
+		const matchesSearch =
+			searchQuery === "" ||
+			post.title.toLowerCase().includes(query) ||
+			slug.toLowerCase().includes(query);
+		const matchesTags = selectedTags.every((tag) => post.tags.includes(tag));
+		return matchesSearch && matchesTags;
+	}),
+);
 
-	const availableTags = $derived(
-		tagSearchQuery
-			? [...new Set(allPostTags)].filter((tag) =>
-					// remove # before filtering
-					tag
-						.toLowerCase()
-						.includes(tagSearchQuery.substring(1).toLowerCase()),
-				)
-			: [],
-	);
+const availableTags = $derived(
+	tagSearchQuery
+		? [...new Set(allPostTags)].filter((tag) =>
+				// remove # before filtering
+				tag.toLowerCase().includes(tagSearchQuery.substring(1).toLowerCase()),
+			)
+		: [],
+);
 
-	function handleInput(event: Event) {
-		const inputValue = (event.currentTarget as HTMLInputElement).value;
-		if (inputValue.startsWith("#")) {
-			tagSearchQuery = inputValue;
-			searchQuery = "";
-			isCompletionVisible = true;
-			activeOptionIndex = -1;
-		} else {
-			searchQuery = inputValue;
-			tagSearchQuery = "";
-			isCompletionVisible = false;
-			activeOptionIndex = -1;
-		}
-
-		// Announce search results
-		if (searchQuery || tagSearchQuery) {
-			announcementText = `${filteredPosts.length} post${filteredPosts.length !== 1 ? "s" : ""} found.`;
-			setTimeout(() => (announcementText = ""), 1000);
-		}
-	}
-
-	function handleKeydown(event: KeyboardEvent) {
-		if (!isCompletionVisible || availableTags.length === 0) return;
-
-		switch (event.key) {
-			case "ArrowDown":
-				event.preventDefault();
-				activeOptionIndex = Math.min(
-					activeOptionIndex + 1,
-					availableTags.length - 1,
-				);
-				break;
-			case "ArrowUp":
-				event.preventDefault();
-				activeOptionIndex = Math.max(activeOptionIndex - 1, 0);
-				break;
-			case "Enter":
-			case " ":
-				event.preventDefault();
-				if (activeOptionIndex >= 0) {
-					const tag = availableTags[activeOptionIndex];
-					if (tag) {
-						selectTag(tag);
-					}
-				}
-				break;
-			case "Escape":
-				event.preventDefault();
-				isCompletionVisible = false;
-				activeOptionIndex = -1;
-				break;
-		}
-	}
-
-	function selectTag(tag: string) {
-		selectedTags.push(tag);
-		if (inputBox) {
-			inputBox.value = "";
-			inputBox.focus();
-		}
+function handleInput(event: Event) {
+	const inputValue = (event.currentTarget as HTMLInputElement).value;
+	if (inputValue.startsWith("#")) {
+		tagSearchQuery = inputValue;
+		searchQuery = "";
+		isCompletionVisible = true;
+		activeOptionIndex = -1;
+	} else {
+		searchQuery = inputValue;
 		tagSearchQuery = "";
 		isCompletionVisible = false;
 		activeOptionIndex = -1;
-		announcementText = `Added tag ${tag}. ${filteredPosts.length} post${filteredPosts.length !== 1 ? "s" : ""} found.`;
+	}
+
+	// Announce search results
+	if (searchQuery || tagSearchQuery) {
+		announcementText = `${filteredPosts.length} post${filteredPosts.length !== 1 ? "s" : ""} found.`;
 		setTimeout(() => (announcementText = ""), 1000);
 	}
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (!isCompletionVisible || availableTags.length === 0) return;
+
+	switch (event.key) {
+		case "ArrowDown":
+			event.preventDefault();
+			activeOptionIndex = Math.min(
+				activeOptionIndex + 1,
+				availableTags.length - 1,
+			);
+			break;
+		case "ArrowUp":
+			event.preventDefault();
+			activeOptionIndex = Math.max(activeOptionIndex - 1, 0);
+			break;
+		case "Enter":
+		case " ":
+			event.preventDefault();
+			if (activeOptionIndex >= 0) {
+				const tag = availableTags[activeOptionIndex];
+				if (tag) {
+					selectTag(tag);
+				}
+			}
+			break;
+		case "Escape":
+			event.preventDefault();
+			isCompletionVisible = false;
+			activeOptionIndex = -1;
+			break;
+	}
+}
+
+function selectTag(tag: string) {
+	selectedTags.push(tag);
+	if (inputBox) {
+		inputBox.value = "";
+		inputBox.focus();
+	}
+	tagSearchQuery = "";
+	isCompletionVisible = false;
+	activeOptionIndex = -1;
+	announcementText = `Added tag ${tag}. ${filteredPosts.length} post${filteredPosts.length !== 1 ? "s" : ""} found.`;
+	setTimeout(() => (announcementText = ""), 1000);
+}
 </script>
 
 <div class="relative">
