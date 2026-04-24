@@ -17,21 +17,20 @@ const { title, description, href, slug, stack, hasImage = true } = Astro.props;
 	class="bg-white/60 text-left p-4 transition-all group hover:bg-white"
 	transition:name={`project-card-${slug}`}
 >
-	{
-		hasImage && (
-		<div class="overflow-hidden border-[0.5px] border-pink-200/50">
-				<img
-					src={`/assets/projects/${slug}/cover.webp`}
-					alt={`Screenshot of ${title} project interface`}
-					class="block w-full h-full bg-pink-100 transition-transform duration-300"
-					loading="lazy"
-				/>
-			</div>
-		)
-	}
-	<div
-		class={`grid grid-rows-[auto_auto_auto] ${hasImage ? 'pt-4' : ''}`}
-	>
+	<div class="relative overflow-hidden border-[0.5px] border-pink-200/50">
+		<div class="absolute inset-0 bg-pink-200/10 z-10 group-hover:opacity-0 transition-all duration-150" />
+		<img
+			src={`/assets/projects/${slug}/cover.webp`}
+			alt={`Screenshot of ${title} project interface`}
+			class="inline-block w-full h-auto aspect-video bg-white transition-all duration-150 grayscale group-hover:grayscale-0"
+			loading="lazy"
+			onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+		/>
+		<div class="hidden w-full h-auto aspect-video items-center justify-center text-xs font-light uppercase text-pink-800/50 tracking-wider bg-white">
+			{title}
+		</div>
+	</div>
+	<div class="grid grid-rows-[auto_auto_auto] pt-4">
 		<a
 			data-astro-prefetch
 			rel="prefetch"
@@ -49,7 +48,7 @@ const { title, description, href, slug, stack, hasImage = true } = Astro.props;
 					<a
 						href={url}
 						target="_blank"
-						rel="norel noreferrer"
+						rel="noopener noreferrer"
 						class="text-xs text-pink-800 bg-pink-50/80 px-3 py-1 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-1 transition-colors"
 					>
 						{name}
