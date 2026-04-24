@@ -18,6 +18,13 @@ posts.sort((a, b) => (a.data.date > b.data.date ? -1 : 1));
 		>
 			All Posts
 		</h1>
+			{posts.length === 0 ? (
+			<div class="py-16 text-center border border-dashed border-pink-300">
+				<p class="text-sm font-mono text-pink-950/60 uppercase tracking-wider">No posts yet</p>
+				<p class="text-sm font-body text-pink-950/50 mt-2">Check back later, or go touch some grass.</p>
+			</div>
+		) : (
 			<PostList client:load posts={posts.map(({ data, id }) => ({ ...data, id }))} />
+		)}
 	</section>
 </MainLayout>

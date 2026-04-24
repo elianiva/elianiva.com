@@ -1,0 +1,43 @@
+---
+title: "Case Study Demo"
+date: 2025-01-01
+description: "A test project demonstrating the new case study layout. This is a dummy entry to validate the layout before migrating real projects."
+source: "https://github.com/elianiva"
+demo: "https://elianiva.com"
+type: personal
+featured: false
+stack:
+    - ["Astro", "https://astro.build"]
+    - ["Svelte", "https://svelte.dev"]
+    - ["Tailwind", "https://tailwindcss.com"]
+
+# Case Study Fields (optional)
+context: "I needed a way to present my projects that showed not just what I built, but why I built it that way. The existing layout was just a screenshot and a wall of text — fine for notes, not great for telling a story."
+role: "Frontend Engineer / UI Design"
+decisions:
+    - "Kept the two-column layout (content + stack sidebar) because it mirrors how people actually read project pages — they want the story first, then the technical details."
+    - "Used sectioned headings (Context, Role, Decisions, Outcome) because they force me to think about each project as a narrative, not just a feature list."
+    - "Made the case study fields optional so existing projects don't break, and I can progressively adopt this format."
+outcome: "Now I have a reusable structure for any project I want to present as a case study. The layout works for both detailed walkthroughs and simple project overviews."
+---
+
+## What This Is
+
+This is a **demo entry** for the new `CaseStudyLayout`. It lives alongside the existing `ProjectLayout` — no migration needed.
+
+## How to Use It
+
+For any new project (or when you feel like rewriting an old one), add these optional frontmatter fields:
+
+- `context` — Why did you build this? What problem were you solving?
+- `role` — What did you actually do? Frontend only? Design + code?
+- `decisions` — Array of strings. Why this layout, this color, this interaction?
+- `outcome` — What happened? Metrics, user feedback, or just "it worked."
+
+If you omit all of them, the layout falls back to a cleaner version of the old project page.
+
+## Technical Notes
+
+The layout renders the case study fields **above** the MDX content. The content area is still a two-column grid with `prose` styling. The stack sidebar stays consistent with the old layout.
+
+If a project doesn't have a `cover.webp`, set `hasImage: false` (or omit the screenshot section from the layout — it already checks for this).
