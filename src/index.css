@@ -26,7 +26,7 @@
 @layer base {
 	html,
 	body {
-		@apply overscroll-none;
+		@apply overscroll-none overflow-x-hidden;
 	}
 
 	body {
@@ -164,4 +164,8 @@
 
 .with-box-underline {
 	@apply after:content-[""] after:absolute after:bottom-0 after:w-dvw after:left-1/2 after:-translate-x-1/2 after:bg-pink-200/50 after:h-px;
+}
+
+.with-box-upperline {
+	@apply before:content-[""] before:absolute before:top-0 before:w-dvw before:left-1/2 before:-translate-x-1/2 before:bg-pink-200/50 before:h-px;
 }
