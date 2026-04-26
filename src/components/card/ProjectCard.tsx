@@ -1,13 +1,11 @@
 import { Link } from "@tanstack/react-router";
 
-type Stack = [stack: string, url: string];
-
 interface ProjectCardProps {
   slug: string;
   title: string;
   description: string;
   href: string;
-  stack: Stack[];
+  stack: string[][];
   hasImage?: boolean;
 }
 
@@ -58,17 +56,20 @@ export function ProjectCard({
           {description}
         </p>
         <div className="flex flex-wrap items-end gap-1 font-mono uppercase">
-          {stack.map(([name, url]) => (
-            <a
-              key={name}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-pink-800 bg-pink-50/80 px-3 py-1 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-1 transition-colors"
-            >
-              {name}
-            </a>
-          ))}
+          {stack.map((item) => {
+            const [name, url] = item;
+            return (
+              <a
+                key={name}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-pink-800 bg-pink-50/80 px-3 py-1 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-1 transition-colors"
+              >
+                {name}
+              </a>
+            );
+          })}
         </div>
       </div>
     </div>
