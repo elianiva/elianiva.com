@@ -5,6 +5,9 @@ import { BackButton } from "#/components/BackButton";
 import { CodeCopy } from "#/components/CodeCopy";
 import { Update } from "#/components/Update";
 import { Greentext } from "#/components/Greentext";
+import { Quiz } from "#/components/Quiz";
+import { RegexHighlighter } from "#/components/RegexHighlighter";
+import { TermPopover } from "#/components/TermPopover";
 import { SEO } from "#/components/SEO";
 import CalendarIcon from "~icons/ph/calendar-blank";
 import TagIcon from "~icons/ph/tag";
@@ -37,6 +40,9 @@ export const Route = createFileRoute("/posts/$slug")({
 const mdxComponents = {
   Update,
   Greentext,
+  Quiz,
+  RegexHighlighter,
+  TermPopover,
 };
 
 function PostDetailPage() {
