@@ -13,3 +13,4 @@ __unconfig*
 todos.json
 
 .content-collections
+.cache
