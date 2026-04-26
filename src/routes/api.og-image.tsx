@@ -90,7 +90,7 @@ export const Route = createFileRoute('/api/og-image')({
         const pngData = resvg.render()
         const pngBuffer = pngData.asPng()
 
-        return new Response(pngBuffer.buffer, {
+        return new Response(pngBuffer.buffer as ArrayBuffer, {
           headers: {
             'Content-Type': 'image/png',
             'Cache-Control': 'public, max-age=86400',

@@ -36,7 +36,6 @@ function random(min: number, max: number) {
 export function CanvasBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
-  const lastTimeRef = useRef<number>(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -47,6 +46,8 @@ export function CanvasBackground() {
 
     const gl = canvas.getContext('webgl2', { alpha: false, antialias: false })
     if (!gl) return
+
+    const c = canvas
 
     const vs = createShader(gl, gl.VERTEX_SHADER, vertSource)
     const fs = createShader(gl, gl.FRAGMENT_SHADER, fragSource)
@@ -118,9 +119,9 @@ export function CanvasBackground() {
       const dpr = Math.min(window.devicePixelRatio, 1.5)
       const w = window.innerWidth
       const h = window.innerHeight
-      canvas.width = w * dpr
-      canvas.height = h * dpr
-      gl!.viewport(0, 0, canvas.width, canvas.height)
+      c.width = w * dpr
+      c.height = h * dpr
+      gl!.viewport(0, 0, c.width, c.height)
     }
 
     resize()
@@ -132,7 +133,7 @@ export function CanvasBackground() {
       const elapsed = (now - startTime) / 1000
       gl!.useProgram(program)
       gl!.uniform1f(uTime, elapsed)
-      gl!.uniform2f(uRes, canvas.width, canvas.height)
+      gl!.uniform2f(uRes, c.width, c.height)
       gl!.uniform2fv(uPos, posArr)
       gl!.uniform2fv(uDir, dirArr)
       gl!.uniform1fv(uDriftSpeed, driftSpeedArr)

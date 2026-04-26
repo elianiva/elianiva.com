@@ -29,9 +29,7 @@ const config = defineConfig({
         },
       },
     }),
-    viteReact({
-      babel: { plugins: ['babel-plugin-react-compiler'] },
-    }),
+    viteReact(),
     glsl(),
     Icons({ compiler: 'jsx', jsx: 'react' }),
   ],

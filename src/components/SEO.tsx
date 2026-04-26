@@ -13,7 +13,7 @@ interface SEOProps {
 export function SEO({
   title,
   description = sites.description,
-  keywords = sites.keywords,
+  keywords = [...sites.keywords],
   thumbnail,
   isPost = false,
   publishedAt,
