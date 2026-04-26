@@ -6,6 +6,7 @@ import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { cloudflare } from '@cloudflare/vite-plugin'
 import glsl from 'vite-plugin-glsl'
+import Icons from 'unplugin-icons/vite'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
@@ -27,6 +28,7 @@ const config = defineConfig({
       babel: { plugins: ['babel-plugin-react-compiler'] },
     }),
     glsl(),
+    Icons({ compiler: 'jsx', jsx: 'react' }),
   ],
 })
 
