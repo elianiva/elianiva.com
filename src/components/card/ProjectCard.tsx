@@ -47,7 +47,7 @@ export function ProjectCard({
       </div>
       <div className="grid grid-rows-[auto_auto_auto] pt-4">
         <Link
-          to={href}
+          to={href as any}
           className="text-base font-bold font-display text-pink-950 group-hover:text-pink-700 transition-property-color duration-100 ease-out focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         >
           {title}

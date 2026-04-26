@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { Note } from "#/types/notes";
 
 interface PeopleCardProps {
@@ -12,8 +13,8 @@ export function PeopleCard({ note }: PeopleCardProps) {
 
   return (
     <article style={{ viewTransitionName: `note-card-${note.slug}` }}>
-      <a
-        href={`/notes/${note.slug}`}
+      <Link
+        to={`/notes/${note.slug}` as any}
         className="flex items-center gap-3 p-3 bg-white/60 border border-dashed border-pink-200 hover:bg-white/80 transition-colors duration-200"
       >
         {/* avatar */}
@@ -37,7 +38,7 @@ export function PeopleCard({ note }: PeopleCardProps) {
             ← {note.backlinks.length}
           </span>
         )}
-      </a>
+      </Link>
     </article>
   );
 }

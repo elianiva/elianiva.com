@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { loadNotes } from "#/lib/notes";
 import { BackButton } from "#/components/BackButton";
 import { Backlinks } from "#/components/notes/Backlinks";
@@ -64,7 +64,7 @@ function NoteDetailPage() {
         <article className="pt-6" style={{ viewTransitionName: `note-card-${note.slug}` }}>
           {/* Breadcrumb */}
           <nav className="text-sm text-pink-950/50 mb-6">
-            <a href="/notes" className="hover:text-pink-700 transition-colors">Notes</a>
+            <Link to="/notes" className="hover:text-pink-700 transition-colors">Notes</Link>
             <span className="mx-2">/</span>
             <span>{categoryLabels[note.category] || note.category}</span>
           </nav>

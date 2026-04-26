@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { Note } from "#/types/notes";
 
 interface MusicCardProps {
@@ -16,8 +17,8 @@ export function MusicCard({ note }: MusicCardProps) {
 
   return (
     <article style={{ viewTransitionName: `note-card-${note.slug}` }}>
-      <a
-        href={`/notes/${note.slug}`}
+      <Link
+        to={`/notes/${note.slug}` as any}
         className="flex items-center gap-3 px-3 py-2 bg-white/60 border border-purple-200 hover:bg-white/80 transition-colors duration-200"
       >
         {/* album art placeholder */}
@@ -49,7 +50,7 @@ export function MusicCard({ note }: MusicCardProps) {
             {displayYear}
           </span>
         )}
-      </a>
+      </Link>
     </article>
   );
 }

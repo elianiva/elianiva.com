@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { allProjects } from "content-collections";
 import { MDXContent } from "@content-collections/mdx/react";
 import { BackButton } from "#/components/BackButton";
@@ -146,8 +146,8 @@ function ProjectDetailPage() {
         <nav className="mt-12 pt-6 border-t border-pink-200/50">
           <div className="grid grid-cols-2 gap-4">
             {prevProject ? (
-              <a
-                href={`/projects/${prevProject.slug}`}
+              <Link
+                to={`/projects/${prevProject.slug}` as any}
                 className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
@@ -156,13 +156,13 @@ function ProjectDetailPage() {
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
                   {prevProject.title}
                 </span>
-              </a>
+              </Link>
             ) : (
               <div />
             )}
             {nextProject ? (
-              <a
-                href={`/projects/${nextProject.slug}`}
+              <Link
+                to={`/projects/${nextProject.slug}` as any}
                 className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
@@ -171,7 +171,7 @@ function ProjectDetailPage() {
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
                   {nextProject.title}
                 </span>
-              </a>
+              </Link>
             ) : (
               <div />
             )}

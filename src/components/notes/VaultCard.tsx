@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { Note } from "#/types/notes";
 
 interface VaultCardProps {
@@ -18,8 +19,8 @@ export function VaultCard({ note }: VaultCardProps) {
 
   return (
     <article style={{ viewTransitionName: `note-card-${note.slug}` }}>
-      <a
-        href={`/notes/${note.slug}`}
+      <Link
+        to={`/notes/${note.slug}` as any}
         className="relative block p-4 bg-white/60 border border-sky-200 hover:bg-white/80 transition-colors duration-200 overflow-hidden"
         style={{ clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%)" }}
       >
@@ -49,7 +50,7 @@ export function VaultCard({ note }: VaultCardProps) {
         <div className="mt-3 text-xs text-pink-950/40">
           <time dateTime={note.date}>{date}</time>
         </div>
-      </a>
+      </Link>
     </article>
   );
 }

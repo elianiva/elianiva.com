@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import CalendarIcon from "~icons/ph/calendar-blank";
 
 interface PostCardProps {
@@ -18,8 +19,8 @@ export function PostCard({ title, description, href, date, tags }: PostCardProps
       aria-labelledby="post-title"
       style={{ viewTransitionName: `post-card-${slug}` }}
     >
-      <a
-        href={href}
+      <Link
+        to={href as any}
         className="grid grid-rows-[auto_2rem_auto_2rem] p-4 h-full focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         aria-labelledby="post-title"
       >
@@ -53,7 +54,7 @@ export function PostCard({ title, description, href, date, tags }: PostCardProps
             </span>
           ))}
         </div>
-      </a>
+      </Link>
     </div>
   );
 }
