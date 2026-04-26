@@ -1,58 +1,43 @@
 import type { Note } from "#/types/notes";
-import UserIcon from "~icons/ph/user";
-import LinkIcon from "~icons/ph/link";
 
 interface PeopleCardProps {
   note: Note;
 }
 
 export function PeopleCard({ note }: PeopleCardProps) {
-  const initials = note.title
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const initial = note.title.charAt(0).toUpperCase();
+  const displayTags = note.tags
+    .filter((t) => t !== "public" && t !== "person")
+    .slice(0, 3);
 
   return (
-    <a
-      href={`/notes/${note.slug}`}
-      className="group block relative bg-white/60 border border-pink-200/50 p-4 hover:bg-white hover:shadow-card transition-all"
-    >
-      <div className="flex items-start gap-3">
-        {/* Initial avatar */}
-        <div className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-100 to-yellow-100 flex items-center justify-center text-sm font-display font-bold text-pink-800">
-          {initials || <UserIcon className="w-4 h-4" />}
+    <article style={{ viewTransitionName: `note-card-${note.slug}` }}>
+      <a
+        href={`/notes/${note.slug}`}
+        className="flex items-center gap-3 p-3 bg-white/60 border border-dashed border-pink-200 hover:bg-white/80 transition-colors duration-200"
+      >
+        {/* avatar */}
+        <div className="shrink-0 w-10 h-10 rounded-full bg-pink-100/70 border border-dashed border-pink-200 flex items-center justify-center hover:bg-pink-100 transition-colors">
+          <span className="font-display text-sm font-bold text-pink-500">{initial}</span>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <h3 className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors truncate">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-display text-sm font-semibold text-pink-950 hover:text-pink-700 transition-colors truncate">
             {note.title}
           </h3>
-          {note.description && (
-            <p className="text-sm text-pink-950/60 line-clamp-2">{note.description}</p>
+          {displayTags.length > 0 && (
+            <p className="text-xs text-pink-950/50 mt-0.5 truncate">
+              {displayTags.map((t) => `#${t}`).join(" ")}
+            </p>
           )}
         </div>
-      </div>
 
-      <div className="flex flex-wrap items-center gap-2 mt-3">
-        {note.tags
-          .filter((t) => t !== "public")
-          .map((tag) => (
-            <span
-              key={tag}
-              className="text-xs font-mono text-pink-950/50 bg-pink-50/60 px-1.5 py-0.5"
-            >
-              #{tag}
-            </span>
-          ))}
         {note.backlinks.length > 0 && (
-          <span className="flex items-center gap-1 text-xs text-pink-950/40 ml-auto">
-            <LinkIcon className="w-3 h-3" />
-            {note.backlinks.length} backlink{note.backlinks.length !== 1 ? "s" : ""}
+          <span className="shrink-0 text-xs text-pink-400 whitespace-nowrap">
+            ← {note.backlinks.length}
           </span>
         )}
-      </div>
-    </a>
+      </a>
+    </article>
   );
 }

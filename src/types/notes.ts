@@ -9,14 +9,18 @@ export type Note = {
   category: NoteCategory;
   tags: string[];
   date: string;
+  modifiedAt?: string;
   backlinks: string[];
   outboundLinks: string[];
   isPublic: boolean;
   // Category-specific fields
   domain?: string; // for articles
+  url?: string; // for articles (alias)
+  author?: string; // for articles
+  links?: string[]; // for people
   artist?: string; // for music
   album?: string; // for music
-  year?: number; // for music
+  year?: (string | number)[]; // for music (array)
 };
 
 export type NotesGraph = {

@@ -6,8 +6,6 @@ import { SEO } from "#/components/SEO";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import wikiLinkPlugin from "@flowershow/remark-wiki-link";
-import CalendarIcon from "~icons/ph/calendar-blank";
-import TagIcon from "~icons/ph/tag";
 
 export const Route = createFileRoute("/notes/$slug")({
   component: NoteDetailPage,
@@ -26,92 +24,120 @@ export const Route = createFileRoute("/notes/$slug")({
   }),
 });
 
+const categoryLabels: Record<string, string> = {
+  article: "Article",
+  vault: "Vault",
+  person: "Person",
+  music: "Music",
+  articles: "Article",
+  people: "Person",
+};
+
 function NoteDetailPage() {
   const { note, notes } = Route.useLoaderData();
 
+  const displayTags = note.tags.filter((t) => t !== "public");
+
+  const createdDate = new Date(note.date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const modifiedDate = note.modifiedAt
+    ? new Date(note.modifiedAt).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : null;
+
+  const hasModifiedDate =
+    note.modifiedAt && new Date(note.modifiedAt).getTime() !== new Date(note.date).getTime();
+
   return (
     <>
-      <SEO
-        title={note.title}
-        description={note.description}
-        keywords={note.tags}
-      />
-      <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
-        <div className="py-4 md:py-8 px-2 md:px-8">
-          <BackButton />
+      <SEO title={note.title} />
+      <div className="mx-auto max-w-3xl px-4 py-10">
+        <BackButton />
 
-          <article className="pt-6">
-            <h1 className="text-2xl md:text-4xl font-bold font-display text-pink-950 tracking-wide pb-4">
+        <article className="pt-6" style={{ viewTransitionName: `note-card-${note.slug}` }}>
+          {/* Breadcrumb */}
+          <nav className="text-sm text-pink-950/50 mb-6">
+            <a href="/notes" className="hover:text-pink-700 transition-colors">Notes</a>
+            <span className="mx-2">/</span>
+            <span>{categoryLabels[note.category] || note.category}</span>
+          </nav>
+
+          {/* Header */}
+          <header className="mb-8">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-pink-950 tracking-wide">
               {note.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-4 pb-6 text-sm text-pink-950/70 border-b border-pink-200/50">
-              <div className="flex items-center gap-1.5">
-                <CalendarIcon className="w-4 h-4" />
-                <span className="font-body">
-                  {new Date(note.date).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <TagIcon className="w-4 h-4" />
-                <div className="flex gap-2">
-                  {note.tags
-                    .filter((t) => t !== "public")
-                    .map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs font-mono text-pink-950/70 bg-pink-50/80 px-2 py-0.5"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                </div>
-              </div>
+            <div className="flex flex-wrap items-center gap-3 mt-4 text-sm text-pink-950/60">
+              <span className="px-2 py-1 rounded-full bg-pink-100/50 text-pink-900 text-xs font-medium">
+                {categoryLabels[note.category] || note.category}
+              </span>
+              <span>Created {createdDate}</span>
+              {hasModifiedDate && modifiedDate && (
+                <span>· Modified {modifiedDate}</span>
+              )}
             </div>
 
-            {/* Note content */}
-            <div className="prose prose-pink max-w-none pt-6">
-              <ReactMarkdown
-                remarkPlugins={[
-                  remarkGfm,
-                  [wikiLinkPlugin, { aliasDivider: "|" }],
-                ]}
-                components={{
-                  a: ({ href, children }) => {
-                    if (href?.startsWith("/notes/")) {
-                      return (
-                        <a
-                          href={href}
-                          className="text-pink-600 hover:text-pink-800 underline decoration-pink-300"
-                        >
-                          {children}
-                        </a>
-                      );
-                    }
+            {displayTags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {displayTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs px-2 py-1 rounded-full bg-white/60 text-pink-950/70 border border-dashed border-pink-200"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </header>
+
+          {/* Content */}
+          <div className="prose prose-pink max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[
+                remarkGfm,
+                [wikiLinkPlugin, { aliasDivider: "|" }],
+              ]}
+              components={{
+                a: ({ href, children }) => {
+                  if (href?.startsWith("/notes/")) {
                     return (
                       <a
                         href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="text-pink-600 hover:text-pink-800 underline decoration-pink-300"
                       >
                         {children}
                       </a>
                     );
-                  },
-                }}
-              >
-                {note.content}
-              </ReactMarkdown>
-            </div>
-          </article>
+                  }
+                  return (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-pink-600 hover:text-pink-800 underline decoration-pink-300"
+                    >
+                      {children}
+                    </a>
+                  );
+                },
+              }}
+            >
+              {note.content}
+            </ReactMarkdown>
+          </div>
 
+          {/* Backlinks */}
           <Backlinks notes={notes} currentSlug={note.slug} />
-        </div>
+        </article>
       </div>
     </>
   );

@@ -1,6 +1,9 @@
 import { useRef, useState, useCallback } from "react";
 import * as anime from "animejs";
 import type { GitHubPullRequest } from "#/types/github-pr";
+import StarIcon from "~icons/ph/star-fill";
+import GitPullRequestIcon from "~icons/ph/git-pull-request-duotone";
+import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
 
 interface PRDropdownProps {
   repository: {
@@ -78,7 +81,7 @@ export function PRDropdown({
   const totalDeletions = prs.reduce((sum, pr) => sum + pr.deletions, 0);
 
   return (
-    <div className="border border-pink-200 rounded-lg overflow-hidden bg-white/50">
+    <div className="border border-pink-200 overflow-hidden bg-white/50">
       <button
         onClick={toggle}
         className="w-full flex items-center justify-between p-3 md:p-4 text-left hover:bg-pink-50/50 transition-colors cursor-pointer"
@@ -107,10 +110,12 @@ export function PRDropdown({
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0 ml-2">
-          <span className="text-xs font-body text-pink-950/60">
-            ★ {formatStarCount(repository.stargazerCount)}
+          <span className="text-xs font-body text-pink-950/60 flex items-center gap-1">
+            <StarIcon className="w-3 h-3" />
+            {formatStarCount(repository.stargazerCount)}
           </span>
-          <span className="text-xs font-body bg-pink-100 text-pink-800 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-body bg-pink-100 text-pink-800 px-2 py-0.5 flex items-center gap-1">
+            <GitPullRequestIcon className="w-3 h-3" />
             {mergedCount} merged
           </span>
         </div>
@@ -125,7 +130,7 @@ export function PRDropdown({
                 href={pr.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-2 rounded-md hover:bg-pink-50/50 transition-colors group"
+                className="flex items-center justify-between p-2 hover:bg-pink-50/50 transition-colors group"
               >
                 <div className="min-w-0 flex-1">
                   <span className="text-sm font-body text-pink-950 group-hover:text-pink-700 truncate block">
@@ -135,6 +140,7 @@ export function PRDropdown({
                 <div className="flex items-center gap-2 shrink-0 ml-3 text-xs font-mono">
                   <span className="text-green-600">+{pr.additions}</span>
                   <span className="text-red-500">-{pr.deletions}</span>
+                  <ArrowUpRightIcon className="w-3 h-3 text-pink-400" />
                 </div>
               </a>
             ))}

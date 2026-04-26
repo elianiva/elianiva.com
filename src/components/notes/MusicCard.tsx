@@ -1,50 +1,55 @@
 import type { Note } from "#/types/notes";
-import MusicNoteIcon from "~icons/ph/music-note";
 
 interface MusicCardProps {
   note: Note;
 }
 
 export function MusicCard({ note }: MusicCardProps) {
+  const displayYear =
+    note.year && Array.isArray(note.year)
+      ? note.year.length > 1
+        ? `${note.year[0]}-${note.year[note.year.length - 1]}`
+        : String(note.year[0])
+      : note.year
+        ? String(note.year)
+        : "";
+
   return (
-    <a
-      href={`/notes/${note.slug}`}
-      className="group block relative bg-white/60 border border-pink-200/50 p-4 hover:bg-white hover:shadow-card transition-all"
-    >
-      <div className="flex items-start gap-3">
-        {/* Album art placeholder */}
-        <div className="shrink-0 w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-          <MusicNoteIcon className="w-6 h-6 text-purple-400" />
+    <article style={{ viewTransitionName: `note-card-${note.slug}` }}>
+      <a
+        href={`/notes/${note.slug}`}
+        className="flex items-center gap-3 px-3 py-2 bg-white/60 border border-purple-200 hover:bg-white/80 transition-colors duration-200"
+      >
+        {/* album art placeholder */}
+        <div className="shrink-0 w-12 h-12 bg-purple-100/70 border border-purple-200 flex items-center justify-center hover:bg-purple-100 transition-colors">
+          <svg
+            className="w-5 h-5 text-purple-400"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6zm-2 16a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" />
+          </svg>
         </div>
 
-        <div className="min-w-0">
-          <h3 className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors truncate">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-display text-sm font-semibold text-pink-950 hover:text-purple-700 transition-colors truncate leading-snug">
             {note.title}
           </h3>
           {note.artist && (
-            <p className="text-sm text-pink-950/60">{note.artist}</p>
+            <p className="text-xs text-pink-950/60 mt-0.5 truncate">{note.artist}</p>
           )}
-          {note.album && (
-            <p className="text-xs text-pink-950/40">
-              {note.album}
-              {note.year && ` (${note.year})`}
-            </p>
+          {note.description && (
+            <p className="text-xs text-pink-950/40 truncate">{note.description}</p>
           )}
         </div>
-      </div>
 
-      <div className="flex flex-wrap gap-2 mt-3">
-        {note.tags
-          .filter((t) => t !== "public")
-          .map((tag) => (
-            <span
-              key={tag}
-              className="text-xs font-mono text-purple-700/60 bg-purple-50/60 px-1.5 py-0.5"
-            >
-              #{tag}
-            </span>
-          ))}
-      </div>
-    </a>
+        {displayYear && (
+          <span className="shrink-0 text-xs font-mono text-purple-400 self-start pt-0.5">
+            {displayYear}
+          </span>
+        )}
+      </a>
+    </article>
   );
 }

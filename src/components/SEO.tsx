@@ -22,6 +22,7 @@ export function SEO({
   const url = new URL(state.location.pathname, sites.siteUrl).toString()
   const fullTitle = title ? `${title} | ${sites.siteName}` : sites.siteName
   const thumb = thumbnail || new URL('/assets/thumbnail.png', sites.siteUrl).toString()
+  const twitterCard = thumbnail ? 'summary_large_image' : 'summary'
 
   return (
     <>
@@ -29,6 +30,7 @@ export function SEO({
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords.join(', ')} />
       <meta name="author" content={sites.author} />
+      <meta name="theme-color" content="#fff1f2" />
       <link rel="canonical" href={url} />
 
       {/* Open Graph */}
@@ -46,15 +48,16 @@ export function SEO({
       )}
 
       {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content={twitterCard} />
       <meta name="twitter:site" content={sites.twitter} />
       <meta name="twitter:creator" content={sites.twitter} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={thumb} />
+      <meta name="twitter:image:alt" content={fullTitle} />
 
       {/* Favicon */}
-      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <link rel="icon" type="image/png" href="/favicon.png" />
       <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     </>
   )

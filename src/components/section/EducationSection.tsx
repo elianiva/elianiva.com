@@ -13,11 +13,12 @@ const PAST_EDUCATIONS: Education[] = [
 
 export function EducationSection() {
   return (
-    <section className="py-10 grid grid-cols-[1fr_2fr]">
-      <h1 className="text-2xl text-slate-800 font-heading uppercase justify-self-start m-0">
+    <section className="py-10 grid grid-cols-[1fr_2fr] h-[20rem] overflow-hidden relative">
+      <div className="absolute inset-0 bg-gradient-to-t from-pink-50 to-transparent z-10 bg-clip-content" />
+      <h1 className="text-2xl text-pink-950 font-heading uppercase justify-self-start m-0 z-20">
         education
       </h1>
-      <div>
+      <div className="z-20">
         {PAST_EDUCATIONS.map((education) => (
           <EducationCard key={education.institution} {...education} />
         ))}

@@ -1,5 +1,4 @@
 import type { Note } from "#/types/notes";
-import ArrowLeftIcon from "~icons/ph/arrow-left";
 
 interface BacklinksProps {
   notes: Note[];
@@ -15,29 +14,29 @@ export function Backlinks({ notes, currentSlug }: BacklinksProps) {
     .filter(Boolean) as Note[];
 
   return (
-    <div className="mt-12 pt-6 border-t border-pink-200/50">
-      <h3 className="text-sm font-mono text-pink-950/50 uppercase tracking-wider mb-4 flex items-center gap-2">
-        <ArrowLeftIcon className="w-4 h-4" />
-        Backlinks
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {backlinkNotes.map((note) => (
-          <a
-            key={note.slug}
-            href={`/notes/${note.slug}`}
-            className="group block bg-white/60 border border-pink-200/50 p-3 hover:bg-white hover:shadow-card transition-all"
-          >
-            <h4 className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors text-sm">
-              {note.title}
-            </h4>
-            {note.description && (
-              <p className="text-xs text-pink-950/50 mt-1 line-clamp-2">
-                {note.description}
-              </p>
-            )}
-          </a>
+    <aside className="mt-12 pt-8 border-t border-dashed border-pink-200">
+      <h2 className="font-display text-lg font-semibold text-pink-950 mb-4">
+        Linked from
+      </h2>
+      <ul className="space-y-3">
+        {backlinkNotes.map((backlink) => (
+          <li key={backlink.slug}>
+            <a
+              href={`/notes/${backlink.slug}`}
+              className="group block p-3 bg-white/40 border border-dashed border-pink-200 hover:bg-white/60 transition-colors"
+            >
+              <span className="font-medium text-pink-950 group-hover:text-pink-700 transition-colors">
+                {backlink.title}
+              </span>
+              {backlink.description && (
+                <p className="text-sm text-pink-950/50 mt-1 line-clamp-2">
+                  {backlink.description}
+                </p>
+              )}
+            </a>
+          </li>
         ))}
-      </div>
-    </div>
+      </ul>
+    </aside>
   );
 }

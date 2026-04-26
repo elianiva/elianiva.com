@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
     return { posts, personalProjects };
   },
   head: () => ({
-    meta: [{ title: "Home | elianiva's home row" }],
+    meta: [{ title: `Home | elianiva's home row` }],
   }),
 });
 
@@ -49,13 +49,9 @@ function Home() {
             data-anime
             className="text-sm md:text-base leading-relaxed font-body text-pink-950/80"
           >
-            4+ years doing frontend things, though I've wandered into backend,
-            databases, and sometimes infra whenever something needed doing. I
-            like to build interfaces that don't annoy people and very much enjoy
-            removing lots of AI slop from a codebase. These days I'm trying to
-            shift my focus on doing design engineering things. I enjoy tinkering
-            with side projects, OSS, and lots of coffee in my free time. Feel
-            free to say hi! ツ
+            Software Engineer doing frontend things. I like making interfaces that
+            don&apos;t annoy people and enjoy removing AI slop. Currently trying to
+            get better at the design side of things. Also I rebuilt this site like 5 times.
           </p>
         </section>
       </ScrollReveal>

@@ -7,9 +7,9 @@ interface GraphViewProps {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  articles: "#f472b6",
+  articles: "#fbbf24",
   vault: "#7dd3fc",
-  people: "#fcd34d",
+  people: "#f472b6",
   music: "#c084fc",
 };
 
@@ -29,26 +29,32 @@ export function GraphView({ graph, onNodeClick }: GraphViewProps) {
 
   if (!ForceGraph) {
     return (
-      <div className="flex items-center justify-center h-full text-pink-950/40 font-body">
+      <div className="w-full h-[400px] flex items-center justify-center text-pink-950/50">
         Loading graph...
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className="w-full h-full">
+    <div
+      ref={containerRef}
+      className="w-full h-[400px] border border-dashed border-pink-200 bg-white/40"
+      role="img"
+      aria-label="Note relationship graph"
+    >
       <ForceGraph
         graphData={graph}
-        nodeAutoColorBy="category"
-        nodeColor={(node: any) => CATEGORY_COLORS[node.category] || "#f472b6"}
-        nodeLabel={(node: any) => node.name}
-        nodeRelSize={6}
-        linkColor={() => "rgba(244, 114, 182, 0.2)"}
-        linkWidth={1}
-        backgroundColor="transparent"
+        nodeId="id"
+        nodeLabel="name"
+        nodeColor={(node: any) => CATEGORY_COLORS[node.category] || "#999"}
+        nodeVal={(node: any) => node.val || 4}
+        linkDirectionalArrowLength={6}
+        linkDirectionalArrowRelPos={1}
+        linkCurvature={0.25}
+        backgroundColor="rgba(0,0,0,0)"
         onNodeClick={(node: any) => onNodeClick?.(node.id)}
         width={containerRef.current?.clientWidth}
-        height={containerRef.current?.clientHeight}
+        height={400}
       />
     </div>
   );

@@ -18,13 +18,13 @@ export const Route = createFileRoute("/notes")({
     return { notes, graph };
   },
   head: () => ({
-    meta: [{ title: "Notes | elianiva's home row" }],
+    meta: [{ title: "Notes / Digital Garden | elianiva's home row" }],
   }),
 });
 
 function NotesPage() {
   const { notes, graph } = Route.useLoaderData();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Note[] | null>(null);
   const [graphOpen, setGraphOpen] = useState(false);
 
@@ -38,41 +38,51 @@ function NotesPage() {
     setSearchResults(query ? results : null);
   };
 
+  const hasGraphData = graph.links.length > 0 || graph.nodes.some((n) => n.val > 1);
+
   return (
-    <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
-      <div className="py-4 md:py-8 px-2 md:px-8">
-        <BackButton />
+    <div className="mx-auto max-w-4xl px-4 py-10">
+      <BackButton />
 
-        <div className="flex items-center justify-between pt-6 pb-4">
-          <h1 className="text-2xl md:text-3xl font-bold font-display text-pink-950 tracking-wide">
-            Notes Vault
-          </h1>
-          <button
-            onClick={() => setGraphOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-white/60 border border-pink-200 text-sm font-body text-pink-950 hover:bg-white hover:shadow-card transition-all"
-          >
-            <GraphIcon className="w-4 h-4" />
-            Graph
-          </button>
-        </div>
-
-        <p className="text-sm md:text-base font-body text-pink-950/70 pb-6">
-          A collection of my notes, articles, bookmarks, and other things I find
-          interesting. Mostly written in Obsidian-style markdown.
+      <div className="mb-4 pt-6">
+        <h1 className="font-display text-3xl md:text-4xl font-bold text-pink-950 tracking-wide">
+          Personal Notes Vault
+        </h1>
+        <p className="text-pink-950/70 mt-2 font-body">
+          A collection of notes, articles, and thoughts. These are pulled from my personal obsidian vault.
+          <br />
+          There are <span className="text-pink-500">{notes.length}</span> public notes.
         </p>
+      </div>
 
-        <div className="mb-6">
+      {notes.length > 0 && (
+        <div className="mb-4">
           <Search notes={notes} onSearch={handleSearch} />
         </div>
+      )}
 
-        {searchQuery && (
-          <p className="text-sm text-pink-950/50 mb-4 font-body">
-            {displayedNotes.length} result{displayedNotes.length !== 1 ? "s" : ""} for "{searchQuery}"
+      {notes.length === 0 ? (
+        <div className="text-center py-20 text-pink-950/50">
+          <p>No public notes yet.</p>
+          <p className="text-sm mt-2">
+            Add the <code>public</code> tag to notes to publish them.
           </p>
-        )}
-
+        </div>
+      ) : (
         <NotesTabs notes={displayedNotes} />
-      </div>
+      )}
+
+      {hasGraphData && (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => setGraphOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white/60 border border-pink-200 text-sm font-body text-pink-950 hover:bg-white hover:shadow-card transition-all"
+          >
+            <GraphIcon className="w-4 h-4" />
+            View Graph
+          </button>
+        </div>
+      )}
 
       <GraphModal
         graph={graph}

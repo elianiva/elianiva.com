@@ -1,24 +1,31 @@
-import sites from '#/data/sites'
-
 export function Footer() {
-  const buildDate = new Date().toISOString()
-  const commitHash = import.meta.env.VITE_COMMIT_HASH || 'dev'
+  const buildDate = new Date().toLocaleString("en-GB", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  })
+
+  const commitHash =
+    (import.meta.env.VITE_COMMIT_HASH as string | undefined)?.slice(0, 7) ?? "dev"
 
   return (
-    <footer className="site-footer mt-auto py-8 text-center text-sm text-pink-950/60">
-      <div className="page-wrap">
-        <p>
-          Built with{' '}
-          <a href="https://tanstack.com/start" className="text-pink-600 hover:text-pink-800">
-            TanStack Start
-          </a>{' '}
-          &bull;{' '}
-          <a href={sites.github} className="text-pink-600 hover:text-pink-800">
-            Source
-          </a>
+    <footer className="relative mx-auto max-w-[1080px] px-4 py-10 border-x border-pink-200/50 with-box-upperline">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <p className="text-sm font-light! font-body text-pink-950/50 leading-relaxed">
+          made with actual care (and probably too much coffee)<br />
         </p>
-        <p className="mt-2 font-mono text-xs text-pink-950/40">
-          {commitHash} &bull; {buildDate}
+
+        <div className="w-24 h-px bg-pink-200/50"></div>
+
+        <p className="text-[11px] font-mono text-pink-950/40 uppercase tracking-[0.15em]">
+          tanstack start · react · tailwind
+        </p>
+
+        <p className="text-xs font-mono text-pink-950/30 lowercase">
+          last updated {buildDate} · {commitHash}
         </p>
       </div>
     </footer>

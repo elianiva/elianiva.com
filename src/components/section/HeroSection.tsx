@@ -46,9 +46,9 @@ export function HeroSection() {
             className="text-sm md:text-base leading-relaxed font-body text-pink-950/80 py-3 max-w-[60ch]"
           >
             Software Engineer doing frontend things. I like making interfaces
-            that don't annoy people and enjoy removing AI slop. Currently trying
-            to get better at the design side of things. Also I rebuilt this site
-            like 5 times.
+            that don&apos;t annoy people and enjoy removing AI slop. Currently
+            trying to get better at the design side of things. Also I rebuilt
+            this site like 5 times.
           </p>
           <div className="flex items-center flex-wrap gap-2 pt-2 justify-center md:justify-start">
             {socials.map((social) => {

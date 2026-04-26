@@ -19,17 +19,17 @@ export function EducationCard({
   return (
     <div className="relative mb-8">
       <div className="flex justify-between items-center">
-        <span className="text-xl font-bold font-heading text-slate-800">
+        <span className="text-xl font-bold font-heading text-pink-950">
           {institution}
         </span>
-        <span className="text-lg font-medium font-heading text-slate-600">
+        <span className="text-lg font-medium font-heading text-pink-950/70">
           {startDate} - {finishDate}
         </span>
       </div>
-      <span className="text-base text-slate-600 font-sans block">
+      <span className="text-base text-pink-950/70 font-body block">
         GPA: {gpa} (current)
       </span>
-      <span className="text-base text-slate-600 font-sans capitalize">
+      <span className="text-base text-pink-950/70 font-body capitalize">
         {degree} - {fieldOfStudy}
       </span>
     </div>
