@@ -11,10 +11,10 @@ const { posts } = Astro.props;
 ---
 
 <section class="py-4 md:py-8 px-2 md:px-8">
-	<h2 id="blog-heading" class="text-2xl font-bold font-display text-pink-950 tracking-wide pt-2">
+	<h2 data-anime id="blog-heading" class="text-2xl font-bold font-display text-pink-950 tracking-wide pt-2">
 		Blog
 	</h2>
-	<p class="text-sm md:text-base font-body text-pink-950/70 pt-2 pb-4">
+	<p data-anime class="text-sm md:text-base font-body text-pink-950/70 pt-2 pb-4">
 		Even though I don't write often, I try to share my thoughts and
 		experiences from time to time. Hope you find them useful!
 	</p>
@@ -25,13 +25,17 @@ const { posts } = Astro.props;
 			posts
 				.slice(0, 6)
 				.map((post) => (
-					<PostCard {...post.data} href={`/posts/${post.id}`} />
+					<div data-anime>
+						<PostCard {...post.data} href={`/posts/${post.id}`} />
+					</div>
 				))
 		}
 	</div>
-	<ViewAllButton
-		href="/posts"
-		label="View all posts"
-		ariaLabel="View all blog posts"
-	/>
+	<div data-anime>
+		<ViewAllButton
+			href="/posts"
+			label="View all posts"
+			ariaLabel="View all blog posts"
+		/>
+	</div>
 </section>

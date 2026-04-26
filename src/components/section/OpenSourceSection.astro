@@ -35,17 +35,18 @@ const sortedRepositories = Object.entries(groupedPRs).sort(
 <section class="py-4 md:py-8 px-2 md:px-8">
 	<h2
 		id="open-source-contributions-heading"
+		data-anime
 		class="work-experience-card text-2xl font-bold font-display text-pink-950 tracking-wide pt-2"
 	>
 		Open Source Contributions
 	</h2>
-	<p class="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
+	<p data-anime class="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
 		Here are some of my merged pull requests across various open source projects.
 	</p>
 
 	<div class="relative flex flex-col gap-2">
 		{sortedRepositories.map(([, data]) => (
-			<div class="work-experience-card">
+			<div data-anime class="work-experience-card">
 				<PRDropdown
 					repository={data.repository}
 					prs={data.prs}

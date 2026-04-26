@@ -1,5 +1,5 @@
 <script lang="ts">
-import { type AnimationPlaybackControlsWithThen, animate } from "motion";
+import { animate, type JSAnimation } from "animejs";
 import { untrack } from "svelte";
 
 interface Props {
@@ -27,7 +27,7 @@ let {
 // svelte-ignore state_referenced_locally: intentional
 let isOpen = $state(defaultOpen);
 let detailsEl: HTMLDivElement;
-let animationRef: AnimationPlaybackControlsWithThen | null = null;
+let animationRef: JSAnimation | null = null;
 
 function toggleOpen() {
 	isOpen = !isOpen;
@@ -45,7 +45,7 @@ function toggleOpen() {
 	}
 
 	if (animationRef) {
-		animationRef.stop();
+		animationRef.cancel();
 	}
 
 	if (isOpen) {
@@ -54,17 +54,12 @@ function toggleOpen() {
 		detailsEl.style.height = "0px";
 		detailsEl.style.opacity = "0";
 
-		animationRef = animate(
-			detailsEl,
-			{
-				height: `${targetHeight}px`,
-				opacity: 1,
-			},
-			{
-				duration: 0.35,
-				ease: [0.25, 0.46, 0.45, 0.94],
-			},
-		);
+		animationRef = animate(detailsEl, {
+			height: ["0px", `${targetHeight}px`],
+			opacity: [0, 1],
+			duration: 350,
+			ease: "easeOutCubic",
+		});
 
 		animationRef.then(() => {
 			if (detailsEl) {
@@ -76,17 +71,12 @@ function toggleOpen() {
 		const currentHeight = detailsEl.scrollHeight;
 		detailsEl.style.height = `${currentHeight}px`;
 
-		animationRef = animate(
-			detailsEl,
-			{
-				height: "0px",
-				opacity: 0,
-			},
-			{
-				duration: 0.25,
-				ease: [0.25, 0.46, 0.45, 0.94],
-			},
-		);
+		animationRef = animate(detailsEl, {
+			height: [`${currentHeight}px`, "0px"],
+			opacity: [1, 0],
+			duration: 250,
+			ease: "easeOutCubic",
+		});
 	}
 }
 

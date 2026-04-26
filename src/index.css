@@ -84,6 +84,26 @@
 	}
 }
 
+[data-hero-reveal] {
+	opacity: 0;
+	transform: translateY(16px);
+	will-change: transform, opacity;
+}
+
+[data-anime] {
+	opacity: 0;
+	transform: translateY(24px);
+	will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html [data-hero-reveal],
+	html [data-anime] {
+		opacity: 1;
+		transform: none;
+	}
+}
+
 @layer utilities {
 	/* Blob shape utility */
 	.blob-shape {

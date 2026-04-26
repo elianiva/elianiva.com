@@ -12,6 +12,7 @@ const { workExperiences } = Astro.props;
 <section class="py-4 md:py-8 px-2 md:px-8">
 	<h2
 		id="experience-heading"
+		data-anime
 		class="work-experience-card text-2xl font-bold font-display text-pink-950 tracking-wide pb-4"
 	>
 		Work Experience
@@ -19,7 +20,9 @@ const { workExperiences } = Astro.props;
 	<div class="relative flex flex-col gap-2">
 		{
 			workExperiences.map((experience, index) => (
-				<WorkExperienceCard {...experience} defaultOpen={index === 0} client:visible />
+				<div data-anime>
+					<WorkExperienceCard {...experience} defaultOpen={index === 0} client:visible />
+				</div>
 			))
 		}
 	</div>

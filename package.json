@@ -26,12 +26,12 @@
 		"@fontsource/ibm-plex-mono": "^5.2.7",
 		"@fontsource/varela-round": "^5.2.8",
 		"@tailwindcss/vite": "^4.2.2",
+		"animejs": "^4.3.6",
 		"astro": "6.1.8",
 		"force-graph": "^1.51.4",
 		"fuse.js": "^7.3.0",
 		"glob": "^13.0.6",
 		"gray-matter": "^4.0.3",
-		"motion": "^12.38.0",
 		"octokit": "^5.0.5",
 		"rehype-raw": "^7.0.0",
 		"rehype-stringify": "^10.0.1",
@@ -43,6 +43,7 @@
 		"unplugin-icons": "^23.0.1"
 	},
 	"devDependencies": {
+		"@astrojs/check": "^0.9.8",
 		"@iconify-json/ph": "^1.2.2",
 		"@tailwindcss/typography": "^0.5.19",
 		"@types/glob": "^9.0.0",
