@@ -20,6 +20,7 @@ const config = defineConfig({
         autoStaticPathsDiscovery: true,
         crawlLinks: true,
         failOnError: true,
+        filter: ({ path }) => !path.startsWith('/notes'),
       },
     }),
     viteReact({

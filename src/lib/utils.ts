@@ -9,8 +9,8 @@ export function cn(...inputs: ClassValue[]) {
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^ws-]/g, "")
-    .replace(/s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
 }
