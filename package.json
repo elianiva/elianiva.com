@@ -13,6 +13,8 @@
     "deploy": "pnpm run build && wrangler deploy"
   },
   "dependencies": {
+    "@cf-wasm/resvg": "^0.3.3",
+    "@cf-wasm/satori": "^0.3.5",
     "@cloudflare/vite-plugin": "^1.26.0",
     "@flowershow/remark-wiki-link": "^3.4.0",
     "@fontsource/chonburi": "^5.2.8",
@@ -44,6 +46,7 @@
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
+    "satori-html": "^0.3.2",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.1.18",
     "tw-animate-css": "^1.3.6",

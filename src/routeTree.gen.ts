@@ -16,6 +16,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as NotesSlugRouteImport } from './routes/notes.$slug'
+import { Route as ApiOgImageRouteImport } from './routes/api.og-image'
+import { Route as ApiGraphJsonRouteImport } from './routes/api.graph-json'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -52,12 +54,24 @@ const NotesSlugRoute = NotesSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => NotesRoute,
 } as any)
+const ApiOgImageRoute = ApiOgImageRouteImport.update({
+  id: '/api/og-image',
+  path: '/api/og-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGraphJsonRoute = ApiGraphJsonRouteImport.update({
+  id: '/api/graph-json',
+  path: '/api/graph-json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/notes': typeof NotesRouteWithChildren
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/api/graph-json': typeof ApiGraphJsonRoute
+  '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -67,6 +81,8 @@ export interface FileRoutesByTo {
   '/notes': typeof NotesRouteWithChildren
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/api/graph-json': typeof ApiGraphJsonRoute
+  '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -77,6 +93,8 @@ export interface FileRoutesById {
   '/notes': typeof NotesRouteWithChildren
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/api/graph-json': typeof ApiGraphJsonRoute
+  '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -88,6 +106,8 @@ export interface FileRouteTypes {
     | '/notes'
     | '/posts'
     | '/projects'
+    | '/api/graph-json'
+    | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
@@ -97,6 +117,8 @@ export interface FileRouteTypes {
     | '/notes'
     | '/posts'
     | '/projects'
+    | '/api/graph-json'
+    | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
@@ -106,6 +128,8 @@ export interface FileRouteTypes {
     | '/notes'
     | '/posts'
     | '/projects'
+    | '/api/graph-json'
+    | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
@@ -116,6 +140,8 @@ export interface RootRouteChildren {
   NotesRoute: typeof NotesRouteWithChildren
   PostsRoute: typeof PostsRouteWithChildren
   ProjectsRoute: typeof ProjectsRouteWithChildren
+  ApiGraphJsonRoute: typeof ApiGraphJsonRoute
+  ApiOgImageRoute: typeof ApiOgImageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -169,6 +195,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotesSlugRouteImport
       parentRoute: typeof NotesRoute
     }
+    '/api/og-image': {
+      id: '/api/og-image'
+      path: '/api/og-image'
+      fullPath: '/api/og-image'
+      preLoaderRoute: typeof ApiOgImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/graph-json': {
+      id: '/api/graph-json'
+      path: '/api/graph-json'
+      fullPath: '/api/graph-json'
+      preLoaderRoute: typeof ApiGraphJsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -209,6 +249,8 @@ const rootRouteChildren: RootRouteChildren = {
   NotesRoute: NotesRouteWithChildren,
   PostsRoute: PostsRouteWithChildren,
   ProjectsRoute: ProjectsRouteWithChildren,
+  ApiGraphJsonRoute: ApiGraphJsonRoute,
+  ApiOgImageRoute: ApiOgImageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
