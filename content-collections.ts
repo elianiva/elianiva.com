@@ -2,6 +2,24 @@ import { defineCollection, defineConfig } from "@content-collections/core";
 import { compileMDX } from "@content-collections/mdx";
 import { z } from "zod";
 
+// Strip Astro/Svelte component imports from MDX content.
+// Components are provided at runtime via <MDXContent components={{...}} />.
+function stripComponentImports(content: string): string {
+  const lines = content.split("\n");
+  const filtered = lines.filter((line) => {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("import ")) return true;
+    // Keep imports that are not Astro/Svelte components
+    return !(
+      trimmed.includes('"~/components/') ||
+      trimmed.includes("'~/components/") ||
+      trimmed.includes('"../components/') ||
+      trimmed.includes("'../components/")
+    );
+  });
+  return filtered.join("\n");
+}
+
 const posts = defineCollection({
   name: "posts",
   directory: "src/content/posts",
@@ -12,9 +30,11 @@ const posts = defineCollection({
     description: z.string(),
     tags: z.array(z.string()),
     draft: z.boolean().optional(),
+    content: z.string(),
   }),
   transform: async (document, context) => {
-    const mdx = await compileMDX(context, document);
+    const cleaned = stripComponentImports(document.content);
+    const mdx = await compileMDX(context, { ...document, content: cleaned });
     return {
       ...document,
       slug: document._meta.path,
@@ -31,15 +51,17 @@ const projects = defineCollection({
     title: z.string(),
     date: z.string(),
     description: z.string(),
-    demo: z.string().nullable(),
+    demo: z.string().nullable().optional(),
     source: z.string(),
-    type: z.enum(["personal", "work"]),
-    featured: z.boolean(),
-    stack: z.array(z.tuple([z.string(), z.string()])),
+    type: z.enum(["personal", "work", "open-source", "assignment"]),
+    featured: z.boolean().optional(),
+    stack: z.array(z.tuple([z.string(), z.string()])).optional(),
     hasImage: z.boolean().optional(),
+    content: z.string(),
   }),
   transform: async (document, context) => {
-    const mdx = await compileMDX(context, document);
+    const cleaned = stripComponentImports(document.content);
+    const mdx = await compileMDX(context, { ...document, content: cleaned });
     return {
       ...document,
       slug: document._meta.path,

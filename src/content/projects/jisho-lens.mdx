@@ -1,0 +1,28 @@
+---
+title: Jisho Lens
+date: 2022-06-08
+description: Yomichan for Android with Google Lens-like feature
+source: https://github.com/elianiva/jisho-lens
+type: personal
+featured: true
+stack:
+    - ["Flutter", "https://flutter.dev"]
+---
+
+## Background
+
+**Jisho Lens** is an android app to help you learn Japanese. It basically works like Yomichan. I also took the idea of Googe Lens, hence the name Jisho _Lens_. It works by scanning your screen and tries to find any Japanese text and make it clickable. After you click the word, there will be a pop-up about the detail of the word.
+
+## Technical Details
+
+I made the app using Flutter and Riverpod as the state manager. I didn't choose BLoC because that looks a bit too complicated for me who just want a simple state manager. I didn't choose GetX either because it has too much stuff, I just want a state manager, not a mini-framework that sits on top of Flutter. The reason why I chose Riverpod specifically instead of Provider which is made by the same author is because Riverpod tries to address some issues with Provider, at least that's what it said on its website. Also, I prefer how Riverpod works since it doesn't require the `BuildContext` or other Flutter specific things to run.
+
+## Features
+
+- OCR based word scanner (using MLKit)
+- Searchable word using local dictionary
+- Dark Mode
+- Kanji breakdown (radicals, meaning, etc)
+- Example sentences
+- History and bookmark
+- Kanji drawing (not perfect though)
