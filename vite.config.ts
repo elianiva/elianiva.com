@@ -19,9 +19,8 @@ const config = defineConfig({
       prerender: {
         enabled: true,
         autoStaticPathsDiscovery: true,
-        crawlLinks: true,
+        crawlLinks: false,
         failOnError: true,
-        filter: ({ path }) => !path.startsWith('/notes'),
       },
     }),
     viteReact({
