@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as PostsRouteImport } from './routes/posts'
+import { Route as NotesRouteImport } from './routes/notes'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
+import { Route as NotesSlugRouteImport } from './routes/notes.$slug'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -23,6 +25,11 @@ const ProjectsRoute = ProjectsRouteImport.update({
 const PostsRoute = PostsRouteImport.update({
   id: '/posts',
   path: '/posts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesRoute = NotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -40,45 +47,73 @@ const PostsSlugRoute = PostsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => PostsRoute,
 } as any)
+const NotesSlugRoute = NotesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NotesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/notes': typeof NotesRouteWithChildren
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/notes': typeof NotesRouteWithChildren
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/notes': typeof NotesRouteWithChildren
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/posts' | '/projects' | '/posts/$slug' | '/projects/$slug'
+  fullPaths:
+    | '/'
+    | '/notes'
+    | '/posts'
+    | '/projects'
+    | '/notes/$slug'
+    | '/posts/$slug'
+    | '/projects/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/posts' | '/projects' | '/posts/$slug' | '/projects/$slug'
+  to:
+    | '/'
+    | '/notes'
+    | '/posts'
+    | '/projects'
+    | '/notes/$slug'
+    | '/posts/$slug'
+    | '/projects/$slug'
   id:
     | '__root__'
     | '/'
+    | '/notes'
     | '/posts'
     | '/projects'
+    | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NotesRoute: typeof NotesRouteWithChildren
   PostsRoute: typeof PostsRouteWithChildren
   ProjectsRoute: typeof ProjectsRouteWithChildren
 }
@@ -97,6 +132,13 @@ declare module '@tanstack/react-router' {
       path: '/posts'
       fullPath: '/posts'
       preLoaderRoute: typeof PostsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes': {
+      id: '/notes'
+      path: '/notes'
+      fullPath: '/notes'
+      preLoaderRoute: typeof NotesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -120,8 +162,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsSlugRouteImport
       parentRoute: typeof PostsRoute
     }
+    '/notes/$slug': {
+      id: '/notes/$slug'
+      path: '/$slug'
+      fullPath: '/notes/$slug'
+      preLoaderRoute: typeof NotesSlugRouteImport
+      parentRoute: typeof NotesRoute
+    }
   }
 }
+
+interface NotesRouteChildren {
+  NotesSlugRoute: typeof NotesSlugRoute
+}
+
+const NotesRouteChildren: NotesRouteChildren = {
+  NotesSlugRoute: NotesSlugRoute,
+}
+
+const NotesRouteWithChildren = NotesRoute._addFileChildren(NotesRouteChildren)
 
 interface PostsRouteChildren {
   PostsSlugRoute: typeof PostsSlugRoute
@@ -147,6 +206,7 @@ const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NotesRoute: NotesRouteWithChildren,
   PostsRoute: PostsRouteWithChildren,
   ProjectsRoute: ProjectsRouteWithChildren,
 }
