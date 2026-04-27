@@ -70,6 +70,8 @@
     "@vitejs/plugin-react": "^6.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "jsdom": "^28.1.0",
+    "rehype-pretty-code": "^0.14.3",
+    "shiki": "^4.0.2",
     "tsx": "^4.21.0",
     "typescript": "^5.7.2",
     "unplugin-icons": "^23.0.1",

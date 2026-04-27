@@ -1,5 +1,7 @@
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { compileMDX } from "@content-collections/mdx";
+import rehypePrettyCode from "rehype-pretty-code";
+import type { Options as PrettyCodeOptions } from "rehype-pretty-code";
 import { z } from "zod";
 
 // Strip Astro/Svelte component imports from MDX content.
@@ -20,6 +22,23 @@ function stripComponentImports(content: string): string {
   return filtered.join("\n");
 }
 
+const prettyCodeOptions: PrettyCodeOptions = {
+  theme: "rose-pine-dawn",
+  onVisitLine(node) {
+    if (node.children.length === 0) {
+      node.children = [{ type: "text", value: " " }];
+    }
+  },
+  onVisitHighlightedLine(node) {
+    node.properties.className ??= [];
+    node.properties.className.push("line--highlighted");
+  },
+  onVisitHighlightedChars(node) {
+    node.properties.className ??= [];
+    node.properties.className.push("word--highlighted");
+  },
+};
+
 const posts = defineCollection({
   name: "posts",
   directory: "src/content/posts",
@@ -34,7 +53,9 @@ const posts = defineCollection({
   }),
   transform: async (document, context) => {
     const cleaned = stripComponentImports(document.content);
-    const mdx = await compileMDX(context, { ...document, content: cleaned });
+    const mdx = await compileMDX(context, { ...document, content: cleaned }, {
+      rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+    });
     return {
       ...document,
       slug: document._meta.path,
@@ -61,7 +82,9 @@ const projects = defineCollection({
   }),
   transform: async (document, context) => {
     const cleaned = stripComponentImports(document.content);
-    const mdx = await compileMDX(context, { ...document, content: cleaned });
+    const mdx = await compileMDX(context, { ...document, content: cleaned }, {
+      rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+    });
     return {
       ...document,
       slug: document._meta.path,

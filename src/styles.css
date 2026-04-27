@@ -214,6 +214,38 @@
 	}
 }
 
+/* Shiki / rehype-pretty-code overrides */
+.prose :where(figure[data-rehype-pretty-code-figure]):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply my-6;
+}
+
+.prose :where(figure[data-rehype-pretty-code-figure] pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply bg-[#faf4ed]! border border-[#f2e9e1] border-dashed rounded-none;
+}
+
+.prose :where(figure[data-rehype-pretty-code-figure] code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply bg-transparent! text-[#575279]!;
+}
+
+.prose :where(figure[data-rehype-pretty-code-figure] code span):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply text-[#575279];
+}
+
+/* Line highlighting */
+.prose :where(figure[data-rehype-pretty-code-figure] .line--highlighted):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply bg-[#f2e9e1]/60;
+}
+
+/* Word/char highlighting */
+.prose :where(figure[data-rehype-pretty-code-figure] .word--highlighted):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply bg-[#f2e9e1] rounded-sm px-1;
+}
+
+/* Code block title/caption */
+.prose :where(figure[data-rehype-pretty-code-figure] [data-rehype-pretty-code-title]):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply text-xs font-mono text-pink-700/70 mb-1 block;
+}
+
 /* Wiki-link styling */
 .wiki-link {
 	@apply text-pink-600 border-b border-dashed border-pink-400 no-underline;
