@@ -18,6 +18,9 @@ import { Route as PostsSlugRouteImport } from './routes/posts/$slug'
 import { Route as NotesSlugRouteImport } from './routes/notes/$slug'
 import { Route as ApiOgImageRouteImport } from './routes/api.og-image'
 import { Route as ApiGraphJsonRouteImport } from './routes/api.graph-json'
+import { Route as ApiSitemapXmlRouteImport } from './routes/api/sitemap.xml'
+import { Route as ApiRssXmlRouteImport } from './routes/api/rss.xml'
+import { Route as ApiRobotsTxtRouteImport } from './routes/api/robots.txt'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +67,21 @@ const ApiGraphJsonRoute = ApiGraphJsonRouteImport.update({
   path: '/api/graph-json',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSitemapXmlRoute = ApiSitemapXmlRouteImport.update({
+  id: '/api/sitemap/xml',
+  path: '/api/sitemap/xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRssXmlRoute = ApiRssXmlRouteImport.update({
+  id: '/api/rss/xml',
+  path: '/api/rss/xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRobotsTxtRoute = ApiRobotsTxtRouteImport.update({
+  id: '/api/robots/txt',
+  path: '/api/robots/txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +93,9 @@ export interface FileRoutesByFullPath {
   '/notes/': typeof NotesIndexRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/api/robots/txt': typeof ApiRobotsTxtRoute
+  '/api/rss/xml': typeof ApiRssXmlRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +107,9 @@ export interface FileRoutesByTo {
   '/notes': typeof NotesIndexRoute
   '/posts': typeof PostsIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/api/robots/txt': typeof ApiRobotsTxtRoute
+  '/api/rss/xml': typeof ApiRssXmlRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +122,9 @@ export interface FileRoutesById {
   '/notes/': typeof NotesIndexRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/api/robots/txt': typeof ApiRobotsTxtRoute
+  '/api/rss/xml': typeof ApiRssXmlRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +138,9 @@ export interface FileRouteTypes {
     | '/notes/'
     | '/posts/'
     | '/projects/'
+    | '/api/robots/txt'
+    | '/api/rss/xml'
+    | '/api/sitemap/xml'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +152,9 @@ export interface FileRouteTypes {
     | '/notes'
     | '/posts'
     | '/projects'
+    | '/api/robots/txt'
+    | '/api/rss/xml'
+    | '/api/sitemap/xml'
   id:
     | '__root__'
     | '/'
@@ -133,6 +166,9 @@ export interface FileRouteTypes {
     | '/notes/'
     | '/posts/'
     | '/projects/'
+    | '/api/robots/txt'
+    | '/api/rss/xml'
+    | '/api/sitemap/xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +181,9 @@ export interface RootRouteChildren {
   NotesIndexRoute: typeof NotesIndexRoute
   PostsIndexRoute: typeof PostsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  ApiRobotsTxtRoute: typeof ApiRobotsTxtRoute
+  ApiRssXmlRoute: typeof ApiRssXmlRoute
+  ApiSitemapXmlRoute: typeof ApiSitemapXmlRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +251,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGraphJsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sitemap/xml': {
+      id: '/api/sitemap/xml'
+      path: '/api/sitemap/xml'
+      fullPath: '/api/sitemap/xml'
+      preLoaderRoute: typeof ApiSitemapXmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/rss/xml': {
+      id: '/api/rss/xml'
+      path: '/api/rss/xml'
+      fullPath: '/api/rss/xml'
+      preLoaderRoute: typeof ApiRssXmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/robots/txt': {
+      id: '/api/robots/txt'
+      path: '/api/robots/txt'
+      fullPath: '/api/robots/txt'
+      preLoaderRoute: typeof ApiRobotsTxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +285,9 @@ const rootRouteChildren: RootRouteChildren = {
   NotesIndexRoute: NotesIndexRoute,
   PostsIndexRoute: PostsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
+  ApiRobotsTxtRoute: ApiRobotsTxtRoute,
+  ApiRssXmlRoute: ApiRssXmlRoute,
+  ApiSitemapXmlRoute: ApiSitemapXmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
