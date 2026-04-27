@@ -12,7 +12,8 @@
     "test": "vitest run",
     "deploy": "pnpm run build && wrangler deploy",
     "format": "oxfmt --write .",
-    "lint": "oxlint ."
+    "lint": "oxlint .",
+    "cf-types": "wrangler types"
   },
   "dependencies": {
     "@cf-wasm/resvg": "^0.3.3",
