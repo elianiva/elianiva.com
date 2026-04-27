@@ -2,6 +2,30 @@ import { createServerFn } from "@tanstack/react-start";
 import { env } from "#/env";
 import type { GitHubPullRequest, GroupedPRs, GraphQLResponse } from "#/types/github-pr";
 
+type Entry<T> = { value: T; at: number };
+
+const store = new Map<string, Entry<unknown>>();
+
+export async function cached<T>(key: string, ttlMs: number, load: () => Promise<T>): Promise<T> {
+  const hit = store.get(key) as Entry<T> | undefined;
+  if (hit && Date.now() - hit.at < ttlMs) return hit.value;
+  try {
+    const value = await load();
+    store.set(key, { value, at: Date.now() });
+    return value;
+  } catch (err) {
+    if (hit) return hit.value;
+    throw err;
+  }
+}
+
+export const TTL = {
+  live: 1000 * 20, // 20s
+  short: 1000 * 60 * 5, // 5m
+  medium: 1000 * 60 * 30, // 30m
+  long: 1000 * 60 * 60 * 6, // 6h
+};
+
 const GITHUB_GRAPHQL_QUERY = `
   query($username: String!, $after: String) {
     user(login: $username) {
@@ -122,41 +146,13 @@ export const getGitHubPRs = createServerFn({ method: "GET" }).handler(async () =
   const username = "elianiva";
   const minStars = 10;
 
-  if (process.env.NODE_ENV === "development") {
-    try {
-      const fs = await import("node:fs/promises");
-      const cachePath = ".cache/github-prs.json";
-      const cached = await fs.readFile(cachePath, "utf-8").catch(() => null);
-      if (cached) {
-        const data = JSON.parse(cached);
-        const age = Date.now() - data.cachedAt;
-        if (age < 60 * 60 * 1000) {
-          return {
-            grouped: data.grouped as GroupedPRs,
-            totalPRs: data.totalPRs as number,
-          };
-        }
-      }
-    } catch {
-      // ignore cache errors
-    }
-  }
-
-  const prs = await fetchAllPRs(username, minStars);
-  const grouped = groupPRs(prs);
-
-  if (process.env.NODE_ENV === "development") {
-    try {
-      const fs = await import("node:fs/promises");
-      await fs.mkdir(".cache", { recursive: true });
-      await fs.writeFile(
-        ".cache/github-prs.json",
-        JSON.stringify({ grouped, totalPRs: prs.length, cachedAt: Date.now() }, null, 2),
-      );
-    } catch {
-      // ignore cache write errors
-    }
-  }
-
-  return { grouped, totalPRs: prs.length };
+  return cached(
+    "github-prs",
+    TTL.long,
+    async () => {
+      const prs = await fetchAllPRs(username, minStars);
+      const grouped = groupPRs(prs);
+      return { grouped, totalPRs: prs.length };
+    },
+  );
 });
