@@ -1,32 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { allPosts, allProjects } from "content-collections";
 import { HeroSection } from "#/components/section/HeroSection";
 import { ScrollReveal } from "#/components/animation/ScrollReveal";
 import { BlogSection } from "#/components/section/BlogSection";
-import { ProjectSection } from "#/components/section/ProjectSection";
 import { WorkExperienceSection } from "#/components/section/WorkExperienceSection";
 import { OpenSourceSection } from "#/components/section/OpenSourceSection";
+import { PersonalProjectsSection } from "#/components/section/PersonalProjectsSection";
 import { workExperiences } from "#/data/work-experience";
 
 export const Route = createFileRoute("/")({
   component: Home,
-  loader: async () => {
-    const personalProjects = allProjects
-      .filter((p) => p.type === "personal" && p.featured)
-      .sort((a, b) => (a.date > b.date ? -1 : 1));
-
-    const posts = allPosts.filter((p) => !p.draft).sort((a, b) => (a.date > b.date ? -1 : 1));
-
-    return { posts, personalProjects };
-  },
   head: () => ({
     meta: [{ title: `Home | elianiva's home row` }],
   }),
 });
 
 function Home() {
-  const { posts, personalProjects } = Route.useLoaderData();
-
   return (
     <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50">
       <HeroSection />
@@ -74,17 +62,12 @@ function Home() {
           aria-labelledby="blog-heading"
           className="relative with-box-underline"
         >
-          <BlogSection posts={posts} />
+          <BlogSection />
         </section>
       </ScrollReveal>
       <ScrollReveal delay={480}>
         <section role="region" aria-labelledby="personal-projects-heading">
-          <ProjectSection
-            title="Personal Projects"
-            description="These are some of my personal projects that I made in the past. Some of them are still in use, some are not. Mostly made them just for fun and to learn new things!"
-            projects={personalProjects}
-            seeMoreUrl="/projects"
-          />
+          <PersonalProjectsSection />
         </section>
       </ScrollReveal>
     </div>

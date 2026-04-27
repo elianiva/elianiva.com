@@ -88,7 +88,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
 
   return (
     <div
-      className="bg-blur-xl bg-white/60 focus:outline-none border border-pink-200/50"
+      className="bg-blur-xl bg-white/60 hover:bg-white focus:bg-white focus:outline-none"
       data-open={isOpen}
     >
       <button

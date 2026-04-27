@@ -19,7 +19,7 @@ export function ProjectCard({
 }: ProjectCardProps) {
   return (
     <div
-      className="bg-white/60 text-left p-4 transition-all group hover:bg-white"
+      className="bg-white/60 text-left p-4 transition-all group hover:bg-white h-full flex flex-col"
       style={{ viewTransitionName: `project-card-${slug}` }}
     >
       <div className="relative overflow-hidden border-[0.5px] border-pink-200/50">
@@ -45,7 +45,7 @@ export function ProjectCard({
           {title}
         </div>
       </div>
-      <div className="grid grid-rows-[auto_auto_auto] pt-4">
+      <div className="grid grid-rows-[auto_auto_auto] pt-4 flex-1">
         <Link
           to={href as any}
           className="text-base font-bold font-display text-pink-950 group-hover:text-pink-700 transition-property-color duration-100 ease-out focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"

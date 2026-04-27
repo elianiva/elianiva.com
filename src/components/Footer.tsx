@@ -1,15 +1,4 @@
 export function Footer() {
-  const buildDate = new Date().toLocaleString("en-GB", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  });
-
-  const commitHash = (import.meta.env.VITE_COMMIT_HASH as string | undefined)?.slice(0, 7) ?? "dev";
-
   return (
     <footer className="relative mx-auto max-w-[1080px] px-4 py-10 border-x border-pink-200/50 with-box-upperline">
       <div className="flex flex-col items-center gap-3 text-center">
@@ -24,9 +13,25 @@ export function Footer() {
           tanstack start · react · tailwind
         </p>
 
-        <p className="text-xs font-mono text-pink-950/30 lowercase">
-          last updated {buildDate} · {commitHash}
-        </p>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(" +
+              (() => {
+                const el = document.getElementById("build-date-value");
+                if (!el) return;
+                el.textContent = new Date().toLocaleString("en-GB", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  second: "numeric",
+                });
+              }).toString() +
+              ")()",
+          }}
+        />
       </div>
     </footer>
   );

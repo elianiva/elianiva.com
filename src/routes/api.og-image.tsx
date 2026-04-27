@@ -55,9 +55,9 @@ export const Route = createFileRoute("/api/og-image")({
           .map((tag) => tag.trim());
         const decodedDescription = decodeURIComponent(description);
 
-        // Load Chonburi font from @fontsource
-        const chonburiFont = await Bun.file(
-          "node_modules/@fontsource/chonburi/files/chonburi-latin-400-normal.woff2",
+        // Load Hepta Slab font from @fontsource
+        const heptaSlabFont = await Bun.file(
+          "node_modules/@fontsource/hepta-slab/files/hepta-slab-latin-400-normal.woff2",
         ).arrayBuffer();
 
         const markup = html`
@@ -80,7 +80,7 @@ export const Route = createFileRoute("/api/og-image")({
               width: 100%;
               height: 100%;
               border-radius: 32px;
-              font-family: 'Chonburi', serif;
+              font-family: 'Hepta Slab', serif;
               background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 240, 245, 0.5) 50%, rgba(255, 245, 240, 0.6) 100%);
               backdrop-filter: blur(20px);
               position: relative;
@@ -183,8 +183,8 @@ export const Route = createFileRoute("/api/og-image")({
           height: CARD_HEIGHT,
           fonts: [
             {
-              name: "Chonburi",
-              data: chonburiFont,
+              name: "Hepta Slab",
+              data: heptaSlabFont,
               weight: 400,
             },
           ],
@@ -193,7 +193,7 @@ export const Route = createFileRoute("/api/og-image")({
         const resvg = new Resvg(svg, {
           font: {
             loadSystemFonts: false,
-            defaultFontFamily: "Chonburi",
+            defaultFontFamily: "Hepta Slab",
           },
           fitTo: {
             mode: "width",

@@ -27,9 +27,9 @@ export const TTL = {
 };
 
 const GITHUB_GRAPHQL_QUERY = `
-  query($username: String!, $after: String) {
+  query GetPRs($username: String!, $endCursor: String) {
     user(login: $username) {
-      pullRequests(first: 100, after: $after, states: MERGED, orderBy: {field: UPDATED_AT, direction: DESC}) {
+      pullRequests(first: 100, after: $endCursor, states: MERGED, orderBy: {field: CREATED_AT, direction: DESC}) {
         pageInfo {
           hasNextPage
           endCursor
@@ -75,12 +75,12 @@ async function fetchAllPRs(username: string, minStars: number): Promise<GitHubPu
 
   const allPRs: GitHubPullRequest[] = [];
   let hasNextPage = true;
-  let after: string | null = null;
+  let endCursor: string | null = null;
 
   while (hasNextPage) {
     const response: GraphQLResponse = await octokit.graphql(GITHUB_GRAPHQL_QUERY, {
       username,
-      after,
+      endCursor,
     });
 
     const prs = response.user.pullRequests.nodes;
@@ -116,7 +116,7 @@ async function fetchAllPRs(username: string, minStars: number): Promise<GitHubPu
     }
 
     hasNextPage = pageInfo.hasNextPage;
-    after = pageInfo.endCursor;
+    endCursor = pageInfo.endCursor;
   }
 
   return allPRs;
@@ -144,7 +144,7 @@ function groupPRs(prs: GitHubPullRequest[]): GroupedPRs {
 
 export const getGitHubPRs = createServerFn({ method: "GET" }).handler(async () => {
   const username = "elianiva";
-  const minStars = 10;
+  const minStars = 5000;
 
   return cached(
     "github-prs",

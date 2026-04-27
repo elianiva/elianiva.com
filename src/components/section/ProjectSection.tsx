@@ -28,9 +28,9 @@ export function ProjectSection({ projects, title, description, seeMoreUrl }: Pro
       <p data-anime className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
         {description}
       </p>
-      <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd">
+      <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd items-stretch">
         {projects.map((project) => (
-          <div key={project.slug} data-anime>
+          <div key={project.slug} data-anime className="h-full">
             <ProjectCard
               slug={project.slug}
               title={project.title}

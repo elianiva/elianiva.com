@@ -15,7 +15,7 @@ import { Frame } from "../components/Frame";
 import { CanvasBackground } from "../components/CanvasBackground";
 import { Footer } from "../components/Footer";
 
-import "@fontsource/chonburi";
+import "@fontsource/hepta-slab";
 import "@fontsource/varela-round";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";

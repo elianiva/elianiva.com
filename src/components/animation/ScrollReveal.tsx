@@ -36,7 +36,7 @@ export function ScrollReveal({ children, delay = 0 }: ScrollRevealProps) {
           observer.disconnect();
         }
       },
-      { threshold: 0.2 },
+      { threshold: 0.1 },
     );
 
     observer.observe(wrapper);

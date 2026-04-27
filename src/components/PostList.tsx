@@ -174,9 +174,10 @@ export function PostList({ posts }: PostListProps) {
       </p>
 
       {/* Post grid */}
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 items-stretch">
         {filteredPosts.map((post) => (
-          <PostCard
+          <div key={post.slug} className="h-full">
+            <PostCard
             key={post.slug}
             title={post.title}
             description={post.description}
@@ -184,6 +185,7 @@ export function PostList({ posts }: PostListProps) {
             date={post.date}
             tags={post.tags}
           />
+          </div>
         ))}
       </div>
 

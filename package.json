@@ -20,7 +20,7 @@
     "@cf-wasm/satori": "^0.3.5",
     "@cloudflare/vite-plugin": "^1.26.0",
     "@flowershow/remark-wiki-link": "^3.4.0",
-    "@fontsource/chonburi": "^5.2.8",
+    "@fontsource/hepta-slab": "^5.2.8",
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@fontsource/varela-round": "^5.2.8",
     "@t3-oss/env-core": "^0.13.10",
