@@ -1,13 +1,13 @@
-import { useRouterState } from '@tanstack/react-router'
-import sites from '#/data/sites'
+import { useRouterState } from "@tanstack/react-router";
+import sites from "#/data/sites";
 
 interface SEOProps {
-  title?: string
-  description?: string
-  keywords?: string[]
-  thumbnail?: string
-  isPost?: boolean
-  publishedAt?: string
+  title?: string;
+  description?: string;
+  keywords?: string[];
+  thumbnail?: string;
+  isPost?: boolean;
+  publishedAt?: string;
 }
 
 export function SEO({
@@ -18,17 +18,17 @@ export function SEO({
   isPost = false,
   publishedAt,
 }: SEOProps) {
-  const state = useRouterState()
-  const url = new URL(state.location.pathname, sites.siteUrl).toString()
-  const fullTitle = title ? `${title} | ${sites.siteName}` : sites.siteName
-  const thumb = thumbnail || new URL('/assets/thumbnail.png', sites.siteUrl).toString()
-  const twitterCard = thumbnail ? 'summary_large_image' : 'summary'
+  const state = useRouterState();
+  const url = new URL(state.location.pathname, sites.siteUrl).toString();
+  const fullTitle = title ? `${title} | ${sites.siteName}` : sites.siteName;
+  const thumb = thumbnail || new URL("/assets/thumbnail.png", sites.siteUrl).toString();
+  const twitterCard = thumbnail ? "summary_large_image" : "summary";
 
   return (
     <>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content={keywords.join(', ')} />
+      <meta name="keywords" content={keywords.join(", ")} />
       <meta name="author" content={sites.author} />
       <meta name="theme-color" content="#fff1f2" />
       <link rel="canonical" href={url} />
@@ -39,7 +39,7 @@ export function SEO({
       <meta property="og:url" content={url} />
       <meta property="og:site_name" content={sites.siteName} />
       <meta property="og:image" content={thumb} />
-      <meta property="og:type" content={isPost ? 'article' : 'website'} />
+      <meta property="og:type" content={isPost ? "article" : "website"} />
       {isPost && publishedAt && (
         <>
           <meta property="article:published_time" content={publishedAt} />
@@ -60,5 +60,5 @@ export function SEO({
       <link rel="icon" type="image/png" href="/favicon.png" />
       <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     </>
-  )
+  );
 }

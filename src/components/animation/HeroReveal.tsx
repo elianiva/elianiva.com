@@ -12,16 +12,12 @@ export function HeroReveal({ children }: HeroRevealProps) {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return;
 
     const name = wrapper.querySelector('[data-hero-reveal="name"]');
     const desc = wrapper.querySelector('[data-hero-reveal="desc"]');
-    const socials = wrapper.querySelectorAll<HTMLElement>(
-      '[data-hero-reveal="social"]'
-    );
+    const socials = wrapper.querySelectorAll<HTMLElement>('[data-hero-reveal="social"]');
     const avatar = wrapper.querySelector('[data-hero-reveal="avatar"]');
 
     requestAnimationFrame(() => {

@@ -15,9 +15,7 @@ export const Route = createFileRoute("/")({
       .filter((p) => p.type === "personal" && p.featured)
       .sort((a, b) => (a.date > b.date ? -1 : 1));
 
-    const posts = allPosts
-      .filter((p) => !p.draft)
-      .sort((a, b) => (a.date > b.date ? -1 : 1));
+    const posts = allPosts.filter((p) => !p.draft).sort((a, b) => (a.date > b.date ? -1 : 1));
 
     return { posts, personalProjects };
   },
@@ -45,13 +43,10 @@ function Home() {
           >
             About Me
           </h2>
-          <p
-            data-anime
-            className="text-sm md:text-base leading-relaxed font-body text-pink-950/80"
-          >
-            Software Engineer doing frontend things. I like making interfaces that
-            don&apos;t annoy people and enjoy removing AI slop. Currently trying to
-            get better at the design side of things. Also I rebuilt this site like 5 times.
+          <p data-anime className="text-sm md:text-base leading-relaxed font-body text-pink-950/80">
+            Software Engineer doing frontend things. I like making interfaces that don&apos;t annoy
+            people and enjoy removing AI slop. Currently trying to get better at the design side of
+            things. Also I rebuilt this site like 5 times.
           </p>
         </section>
       </ScrollReveal>

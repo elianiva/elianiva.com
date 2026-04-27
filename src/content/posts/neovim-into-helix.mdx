@@ -3,9 +3,9 @@ title: From Neovim to Helix
 date: 2025-10-28
 description: Reasons why I'm leaving Neovim in favour of Helix editor due to its simplicity
 tags:
-    - neovim
-    - editor
-    - helix
+  - neovim
+  - editor
+  - helix
 ---
 
 Sup! :)
@@ -18,7 +18,7 @@ Text editors are... weirdly personal, as I found out. Everyone seems to have the
 
 Initially, I was using Vim before I discovered Neovim not long after I started using it. Back then, Neovim was just a fork of Vim with architectural differences, the most notable one being `libuv` that enables non-blocking plugins and background tasks. It also introduced an RPC interface which allows you to write plugins in other languages (remember [coc.nvim](https://github.com/neoclide/coc.nvim)? It was _the shit_ that people talked about back then, before we finally have built-in LSP client support in Neovim).
 
-Neovim also splits the core and the UI, so people can make their own GUI with actual Neovim embedded instead of trying to make yet another sub-par emulation. There are probably many other differences that I didn't mention, but my point is that there was not that much of a difference between Neovim 0.4 and Vim 8.0, unlike how it is right now with Neovim 0.11.x and Vim 9.x. 
+Neovim also splits the core and the UI, so people can make their own GUI with actual Neovim embedded instead of trying to make yet another sub-par emulation. There are probably many other differences that I didn't mention, but my point is that there was not that much of a difference between Neovim 0.4 and Vim 8.0, unlike how it is right now with Neovim 0.11.x and Vim 9.x.
 
 I later found out that the master branch contained a bunch of good stuff, including Lua scripting support[^1], built-in LSP client, Treesitter integration, and many more! That's where the rabbit hole begins... I started exploring much of the not-yet-stable latest and greatest Neovim API. If you're using Neovim before 0.5 was released, you'll know how long it was before 0.5 finally gets merged, hahah. Not to mention the support for a first-class `init.lua` instead of `init.vim`, that one was quite a ride.
 
@@ -110,7 +110,7 @@ I liked it for a while; it made me get things done quickly, and I used it quite 
 
 # Into the post-modern era
 
-At this point, LLM writes more code than I do myself. I'll let you decide whether it's a good thing or not. I liked the fact that it makes me more productive in shipping things. 
+At this point, LLM writes more code than I do myself. I'll let you decide whether it's a good thing or not. I liked the fact that it makes me more productive in shipping things.
 
 I have an issue with using LLM, though; it takes the fun out of programming, at least for me. I stopped editing the code manually, and I stopped navigating the code manually; all of it has been assisted by LLM.
 
@@ -120,7 +120,7 @@ After editing my prompt more than I edit my code, I decided to step back a bit a
 
 I discovered [Helix](https://helix-editor.com/) years ago when the project was still quite young, circa 2022, only a year after it was made. Someone mentioned it in Neovim's #matrix for it being a _post-modern text editor_.
 
-At first, it didn't really catch my attention to make me consider using it. Although it did catch my attention a little, the fact that it has first-class Treesitter support, [Rope data structure](https://en.wikipedia.org/wiki/Rope_(data_structure)) for the text, which should make things faster, _and_ an LSP client by default makes it quite interesting. 
+At first, it didn't really catch my attention to make me consider using it. Although it did catch my attention a little, the fact that it has first-class Treesitter support, [Rope data structure](<https://en.wikipedia.org/wiki/Rope_(data_structure)>) for the text, which should make things faster, _and_ an LSP client by default makes it quite interesting.
 
 I decided to pay close attention to it because who knows, it might be the next new shiny thing for me (spoiler alert: yes it does).
 
@@ -132,13 +132,13 @@ I thought to myself, I think this is it! This is the missing piece that I was lo
 
 I used (Neo)vim for years, so the muscle memory has been ingrained in me. I didn't even know what my fingers were doing, I could just think what I wanted to do and they just did it for me. If the keypresses were visualised, I'd also get confused, wdym I pressed `ggVg=<C-o>` or `vipddjjjjjjp`, like, seriously, what is that nonsense.
 
-Helix has a flipped mindset. Instead of doing action->selection, kinda like how you'd do Verb->Object, in Helix, you'd do selection->action. At first, I thought this didn't make sense at all. Only after I realised that in Helix, you're always in select mode, each time you move using the navigation keys like `b` or `w`, you will always be selecting something, until you explicitly say not to. 
+Helix has a flipped mindset. Instead of doing action->selection, kinda like how you'd do Verb->Object, in Helix, you'd do selection->action. At first, I thought this didn't make sense at all. Only after I realised that in Helix, you're always in select mode, each time you move using the navigation keys like `b` or `w`, you will always be selecting something, until you explicitly say not to.
 
 This screwed my muscle memory at first because I'm so used to the action->selection mindset like `dw` for deleting words, now I had to adjust to using `wd`, but worry not! Since Helix is always in select mode, it ended up saving me some keystrokes because the things that I want to delete are sometimes already being selected, so I just simply need to press `d` to delete them, cool!
 
 The selection->action mindset makes more sense for text editing because you can clearly visualise the text that you want to operate on, as opposed to having to memorise what certain movements do, like we have in (Neo)vim.
 
-Some of the keybindings are also more consistent. Going to the start of a (non whitespace) line is `gs` instead of `^`, going to the end of a line is `gl` instead of `$`. I know, I know, the reason why Vim picked `^` and `$` is because it borrows the idea from regular expressions. Even though it's faster because it's only a single keypress as opposed to two, it can feel a bit cryptic to some people. I like that Helix favours a more consistent way of doing things, even if it sacrifices efficiency for a bit[^2]. 
+Some of the keybindings are also more consistent. Going to the start of a (non whitespace) line is `gs` instead of `^`, going to the end of a line is `gl` instead of `$`. I know, I know, the reason why Vim picked `^` and `$` is because it borrows the idea from regular expressions. Even though it's faster because it's only a single keypress as opposed to two, it can feel a bit cryptic to some people. I like that Helix favours a more consistent way of doing things, even if it sacrifices efficiency for a bit[^2].
 
 [^2]: I mean, let's be real here, it probably doesn't even matter when it's just a few keypresses of difference.
 
@@ -248,7 +248,7 @@ command = "biome"
 args = ["lsp-proxy"]
 
 # ------------------
- 
+
 [[language]]
 name = "html"
 language-servers = [ "vscode-html-language-server", "tailwindcss-ls" ]

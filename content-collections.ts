@@ -53,9 +53,13 @@ const posts = defineCollection({
   }),
   transform: async (document, context) => {
     const cleaned = stripComponentImports(document.content);
-    const mdx = await compileMDX(context, { ...document, content: cleaned }, {
-      rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
-    });
+    const mdx = await compileMDX(
+      context,
+      { ...document, content: cleaned },
+      {
+        rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+      },
+    );
     return {
       ...document,
       slug: document._meta.path,
@@ -82,9 +86,13 @@ const projects = defineCollection({
   }),
   transform: async (document, context) => {
     const cleaned = stripComponentImports(document.content);
-    const mdx = await compileMDX(context, { ...document, content: cleaned }, {
-      rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
-    });
+    const mdx = await compileMDX(
+      context,
+      { ...document, content: cleaned },
+      {
+        rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+      },
+    );
     return {
       ...document,
       slug: document._meta.path,

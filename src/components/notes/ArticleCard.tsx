@@ -12,12 +12,8 @@ export function ArticleCard({ note }: ArticleCardProps) {
     day: "numeric",
   });
 
-  const domain = note.domain
-    ? new URL(note.domain).hostname.replace(/^www./, "")
-    : "";
-  const displayTags = note.tags
-    .filter((t) => t !== "public" && t !== "article")
-    .slice(0, 3);
+  const domain = note.domain ? new URL(note.domain).hostname.replace(/^www./, "") : "";
+  const displayTags = note.tags.filter((t) => t !== "public" && t !== "article").slice(0, 3);
 
   const cardContent = (
     <>
@@ -35,16 +31,12 @@ export function ArticleCard({ note }: ArticleCardProps) {
           {note.title}
         </h3>
         {note.description && (
-          <p className="text-sm text-pink-950/60 mt-1 line-clamp-2">
-            {note.description}
-          </p>
+          <p className="text-sm text-pink-950/60 mt-1 line-clamp-2">{note.description}</p>
         )}
 
         <div className="flex flex-wrap items-center gap-2 mt-3 text-xs text-pink-950/50">
           {domain && (
-            <span className="px-2 py-0.5 bg-sky-100/70 text-sky-800 font-medium">
-              {domain}
-            </span>
+            <span className="px-2 py-0.5 bg-sky-100/70 text-sky-800 font-medium">{domain}</span>
           )}
           {note.author && (
             <>
@@ -56,9 +48,7 @@ export function ArticleCard({ note }: ArticleCardProps) {
           {displayTags.length > 0 && (
             <>
               <span>·</span>
-              <span className="truncate">
-                {displayTags.map((t) => `#${t}`).join(" ")}
-              </span>
+              <span className="truncate">{displayTags.map((t) => `#${t}`).join(" ")}</span>
             </>
           )}
         </div>

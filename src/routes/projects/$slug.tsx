@@ -15,12 +15,8 @@ export const Route = createFileRoute("/projects/$slug")({
       throw notFound();
     }
 
-    const sortedProjects = allProjects.sort((a, b) =>
-      a.date > b.date ? -1 : 1
-    );
-    const currentIndex = sortedProjects.findIndex(
-      (p) => p.slug === params.slug
-    );
+    const sortedProjects = allProjects.sort((a, b) => (a.date > b.date ? -1 : 1));
+    const currentIndex = sortedProjects.findIndex((p) => p.slug === params.slug);
     const prevProject = sortedProjects[currentIndex + 1] || null;
     const nextProject = sortedProjects[currentIndex - 1] || null;
 
@@ -42,15 +38,29 @@ function ProjectNotFoundPage() {
     <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
       <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / projects</p>
-        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">This project has not materialized.</h1>
-        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">The thing you were looking for is not here. Maybe check the project list again.</p>
+        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
+          This project has not materialized.
+        </h1>
+        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">
+          The thing you were looking for is not here. Maybe check the project list again.
+        </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link to="/" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Home</Link>
-          <Link to="/projects" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Projects index</Link>
+          <Link
+            to="/"
+            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
+          >
+            Home
+          </Link>
+          <Link
+            to="/projects"
+            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
+          >
+            Projects index
+          </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function ProjectDetailPage() {
@@ -60,11 +70,7 @@ function ProjectDetailPage() {
 
   return (
     <>
-      <SEO
-        title={project.title}
-        description={project.description}
-        thumbnail={thumbnail}
-      />
+      <SEO title={project.title} description={project.description} thumbnail={thumbnail} />
       <main
         className="mx-auto max-w-[1080px] px-2 md:px-4 py-10 border-x border-pink-200/50"
         style={{ viewTransitionName: `project-card-${project.slug}` }}
@@ -128,20 +134,13 @@ function ProjectDetailPage() {
               </h2>
               <div className="space-y-3 pt-4">
                 {(project.stack || []).map(([stackName, stackHomepage]) => (
-                  <div
-                    key={stackName}
-                    className="flex items-center gap-3 group"
-                  >
+                  <div key={stackName} className="flex items-center gap-3 group">
                     <div className="flex items-center justify-center p-2 bg-pink-50/80 border-[0.5px] border-pink-200/50 w-12 h-12 shrink-0">
                       <img
                         className={`w-full h-full object-contain ${
-                          stackName.toLowerCase() === "nextjs"
-                            ? "filter invert"
-                            : ""
+                          stackName.toLowerCase() === "nextjs" ? "filter invert" : ""
                         }`}
-                        src={`/assets/logo/${stackName
-                          .toLowerCase()
-                          .replace(/\s+/g, "-")}.png`}
+                        src={`/assets/logo/${stackName.toLowerCase().replace(/\s+/g, "-")}.png`}
                         alt={stackName}
                       />
                     </div>

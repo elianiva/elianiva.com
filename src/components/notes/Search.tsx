@@ -39,7 +39,10 @@ export function Search({ notes, onSearch }: SearchProps) {
       if (value.trim() && fuseRef.current) {
         const searchResults = fuseRef.current.search(value);
         setResults(searchResults);
-        onSearch(value, searchResults.map((r) => r.item));
+        onSearch(
+          value,
+          searchResults.map((r) => r.item),
+        );
       } else {
         setResults([]);
         onSearch("", notes);

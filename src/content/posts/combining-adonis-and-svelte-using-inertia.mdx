@@ -3,8 +3,8 @@ title: Combining Adonis and Svelte using InertiaJS
 date: 2021-08-29
 description: A short guide to build modern monolithic app using InertiaJS with Adonis and Svelte
 tags:
-    - svelte
-    - website
+  - svelte
+  - website
 ---
 
 [inertia-link]: https://inertiajs.com
@@ -134,19 +134,19 @@ const sveltePreprocess = require("svelte-preprocess");
 
 // add this block
 Encore.addLoader({
-	test: /\\.svelte$/,
-	loader: "svelte-loader",
-	options: {
-		emitCss: true,
-		preprocess: sveltePreprocess({}),
-	},
+  test: /\\.svelte$/,
+  loader: "svelte-loader",
+  options: {
+    emitCss: true,
+    preprocess: sveltePreprocess({}),
+  },
 });
 
 /****the rest of the config****/
 
 const config = Encore.getWebpackConfig();
 config.infrastructureLogging = {
-	level: "warn",
+  level: "warn",
 };
 config.stats = "errors-warnings";
 // add this line
@@ -162,14 +162,14 @@ import { createInertiaApp } from "@inertiajs/inertia-svelte";
 import { InertiaProgress } from "@inertiajs/progress";
 
 InertiaProgress.init({
-	showSpinner: true,
+  showSpinner: true,
 });
 
 createInertiaApp({
-	resolve: (name) => import(`./Pages/${name}.svelte`),
-	setup({ el, App, props }) {
-		new App({ target: el, props });
-	},
+  resolve: (name) => import(`./Pages/${name}.svelte`),
+  setup({ el, App, props }) {
+    new App({ target: el, props });
+  },
 });
 ```
 
@@ -217,7 +217,7 @@ Open `start/routes.ts` and add a new route for our Svelte app.
 
 ```javascript
 Route.get("/foo", async ({ inertia }) => {
-	return inertia.render("Foo", { text: "Hello, World!" });
+  return inertia.render("Foo", { text: "Hello, World!" });
 });
 ```
 
@@ -233,9 +233,9 @@ Of course, always refer to Adonis/Svelte/Inertia for more detailed API reference
 
 Here are some references I used when trying this out.
 
--   [eidellev/inertia-adonisjs](https://github.com/eidellev/inertiajs-adonisjs) - The adapter repository.
--   [Adonis, Inertia, and Svelte by Eidellev](https://medium.com/@jyrki-grohn/adonis-inertia-and-svelte-5291abedea65) - This one is kinda outdated, that's why I made this post.
--   [danangponorogo/adonisvelnertia](https://github.com/danangponorogo/adonisvelnertia)
+- [eidellev/inertia-adonisjs](https://github.com/eidellev/inertiajs-adonisjs) - The adapter repository.
+- [Adonis, Inertia, and Svelte by Eidellev](https://medium.com/@jyrki-grohn/adonis-inertia-and-svelte-5291abedea65) - This one is kinda outdated, that's why I made this post.
+- [danangponorogo/adonisvelnertia](https://github.com/danangponorogo/adonisvelnertia)
 
 # Closing Note
 

@@ -37,9 +37,7 @@ export function MusicCard({ note }: MusicCardProps) {
           <h3 className="font-display text-sm font-semibold text-pink-950 hover:text-purple-700 transition-colors truncate leading-snug">
             {note.title}
           </h3>
-          {note.artist && (
-            <p className="text-xs text-pink-950/60 mt-0.5 truncate">{note.artist}</p>
-          )}
+          {note.artist && <p className="text-xs text-pink-950/60 mt-0.5 truncate">{note.artist}</p>}
           {note.description && (
             <p className="text-xs text-pink-950/40 truncate">{note.description}</p>
           )}

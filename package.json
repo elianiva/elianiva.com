@@ -10,7 +10,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "deploy": "pnpm run build && wrangler deploy"
+    "deploy": "pnpm run build && wrangler deploy",
+    "format": "oxfmt --write .",
+    "lint": "oxlint ."
   },
   "dependencies": {
     "@cf-wasm/resvg": "^0.3.3",
@@ -70,6 +72,8 @@
     "@vitejs/plugin-react": "^6.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "jsdom": "^28.1.0",
+    "oxfmt": "^0.46.0",
+    "oxlint": "^1.61.0",
     "rehype-pretty-code": "^0.14.3",
     "shiki": "^4.0.2",
     "tsx": "^4.21.0",
@@ -80,11 +84,11 @@
     "vitest": "^3.0.5",
     "wrangler": "^4.70.0"
   },
+  "packageManager": "pnpm@10.33.2",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
       "lightningcss"
     ]
-  },
-  "packageManager": "pnpm@10.33.2"
+  }
 }

@@ -3,8 +3,8 @@ title: My Experience Trying Out Svelte For The First Time
 date: 2020-09-27
 description: Phew lads, I finally tried svelte after a while and boi oh boi do I love it
 tags:
-    - svelte
-    - website
+  - svelte
+  - website
 ---
 
 import Update from "~/components/Update.astro";
@@ -27,27 +27,27 @@ My first impression was like, man, this is just like a vanilla html with some su
 
 ```html
 <style>
-	.heading {
-		color: aqua;
-	}
+  .heading {
+    color: aqua;
+  }
 </style>
 
 <Navbar title="An epic title">
-	<h1 class="heading">
-		{heading}
-		<h1>
-			<div>
-				<p>{paragraph}</p>
-			</div>
-			<footer />
+  <h1 class="heading">
+    {heading}
+    <h1>
+      <div>
+        <p>{paragraph}</p>
+      </div>
+      <footer />
 
-			<script>
-				import Footer from "./_components/Footer.svelte";
-				let heading = "This is a heading";
-				let paragraph = "This is a heading";
-			</script>
-		</h1>
-	</h1></Navbar
+      <script>
+        import Footer from "./_components/Footer.svelte";
+        let heading = "This is a heading";
+        let paragraph = "This is a heading";
+      </script>
+    </h1>
+  </h1></Navbar
 >
 ```
 
@@ -98,13 +98,13 @@ On Svelte, the whole file is a component. It uses `.svelte` extension and the sy
 
 ```html
 <style>
-	/* some stylings */
+  /* some stylings */
 </style>
 
 <div>I'm an HTML</div>
 
 <script>
-	// some logic goes here
+  // some logic goes here
 </script>
 ```
 
@@ -120,7 +120,7 @@ Apparently, props in svelte is just an exported `let` variable. So what you woul
 <div>{count}</div>
 
 <script>
-	export let count;
+  export let count;
 </script>
 ```
 
@@ -128,11 +128,11 @@ Apparently, props in svelte is just an exported `let` variable. So what you woul
 
 ```html
 <div>
-	<Counter count="{1}" />
+  <Counter count="{1}" />
 </div>
 
 <script>
-	import Counter from "./counter.svelte";
+  import Counter from "./counter.svelte";
 </script>
 ```
 
@@ -152,8 +152,8 @@ import React, { createContext, useState } from "react";
 export const CountContext = createContext(null);
 
 export const CountProvider = ({ children }) => {
-	const [count, setCount] = useState(0);
-	return <CountContext.Provider value={{ count, setCount }}>{children}</CountContext.Provider>;
+  const [count, setCount] = useState(0);
+  return <CountContext.Provider value={{ count, setCount }}>{children}</CountContext.Provider>;
 };
 ```
 
@@ -164,14 +164,14 @@ import React, { useContext } from "react";
 import { CountProvider, CountContext } from "./context";
 
 export default () => {
-	const { count, setCount } = useContext(CountContext);
-	return (
-		<CountProvider>
-			<p>{count}</p>
-			<button onClick={() => setCount(count + 1)}>Increment</button>
-			<button onClick={() => setCount(count - 1)}>Decrement</button>
-		</CountProvider>
-	);
+  const { count, setCount } = useContext(CountContext);
+  return (
+    <CountProvider>
+      <p>{count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(count - 1)}>Decrement</button>
+    </CountProvider>
+  );
 };
 ```
 
@@ -193,7 +193,7 @@ export const count = writable(0);
 <button on:click="{count.update(n" ="">n - 1)}>Decrement</button>
 
 <script>
-	import { count } from "./stores";
+  import { count } from "./stores";
 </script>
 ```
 
@@ -214,8 +214,8 @@ Svelte provides [animation](https://svelte.dev/tutorial/animate) and [transition
 {/if}
 
 <script>
-	import { fade } from "svelte/transition";
-	let isVisible = false;
+  import { fade } from "svelte/transition";
+  let isVisible = false;
 </script>
 ```
 
@@ -231,13 +231,13 @@ Last one is logic blocks. On React, you can use curly braces `{}` to write some 
 import React, { useState } from "react";
 
 export default function Counter() {
-	const [isVisible, setVisible] = false;
-	return (
-		<div>
-			{isVisible && <div>I'm Visible!</div>}
-			<button onClick={() => setVisible(!isVisible)}>Toggle</button>
-		</div>
-	);
+  const [isVisible, setVisible] = false;
+  return (
+    <div>
+      {isVisible && <div>I'm Visible!</div>}
+      <button onClick={() => setVisible(!isVisible)}>Toggle</button>
+    </div>
+  );
 }
 ```
 
@@ -250,7 +250,7 @@ It's a little bit different on Svelte. It looks something like this.
 <button on:clock="{isVisible" ="!isVisible}">Toggle</button>
 
 <script>
-	let isVisible = false;
+  let isVisible = false;
 </script>
 ```
 

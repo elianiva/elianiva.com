@@ -1,14 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { html } from 'satori-html'
-import { satori } from '@cf-wasm/satori'
-import { Resvg } from '@cf-wasm/resvg'
-import sites from '#/data/sites'
+import { createFileRoute } from "@tanstack/react-router";
+import { html } from "satori-html";
+import { satori } from "@cf-wasm/satori";
+import { Resvg } from "@cf-wasm/resvg";
+import sites from "#/data/sites";
 
-const domainName = new URL(sites.siteUrl).hostname
+const domainName = new URL(sites.siteUrl).hostname;
 
 // satori dimensions
-const CARD_WIDTH = 1200
-const CARD_HEIGHT = 630
+const CARD_WIDTH = 1200;
+const CARD_HEIGHT = 630;
 
 // Soft peachy-pink color palette matching the site
 const COLORS = {
@@ -25,43 +25,44 @@ const COLORS = {
   textPrimary: "#831843",
   textSecondary: "#9d174d",
   textMuted: "#be185d",
-}
+};
 
-export const Route = createFileRoute('/api/og-image')({
+export const Route = createFileRoute("/api/og-image")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const url = new URL(request.url)
-        const title = url.searchParams.get('title')
-        const date = url.searchParams.get('date')
-        const tags = url.searchParams.get('tags')
-        const description = url.searchParams.get('description')
+        const url = new URL(request.url);
+        const title = url.searchParams.get("title");
+        const date = url.searchParams.get("date");
+        const tags = url.searchParams.get("tags");
+        const description = url.searchParams.get("description");
 
         if (!title || !date || !tags || !description) {
-          return new Response('Missing required query parameters', { status: 400 })
+          return new Response("Missing required query parameters", { status: 400 });
         }
 
-        const formattedDate = new Date(date).toLocaleDateString('en-GB', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-          weekday: 'long',
-        })
+        const formattedDate = new Date(date).toLocaleDateString("en-GB", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          weekday: "long",
+        });
 
-        const decodedTitle = decodeURIComponent(title)
-        const decodedDate = decodeURIComponent(formattedDate)
+        const decodedTitle = decodeURIComponent(title);
+        const decodedDate = decodeURIComponent(formattedDate);
         const decodedTags = decodeURIComponent(tags)
-          .split(',')
-          .map((tag) => tag.trim())
-        const decodedDescription = decodeURIComponent(description)
+          .split(",")
+          .map((tag) => tag.trim());
+        const decodedDescription = decodeURIComponent(description);
 
         // Load Chonburi font from @fontsource
         const chonburiFont = await Bun.file(
-          'node_modules/@fontsource/chonburi/files/chonburi-latin-400-normal.woff2',
-        ).arrayBuffer()
+          "node_modules/@fontsource/chonburi/files/chonburi-latin-400-normal.woff2",
+        ).arrayBuffer();
 
         const markup = html`
-          <div style="
+          <div
+            style="
             display: flex;
             flex-direction: column;
             width: 100%;
@@ -70,8 +71,10 @@ export const Route = createFileRoute('/api/og-image')({
             padding: 24px;
             position: relative;
             overflow: hidden;
-          ">
-            <div style="
+          "
+          >
+            <div
+              style="
               display: flex;
               flex-direction: column;
               width: 100%;
@@ -82,9 +85,11 @@ export const Route = createFileRoute('/api/og-image')({
               backdrop-filter: blur(20px);
               position: relative;
               border: 2px solid rgba(249, 168, 212, 0.6);
-            ">
+            "
+            >
               <!-- Header with domain and date -->
-              <div style="
+              <div
+                style="
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -92,13 +97,15 @@ export const Route = createFileRoute('/api/og-image')({
                 font-size: 22px;
                 color: ${COLORS.textSecondary};
                 letter-spacing: 0.5px;
-              ">
+              "
+              >
                 <span style="font-weight: 600;">${domainName}</span>
                 <span style="opacity: 0.8;">${decodedDate}</span>
               </div>
 
               <!-- Content area -->
-              <div style="
+              <div
+                style="
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -107,9 +114,11 @@ export const Route = createFileRoute('/api/og-image')({
                 flex-grow: 1;
                 padding: 20px 48px;
                 gap: 16px;
-              ">
+              "
+              >
                 <!-- Title with soft styling -->
-                <h1 style="
+                <h1
+                  style="
                   font-size: 52px;
                   font-weight: 400;
                   color: ${COLORS.textPrimary};
@@ -117,32 +126,37 @@ export const Route = createFileRoute('/api/og-image')({
                   margin: 0;
                   letter-spacing: -0.5px;
                   text-shadow: 2px 2px 0px rgba(255, 212, 188, 0.5);
-                ">
+                "
+                >
                   ${decodedTitle}
                 </h1>
 
                 <!-- Description -->
-                <p style="
+                <p
+                  style="
                   font-size: 28px;
                   color: ${COLORS.textMuted};
                   line-height: 1.4;
                   margin: 0;
                   max-width: 85%;
                   opacity: 0.85;
-                ">
+                "
+                >
                   ${decodedDescription}
                 </p>
               </div>
 
               <!-- Tags footer -->
-              <div style="
+              <div
+                style="
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 gap: 12px;
                 padding: 0 32px 28px 32px;
                 flex-wrap: wrap;
-              ">
+              "
+              >
                 ${decodedTags
                   .map(
                     (tag) =>
@@ -158,45 +172,45 @@ export const Route = createFileRoute('/api/og-image')({
                         border: 1px solid rgba(249, 168, 212, 0.6);
                       ">#${tag.trim()}</span>`,
                   )
-                  .join('')}
+                  .join("")}
               </div>
             </div>
           </div>
-        `
+        `;
 
         const svg = await satori(markup, {
           width: CARD_WIDTH,
           height: CARD_HEIGHT,
           fonts: [
             {
-              name: 'Chonburi',
+              name: "Chonburi",
               data: chonburiFont,
               weight: 400,
             },
           ],
-        })
+        });
 
         const resvg = new Resvg(svg, {
           font: {
             loadSystemFonts: false,
-            defaultFontFamily: 'Chonburi',
+            defaultFontFamily: "Chonburi",
           },
           fitTo: {
-            mode: 'width',
+            mode: "width",
             value: CARD_WIDTH,
           },
-        })
+        });
 
-        const pngData = resvg.render()
-        const pngBuffer = pngData.asPng()
+        const pngData = resvg.render();
+        const pngBuffer = pngData.asPng();
 
         return new Response(pngBuffer.buffer as ArrayBuffer, {
           headers: {
-            'Content-Type': 'image/png',
-            'Cache-Control': 'public, max-age=86400',
+            "Content-Type": "image/png",
+            "Cache-Control": "public, max-age=86400",
           },
-        })
+        });
       },
     },
   },
-})
+});

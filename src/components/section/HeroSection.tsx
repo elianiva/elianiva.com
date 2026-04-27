@@ -33,10 +33,7 @@ export function HeroSection() {
             className="text-2xl md:text-3xl font-bold font-display text-pink-950 tracking-wide"
           >
             Dicha Z
-            <span
-              className="text-pink-600"
-              title="Yes, this is where the username comes from"
-            >
+            <span className="text-pink-600" title="Yes, this is where the username comes from">
               elianiva
             </span>
             n Arkana
@@ -45,10 +42,9 @@ export function HeroSection() {
             data-hero-reveal="desc"
             className="text-sm md:text-base leading-relaxed font-body text-pink-950/80 py-3 max-w-[60ch]"
           >
-            Software Engineer doing frontend things. I like making interfaces
-            that don&apos;t annoy people and enjoy removing AI slop. Currently
-            trying to get better at the design side of things. Also I rebuilt
-            this site like 5 times.
+            Software Engineer doing frontend things. I like making interfaces that don&apos;t annoy
+            people and enjoy removing AI slop. Currently trying to get better at the design side of
+            things. Also I rebuilt this site like 5 times.
           </p>
           <div className="flex items-center flex-wrap gap-2 pt-2 justify-center md:justify-start">
             {socials.map((social) => {
@@ -66,9 +62,7 @@ export function HeroSection() {
                 >
                   <div className="group-hover:rounded-2xl transition-all py-2 px-3 text-pink-950 group-hover:text-pink-950 bg-white/70 flex items-center gap-2 group-focus:outline-none group-focus:ring group-focus:ring-pink-400 group-focus:ring-offset-2">
                     <Icon className="w-4 h-4" />
-                    <span className="text-xs font-mono uppercase">
-                      {social.label}
-                    </span>
+                    <span className="text-xs font-mono uppercase">{social.label}</span>
                   </div>
                 </a>
               );

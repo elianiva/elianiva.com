@@ -40,14 +40,7 @@ export const workExperiences: WorkExperience[] = [
       "Rewrote legacy finance module from procedural PHP to a typed service layer with automated reconciliation, eliminating rounding errors and audit discrepancies",
       "Shipped real-time quiz platform (Laravel Reverb, WebSockets) replacing paper-based pre/post-tests, cutting grading turnaround from days to instant",
     ],
-    technologies: [
-      "typescript",
-      "nodejs",
-      "nextjs",
-      "laravel",
-      "mysql",
-      "docker",
-    ],
+    technologies: ["typescript", "nodejs", "nextjs", "laravel", "mysql", "docker"],
   },
   {
     company: "PT Healstation Indonesia",
@@ -118,12 +111,6 @@ export const workExperiences: WorkExperience[] = [
       "Structured UI with Atomic Design (atoms, molecules, organisms), enabling 3 other devs to compose new screens from existing primitives instead of duplicating code",
       "Added real-time SSE notifications so assignees see updates instantly, eliminating the need to refresh or poll for task changes",
     ],
-    technologies: [
-      "typescript",
-      "react",
-      "react-hook-form",
-      "react-query",
-      "chakra-ui",
-    ],
+    technologies: ["typescript", "react", "react-hook-form", "react-query", "chakra-ui"],
   },
 ];

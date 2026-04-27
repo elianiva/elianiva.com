@@ -3,8 +3,8 @@ title: I rebuilt my site using Sapper from scratch
 date: 2020-10-20
 description: A post where I explain why I migrate my website using Svelte/Sapper
 tags:
-    - svelte
-    - website
+  - svelte
+  - website
 ---
 
 import Update from "~/components/Update.astro";
@@ -50,13 +50,13 @@ The solution for it was quite simple, I just need to add this piece of code (tha
 ```javascript
 import { onMount } from "svelte";
 onMount(() => {
-	document.querySelectorAll("a").forEach((a) => {
-		if (!a.hash || !document.querySelectorAll(a.hash).length) return;
-		a.addEventListener("click", (event) => {
-			event.preventDefault();
-			window.location.hash = event.target.getAttribute("href");
-		});
-	});
+  document.querySelectorAll("a").forEach((a) => {
+    if (!a.hash || !document.querySelectorAll(a.hash).length) return;
+    a.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.location.hash = event.target.getAttribute("href");
+    });
+  });
 });
 ```
 
@@ -101,7 +101,7 @@ This is caused by passing a variable to `svelte-image` component like this.
 <image src="{src}" />
 
 <script>
-	export let src;
+  export let src;
 </script>
 ```
 
@@ -119,10 +119,10 @@ I no longer use svelte-image because for some reason, [sharp](https://github.com
 
 Here are some resources that helped me make this website. Hope you find this useful ツ
 
--   https://github.com/iamyuu/iamyuu
--   https://web.dev/
--   https://fatihkalifa.com/dark-mode-web
--   https://css-tricks.com/a-complete-guide-to-dark-mode-on-the-web/
+- https://github.com/iamyuu/iamyuu
+- https://web.dev/
+- https://fatihkalifa.com/dark-mode-web
+- https://css-tricks.com/a-complete-guide-to-dark-mode-on-the-web/
 
 # Conclusion
 

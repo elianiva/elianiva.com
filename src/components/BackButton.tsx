@@ -20,9 +20,7 @@ export function BackButton() {
         aria-label="Go back"
       >
         <ArrowLeftIcon className="w-4 h-4" />
-        <span className="font-body uppercase font-medium tracking-wider text-xs">
-          Back
-        </span>
+        <span className="font-body uppercase font-medium tracking-wider text-xs">Back</span>
       </button>
       <Link
         to="/"
@@ -30,9 +28,7 @@ export function BackButton() {
         aria-label="Go to home"
       >
         <HouseIcon className="w-4 h-4" />
-        <span className="font-body uppercase font-medium tracking-wider text-xs">
-          Home
-        </span>
+        <span className="font-body uppercase font-medium tracking-wider text-xs">Home</span>
       </Link>
     </div>
   );

@@ -12,11 +12,5 @@
   "routerOnly": false,
   "version": 1,
   "framework": "react",
-  "chosenAddOns": [
-    "cloudflare",
-    "compiler",
-    "t3env",
-    "shadcn",
-    "tanstack-query"
-  ]
+  "chosenAddOns": ["cloudflare", "compiler", "t3env", "shadcn", "tanstack-query"]
 }

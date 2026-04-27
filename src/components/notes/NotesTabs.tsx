@@ -86,7 +86,7 @@ export function NotesTabs({ notes }: NotesTabsProps) {
                 isActive ? "text-pink-600" : "text-pink-950/50 hover:text-pink-950/80"
               }`}
               aria-pressed={isActive}
-              style={isActive ? { anchorName: "--active-tab" } as React.CSSProperties : undefined}
+              style={isActive ? ({ anchorName: "--active-tab" } as React.CSSProperties) : undefined}
             >
               {categoryLabels[cat]}
               <span

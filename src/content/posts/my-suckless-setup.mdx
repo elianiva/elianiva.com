@@ -3,8 +3,8 @@ title: My Setup Using Suckless Software
 date: 2020-06-04
 description: A post where I fully explain about my setup using suckless's softwares
 tags:
-    - linux
-    - window manager
+  - linux
+  - window manager
 ---
 
 import Update from "~/components/Update.astro";
@@ -47,66 +47,66 @@ One of the suckless key features is patching. To add new functionality, you need
 
 I personally use 5 of them and a little bit of tweaking on `dwm.c` file. Here are those patches.
 
--   [**Actual Fullscreen**](https://dwm.suckless.org/patches/actualfullscreen/)
+- [**Actual Fullscreen**](https://dwm.suckless.org/patches/actualfullscreen/)
 
-    As its name suggests, it enables actual fullscreen behaviour instead of toggling the bar off and go to monocle mode.
+  As its name suggests, it enables actual fullscreen behaviour instead of toggling the bar off and go to monocle mode.
 
--   [**Per Tag**](https://dwm.suckless.org/patches/pertag/)
+- [**Per Tag**](https://dwm.suckless.org/patches/pertag/)
 
-    This patch enables per tag behaviour which means if you enable floating mode on the first tag, it won't be applied to another tag. I like this behaviour more than DWM's default behaviour which applies to all of the available tags.
+  This patch enables per tag behaviour which means if you enable floating mode on the first tag, it won't be applied to another tag. I like this behaviour more than DWM's default behaviour which applies to all of the available tags.
 
--   [**Status2d**](https://dwm.suckless.org/patches/status2d/)
+- [**Status2d**](https://dwm.suckless.org/patches/status2d/)
 
-    This patch gives you a new syntax for statusbar colour. It also capable of drawing rectangles to your statusbar but I personally don't use it. I only use it for changing my statusbar icon colour.
+  This patch gives you a new syntax for statusbar colour. It also capable of drawing rectangles to your statusbar but I personally don't use it. I only use it for changing my statusbar icon colour.
 
--   [**Vanity Gaps**](https://dwm.suckless.org/patches/vanitygaps/)
+- [**Vanity Gaps**](https://dwm.suckless.org/patches/vanitygaps/)
 
-    The most essential feature of a window manager for me. If a tiling window manager doesn't have this feature, I won't use it. It makes me feel less claustrophobic.
+  The most essential feature of a window manager for me. If a tiling window manager doesn't have this feature, I won't use it. It makes me feel less claustrophobic.
 
--   [**Swallow Patch**](https://dwm.suckless.org/patches/swallow/)
+- [**Swallow Patch**](https://dwm.suckless.org/patches/swallow/)
 
-    I recently use this patch to fix the usual behaviour when you open a program that spawns another window from terminal, the terminal window doesn't do anything but it stays there. If you close it, the program will also get killed. This patch allows you to spawn a program from terminal and that program will take the terminal window instead of spawning a new one. If you close the program, your terminal still there.
+  I recently use this patch to fix the usual behaviour when you open a program that spawns another window from terminal, the terminal window doesn't do anything but it stays there. If you close it, the program will also get killed. This patch allows you to spawn a program from terminal and that program will take the terminal window instead of spawning a new one. If you close the program, your terminal still there.
 
--   **Centered**
+- **Centered**
 
-    I modify the original isCenter patch so I don't have to define which class that needs to be centered, I just apply it globally. If you interested in how it looks, here it is.
+  I modify the original isCenter patch so I don't have to define which class that needs to be centered, I just apply it globally. If you interested in how it looks, here it is.
 
-    ```cpp
-    // center floating window
-    if (c->x == selmon->wx) c->x += (c->mon->ww - WIDTH(c)) / 2 - c->bw;
-    if (c->y == selmon->wy) c->y += (c->mon->wh - HEIGHT(c)) / 2 - c->bw;
-    ```
+  ```cpp
+  // center floating window
+  if (c->x == selmon->wx) c->x += (c->mon->ww - WIDTH(c)) / 2 - c->bw;
+  if (c->y == selmon->wy) c->y += (c->mon->wh - HEIGHT(c)) / 2 - c->bw;
+  ```
 
-    Place it inside `manage(Window w, XWindowAttributes *wa)` function in between of `wc.border_width = c->bw;` and `XConfigureWindow(dpy, w, CWBorderWidth, &wc);`, then recompile it. That's it, you're done.
+  Place it inside `manage(Window w, XWindowAttributes *wa)` function in between of `wc.border_width = c->bw;` and `XConfigureWindow(dpy, w, CWBorderWidth, &wc);`, then recompile it. That's it, you're done.
 
--   **No Monocle Border**
+- **No Monocle Border**
 
-    I don't like any border when in monocle mode so I tried to use no border patch and it doesn't work, I don't know why. So I add this code that I found on the internet instead.
+  I don't like any border when in monocle mode so I tried to use no border patch and it doesn't work, I don't know why. So I add this code that I found on the internet instead.
 
-    ```cpp
-    if ((&monocle == c->mon->lt[c->mon->sellt]->arrange) && (!c->isfloating)) {
-          wc.border_width = 0;
-          c->w = wc.width += c->bw * 2;
-          c->h = wc.height += c->bw * 2;
-      }
-    ```
+  ```cpp
+  if ((&monocle == c->mon->lt[c->mon->sellt]->arrange) && (!c->isfloating)) {
+        wc.border_width = 0;
+        c->w = wc.width += c->bw * 2;
+        c->h = wc.height += c->bw * 2;
+    }
+  ```
 
-    Add that to `resizeclient(Client *c, int x, int y, int w, int h)` function after `wc.border_width = c->bw;` then recompile it.
+  Add that to `resizeclient(Client *c, int x, int y, int w, int h)` function after `wc.border_width = c->bw;` then recompile it.
 
--   **Change Bar Height**
+- **Change Bar Height**
 
-    By default, DWM define bar height by calculating font size and adding 2px on top and bottom. It looks ugly to me, I want to be able to define my bar height. So I replaced some code with this.
+  By default, DWM define bar height by calculating font size and adding 2px on top and bottom. It looks ugly to me, I want to be able to define my bar height. So I replaced some code with this.
 
-    ```cpp
-    // previous
-    bh = drw->fonts->h + 2;
+  ```cpp
+  // previous
+  bh = drw->fonts->h + 2;
 
-    // new
-    bh = user_bh ? user_bh : drw->fonts->h + 2;
+  // new
+  bh = user_bh ? user_bh : drw->fonts->h + 2;
 
-    // config.h
-    static const int user_bh = 28;
-    ```
+  // config.h
+  static const int user_bh = 28;
+  ```
 
 Those are all of my patches. I tried to make it as minimal as possible but keeping the look and feel that I like. If you don't know how to apply a patch, here's an example.
 
@@ -158,13 +158,13 @@ Out of the box, it's very usable already. But, it looks ugly to me. I want to ad
 
 As I said, I only use 1 patch for dmenu and that patch is...
 
--   [**Lineheight**](https://tools.suckless.org/dmenu/patches/line-height/).
+- [**Lineheight**](https://tools.suckless.org/dmenu/patches/line-height/).
 
-    It gives dmenu the ability to set the line-height by changing the `line-height` variable. I set it to 28 and my font size is 11.
+  It gives dmenu the ability to set the line-height by changing the `line-height` variable. I set it to 28 and my font size is 11.
 
-    ```c
-    static unsigned int lineheight = 28;
-    ```
+  ```c
+  static unsigned int lineheight = 28;
+  ```
 
 # Terminal
 
@@ -194,37 +194,37 @@ There you have it, a barebone installation of ST. To be honest, I can't use ST w
 
 I use quite a lot of patches for ST. Mainly for the appearance. Here's my list of patches.
 
--   [**Boxdraw**](https://st.suckless.org/patches/boxdraw)
+- [**Boxdraw**](https://st.suckless.org/patches/boxdraw)
 
-    This patch allows a line to be drawn gapless. I use this so that lines like tmux borders, fzf pop-up border, stuff like gotop, ytop, etc. This patch makes them look _way_ better.
+  This patch allows a line to be drawn gapless. I use this so that lines like tmux borders, fzf pop-up border, stuff like gotop, ytop, etc. This patch makes them look _way_ better.
 
--   [**Bold is not bright**](https://st.suckless.org/patches/bold-is-not-bright/)
+- [**Bold is not bright**](https://st.suckless.org/patches/bold-is-not-bright/)
 
-    This patch makes bold font the same colour as the regular font. I hate it when bold letters have a different colour than the regular ones.
+  This patch makes bold font the same colour as the regular font. I hate it when bold letters have a different colour than the regular ones.
 
--   [**Clipboard**](https://st.suckless.org/patches/clipboard)
+- [**Clipboard**](https://st.suckless.org/patches/clipboard)
 
-    This patch makes ST use the same clipboard that the browser uses. I don't like the default ST behaviour.
+  This patch makes ST use the same clipboard that the browser uses. I don't like the default ST behaviour.
 
--   [**Scrollback**](https://st.suckless.org/patches/scrollback/)
+- [**Scrollback**](https://st.suckless.org/patches/scrollback/)
 
-    This patch enables scrolling on **ST** like most terminal out there. I can't use ST without this feature because I don't use **tmux** that often.
+  This patch enables scrolling on **ST** like most terminal out there. I can't use ST without this feature because I don't use **tmux** that often.
 
--   [**Font2**](https://st.suckless.org/patches/font2/)
+- [**Font2**](https://st.suckless.org/patches/font2/)
 
-    This patch makes ST be able to set a fallback font. For example, I use Iosevka which doesn't support CJK characters so I use Noto Sans CJK for the fallback to be able to render them properly.
+  This patch makes ST be able to set a fallback font. For example, I use Iosevka which doesn't support CJK characters so I use Noto Sans CJK for the fallback to be able to render them properly.
 
--   [**Ligatures**](https://st.suckless.org/patches/ligatures/)
+- [**Ligatures**](https://st.suckless.org/patches/ligatures/)
 
-    This is my favorite patch out of all of them. I can enjoy those sweet ligatures on ST rather than having to change to Kitty. It's a bit buggy though if you scroll up the prompt will follow you. It doesn't bother that much so I ignore that.
+  This is my favorite patch out of all of them. I can enjoy those sweet ligatures on ST rather than having to change to Kitty. It's a bit buggy though if you scroll up the prompt will follow you. It doesn't bother that much so I ignore that.
 
--   [**Xresources**](https://st.suckless.org/patches/xresources/)
+- [**Xresources**](https://st.suckless.org/patches/xresources/)
 
-    This patch makes ST apply colours from `.xresources`. I like this approach rather than changing its `config.h` to change the colour scheme.
+  This patch makes ST apply colours from `.xresources`. I like this approach rather than changing its `config.h` to change the colour scheme.
 
--   **Palenight Colour Scheme**
+- **Palenight Colour Scheme**
 
-    I change the default colour scheme on my build to Palenight. It's such a great colour scheme and I love it.
+  I change the default colour scheme on my build to Palenight. It's such a great colour scheme and I love it.
 
 # Tips
 

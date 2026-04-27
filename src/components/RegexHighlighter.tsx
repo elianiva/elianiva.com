@@ -51,7 +51,7 @@ export function RegexHighlighter({ patterns, text }: RegexHighlighterProps) {
                   <span key={segIdx} className="text-pink-950/80">
                     {seg.text}
                   </span>
-                )
+                ),
               )}
             </div>
           );

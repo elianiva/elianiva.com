@@ -24,7 +24,9 @@ export function OpenSourceSection() {
       <p data-anime className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
         Here are some of my merged pull requests across various open source projects.
         {totalPRs > 0 && (
-          <span className="ml-1">({totalPRs} PRs across {repos.length} repositories)</span>
+          <span className="ml-1">
+            ({totalPRs} PRs across {repos.length} repositories)
+          </span>
         )}
       </p>
 

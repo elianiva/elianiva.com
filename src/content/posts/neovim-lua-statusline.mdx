@@ -3,7 +3,7 @@ title: How I made my Neovim statusline in Lua
 date: 2020-11-29
 description: A post where I explain how I made my custom statusline in Lua
 tags:
-    - neovim
+  - neovim
 ---
 
 import Update from "~/components/Update.astro";
@@ -32,13 +32,13 @@ that is it can now use Lua for its config. Quite a while ago I wrote [this post]
 
 If you want to follow along, then these are the prerequisite.
 
--   Neovim 0.5 (we need this version for lua support)
--   [gitsigns.nvim][gitsigns-link]
--   [nerdfont][nerdfont-link]
--   [nvim-web-devicons][nvim-web-devicons]
--   Terminal that supports true colour (I use [Alacritty][alacritty-link])
--   Patience
--   Googling skills in case something doesn't work correctly :p
+- Neovim 0.5 (we need this version for lua support)
+- [gitsigns.nvim][gitsigns-link]
+- [nerdfont][nerdfont-link]
+- [nvim-web-devicons][nvim-web-devicons]
+- Terminal that supports true colour (I use [Alacritty][alacritty-link])
+- Patience
+- Googling skills in case something doesn't work correctly :p
 
 # Creating The Statusline
 
@@ -223,9 +223,9 @@ Depending on the current window width, it will return different output. For exam
 Thanks to @Evgeni for pointing me out, I moved the `mode` table outside of the function because previously I was putting it inside a function which will get created every time the function is executed.
 
 <br />
-Also, since I moved from `vim.fn.mode` to `vim.api.nvim_get_mode().mode`, there are *a lot* of missing keys on my `mode`
-table; Hence a metatable is used so it will give me an `Unknown` mode instead of throwing an error when there's no matching
-key on the table. (Also thanks @Evgeni :)
+Also, since I moved from `vim.fn.mode` to `vim.api.nvim_get_mode().mode`, there are *a lot* of
+missing keys on my `mode` table; Hence a metatable is used so it will give me an `Unknown` mode
+instead of throwing an error when there's no matching key on the table. (Also thanks @Evgeni :)
 
 </Update>
 

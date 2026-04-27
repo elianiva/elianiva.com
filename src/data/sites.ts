@@ -1,9 +1,7 @@
 export default {
   author: "elianiva",
   siteName: "elianiva's home row",
-  siteUrl: import.meta.env.DEV
-    ? "http://localhost:3000"
-    : "https://elianiva.com",
+  siteUrl: import.meta.env.DEV ? "http://localhost:3000" : "https://elianiva.com",
   github: "https://github.com/elianiva",
   bluesky: "https://bsky.app/profile/elianiva.com",
   twitter: "https://x.com/elianiva_",

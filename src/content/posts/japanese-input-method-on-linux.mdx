@@ -3,8 +3,8 @@ title: Setting up Japanese input method on Linux
 date: 2020-06-05
 description: Installing fcitx and mozc for Japanese input method so you can type 日本語 on Linux
 tags:
-    - linux
-    - japanese
+  - linux
+  - japanese
 ---
 
 import Update from "~/components/Update.astro";
@@ -46,25 +46,25 @@ After installing it, we need to set some variables for it to work.
 To set our input method to `fcitx`, we need to change our environment variable.
 I set it on `~/.profile`, but you can set it on `~/.xprofile`, `~/.pam_environment`, `~/.xinitrc` or anything that gets sourced on login. You ned to set these variables
 
--   `~/.pam_environment`
+- `~/.pam_environment`
 
-    ```bash
-    GTK_IM_MODULE DEFAULT=fcitx
-    QT_IM_MODULE  DEFAULT=fcitx
-    XMODIFIERS    DEFAULT=\@im=fcitx
-    SDL_IM_MODULE DEFAULT=fcitx
-    IBUS_USE_PORTAL=1
-    ```
+  ```bash
+  GTK_IM_MODULE DEFAULT=fcitx
+  QT_IM_MODULE  DEFAULT=fcitx
+  XMODIFIERS    DEFAULT=\@im=fcitx
+  SDL_IM_MODULE DEFAULT=fcitx
+  IBUS_USE_PORTAL=1
+  ```
 
--   `~/.profile` or anything that uses shell syntax
-    ```bash
-    export GLFW_IM_MODULE="ibus"
-    export GTK_IM_MODULE="fcitx"
-    export QT_IM_MODULE="fcitx"
-    export XMODIFIERS="@im=fcitx"
-    export SDL_IM_MODULE="fcitx"
-    export IBUS_USE_PORTAL=1
-    ```
+- `~/.profile` or anything that uses shell syntax
+  ```bash
+  export GLFW_IM_MODULE="ibus"
+  export GTK_IM_MODULE="fcitx"
+  export QT_IM_MODULE="fcitx"
+  export XMODIFIERS="@im=fcitx"
+  export SDL_IM_MODULE="fcitx"
+  export IBUS_USE_PORTAL=1
+  ```
 
 # Mozc
 

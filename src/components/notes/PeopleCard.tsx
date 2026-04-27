@@ -7,9 +7,7 @@ interface PeopleCardProps {
 
 export function PeopleCard({ note }: PeopleCardProps) {
   const initial = note.title.charAt(0).toUpperCase();
-  const displayTags = note.tags
-    .filter((t) => t !== "public" && t !== "person")
-    .slice(0, 3);
+  const displayTags = note.tags.filter((t) => t !== "public" && t !== "person").slice(0, 3);
 
   return (
     <article style={{ viewTransitionName: `note-card-${note.slug}` }}>

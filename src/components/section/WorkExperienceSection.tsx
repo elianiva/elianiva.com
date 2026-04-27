@@ -5,9 +5,7 @@ interface WorkExperienceSectionProps {
   workExperiences: WorkExperience[];
 }
 
-export function WorkExperienceSection({
-  workExperiences,
-}: WorkExperienceSectionProps) {
+export function WorkExperienceSection({ workExperiences }: WorkExperienceSectionProps) {
   return (
     <section className="py-4 md:py-8 px-2 md:px-8">
       <h2
@@ -20,10 +18,7 @@ export function WorkExperienceSection({
       <div className="relative flex flex-col gap-2">
         {workExperiences.map((experience, index) => (
           <div key={experience.company} data-anime>
-            <WorkExperienceCard
-              {...experience}
-              defaultOpen={index === 0}
-            />
+            <WorkExperienceCard {...experience} defaultOpen={index === 0} />
           </div>
         ))}
       </div>

@@ -15,9 +15,7 @@ export function Backlinks({ notes, currentSlug }: BacklinksProps) {
 
   return (
     <aside className="mt-12 pt-8 border-t border-dashed border-pink-200">
-      <h2 className="font-display text-lg font-semibold text-pink-950 mb-4">
-        Linked from
-      </h2>
+      <h2 className="font-display text-lg font-semibold text-pink-950 mb-4">Linked from</h2>
       <ul className="space-y-3">
         {backlinkNotes.map((backlink) => (
           <li key={backlink.slug}>
@@ -29,9 +27,7 @@ export function Backlinks({ notes, currentSlug }: BacklinksProps) {
                 {backlink.title}
               </span>
               {backlink.description && (
-                <p className="text-sm text-pink-950/50 mt-1 line-clamp-2">
-                  {backlink.description}
-                </p>
+                <p className="text-sm text-pink-950/50 mt-1 line-clamp-2">{backlink.description}</p>
               )}
             </a>
           </li>

@@ -14,9 +14,7 @@ export function ScrollReveal({ children, delay = 0 }: ScrollRevealProps) {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return;
 
     const els = wrapper.querySelectorAll<HTMLElement>("[data-anime]");
@@ -38,7 +36,7 @@ export function ScrollReveal({ children, delay = 0 }: ScrollRevealProps) {
           observer.disconnect();
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
 
     observer.observe(wrapper);

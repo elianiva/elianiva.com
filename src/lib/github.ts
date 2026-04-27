@@ -130,46 +130,45 @@ export function formatChanges(additions: number, deletions: number): string {
   return String(total);
 }
 
-export const getGitHubPRs = createServerFn({ method: "GET" })
-  .handler(async () => {
-    const username = "elianiva";
-    const minStars = 10;
+export const getGitHubPRs = createServerFn({ method: "GET" }).handler(async () => {
+  const username = "elianiva";
+  const minStars = 10;
 
-    if (process.env.NODE_ENV === "development") {
-      try {
-        const fs = await import("node:fs/promises");
-        const cachePath = ".cache/github-prs.json";
-        const cached = await fs.readFile(cachePath, "utf-8").catch(() => null);
-        if (cached) {
-          const data = JSON.parse(cached);
-          const age = Date.now() - data.cachedAt;
-          if (age < 60 * 60 * 1000) {
-            return {
-              grouped: data.grouped as GroupedPRs,
-              totalPRs: data.totalPRs as number,
-            };
-          }
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const fs = await import("node:fs/promises");
+      const cachePath = ".cache/github-prs.json";
+      const cached = await fs.readFile(cachePath, "utf-8").catch(() => null);
+      if (cached) {
+        const data = JSON.parse(cached);
+        const age = Date.now() - data.cachedAt;
+        if (age < 60 * 60 * 1000) {
+          return {
+            grouped: data.grouped as GroupedPRs,
+            totalPRs: data.totalPRs as number,
+          };
         }
-      } catch {
-        // ignore cache errors
       }
+    } catch {
+      // ignore cache errors
     }
+  }
 
-    const prs = await fetchAllPRs(username, minStars);
-    const grouped = groupPRs(prs);
+  const prs = await fetchAllPRs(username, minStars);
+  const grouped = groupPRs(prs);
 
-    if (process.env.NODE_ENV === "development") {
-      try {
-        const fs = await import("node:fs/promises");
-        await fs.mkdir(".cache", { recursive: true });
-        await fs.writeFile(
-          ".cache/github-prs.json",
-          JSON.stringify({ grouped, totalPRs: prs.length, cachedAt: Date.now() }, null, 2)
-        );
-      } catch {
-        // ignore cache write errors
-      }
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const fs = await import("node:fs/promises");
+      await fs.mkdir(".cache", { recursive: true });
+      await fs.writeFile(
+        ".cache/github-prs.json",
+        JSON.stringify({ grouped, totalPRs: prs.length, cachedAt: Date.now() }, null, 2),
+      );
+    } catch {
+      // ignore cache write errors
     }
+  }
 
-    return { grouped, totalPRs: prs.length };
-  });
+  return { grouped, totalPRs: prs.length };
+});

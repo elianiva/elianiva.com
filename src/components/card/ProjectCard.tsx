@@ -52,9 +52,7 @@ export function ProjectCard({
         >
           {title}
         </Link>
-        <p className="font-body text-sm text-pink-950/70 pt-1 pb-3">
-          {description}
-        </p>
+        <p className="font-body text-sm text-pink-950/70 pt-1 pb-3">{description}</p>
         <div className="flex flex-wrap items-end gap-1 font-mono uppercase">
           {stack.map((item) => {
             const [name, url] = item;

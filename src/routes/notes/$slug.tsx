@@ -42,15 +42,29 @@ function NoteNotFoundPage() {
     <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
       <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / notes</p>
-        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">This note faded out of the vault.</h1>
-        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">The note you asked for is missing or private. Try another path back into the garden.</p>
+        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
+          This note faded out of the vault.
+        </h1>
+        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">
+          The note you asked for is missing or private. Try another path back into the garden.
+        </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link to="/" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Home</Link>
-          <Link to="/notes" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Notes index</Link>
+          <Link
+            to="/"
+            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
+          >
+            Home
+          </Link>
+          <Link
+            to="/notes"
+            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
+          >
+            Notes index
+          </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function NoteDetailPage() {
@@ -84,7 +98,9 @@ function NoteDetailPage() {
         <article className="pt-6" style={{ viewTransitionName: `note-card-${note.slug}` }}>
           {/* Breadcrumb */}
           <nav className="text-sm text-pink-950/50 mb-6">
-            <Link to="/notes" className="hover:text-pink-700 transition-colors">Notes</Link>
+            <Link to="/notes" className="hover:text-pink-700 transition-colors">
+              Notes
+            </Link>
             <span className="mx-2">/</span>
             <span>{categoryLabels[note.category] || note.category}</span>
           </nav>
@@ -100,9 +116,7 @@ function NoteDetailPage() {
                 {categoryLabels[note.category] || note.category}
               </span>
               <span>Created {createdDate}</span>
-              {hasModifiedDate && modifiedDate && (
-                <span>· Modified {modifiedDate}</span>
-              )}
+              {hasModifiedDate && modifiedDate && <span>· Modified {modifiedDate}</span>}
             </div>
 
             {displayTags.length > 0 && (
@@ -122,10 +136,7 @@ function NoteDetailPage() {
           {/* Content */}
           <div className="prose prose-pink max-w-none">
             <ReactMarkdown
-              remarkPlugins={[
-                remarkGfm,
-                [wikiLinkPlugin, { aliasDivider: "|" }],
-              ]}
+              remarkPlugins={[remarkGfm, [wikiLinkPlugin, { aliasDivider: "|" }]]}
               components={{
                 a: ({ href, children }) => {
                   if (href?.startsWith("/notes/")) {

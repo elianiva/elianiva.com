@@ -12,9 +12,7 @@ export function VaultCard({ note }: VaultCardProps) {
     day: "numeric",
   });
 
-  const displayTags = note.tags
-    .filter((t) => t !== "public" && t !== "vault")
-    .slice(0, 4);
+  const displayTags = note.tags.filter((t) => t !== "public" && t !== "vault").slice(0, 4);
   const extraTags = note.tags.filter((t) => t !== "public" && t !== "vault").length - 4;
 
   return (
@@ -25,9 +23,7 @@ export function VaultCard({ note }: VaultCardProps) {
         style={{ clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%)" }}
       >
         {/* folded corner */}
-        <div
-          className="absolute top-0 right-0 w-0 h-0 border-l-[16px] border-b-[16px] border-l-sky-200 border-b-transparent hover:border-l-sky-300 transition-colors"
-        ></div>
+        <div className="absolute top-0 right-0 w-0 h-0 border-l-[16px] border-b-[16px] border-l-sky-200 border-b-transparent hover:border-l-sky-300 transition-colors"></div>
 
         <h3 className="font-display text-base font-semibold text-pink-950 hover:text-sky-700 transition-colors leading-snug pr-3">
           {note.title}
@@ -42,9 +38,7 @@ export function VaultCard({ note }: VaultCardProps) {
               #{tag}
             </span>
           ))}
-          {extraTags > 0 && (
-            <span className="text-xs text-pink-950/40">+{extraTags}</span>
-          )}
+          {extraTags > 0 && <span className="text-xs text-pink-950/40">+{extraTags}</span>}
         </div>
 
         <div className="mt-3 text-xs text-pink-950/40">

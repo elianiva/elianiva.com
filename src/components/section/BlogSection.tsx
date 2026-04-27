@@ -16,12 +16,9 @@ export function BlogSection({ posts }: BlogSectionProps) {
       >
         Blog
       </h2>
-      <p
-        data-anime
-        className="text-sm md:text-base font-body text-pink-950/70 pt-2 pb-4"
-      >
-        Even though I don't write often, I try to share my thoughts and
-        experiences from time to time. Hope you find them useful!
+      <p data-anime className="text-sm md:text-base font-body text-pink-950/70 pt-2 pb-4">
+        Even though I don't write often, I try to share my thoughts and experiences from time to
+        time. Hope you find them useful!
       </p>
       <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4">
         {posts.slice(0, 6).map((post) => (
@@ -37,11 +34,7 @@ export function BlogSection({ posts }: BlogSectionProps) {
         ))}
       </div>
       <div data-anime>
-        <ViewAllButton
-          href="/posts"
-          label="View all posts"
-          ariaLabel="View all blog posts"
-        />
+        <ViewAllButton href="/posts" label="View all posts" ariaLabel="View all blog posts" />
       </div>
     </section>
   );

@@ -46,7 +46,7 @@ export function Quiz({ question, options, correctResponse, errorResponse }: Quiz
     setIsShaking(false);
   };
 
-  const isCorrect = selected ? options.find((o) => o.id === selected)?.isCorrect ?? false : false;
+  const isCorrect = selected ? (options.find((o) => o.id === selected)?.isCorrect ?? false) : false;
   const response = isCorrect ? correctResponse : errorResponse;
 
   return (

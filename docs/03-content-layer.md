@@ -1,9 +1,11 @@
 ## 03 - Content Layer with content-collections
 
 ### Goal
+
 Use @content-collections/core + @content-collections/vite + @content-collections/mdx as the content layer, replacing Astro's content collections.
 
 ### Research Findings
+
 - content-collections is officially supported by TanStack Start (v1.121.0+)
 - Uses @content-collections/vite adapter (NOT the vinxi adapter)
 - Processes markdown/MDX at build time
@@ -13,6 +15,7 @@ Use @content-collections/core + @content-collections/vite + @content-collections
 - Supports remarkPlugins and rehypePlugins in compileMDX options
 
 ### Dependencies
+
 - @content-collections/core
 - @content-collections/vite
 - @content-collections/mdx
@@ -21,13 +24,14 @@ Use @content-collections/core + @content-collections/vite + @content-collections
 ### Configuration
 
 **vite.config.ts:**
+
 ```ts
 import contentCollections from "@content-collections/vite";
 import { defineConfig } from "vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { cloudflare } from '@cloudflare/vite-plugin'
+import viteReact from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
 
 export default defineConfig({
   plugins: [
@@ -37,10 +41,11 @@ export default defineConfig({
     tanstackStart(),
     viteReact(),
   ],
-})
+});
 ```
 
 **tsconfig.json:**
+
 ```json
 {
   "compilerOptions": {
@@ -53,6 +58,7 @@ export default defineConfig({
 ```
 
 **content-collections.ts** (project root):
+
 ```ts
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { compileMDX } from "@content-collections/mdx";
@@ -112,6 +118,7 @@ export default defineConfig({
 ```
 
 ### Usage in Routes
+
 ```ts
 import { allPosts, allProjects } from "content-collections";
 import { MDXContent } from "@content-collections/mdx/react";
@@ -122,11 +129,14 @@ return <MDXContent code={post.mdx} components={{ Update, Greentext, Quiz }} />;
 ```
 
 ### Files to Move
-- ../elianiva.com/src/content/posts/*.mdx -> ./src/content/posts/*.mdx (all 48 posts)
-- ../elianiva.com/src/content/projects/*.mdx -> ./src/content/projects/*.mdx (all 33 projects)
+
+- ../elianiva.com/src/content/posts/_.mdx -> ./src/content/posts/_.mdx (all 48 posts)
+- ../elianiva.com/src/content/projects/_.mdx -> ./src/content/projects/_.mdx (all 33 projects)
 
 ### MDX Components
+
 Pass custom components to MDXContent:
+
 - Update -> ./src/components/Update.tsx
 - Greentext -> ./src/components/Greentext.tsx
 - Quiz -> ./src/components/Quiz.tsx
@@ -134,18 +144,21 @@ Pass custom components to MDXContent:
 - TermPopover -> ./src/components/TermPopover.tsx
 
 ### What This Replaces
+
 - Astro's getCollection("posts") -> import { allPosts } from "content-collections"
 - Astro's getCollection("projects") -> import { allProjects } from "content-collections"
 - Astro's render() -> MDXContent component with compileMDX output
 - Astro's content.config.ts -> content-collections.ts
 
 ### Notes on MDX
+
 - content-collections handles frontmatter parsing automatically
 - compileMDX compiles MDX to a renderable string
 - MDXContent renders with custom component mapping
 - remark-gfm and @flowershow/remark-wiki-link passed as remarkPlugins
 
 ### Verification
+
 - All 48 posts load via allPosts import
 - All 33 projects load via allProjects import
 - MDX content renders with custom components

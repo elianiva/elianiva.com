@@ -3,7 +3,7 @@ title: Utterances - Comment section that just works
 date: 2021-02-22
 description: I've been wanting to add a comment section to my website because why not
 tags:
-    - website
+  - website
 ---
 
 [gatsby-link]: https://www.gatsbyjs.com/
@@ -29,35 +29,35 @@ Adding **utterances** is really straightforward, you just need to go to [their w
 
 ```html
 <section>
-	<main>
-		<!-- This is the main content -->
-		<h1>Comments</h1>
-		{#if $theme === "dark"}
-		<div>
-			<script
-				src="https://utteranc.es/client.js"
-				repo="elianiva/elianiva.com"
-				issue-term="pathname"
-				label="Comments"
-				theme="dark-blue"
-				crossorigin="anonymous"
-				async
-			></script>
-		</div>
-		{:else}
-		<div>
-			<script
-				src="https://utteranc.es/client.js"
-				repo="elianiva/elianiva.com"
-				issue-term="pathname"
-				label="Comments"
-				theme="github-light"
-				crossorigin="anonymous"
-				async
-			></script>
-		</div>
-		{/if}
-	</main>
+  <main>
+    <!-- This is the main content -->
+    <h1>Comments</h1>
+    {#if $theme === "dark"}
+    <div>
+      <script
+        src="https://utteranc.es/client.js"
+        repo="elianiva/elianiva.com"
+        issue-term="pathname"
+        label="Comments"
+        theme="dark-blue"
+        crossorigin="anonymous"
+        async
+      ></script>
+    </div>
+    {:else}
+    <div>
+      <script
+        src="https://utteranc.es/client.js"
+        repo="elianiva/elianiva.com"
+        issue-term="pathname"
+        label="Comments"
+        theme="github-light"
+        crossorigin="anonymous"
+        async
+      ></script>
+    </div>
+    {/if}
+  </main>
 </section>
 ```
 

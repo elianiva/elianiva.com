@@ -9,16 +9,12 @@ interface ProjectSectionProps {
   seeMoreUrl?: string | null;
 }
 
-export function ProjectSection({
-  projects,
-  title,
-  description,
-  seeMoreUrl,
-}: ProjectSectionProps) {
-  const headingId = title
-    .toLowerCase()
-    .replace(/s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "") + "-heading";
+export function ProjectSection({ projects, title, description, seeMoreUrl }: ProjectSectionProps) {
+  const headingId =
+    title
+      .toLowerCase()
+      .replace(/s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "") + "-heading";
 
   return (
     <section className="py-4 md:py-8 px-2 md:px-8">
@@ -29,10 +25,7 @@ export function ProjectSection({
       >
         {title}
       </h2>
-      <p
-        data-anime
-        className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4"
-      >
+      <p data-anime className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
         {description}
       </p>
       <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd">

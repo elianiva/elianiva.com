@@ -23,13 +23,10 @@ export function PostList({ posts }: PostListProps) {
         keys: ["title", "slug", "tags"],
         threshold: 0.4,
       }),
-    [posts]
+    [posts],
   );
 
-  const allTags = useMemo(
-    () => Array.from(new Set(posts.flatMap((p) => p.tags))).sort(),
-    [posts]
-  );
+  const allTags = useMemo(() => Array.from(new Set(posts.flatMap((p) => p.tags))).sort(), [posts]);
 
   const suggestions = useMemo(() => {
     if (!searchQuery.startsWith("#") || searchQuery.length < 2) return [];
@@ -41,9 +38,7 @@ export function PostList({ posts }: PostListProps) {
     let result = posts;
 
     if (selectedTags.length > 0) {
-      result = result.filter((p) =>
-        selectedTags.every((t) => p.tags.includes(t))
-      );
+      result = result.filter((p) => selectedTags.every((t) => p.tags.includes(t)));
     }
 
     if (searchQuery && !searchQuery.startsWith("#")) {
@@ -53,14 +48,11 @@ export function PostList({ posts }: PostListProps) {
     return result;
   }, [posts, selectedTags, searchQuery, fuse]);
 
-  const announce = useCallback(
-    (message: string) => {
-      if (announceRef.current) {
-        announceRef.current.textContent = message;
-      }
-    },
-    []
-  );
+  const announce = useCallback((message: string) => {
+    if (announceRef.current) {
+      announceRef.current.textContent = message;
+    }
+  }, []);
 
   useEffect(() => {
     announce(`${filteredPosts.length} post${filteredPosts.length === 1 ? "" : "s"} found`);
@@ -79,22 +71,17 @@ export function PostList({ posts }: PostListProps) {
     inputRef.current?.focus();
   }, []);
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value);
-      setActiveOptionIndex(-1);
-      setShowSuggestions(e.target.value.startsWith("#") && e.target.value.length > 1);
-    },
-    []
-  );
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setActiveOptionIndex(-1);
+    setShowSuggestions(e.target.value.startsWith("#") && e.target.value.length > 1);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setActiveOptionIndex((i) =>
-          Math.min(i + 1, suggestions.length - 1)
-        );
+        setActiveOptionIndex((i) => Math.min(i + 1, suggestions.length - 1));
         setShowSuggestions(true);
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -109,18 +96,13 @@ export function PostList({ posts }: PostListProps) {
         setActiveOptionIndex(-1);
       }
     },
-    [suggestions, activeOptionIndex, addTag]
+    [suggestions, activeOptionIndex, addTag],
   );
 
   return (
     <div className="space-y-4">
       {/* Screen reader announcement */}
-      <div
-        ref={announceRef}
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
-      />
+      <div ref={announceRef} aria-live="polite" aria-atomic="true" className="sr-only" />
 
       {/* Search input */}
       <div className="relative">
@@ -130,11 +112,7 @@ export function PostList({ posts }: PostListProps) {
           value={searchQuery}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() =>
-            setShowSuggestions(
-              searchQuery.startsWith("#") && searchQuery.length > 1
-            )
-          }
+          onFocus={() => setShowSuggestions(searchQuery.startsWith("#") && searchQuery.length > 1)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
           placeholder="Search posts... (use # for tags)"
           role="combobox"
