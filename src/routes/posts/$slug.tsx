@@ -1,6 +1,5 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { allPosts } from "content-collections";
-import { MDXContent } from "@content-collections/mdx/react";
 import { BackButton } from "~/components/BackButton";
 import { CodeCopy } from "~/components/CodeCopy";
 import { Update } from "~/components/Update";
@@ -43,14 +42,6 @@ export const Route = createFileRoute("/posts/$slug")({
   }),
   notFoundComponent: PostNotFoundPage,
 });
-
-const mdxComponents = {
-  Update,
-  Greentext,
-  Quiz,
-  RegexHighlighter,
-  TermPopover,
-};
 
 function PostNotFoundPage() {
   return (
@@ -149,7 +140,7 @@ function PostDetailPage() {
           {/* Post content */}
           <div className="font-body mx-auto max-w-[64ch] prose prose-pink">
             <CodeCopy />
-            <MDXContent code={post.mdx} components={mdxComponents} />
+            <post.mdx />
 
             {/* Giscus comments */}
             <div>

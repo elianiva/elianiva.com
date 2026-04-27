@@ -6,7 +6,7 @@ tags:
   - cli
 ---
 
-import TermPopover from "~/components/TermPopover.svelte";
+import { TermPopover } from "~/components/TermPopover.tsx";
 
 export const revisionDef =
   "A revision is Jujutsu's equivalent of a commit, but unlike Git commits, they remain mutable until pushed to a remote.";
@@ -104,9 +104,9 @@ Imagine this, you're working on a separate branch, you're 12 commits ahead, it d
 
 After the rebase process exploded, you try to fix the issue by using `git reflog`, which is a chronological dump of every Git's internal state transition that has happened. Here's an example on how it looks:
 
-import RegexHighlighter from "~/components/RegexHighlighter.svelte";
+import { RegexHighlighter } from "~/components/RegexHighlighter.tsx";
 
-import Quiz from "~/components/Quiz.svelte";
+import { Quiz } from "~/components/Quiz.tsx";
 
 <RegexHighlighter
   patterns={[

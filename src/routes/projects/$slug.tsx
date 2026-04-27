@@ -1,6 +1,5 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { allProjects } from "content-collections";
-import { MDXContent } from "@content-collections/mdx/react";
 import { BackButton } from "~/components/BackButton";
 import { SEO } from "~/components/SEO";
 import sites from "~/data/sites";
@@ -122,7 +121,7 @@ function ProjectDetailPage() {
                 </div>
               </div>
               <div className="prose prose-pink max-w-full pt-4">
-                <MDXContent code={project.mdx} />
+                <project.mdx />
               </div>
             </div>
           </div>

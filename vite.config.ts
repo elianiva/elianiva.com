@@ -7,12 +7,43 @@ import tailwindcss from "@tailwindcss/vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import glsl from "vite-plugin-glsl";
 import Icons from "unplugin-icons/vite";
+import mdx from "@mdx-js/rollup";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import rehypePrettyCode from "rehype-pretty-code";
+import type { Options as PrettyCodeOptions } from "rehype-pretty-code";
+
+const prettyCodeOptions: PrettyCodeOptions = {
+  theme: "rose-pine-dawn",
+  onVisitLine(node) {
+    if (node.children.length === 0) {
+      node.children = [{ type: "text", value: " " }];
+    }
+  },
+  onVisitHighlightedLine(node) {
+    node.properties.className ??= [];
+    node.properties.className.push("line--highlighted");
+  },
+  onVisitHighlightedChars(node) {
+    node.properties.className ??= [];
+    node.properties.className.push("word--highlighted");
+  },
+};
 
 const config = defineConfig({
-  resolve: { tsconfigPaths: true },
+  resolve: {
+    tsconfigPaths: true,
+  },
   plugins: [
+    {
+      enforce: "pre",
+      ...mdx({
+        remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
+        rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+      }),
+    },
     devtools(),
-    contentCollections(),
+    contentCollections({ environment: "ssr" }),
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
     tanstackStart({
@@ -29,7 +60,7 @@ const config = defineConfig({
         },
       },
     }),
-    viteReact(),
+    viteReact({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),
     glsl(),
     Icons({ compiler: "jsx", jsx: "react" }),
   ],
