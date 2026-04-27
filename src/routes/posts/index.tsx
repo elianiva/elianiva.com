@@ -3,7 +3,7 @@ import { allPosts } from "content-collections";
 import { PostList } from "#/components/PostList";
 import { BackButton } from "#/components/BackButton";
 
-export const Route = createFileRoute("/posts")({
+export const Route = createFileRoute("/posts/")({
   component: PostsPage,
   loader: async () => {
     const posts = allPosts

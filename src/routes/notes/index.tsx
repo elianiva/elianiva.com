@@ -8,7 +8,7 @@ import { useState, useMemo } from "react";
 import GraphIcon from "~icons/ph/graph";
 import type { Note } from "#/types/notes";
 
-export const Route = createFileRoute("/notes")({
+export const Route = createFileRoute("/notes/")({
   component: NotesPage,
   loader: async () => {
     const [notes, graph] = await Promise.all([

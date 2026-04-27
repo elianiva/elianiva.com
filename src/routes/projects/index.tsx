@@ -3,7 +3,7 @@ import { allProjects } from "content-collections";
 import { BackButton } from "#/components/BackButton";
 import { ProjectSection } from "#/components/section/ProjectSection";
 
-export const Route = createFileRoute("/projects")({
+export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
   loader: async () => {
     const personalProjects = allProjects

@@ -9,50 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProjectsRouteImport } from './routes/projects'
-import { Route as PostsRouteImport } from './routes/posts'
-import { Route as NotesRouteImport } from './routes/notes'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
-import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
-import { Route as NotesSlugRouteImport } from './routes/notes.$slug'
+import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
+import { Route as PostsIndexRouteImport } from './routes/posts/index'
+import { Route as NotesIndexRouteImport } from './routes/notes/index'
+import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
+import { Route as PostsSlugRouteImport } from './routes/posts/$slug'
+import { Route as NotesSlugRouteImport } from './routes/notes/$slug'
 import { Route as ApiOgImageRouteImport } from './routes/api.og-image'
 import { Route as ApiGraphJsonRouteImport } from './routes/api.graph-json'
 
-const ProjectsRoute = ProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PostsRoute = PostsRouteImport.update({
-  id: '/posts',
-  path: '/posts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotesRoute = NotesRouteImport.update({
-  id: '/notes',
-  path: '/notes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostsIndexRoute = PostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesIndexRoute = NotesIndexRouteImport.update({
+  id: '/notes/',
+  path: '/notes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ProjectsRoute,
+  id: '/projects/$slug',
+  path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PostsSlugRoute = PostsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => PostsRoute,
+  id: '/posts/$slug',
+  path: '/posts/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const NotesSlugRoute = NotesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => NotesRoute,
+  id: '/notes/$slug',
+  path: '/notes/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiOgImageRoute = ApiOgImageRouteImport.update({
   id: '/api/og-image',
@@ -67,106 +67,88 @@ const ApiGraphJsonRoute = ApiGraphJsonRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/notes': typeof NotesRouteWithChildren
-  '/posts': typeof PostsRouteWithChildren
-  '/projects': typeof ProjectsRouteWithChildren
   '/api/graph-json': typeof ApiGraphJsonRoute
   '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/notes/': typeof NotesIndexRoute
+  '/posts/': typeof PostsIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/notes': typeof NotesRouteWithChildren
-  '/posts': typeof PostsRouteWithChildren
-  '/projects': typeof ProjectsRouteWithChildren
   '/api/graph-json': typeof ApiGraphJsonRoute
   '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/notes': typeof NotesIndexRoute
+  '/posts': typeof PostsIndexRoute
+  '/projects': typeof ProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/notes': typeof NotesRouteWithChildren
-  '/posts': typeof PostsRouteWithChildren
-  '/projects': typeof ProjectsRouteWithChildren
   '/api/graph-json': typeof ApiGraphJsonRoute
   '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/notes/': typeof NotesIndexRoute
+  '/posts/': typeof PostsIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/notes'
-    | '/posts'
-    | '/projects'
     | '/api/graph-json'
     | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
+    | '/notes/'
+    | '/posts/'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/notes'
-    | '/posts'
-    | '/projects'
     | '/api/graph-json'
     | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
+    | '/notes'
+    | '/posts'
+    | '/projects'
   id:
     | '__root__'
     | '/'
-    | '/notes'
-    | '/posts'
-    | '/projects'
     | '/api/graph-json'
     | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
+    | '/notes/'
+    | '/posts/'
+    | '/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  NotesRoute: typeof NotesRouteWithChildren
-  PostsRoute: typeof PostsRouteWithChildren
-  ProjectsRoute: typeof ProjectsRouteWithChildren
   ApiGraphJsonRoute: typeof ApiGraphJsonRoute
   ApiOgImageRoute: typeof ApiOgImageRoute
+  NotesSlugRoute: typeof NotesSlugRoute
+  PostsSlugRoute: typeof PostsSlugRoute
+  ProjectsSlugRoute: typeof ProjectsSlugRoute
+  NotesIndexRoute: typeof NotesIndexRoute
+  PostsIndexRoute: typeof PostsIndexRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/projects': {
-      id: '/projects'
-      path: '/projects'
-      fullPath: '/projects'
-      preLoaderRoute: typeof ProjectsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/posts': {
-      id: '/posts'
-      path: '/posts'
-      fullPath: '/posts'
-      preLoaderRoute: typeof PostsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notes': {
-      id: '/notes'
-      path: '/notes'
-      fullPath: '/notes'
-      preLoaderRoute: typeof NotesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -174,26 +156,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/posts/': {
+      id: '/posts/'
+      path: '/posts'
+      fullPath: '/posts/'
+      preLoaderRoute: typeof PostsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes/': {
+      id: '/notes/'
+      path: '/notes'
+      fullPath: '/notes/'
+      preLoaderRoute: typeof NotesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/$slug': {
       id: '/projects/$slug'
-      path: '/$slug'
+      path: '/projects/$slug'
       fullPath: '/projects/$slug'
       preLoaderRoute: typeof ProjectsSlugRouteImport
-      parentRoute: typeof ProjectsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/posts/$slug': {
       id: '/posts/$slug'
-      path: '/$slug'
+      path: '/posts/$slug'
       fullPath: '/posts/$slug'
       preLoaderRoute: typeof PostsSlugRouteImport
-      parentRoute: typeof PostsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/notes/$slug': {
       id: '/notes/$slug'
-      path: '/$slug'
+      path: '/notes/$slug'
       fullPath: '/notes/$slug'
       preLoaderRoute: typeof NotesSlugRouteImport
-      parentRoute: typeof NotesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/og-image': {
       id: '/api/og-image'
@@ -212,45 +215,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface NotesRouteChildren {
-  NotesSlugRoute: typeof NotesSlugRoute
-}
-
-const NotesRouteChildren: NotesRouteChildren = {
-  NotesSlugRoute: NotesSlugRoute,
-}
-
-const NotesRouteWithChildren = NotesRoute._addFileChildren(NotesRouteChildren)
-
-interface PostsRouteChildren {
-  PostsSlugRoute: typeof PostsSlugRoute
-}
-
-const PostsRouteChildren: PostsRouteChildren = {
-  PostsSlugRoute: PostsSlugRoute,
-}
-
-const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
-
-interface ProjectsRouteChildren {
-  ProjectsSlugRoute: typeof ProjectsSlugRoute
-}
-
-const ProjectsRouteChildren: ProjectsRouteChildren = {
-  ProjectsSlugRoute: ProjectsSlugRoute,
-}
-
-const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
-  ProjectsRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  NotesRoute: NotesRouteWithChildren,
-  PostsRoute: PostsRouteWithChildren,
-  ProjectsRoute: ProjectsRouteWithChildren,
   ApiGraphJsonRoute: ApiGraphJsonRoute,
   ApiOgImageRoute: ApiOgImageRoute,
+  NotesSlugRoute: NotesSlugRoute,
+  PostsSlugRoute: PostsSlugRoute,
+  ProjectsSlugRoute: ProjectsSlugRoute,
+  NotesIndexRoute: NotesIndexRoute,
+  PostsIndexRoute: PostsIndexRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
