@@ -38,8 +38,12 @@ export const Route = createFileRoute("/posts/$slug")({
   head: ({ loaderData }) => ({
     meta: [
       { title: `${loaderData?.post.title ?? "Post"} | ${sites.siteName}` },
+      { name: "description", content: loaderData?.post.description ?? sites.description },
+      { property: "og:title", content: loaderData?.post.title ?? "Post" },
+      { property: "og:description", content: loaderData?.post.description ?? sites.description },
     ],
   }),
+  notFoundComponent: PostNotFoundPage,
 });
 
 const mdxComponents = {
@@ -49,6 +53,22 @@ const mdxComponents = {
   RegexHighlighter,
   TermPopover,
 };
+
+function PostNotFoundPage() {
+  return (
+    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / posts</p>
+        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">This post shelf is empty here.</h1>
+        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">The post you asked for does not exist. Maybe it drifted out of the archive.</p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Home</Link>
+          <Link to="/posts" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Posts index</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function PostDetailPage() {
   const { post, prevPost, nextPost, wordCount, readingTime } = Route.useLoaderData();

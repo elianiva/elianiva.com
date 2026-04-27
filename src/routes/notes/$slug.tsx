@@ -20,8 +20,12 @@ export const Route = createFileRoute("/notes/$slug")({
   head: ({ loaderData }) => ({
     meta: [
       { title: `${loaderData?.note.title ?? "Note"} | elianiva's home row` },
+      { name: "description", content: loaderData?.note.title ?? sites.description },
+      { property: "og:title", content: loaderData?.note.title ?? "Note" },
+      { property: "og:description", content: loaderData?.note.title ?? sites.description },
     ],
   }),
+  notFoundComponent: NoteNotFoundPage,
 });
 
 const categoryLabels: Record<string, string> = {
@@ -32,6 +36,22 @@ const categoryLabels: Record<string, string> = {
   articles: "Article",
   people: "Person",
 };
+
+function NoteNotFoundPage() {
+  return (
+    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / notes</p>
+        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">This note faded out of the vault.</h1>
+        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">The note you asked for is missing or private. Try another path back into the garden.</p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Home</Link>
+          <Link to="/notes" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Notes index</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function NoteDetailPage() {
   const { note, notes } = Route.useLoaderData();

@@ -28,12 +28,30 @@ export const Route = createFileRoute("/projects/$slug")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      {
-        title: `${loaderData?.project.title ?? "Project"} | elianiva's home row`,
-      },
+      { title: `${loaderData?.project.title ?? "Project"} | elianiva's home row` },
+      { name: "description", content: loaderData?.project.description ?? sites.description },
+      { property: "og:title", content: loaderData?.project.title ?? "Project" },
+      { property: "og:description", content: loaderData?.project.description ?? sites.description },
     ],
   }),
+  notFoundComponent: ProjectNotFoundPage,
 });
+
+function ProjectNotFoundPage() {
+  return (
+    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / projects</p>
+        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">This project has not materialized.</h1>
+        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">The thing you were looking for is not here. Maybe check the project list again.</p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Home</Link>
+          <Link to="/projects" className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100">Projects index</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function ProjectDetailPage() {
   const { project, prevProject, nextProject } = Route.useLoaderData();
