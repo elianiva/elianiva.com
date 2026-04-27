@@ -1,5 +1,5 @@
-import { ProjectCard } from "#/components/card/ProjectCard";
-import { ViewAllButton } from "#/components/ViewAllButton";
+import { ProjectCard } from "~/components/card/ProjectCard";
+import { ViewAllButton } from "~/components/ViewAllButton";
 import type { Project } from "content-collections";
 
 interface ProjectSectionProps {

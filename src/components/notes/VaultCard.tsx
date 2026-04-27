@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { Note } from "#/types/notes";
+import type { Note } from "~/types/notes";
 
 interface VaultCardProps {
   note: Note;

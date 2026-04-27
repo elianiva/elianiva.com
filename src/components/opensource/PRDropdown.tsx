@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { animate, type JSAnimation } from "animejs";
-import type { GitHubPullRequest } from "#/types/github-pr";
+import type { GitHubPullRequest } from "~/types/github-pr";
 import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
 import CaretDownIcon from "~icons/ph/caret-down";
 import GitPullRequestIcon from "~icons/ph/git-pull-request-duotone";

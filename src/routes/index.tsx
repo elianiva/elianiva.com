@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HeroSection } from "#/components/section/HeroSection";
-import { ScrollReveal } from "#/components/animation/ScrollReveal";
-import { BlogSection } from "#/components/section/BlogSection";
-import { WorkExperienceSection } from "#/components/section/WorkExperienceSection";
-import { OpenSourceSection } from "#/components/section/OpenSourceSection";
-import { PersonalProjectsSection } from "#/components/section/PersonalProjectsSection";
-import { workExperiences } from "#/data/work-experience";
+import { HeroSection } from "~/components/section/HeroSection";
+import { ScrollReveal } from "~/components/animation/ScrollReveal";
+import { BlogSection } from "~/components/section/BlogSection";
+import { WorkExperienceSection } from "~/components/section/WorkExperienceSection";
+import { OpenSourceSection } from "~/components/section/OpenSourceSection";
+import { PersonalProjectsSection } from "~/components/section/PersonalProjectsSection";
+import { workExperiences } from "~/data/work-experience";
 
 export const Route = createFileRoute("/")({
   component: Home,

@@ -1,15 +1,15 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { allPosts } from "content-collections";
 import { MDXContent } from "@content-collections/mdx/react";
-import { BackButton } from "#/components/BackButton";
-import { CodeCopy } from "#/components/CodeCopy";
-import { Update } from "#/components/Update";
-import { Greentext } from "#/components/Greentext";
-import { Quiz } from "#/components/Quiz";
-import { RegexHighlighter } from "#/components/RegexHighlighter";
-import { TermPopover } from "#/components/TermPopover";
-import { SEO } from "#/components/SEO";
-import sites from "#/data/sites";
+import { BackButton } from "~/components/BackButton";
+import { CodeCopy } from "~/components/CodeCopy";
+import { Update } from "~/components/Update";
+import { Greentext } from "~/components/Greentext";
+import { Quiz } from "~/components/Quiz";
+import { RegexHighlighter } from "~/components/RegexHighlighter";
+import { TermPopover } from "~/components/TermPopover";
+import { SEO } from "~/components/SEO";
+import sites from "~/data/sites";
 import PencilIcon from "~icons/ph/note-pencil";
 
 export const Route = createFileRoute("/posts/$slug")({

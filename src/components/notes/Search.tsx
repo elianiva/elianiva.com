@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import Fuse from "fuse.js";
-import type { Note } from "#/types/notes";
+import type { Note } from "~/types/notes";
 
 interface SearchProps {
   notes: Note[];

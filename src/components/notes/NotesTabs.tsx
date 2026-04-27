@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import type { Note, NoteCategory } from "#/types/notes";
+import type { Note, NoteCategory } from "~/types/notes";
 import { ArticleCard } from "./ArticleCard";
 import { VaultCard } from "./VaultCard";
 import { MusicCard } from "./MusicCard";

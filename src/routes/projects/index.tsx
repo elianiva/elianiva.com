@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { allProjects } from "content-collections";
-import { BackButton } from "#/components/BackButton";
-import { ProjectSection } from "#/components/section/ProjectSection";
-import sites from "#/data/sites";
+import { BackButton } from "~/components/BackButton";
+import { ProjectSection } from "~/components/section/ProjectSection";
+import sites from "~/data/sites";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,

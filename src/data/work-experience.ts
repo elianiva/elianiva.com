@@ -1,4 +1,4 @@
-import type { Technology } from "#/types/technology";
+import type { Technology } from "~/types/technology";
 
 export interface WorkExperience {
   company: string;

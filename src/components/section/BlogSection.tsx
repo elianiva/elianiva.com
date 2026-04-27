@@ -1,5 +1,5 @@
-import { PostCard } from "#/components/card/PostCard";
-import { ViewAllButton } from "#/components/ViewAllButton";
+import { PostCard } from "~/components/card/PostCard";
+import { ViewAllButton } from "~/components/ViewAllButton";
 import { allPosts } from "content-collections";
 
 const posts = allPosts

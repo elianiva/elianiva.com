@@ -1,4 +1,4 @@
-import type { Education } from "#/types/education";
+import type { Education } from "~/types/education";
 
 interface EducationCardProps extends Education {}
 

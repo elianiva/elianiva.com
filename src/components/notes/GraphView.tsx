@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { NotesGraph } from "#/types/notes";
+import type { NotesGraph } from "~/types/notes";
 
 interface GraphViewProps {
   graph: NotesGraph;

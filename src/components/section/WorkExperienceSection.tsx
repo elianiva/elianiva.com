@@ -1,5 +1,5 @@
-import { WorkExperienceCard } from "#/components/card/WorkExperienceCard";
-import type { WorkExperience } from "#/data/work-experience";
+import { WorkExperienceCard } from "~/components/card/WorkExperienceCard";
+import type { WorkExperience } from "~/data/work-experience";
 
 interface WorkExperienceSectionProps {
   workExperiences: WorkExperience[];

@@ -1,5 +1,5 @@
 import { useRouterState } from "@tanstack/react-router";
-import sites from "#/data/sites";
+import sites from "~/data/sites";
 
 interface SEOProps {
   title?: string;

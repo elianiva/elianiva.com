@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { buildGraph } from "#/lib/notes";
+import { buildGraph } from "~/lib/notes";
 
 export const Route = createFileRoute("/api/graph-json")({
   server: {

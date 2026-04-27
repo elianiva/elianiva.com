@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { NotesGraph } from "#/types/notes";
+import type { NotesGraph } from "~/types/notes";
 import { GraphView } from "./GraphView";
 
 interface GraphModalProps {

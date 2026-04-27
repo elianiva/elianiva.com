@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import sites from "#/data/sites";
+import sites from "~/data/sites";
 
 export const Route = createFileRoute("/api/robots/txt")({
   server: {

@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import Fuse from "fuse.js";
-import { PostCard } from "#/components/card/PostCard";
+import { PostCard } from "~/components/card/PostCard";
 import XIcon from "~icons/ph/x";
 import type { Post } from "content-collections";
 

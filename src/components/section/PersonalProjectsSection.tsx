@@ -1,5 +1,5 @@
 import { allProjects } from "content-collections";
-import { ProjectSection } from "#/components/section/ProjectSection";
+import { ProjectSection } from "~/components/section/ProjectSection";
 
 const personalProjects = allProjects
   .filter((p) => p.type === "personal" && p.featured)

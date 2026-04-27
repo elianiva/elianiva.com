@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { allPosts, allProjects } from "content-collections";
-import sites from "#/data/sites";
+import sites from "~/data/sites";
 
 export const Route = createFileRoute("/api/rss/xml")({
   server: {

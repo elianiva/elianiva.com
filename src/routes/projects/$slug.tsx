@@ -1,9 +1,9 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { allProjects } from "content-collections";
 import { MDXContent } from "@content-collections/mdx/react";
-import { BackButton } from "#/components/BackButton";
-import { SEO } from "#/components/SEO";
-import sites from "#/data/sites";
+import { BackButton } from "~/components/BackButton";
+import { SEO } from "~/components/SEO";
+import sites from "~/data/sites";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
 

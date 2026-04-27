@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { html } from "satori-html";
 import { satori } from "@cf-wasm/satori";
 import { Resvg } from "@cf-wasm/resvg";
-import sites from "#/data/sites";
+import sites from "~/data/sites";
 
 const domainName = new URL(sites.siteUrl).hostname;
 

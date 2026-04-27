@@ -1,5 +1,5 @@
-import { HeroReveal } from "#/components/animation/HeroReveal";
-import siteData from "#/data/sites";
+import { HeroReveal } from "~/components/animation/HeroReveal";
+import siteData from "~/data/sites";
 import EnvelopeIcon from "~icons/ph/envelope-duotone";
 import GithubLogoIcon from "~icons/ph/github-logo-duotone";
 import LinkedinLogoIcon from "~icons/ph/linkedin-logo-duotone";

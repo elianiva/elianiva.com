@@ -1,4 +1,4 @@
-import type { Note } from "#/types/notes";
+import type { Note } from "~/types/notes";
 
 interface BacklinksProps {
   notes: Note[];

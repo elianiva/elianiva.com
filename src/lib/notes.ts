@@ -1,6 +1,6 @@
 import matter from "gray-matter";
 import { env } from "#/env";
-import type { Note, NoteCategory, NotesGraph } from "#/types/notes";
+import type { Note, NoteCategory, NotesGraph } from "~/types/notes";
 import { createServerFn } from "@tanstack/react-start";
 
 function extractWikiLinks(content: string): string[] {
@@ -179,7 +179,9 @@ async function loadNotesFromGithub(): Promise<Note[]> {
     });
 
     const mdFiles = treeData.tree.filter(
-      (item) => item.type === "blob" && (item.path?.endsWith(".md") || item.path?.endsWith(".mdx")),
+      (item) =>
+        item.type === "blob" &&
+        (item.path?.endsWith(".md") || item.path?.endsWith(".mdx")),
     );
 
     const notes: Note[] = [];
