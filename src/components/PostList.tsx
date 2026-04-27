@@ -1,11 +1,21 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import Fuse from "fuse.js";
 import { PostCard } from "~/components/card/PostCard";
 import XIcon from "~icons/ph/x";
 import type { Post } from "content-collections";
 
 interface PostListProps {
   posts: Post[];
+}
+
+function searchPosts(posts: Post[], query: string): Post[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return posts;
+  return posts.filter((post) => {
+    if (post.title.toLowerCase().includes(q)) return true;
+    if (post.slug.toLowerCase().includes(q)) return true;
+    if (post.tags?.some((t) => t.toLowerCase().includes(q))) return true;
+    return false;
+  });
 }
 
 export function PostList({ posts }: PostListProps) {
@@ -16,15 +26,6 @@ export function PostList({ posts }: PostListProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const listboxRef = useRef<HTMLUListElement>(null);
   const announceRef = useRef<HTMLDivElement>(null);
-
-  const fuse = useMemo(
-    () =>
-      new Fuse(posts, {
-        keys: ["title", "slug", "tags"],
-        threshold: 0.4,
-      }),
-    [posts],
-  );
 
   const allTags = useMemo(() => Array.from(new Set(posts.flatMap((p) => p.tags))).sort(), [posts]);
 
@@ -42,11 +43,11 @@ export function PostList({ posts }: PostListProps) {
     }
 
     if (searchQuery && !searchQuery.startsWith("#")) {
-      result = fuse.search(searchQuery).map((r) => r.item);
+      result = searchPosts(posts, searchQuery);
     }
 
     return result;
-  }, [posts, selectedTags, searchQuery, fuse]);
+  }, [posts, selectedTags, searchQuery]);
 
   const announce = useCallback((message: string) => {
     if (announceRef.current) {
@@ -178,13 +179,13 @@ export function PostList({ posts }: PostListProps) {
         {filteredPosts.map((post) => (
           <div key={post.slug} className="h-full">
             <PostCard
-            key={post.slug}
-            title={post.title}
-            description={post.description}
-            href={`/posts/${post.slug}`}
-            date={post.date}
-            tags={post.tags}
-          />
+              key={post.slug}
+              title={post.title}
+              description={post.description}
+              href={`/posts/${post.slug}`}
+              date={post.date}
+              tags={post.tags}
+            />
           </div>
         ))}
       </div>

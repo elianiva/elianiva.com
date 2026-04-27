@@ -38,7 +38,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "force-graph": "^1.51.4",
-    "fuse.js": "^7.3.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.577.0",
     "octokit": "^5.0.5",

@@ -1,5 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import Fuse from "fuse.js";
+import { useState, useCallback } from "react";
 import type { Note } from "~/types/notes";
 
 interface SearchProps {
@@ -16,37 +15,27 @@ const categoryLabels: Record<string, string> = {
   people: "Person",
 };
 
+function searchNotes(notes: Note[], query: string): Note[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return notes;
+  return notes.filter((note) => {
+    if (note.title.toLowerCase().includes(q)) return true;
+    if (note.description?.toLowerCase().includes(q)) return true;
+    if (note.tags?.some((t) => t.toLowerCase().includes(q))) return true;
+    return false;
+  });
+}
+
 export function Search({ notes, onSearch }: SearchProps) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Array<ReturnType<Fuse<Note>["search"]>[number]>>([]);
-  const fuseRef = useRef<Fuse<Note> | null>(null);
-
-  useEffect(() => {
-    fuseRef.current = new Fuse(notes, {
-      keys: [
-        { name: "title", weight: 2 },
-        { name: "description", weight: 1 },
-        { name: "tags", weight: 1.5 },
-      ],
-      threshold: 0.3,
-      includeScore: true,
-    });
-  }, [notes]);
+  const [results, setResults] = useState<Note[]>([]);
 
   const handleChange = useCallback(
     (value: string) => {
       setQuery(value);
-      if (value.trim() && fuseRef.current) {
-        const searchResults = fuseRef.current.search(value);
-        setResults(searchResults);
-        onSearch(
-          value,
-          searchResults.map((r) => r.item),
-        );
-      } else {
-        setResults([]);
-        onSearch("", notes);
-      }
+      const searchResults = searchNotes(notes, value);
+      setResults(searchResults);
+      onSearch(value, searchResults);
     },
     [notes, onSearch],
   );
@@ -97,21 +86,21 @@ export function Search({ notes, onSearch }: SearchProps) {
         <div className="absolute z-10 w-full mt-2 bg-white/90 backdrop-blur-sm border border-pink-200 shadow-lg max-h-96 overflow-auto">
           {results.map((result) => (
             <a
-              key={result.item.slug}
-              href={`/notes/${result.item.slug}`}
+              key={result.slug}
+              href={`/notes/${result.slug}`}
               className="block p-4 hover:bg-pink-50/50 transition-colors border-b border-pink-100 last:border-b-0"
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h4 className="font-medium text-pink-950">{result.item.title}</h4>
-                  {result.item.description && (
+                  <h4 className="font-medium text-pink-950">{result.title}</h4>
+                  {result.description && (
                     <p className="text-sm text-pink-950/60 mt-1 line-clamp-2">
-                      {result.item.description}
+                      {result.description}
                     </p>
                   )}
                 </div>
                 <span className="text-xs px-2 py-1 bg-pink-100/50 text-pink-900 shrink-0">
-                  {categoryLabels[result.item.category] || result.item.category}
+                  {categoryLabels[result.category] || result.category}
                 </span>
               </div>
             </a>
