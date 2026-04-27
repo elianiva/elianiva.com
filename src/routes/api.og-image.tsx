@@ -55,9 +55,10 @@ export const Route = createFileRoute('/api/og-image')({
           .map((tag) => tag.trim())
         const decodedDescription = decodeURIComponent(description)
 
-        // Load Chonburi font for that soft, fun aesthetic
-        const fontUrl = new URL('/assets/fonts/Chonburi.ttf', sites.siteUrl).toString()
-        const chonburiFont = await (await fetch(fontUrl)).arrayBuffer()
+        // Load Chonburi font from @fontsource
+        const chonburiFont = await Bun.file(
+          'node_modules/@fontsource/chonburi/files/chonburi-latin-400-normal.woff2',
+        ).arrayBuffer()
 
         const markup = html`
           <div style="

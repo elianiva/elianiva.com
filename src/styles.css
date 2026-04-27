@@ -1,12 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Hepta+Slab:wght@1..900&display=swap");
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @import "tw-animate-css";
 
 @theme {
 	--font-sans: "Varela Round", sans-serif;
-	--font-display: "Hepta Slab", serif;
-	--font-heading: "Hepta Slab", serif;
+	--font-display: "Chonburi", serif;
+	--font-heading: "Chonburi", serif;
 	--font-body: "Varela Round", sans-serif;
 	--font-mono: "IBM Plex Mono", monospace;
 
