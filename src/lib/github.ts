@@ -118,18 +118,6 @@ function groupPRs(prs: GitHubPullRequest[]): GroupedPRs {
   return Object.fromEntries(sorted);
 }
 
-export function formatStarCount(count: number): string {
-  if (count >= 1_000_000) return (count / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
-  if (count >= 1_000) return (count / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
-  return String(count);
-}
-
-export function formatChanges(additions: number, deletions: number): string {
-  const total = additions + deletions;
-  if (total >= 1_000) return (total / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
-  return String(total);
-}
-
 export const getGitHubPRs = createServerFn({ method: "GET" }).handler(async () => {
   const username = "elianiva";
   const minStars = 10;

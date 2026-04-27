@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getGitHubPRs, formatStarCount, formatChanges } from "#/lib/github";
+import { getGitHubPRs } from "#/lib/github";
 import { PRDropdown } from "#/components/opensource/PRDropdown";
 
 export function OpenSourceSection() {
@@ -43,9 +43,6 @@ export function OpenSourceSection() {
               key={repoName}
               repository={group.repository}
               prs={group.prs}
-              mergedCount={group.mergedCount}
-              formatStarCount={formatStarCount}
-              formatChanges={formatChanges}
             />
           ))}
         </div>
