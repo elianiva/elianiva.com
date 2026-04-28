@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { Link } from "@tanstack/react-router";
 import CalendarIcon from "~icons/ph/calendar-blank";
+import { Badge } from "../ui/badge";
 
 type PostCardProps = {
   title: string;
@@ -51,12 +52,9 @@ export function PostCard({ title, description, href, date, tags, ...props }: Pos
           </div>
           <div className="flex gap-1 flex-wrap justify-end">
             {tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-xs font-mono text-pink-950/70 bg-pink-50/80 px-2 py-0.5"
-              >
-                #{tag}
-              </span>
+              <Badge key={tag} variant="secondary">
+                {tag}
+              </Badge>
             ))}
           </div>
         </div>

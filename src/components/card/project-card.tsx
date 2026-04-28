@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { Badge } from "../ui/badge";
+import { cn } from "~/lib/utils";
 
 interface ProjectCardProps {
   slug: string;
@@ -14,40 +16,37 @@ export function ProjectCard({ slug, title, description, href, stack }: ProjectCa
       className="bg-white/60 text-left p-4 transition-all group hover:bg-white h-full flex flex-col"
       style={{ viewTransitionName: `project-card-${slug}` }}
     >
-      <div className="relative overflow-hidden border-[0.5px] border-pink-200/50">
-        <div className="absolute inset-0 bg-pink-200/10 z-10 group-hover:opacity-0 transition-all duration-150" />
-        <img
-          src={`/assets/projects/${slug}/cover.webp`}
-          alt={`Screenshot of ${title} project interface`}
-          className="inline-block w-full h-auto aspect-video bg-white transition-all duration-150 grayscale group-hover:grayscale-0"
-          loading="lazy"
-          onError="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-        />
-        <div className="hidden w-full h-auto aspect-video items-center justify-center text-xs font-light uppercase text-pink-800/50 tracking-wider bg-white">
-          {title}
-        </div>
-      </div>
-      <div className="grid grid-rows-[auto_auto_auto] pt-4 flex-1">
-        <Link
-          to={href as any}
-          className="text-base font-bold font-display text-pink-950 group-hover:text-pink-700 transition-property-color duration-100 ease-out focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+      <div className="flex gap-4 flex-1">
+        <div
+          className={cn(
+            "relative flex items-center justify-center border-2 border-border uppercase w-11 font-black",
+            "before:absolute before:content-[''] before:-left-0.5 before:-bottom-0.5 before:size-0 before:border-t-44 before:border-r-44 before:border-t-pink-100/50 before:border-r-pink-200/50",
+          )}
         >
-          {title}
-        </Link>
-        <p className="font-body text-sm text-pink-950/70 pt-1 pb-3">{description}</p>
-        <div className="flex flex-wrap items-end gap-1 font-mono uppercase">
+          <span className="z-20 text-2xl text-pink-700">{title[0]}</span>
+        </div>
+        <div className="flex-1">
+          <Link
+            to={href as any}
+            className="text-base font-bold font-display text-pink-950 group-hover:text-pink-700 transition-property-color duration-100 ease-out focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+          >
+            {title}
+          </Link>
+          <p className="font-body text-sm text-pink-950/70">{description}</p>
+        </div>
+        <div className="flex flex-wrap items-start gap-1 font-mono uppercase">
           {stack.map((item) => {
             const [name, url] = item;
             return (
-              <a
+              <Badge
                 key={name}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-pink-800 bg-pink-50/80 px-3 py-1 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-1 transition-colors"
-              >
-                {name}
-              </a>
+                variant="secondary"
+                render={
+                  <a href={url} target="_blank" rel="noopener noreferrer">
+                    {name}
+                  </a>
+                }
+              />
             );
           })}
         </div>

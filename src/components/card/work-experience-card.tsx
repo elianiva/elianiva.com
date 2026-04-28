@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { Badge } from "../ui/badge";
 
 interface WorkExperienceCardProps {
   company: string;
@@ -44,13 +45,9 @@ export function WorkExperienceCard({
                 ? "Present"
                 : period[1].toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
             </p>
-            <div className="flex flex-wrap items-center gap-1 py-1">
-              <span className="text-[10px] px-2 py-0.5 bg-pink-50 font-mono uppercase whitespace-nowrap text-pink-700">
-                {location}
-              </span>
-              <span className="text-[10px] px-2 py-0.5 bg-pink-50 font-mono uppercase whitespace-nowrap text-pink-700">
-                {time}
-              </span>
+            <div className="flex flex-wrap items-center gap-1 py-1 uppercase">
+              <Badge variant="secondary">{location}</Badge>
+              <Badge variant="secondary">{time}</Badge>
             </div>
           </div>
           <div
@@ -91,13 +88,9 @@ export function WorkExperienceCard({
                 <h3 className="font-bold font-display text-pink-950 whitespace-nowrap">
                   {company}
                 </h3>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs px-3 py-1 bg-pink-100/60 font-mono uppercase whitespace-nowrap">
-                    {location}
-                  </span>
-                  <span className="text-xs px-3 py-1 bg-pink-100/60 font-mono uppercase whitespace-nowrap">
-                    {time}
-                  </span>
+                <div className="flex items-center gap-2 uppercase">
+                  <Badge variant="secondary">{location}</Badge>
+                  <Badge variant="secondary">{time}</Badge>
                 </div>
               </div>
               <span className="text-sm font-mono text-pink-950 block">{position}</span>
@@ -138,12 +131,11 @@ export function WorkExperienceCard({
           </ul>
           <ul className="flex flex-wrap items-center pt-2 gap-1">
             {technologies.map((technology) => (
-              <li
+              <Badge
                 key={technology}
-                className="font-mono uppercase text-pink-950 text-xs border border-dashed border-pink-400/60 py-1 px-3 stitch-border"
-              >
-                {technology}
-              </li>
+                variant="outline"
+                render={<li key={technology}>#{technology}</li>}
+              />
             ))}
           </ul>
         </motion.div>

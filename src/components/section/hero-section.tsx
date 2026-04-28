@@ -28,7 +28,7 @@ const container = {
       staggerChildren: 0.1,
     },
   },
-};
+} as const;
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -37,7 +37,7 @@ const item = {
     y: 0,
     transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] },
   },
-};
+} as const;
 
 export function HeroSection() {
   const prefersReducedMotion = useReducedMotion();
@@ -116,9 +116,7 @@ export function HeroSection() {
           className="relative block w-40 h-40 group"
           aria-label="Visit GitHub profile"
         >
-          <div className="absolute inset-0 blob-shape bg-pink-200/50 translate-x-2 translate-y-2 transition-transform duration-300 group-hover:translate-x-3 group-hover:translate-y-3" />
-          <div className="absolute inset-0 blob-shape bg-pink-300/30 translate-x-1 translate-y-1 transition-transform duration-300 group-hover:translate-x-2 group-hover:translate-y-2" />
-          <div className="relative w-full h-full blob-shape overflow-hidden border-2 border-pink-300 transition-transform duration-300 group-hover:-translate-y-1">
+          <div className="relative w-full h-full overflow-hidden border border-pink-200/50 transition-transform duration-300 group-hover:-translate-y-1">
             <img
               src="https://avatars.githubusercontent.com/u/51877647?v=4"
               alt="Profile photo of Dicha Zelianiva Arkana"

@@ -32,7 +32,7 @@ const container = {
       staggerChildren: 0.08,
     },
   },
-};
+} as const;
 
 const item = {
   hidden: { opacity: 0, y: 24 },
@@ -41,7 +41,7 @@ const item = {
     y: 0,
     transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] },
   },
-};
+} as const;
 
 interface ProjectSectionProps {
   title: string;
@@ -77,7 +77,7 @@ export function ProjectSection({ title, description, projects, seeMoreUrl }: Pro
           {description}
         </p>
       </motion.div>
-      <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd items-stretch">
+      <div className="relative space-y-1 pb-4 card-tilt-odd items-stretch">
         {projects.map((project) => (
           <motion.div key={project.slug} variants={item} className="h-full">
             <ProjectCard

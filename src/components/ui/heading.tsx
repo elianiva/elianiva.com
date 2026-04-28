@@ -40,6 +40,10 @@ export function Heading<TLevel extends HeadingLevel>({
           "absolute bg-pink-200/50 left-0 right-0 -bottom-1 h-px",
           "before:absolute before:content-[''] before:bg-pink-200 before:left-0 before:bottom-0 before:w-[5ch] before:h-0.5 after:z-10",
           "after:absolute after:content-[''] after:bg-pink-300 after:left-0 after:bottom-0 after:w-[2ch] after:h-0.5 after:z-20",
+          {
+            "-bottom-1": level === 1,
+            "bottom-0": level != 3,
+          }
         )}
       />
       <div

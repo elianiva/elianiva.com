@@ -5,6 +5,8 @@ import { allPosts } from "content-collections";
 import { BackButton } from "~/components/back-button";
 import { CodeCopy } from "~/components/code-copy";
 import { SEO } from "~/components/seo";
+import { Badge } from "~/components/ui/badge";
+import { Heading } from "~/components/ui/heading";
 import sites from "~/data/sites";
 import PencilIcon from "~icons/ph/note-pencil";
 
@@ -37,7 +39,17 @@ const getPostBySlug = createServerFn({ method: "GET" })
       readingTime,
       prevPost: prevPost ? { slug: prevPost.slug, title: prevPost.title } : null,
       nextPost: nextPost ? { slug: nextPost.slug, title: nextPost.title } : null,
-      mdx: await renderServerComponent(<MDXContent />),
+      mdx: await renderServerComponent(
+        <MDXContent
+          components={{
+            h2: (props) => <Heading level={2} {...props} />,
+            h3: (props) => <Heading level={3} {...props} />,
+            h4: (props) => <Heading level={4} {...props} />,
+            h5: (props) => <Heading level={5} {...props} />,
+            h6: (props) => <Heading level={6} {...props} />,
+          }}
+        />,
+      ),
     };
   });
 
@@ -109,11 +121,9 @@ function PostDetailPage() {
         <BackButton />
 
         <article className="pt-6">
-          <h1 className="text-center font-heading text-3xl uppercase mt-12 mb-2 font-semibold text-pink-950">
-            {post.title}
-          </h1>
+          <Heading level={1}>{post.title}</Heading>
 
-          <div className="flex flex-col md:flex-row md:justify-center items-center gap-2 font-body text-sm md:text-base md:leading-loose text-pink-950/70">
+          <div className="flex flex-col md:flex-row items-center gap-2 font-body text-sm md:text-base md:leading-loose text-pink-950/70">
             Posted on
             <span className="text-pink-600 font-medium">
               {new Date(post.date).toLocaleDateString("en-GB", {
@@ -130,21 +140,21 @@ function PostDetailPage() {
           </div>
 
           <a
-            className="block text-center relative no-underline hover:underline hover:text-pink-400 font-body text-sm md:text-base text-pink-950/70 mb-2 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2 rounded px-2 py-1"
+            className="block relative no-underline hover:underline hover:text-pink-400 font-body text-sm md:text-base text-pink-950/70 mb-2 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2 rounded"
             href={`https://github.com/elianiva/elianiva.com/blob/master/src/content/posts/${post.slug}.mdx`}
             target="_blank"
-            rel="norel noreferrer"
+            rel="noopener noreferrer"
             aria-label="Suggest an edit to this post on GitHub"
           >
             Suggest An Edit
             <PencilIcon width="16" height="16" className="inline-block" />
           </a>
 
-          <div className="justify-center flex gap-2 pb-4 mb-8 border-b border-dashed border-pink-300">
+          <div className="flex gap-2 mb-4">
             {post.tags.map((tag) => (
-              <span key={tag} className="font-mono text-pink-700/80 text-sm font-medium">
+              <Badge key={tag} variant="secondary">
                 #{tag}
-              </span>
+              </Badge>
             ))}
           </div>
 

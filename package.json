@@ -17,6 +17,7 @@
     "ui": "pnpm dlx shadcn@latest"
   },
   "dependencies": {
+    "@base-ui/react": "^1.4.1",
     "@cf-wasm/resvg": "^0.3.3",
     "@cf-wasm/satori": "^0.3.5",
     "@cloudflare/vite-plugin": "^1.26.0",
@@ -46,7 +47,6 @@
     "lucide-react": "^1.11.0",
     "motion": "^12.38.0",
     "octokit": "^5.0.5",
-    "radix-ui": "^1.4.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",

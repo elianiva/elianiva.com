@@ -12,8 +12,8 @@ export function RegexHighlighter({ patterns, text }: RegexHighlighterProps) {
   const lines = text.trim().split("\n");
 
   return (
-    <div className="my-6 overflow-x-auto border border-pink-200/50 bg-pink-50/30">
-      <pre className="p-4 font-mono text-sm leading-relaxed">
+    <div className="my-6 overflow-x-auto">
+      <pre className="font-mono text-sm leading-relaxed my-0! py-0">
         {lines.map((line, lineIdx) => {
           const segments: { text: string; color: string | null }[] = [];
           let remaining = line;
