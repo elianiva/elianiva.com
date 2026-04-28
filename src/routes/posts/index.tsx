@@ -1,15 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { allPosts } from "content-collections";
 import { PostList } from "~/components/PostList";
 import { BackButton } from "~/components/BackButton";
 import sites from "~/data/sites";
 
+const getPosts = createServerFn({ method: "GET" }).handler(async () => {
+  return allPosts
+    .filter((p) => !p.draft)
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      date: p.date,
+      description: p.description,
+      tags: p.tags,
+    }));
+});
+
 export const Route = createFileRoute("/posts/")({
   component: PostsPage,
-  loader: async () => {
-    const posts = allPosts.filter((p) => !p.draft).sort((a, b) => (a.date > b.date ? -1 : 1));
-    return { posts };
-  },
+  loader: () => getPosts(),
   head: () => ({
     meta: [{ title: `Posts | ${sites.siteName}` }],
   }),
@@ -47,7 +58,7 @@ function PostsNotFoundPage() {
 }
 
 function PostsPage() {
-  const { posts } = Route.useLoaderData();
+  const posts = Route.useLoaderData();
 
   return (
     <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">

@@ -1,23 +1,53 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { allProjects } from "content-collections";
 import { BackButton } from "~/components/BackButton";
 import { ProjectSection } from "~/components/section/ProjectSection";
 import sites from "~/data/sites";
 
+const getProjects = createServerFn({ method: "GET" }).handler(async () => {
+  const personalProjects = allProjects
+    .filter((p) => p.type === "personal")
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      date: p.date,
+      description: p.description,
+      hasImage: p.hasImage,
+      type: p.type,
+      stack: p.stack,
+    }));
+  const openSourceProjects = allProjects
+    .filter((p) => p.type === "open-source")
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      date: p.date,
+      description: p.description,
+      hasImage: p.hasImage,
+      type: p.type,
+      stack: p.stack,
+    }));
+  const assignmentProjects = allProjects
+    .filter((p) => p.type === "assignment")
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      date: p.date,
+      description: p.description,
+      hasImage: p.hasImage,
+      type: p.type,
+      stack: p.stack,
+    }));
+  return { personalProjects, openSourceProjects, assignmentProjects };
+});
+
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
-  loader: async () => {
-    const personalProjects = allProjects
-      .filter((p) => p.type === "personal")
-      .sort((a, b) => (a.date > b.date ? -1 : 1));
-    const openSourceProjects = allProjects
-      .filter((p) => p.type === "open-source")
-      .sort((a, b) => (a.date > b.date ? -1 : 1));
-    const assignmentProjects = allProjects
-      .filter((p) => p.type === "assignment")
-      .sort((a, b) => (a.date > b.date ? -1 : 1));
-    return { personalProjects, openSourceProjects, assignmentProjects };
-  },
+  loader: () => getProjects(),
   head: () => ({ meta: [{ title: "Projects | " + sites.siteName }] }),
   notFoundComponent: ProjectsNotFoundPage,
 });

@@ -1,43 +1,55 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allPosts } from "content-collections";
 import { BackButton } from "~/components/BackButton";
 import { CodeCopy } from "~/components/CodeCopy";
-import { Update } from "~/components/Update";
-import { Greentext } from "~/components/Greentext";
-import { Quiz } from "~/components/Quiz";
-import { RegexHighlighter } from "~/components/RegexHighlighter";
-import { TermPopover } from "~/components/TermPopover";
 import { SEO } from "~/components/SEO";
 import sites from "~/data/sites";
 import PencilIcon from "~icons/ph/note-pencil";
 
-export const Route = createFileRoute("/posts/$slug")({
-  component: PostDetailPage,
-  loader: async ({ params }) => {
-    const post = allPosts.find((p) => p.slug === params.slug);
+const getPostBySlug = createServerFn({ method: "GET" })
+  .inputValidator((slug: string) => slug)
+  .handler(async ({ data: slug }) => {
+    const post = allPosts.find((p) => p.slug === slug);
     if (!post || post.draft) {
       throw notFound();
     }
 
     const sortedPosts = allPosts.filter((p) => !p.draft).sort((a, b) => (a.date > b.date ? -1 : 1));
-
-    const currentIndex = sortedPosts.findIndex((p) => p.slug === params.slug);
+    const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
     const prevPost = sortedPosts[currentIndex + 1] || null;
     const nextPost = sortedPosts[currentIndex - 1] || null;
 
-    // Calculate word count and reading time
     const contentWithoutHeaders = post.content?.replace(/^(#+\s*)/gm, "") || "";
     const wordCount = contentWithoutHeaders.split(/\s+/).length;
     const readingTime = Math.ceil(wordCount / 200);
 
-    return { post, prevPost, nextPost, wordCount, readingTime };
-  },
+    const MDXContent = post.mdx;
+
+    return {
+      title: post.title,
+      date: post.date,
+      description: post.description,
+      tags: post.tags,
+      slug: post.slug,
+      wordCount,
+      readingTime,
+      prevPost: prevPost ? { slug: prevPost.slug, title: prevPost.title } : null,
+      nextPost: nextPost ? { slug: nextPost.slug, title: nextPost.title } : null,
+      mdx: await renderServerComponent(<MDXContent />),
+    };
+  });
+
+export const Route = createFileRoute("/posts/$slug")({
+  component: PostDetailPage,
+  loader: ({ params: { slug } }) => getPostBySlug({ data: slug }),
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.post.title ?? "Post"} | ${sites.siteName}` },
-      { name: "description", content: loaderData?.post.description ?? sites.description },
-      { property: "og:title", content: loaderData?.post.title ?? "Post" },
-      { property: "og:description", content: loaderData?.post.description ?? sites.description },
+      { title: `${loaderData?.title ?? "Post"} | ${sites.siteName}` },
+      { name: "description", content: loaderData?.description ?? sites.description },
+      { property: "og:title", content: loaderData?.title ?? "Post" },
+      { property: "og:description", content: loaderData?.description ?? sites.description },
     ],
   }),
   notFoundComponent: PostNotFoundPage,
@@ -74,7 +86,7 @@ function PostNotFoundPage() {
 }
 
 function PostDetailPage() {
-  const { post, prevPost, nextPost, wordCount, readingTime } = Route.useLoaderData();
+  const post = Route.useLoaderData();
 
   const ogImageParams = new URLSearchParams({
     title: post.title,
@@ -96,7 +108,6 @@ function PostDetailPage() {
       <div className="mx-auto max-w-[64ch] px-4 lg:px-0 py-10">
         <BackButton />
 
-        {/* Post header */}
         <article className="pt-6">
           <h1 className="text-center font-heading text-3xl uppercase mt-12 mb-2 font-semibold text-pink-950">
             {post.title}
@@ -113,8 +124,8 @@ function PostDetailPage() {
               })}
             </span>
             <span className="font-medium">
-              <span className="hidden md:inline">- </span> {readingTime} min read ·{" "}
-              {wordCount.toLocaleString("en-GB")} words
+              <span className="hidden md:inline">- </span> {post.readingTime} min read ·{" "}
+              {post.wordCount.toLocaleString("en-GB")} words
             </span>
           </div>
 
@@ -137,12 +148,10 @@ function PostDetailPage() {
             ))}
           </div>
 
-          {/* Post content */}
           <div className="font-body mx-auto max-w-[64ch] prose prose-pink">
             <CodeCopy />
-            <post.mdx />
+            {post.mdx}
 
-            {/* Giscus comments */}
             <div>
               <script
                 src="https://giscus.app/client.js"
@@ -167,34 +176,33 @@ function PostDetailPage() {
           </div>
         </article>
 
-        {/* Prev/Next navigation */}
         <nav className="mt-12 pt-6 border-t border-pink-200/50">
           <div className="grid grid-cols-2 gap-4">
-            {prevPost ? (
+            {post.prevPost ? (
               <Link
-                to={`/posts/${prevPost.slug}` as any}
+                to={`/posts/${post.prevPost.slug}` as any}
                 className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Previous
                 </span>
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {prevPost.title}
+                  {post.prevPost.title}
                 </span>
               </Link>
             ) : (
               <div />
             )}
-            {nextPost ? (
+            {post.nextPost ? (
               <Link
-                to={`/posts/${nextPost.slug}` as any}
+                to={`/posts/${post.nextPost.slug}` as any}
                 className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Next
                 </span>
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {nextPost.title}
+                  {post.nextPost.title}
                 </span>
               </Link>
             ) : (

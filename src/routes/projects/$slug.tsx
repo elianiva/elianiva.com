@@ -1,4 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
 import { BackButton } from "~/components/BackButton";
 import { SEO } from "~/components/SEO";
@@ -6,27 +8,44 @@ import sites from "~/data/sites";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
 
-export const Route = createFileRoute("/projects/$slug")({
-  component: ProjectDetailPage,
-  loader: async ({ params }) => {
-    const project = allProjects.find((p) => p.slug === params.slug);
+const getProjectBySlug = createServerFn({ method: "GET" })
+  .inputValidator((slug: string) => slug)
+  .handler(async ({ data: slug }) => {
+    const project = allProjects.find((p) => p.slug === slug);
     if (!project) {
       throw notFound();
     }
 
     const sortedProjects = allProjects.sort((a, b) => (a.date > b.date ? -1 : 1));
-    const currentIndex = sortedProjects.findIndex((p) => p.slug === params.slug);
+    const currentIndex = sortedProjects.findIndex((p) => p.slug === slug);
     const prevProject = sortedProjects[currentIndex + 1] || null;
     const nextProject = sortedProjects[currentIndex - 1] || null;
 
-    return { project, prevProject, nextProject };
-  },
+    const MDXContent = project.mdx;
+
+    return {
+      title: project.title,
+      description: project.description,
+      hasImage: project.hasImage,
+      slug: project.slug,
+      source: project.source,
+      demo: project.demo,
+      stack: project.stack,
+      prevProject: prevProject ? { slug: prevProject.slug, title: prevProject.title } : null,
+      nextProject: nextProject ? { slug: nextProject.slug, title: nextProject.title } : null,
+      mdx: await renderServerComponent(<MDXContent />),
+    };
+  });
+
+export const Route = createFileRoute("/projects/$slug")({
+  component: ProjectDetailPage,
+  loader: ({ params: { slug } }) => getProjectBySlug({ data: slug }),
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.project.title ?? "Project"} | elianiva's home row` },
-      { name: "description", content: loaderData?.project.description ?? sites.description },
-      { property: "og:title", content: loaderData?.project.title ?? "Project" },
-      { property: "og:description", content: loaderData?.project.description ?? sites.description },
+      { title: `${loaderData?.title ?? "Project"} | elianiva's home row` },
+      { name: "description", content: loaderData?.description ?? sites.description },
+      { property: "og:title", content: loaderData?.title ?? "Project" },
+      { property: "og:description", content: loaderData?.description ?? sites.description },
     ],
   }),
   notFoundComponent: ProjectNotFoundPage,
@@ -63,7 +82,7 @@ function ProjectNotFoundPage() {
 }
 
 function ProjectDetailPage() {
-  const { project, prevProject, nextProject } = Route.useLoaderData();
+  const project = Route.useLoaderData();
 
   const thumbnail = `${sites.siteUrl}/assets/projects/${project.slug}/cover.webp`;
 
@@ -121,7 +140,7 @@ function ProjectDetailPage() {
                 </div>
               </div>
               <div className="prose prose-pink max-w-full pt-4">
-                <project.mdx />
+                {project.mdx}
               </div>
             </div>
           </div>
@@ -158,34 +177,33 @@ function ProjectDetailPage() {
           </aside>
         </section>
 
-        {/* Prev/Next navigation */}
         <nav className="mt-12 pt-6 border-t border-pink-200/50">
           <div className="grid grid-cols-2 gap-4">
-            {prevProject ? (
+            {project.prevProject ? (
               <Link
-                to={`/projects/${prevProject.slug}` as any}
+                to={`/projects/${project.prevProject.slug}` as any}
                 className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Previous
                 </span>
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {prevProject.title}
+                  {project.prevProject.title}
                 </span>
               </Link>
             ) : (
               <div />
             )}
-            {nextProject ? (
+            {project.nextProject ? (
               <Link
-                to={`/projects/${nextProject.slug}` as any}
+                to={`/projects/${project.nextProject.slug}` as any}
                 className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Next
                 </span>
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {nextProject.title}
+                  {project.nextProject.title}
                 </span>
               </Link>
             ) : (

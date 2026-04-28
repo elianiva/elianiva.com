@@ -3,6 +3,7 @@ import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import contentCollections from "@content-collections/vite";
 import viteReact from "@vitejs/plugin-react";
+import rsc from "@vitejs/plugin-rsc";
 import tailwindcss from "@tailwindcss/vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import glsl from "vite-plugin-glsl";
@@ -43,10 +44,19 @@ const config = defineConfig({
       }),
     },
     devtools(),
-    contentCollections({ environment: "ssr" }),
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    contentCollections({ environment: "ssr", configPath: "content-collections.config.ts" }),
+    rsc(),
+    cloudflare({
+      viteEnvironment: {
+        name: "ssr",
+        childEnvironments: ["rsc"],
+      },
+    }),
     tailwindcss(),
     tanstackStart({
+      rsc: {
+        enabled: true,
+      },
       prerender: {
         enabled: true,
         autoStaticPathsDiscovery: true,

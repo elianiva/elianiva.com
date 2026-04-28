@@ -1,16 +1,24 @@
-import { allProjects } from "content-collections";
 import { ProjectSection } from "~/components/section/ProjectSection";
 
-const personalProjects = allProjects
-  .filter((p) => p.type === "personal" && p.featured)
-  .sort((a, b) => (a.date > b.date ? -1 : 1));
+interface Project {
+  slug: string;
+  title: string;
+  description: string;
+  date: string;
+  hasImage?: boolean;
+  stack?: [string, string][];
+}
 
-export function PersonalProjectsSection() {
+interface PersonalProjectsSectionProps {
+  projects: Project[];
+}
+
+export function PersonalProjectsSection({ projects }: PersonalProjectsSectionProps) {
   return (
     <ProjectSection
       title="Personal Projects"
       description="These are some of my personal projects that I made in the past. Some of them are still in use, some are not. Mostly made them just for fun and to learn new things!"
-      projects={personalProjects}
+      projects={projects}
       seeMoreUrl="/projects"
     />
   );

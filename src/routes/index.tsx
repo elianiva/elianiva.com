@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { allPosts, allProjects } from "content-collections";
 import { HeroSection } from "~/components/section/HeroSection";
 import { ScrollReveal } from "~/components/animation/ScrollReveal";
 import { BlogSection } from "~/components/section/BlogSection";
@@ -7,14 +9,44 @@ import { OpenSourceSection } from "~/components/section/OpenSourceSection";
 import { PersonalProjectsSection } from "~/components/section/PersonalProjectsSection";
 import { workExperiences } from "~/data/work-experience";
 
+const getHomeData = createServerFn({ method: "GET" }).handler(async () => {
+  const posts = allPosts
+    .filter((p) => !p.draft)
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      description: p.description,
+      date: p.date,
+      tags: p.tags,
+    }));
+
+  const personalProjects = allProjects
+    .filter((p) => p.type === "personal" && p.featured)
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      description: p.description,
+      date: p.date,
+      hasImage: p.hasImage,
+      stack: p.stack,
+    }));
+
+  return { posts, personalProjects };
+});
+
 export const Route = createFileRoute("/")({
   component: Home,
+  loader: () => getHomeData(),
   head: () => ({
     meta: [{ title: `Home | elianiva's home row` }],
   }),
 });
 
 function Home() {
+  const { posts, personalProjects } = Route.useLoaderData();
+
   return (
     <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50">
       <HeroSection />
@@ -62,12 +94,12 @@ function Home() {
           aria-labelledby="blog-heading"
           className="relative with-box-underline"
         >
-          <BlogSection />
+          <BlogSection posts={posts} />
         </section>
       </ScrollReveal>
       <ScrollReveal delay={480}>
         <section role="region" aria-labelledby="personal-projects-heading">
-          <PersonalProjectsSection />
+          <PersonalProjectsSection projects={personalProjects} />
         </section>
       </ScrollReveal>
     </div>
