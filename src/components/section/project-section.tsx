@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { renderServerComponent } from "@tanstack/react-start/rsc";
+import { motion, useReducedMotion } from "motion/react";
 import { allProjects } from "content-collections";
 import { ProjectCard } from "~/components/card/project-card";
 import { ViewAllButton } from "~/components/view-all-button";
@@ -7,17 +7,9 @@ import { Heading } from "../ui/heading";
 
 export type ProjectType = "personal" | "open-source" | "assignment";
 
-export interface ProjectSectionProps {
-  title: string;
-  description: string;
-  type: ProjectType;
-  featured?: boolean;
-  seeMoreUrl?: string | null;
-}
-
-export const getProjectSection = createServerFn({ method: "GET" })
-  .inputValidator((input: ProjectSectionProps) => input)
-  .handler(async ({ data: { title, description, type, featured = false, seeMoreUrl } }) => {
+export const getProjects = createServerFn({ method: "GET" })
+  .inputValidator((input: { type: ProjectType; featured?: boolean }) => input)
+  .handler(async ({ data: { type, featured = false } }) => {
     const projects = allProjects
       .filter((p) => p.type === type)
       .sort((a, b) => (a.date > b.date ? -1 : 1))
@@ -30,44 +22,83 @@ export const getProjectSection = createServerFn({ method: "GET" })
         featured: p.featured,
       }));
 
-    const filtered = featured ? projects.filter((p) => p.featured) : projects;
+    return featured ? projects.filter((p) => p.featured) : projects;
+  });
 
-    const headingId =
-      title
-        .toLowerCase()
-        .replace(/s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "") + "-heading";
+const container = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
 
-    return renderServerComponent(
-      <section className="py-4 md:py-8 px-2 md:px-8">
-        <Heading level={2} data-anime id={headingId}>
+const item = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] },
+  },
+};
+
+interface ProjectSectionProps {
+  title: string;
+  description: string;
+  projects: Awaited<ReturnType<typeof getProjects>>;
+  seeMoreUrl?: string | null;
+}
+
+export function ProjectSection({ title, description, projects, seeMoreUrl }: ProjectSectionProps) {
+  const prefersReducedMotion = useReducedMotion();
+
+  const headingId =
+    title
+      .toLowerCase()
+      .replace(/s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "") + "-heading";
+
+  return (
+    <motion.section
+      className="py-4 md:py-8 px-2 md:px-8"
+      initial={prefersReducedMotion ? false : "hidden"}
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      variants={container}
+    >
+      <motion.div variants={item}>
+        <Heading level={2} id={headingId}>
           {title}
         </Heading>
-        <p data-anime className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
+      </motion.div>
+      <motion.div variants={item}>
+        <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
           {description}
         </p>
-        <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd items-stretch">
-          {filtered.map((project) => (
-            <div key={project.slug} data-anime className="h-full">
-              <ProjectCard
-                slug={project.slug}
-                title={project.title}
-                description={project.description}
-                href={`/projects/${project.slug}`}
-                stack={project.stack || []}
-              />
-            </div>
-          ))}
-        </div>
-        {typeof seeMoreUrl === "string" && (
-          <div data-anime>
-            <ViewAllButton
-              href={seeMoreUrl}
-              label="View all projects"
-              ariaLabel="View all projects"
+      </motion.div>
+      <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd items-stretch">
+        {projects.map((project) => (
+          <motion.div key={project.slug} variants={item} className="h-full">
+            <ProjectCard
+              slug={project.slug}
+              title={project.title}
+              description={project.description}
+              href={`/projects/${project.slug}`}
+              stack={project.stack || []}
             />
-          </div>
-        )}
-      </section>,
-    );
-  });
+          </motion.div>
+        ))}
+      </div>
+      {typeof seeMoreUrl === "string" && (
+        <motion.div variants={item}>
+          <ViewAllButton
+            href={seeMoreUrl}
+            label="View all projects"
+            ariaLabel="View all projects"
+          />
+        </motion.div>
+      )}
+    </motion.section>
+  );
+}

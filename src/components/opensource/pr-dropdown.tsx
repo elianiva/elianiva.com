@@ -1,5 +1,5 @@
-import { useRef, useState, useCallback, useEffect } from "react";
-import { animate, type JSAnimation } from "animejs";
+import { useState, useCallback } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import type { GitHubPullRequest } from "~/types/github-pr";
 import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
 import CaretDownIcon from "~icons/ph/caret-down";
@@ -25,66 +25,13 @@ function abbreviateNumber(num: number): string {
 
 export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const detailsRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<JSAnimation | null>(null);
-  const hasInitialized = useRef(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const totalChanges = prs.reduce((sum, pr) => sum + pr.additions + pr.deletions, 0);
 
   const toggleOpen = useCallback(() => {
-    const nextOpen = !isOpen;
-    setIsOpen(nextOpen);
-
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const detailsEl = detailsRef.current;
-    if (!detailsEl) return;
-
-    if (prefersReduced) {
-      detailsEl.style.height = nextOpen ? "auto" : "0px";
-      detailsEl.style.opacity = nextOpen ? "1" : "0";
-      return;
-    }
-
-    if (animationRef.current) {
-      animationRef.current.cancel();
-    }
-
-    if (nextOpen) {
-      const targetHeight = detailsEl.scrollHeight;
-      detailsEl.style.height = "0px";
-      detailsEl.style.opacity = "0";
-
-      animationRef.current = animate(detailsEl, {
-        height: ["0px", `${targetHeight}px`],
-        opacity: [0, 1],
-        duration: 350,
-        ease: "easeOutCubic",
-      });
-
-      animationRef.current.then(() => {
-        if (detailsRef.current) detailsRef.current.style.height = "auto";
-      });
-    } else {
-      const currentHeight = detailsEl.scrollHeight;
-      detailsEl.style.height = `${currentHeight}px`;
-
-      animationRef.current = animate(detailsEl, {
-        height: [`${currentHeight}px`, "0px"],
-        opacity: [1, 0],
-        duration: 250,
-        ease: "easeOutCubic",
-      });
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    const detailsEl = detailsRef.current;
-    if (!detailsEl || hasInitialized.current) return;
-    hasInitialized.current = true;
-
-    detailsEl.style.height = defaultOpen ? "auto" : "0px";
-    detailsEl.style.opacity = defaultOpen ? "1" : "0";
-  }, [defaultOpen]);
+    setIsOpen((prev) => !prev);
+  }, []);
 
   return (
     <div
@@ -138,7 +85,19 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
         </div>
       </button>
 
-      <div ref={detailsRef} className="overflow-hidden">
+      <motion.div
+        initial={false}
+        animate={{
+          height: isOpen ? "auto" : 0,
+          opacity: isOpen ? 1 : 0,
+        }}
+        transition={
+          prefersReducedMotion
+            ? { duration: 0 }
+            : { duration: isOpen ? 0.35 : 0.25, ease: "easeOut" }
+        }
+        className="overflow-hidden"
+      >
         <div className="border-t border-pink-200/50">
           <div id={`pr-details-${repository.name}`} className="p-3">
             <div className="space-y-2">
@@ -175,7 +134,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

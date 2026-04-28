@@ -169,7 +169,6 @@
 }
 
 @layer utilities {
-
   /* Blob shape utility */
   .blob-shape {
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;

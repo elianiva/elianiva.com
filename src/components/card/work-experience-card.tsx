@@ -1,5 +1,5 @@
-import { useRef, useState, useCallback } from "react";
-import { animate, type JSAnimation } from "animejs";
+import { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 
 interface WorkExperienceCardProps {
   company: string;
@@ -23,76 +23,14 @@ export function WorkExperienceCard({
   defaultOpen = false,
 }: WorkExperienceCardProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const detailsRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<JSAnimation | null>(null);
-  const initializedRef = useRef(false);
-
-  const setInitialStyles = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (!node || initializedRef.current) return;
-      initializedRef.current = true;
-      node.style.height = defaultOpen ? "auto" : "0px";
-      node.style.opacity = defaultOpen ? "1" : "0";
-      detailsRef.current = node;
-    },
-    [defaultOpen],
-  );
-
-  const toggleOpen = () => {
-    const newIsOpen = !isOpen;
-    setIsOpen(newIsOpen);
-
-    const detailsEl = detailsRef.current;
-    if (!detailsEl) return;
-
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (prefersReduced) {
-      detailsEl.style.height = newIsOpen ? "auto" : "0px";
-      detailsEl.style.opacity = newIsOpen ? "1" : "0";
-      return;
-    }
-
-    if (animationRef.current) {
-      animationRef.current.cancel();
-    }
-
-    if (newIsOpen) {
-      const targetHeight = detailsEl.scrollHeight;
-      detailsEl.style.height = "0px";
-      detailsEl.style.opacity = "0";
-
-      animationRef.current = animate(detailsEl, {
-        height: ["0px", targetHeight + "px"],
-        opacity: [0, 1],
-        duration: 350,
-        ease: "easeOutCubic",
-      });
-
-      animationRef.current.then(() => {
-        if (detailsEl) {
-          detailsEl.style.height = "auto";
-        }
-      });
-    } else {
-      const currentHeight = detailsEl.scrollHeight;
-      detailsEl.style.height = currentHeight + "px";
-
-      animationRef.current = animate(detailsEl, {
-        height: [currentHeight + "px", "0px"],
-        opacity: [1, 0],
-        duration: 250,
-        ease: "easeOutCubic",
-      });
-    }
-  };
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <div className="work-experience-card group rounded-2xl transition-colors" data-open={isOpen}>
       <button
         type="button"
         className="list-none w-full cursor-pointer focus:ring-0 focus:outline-none p-2 text-left"
-        onClick={toggleOpen}
+        onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
         {/* Mobile Layout */}
@@ -175,7 +113,19 @@ export function WorkExperienceCard({
         </div>
 
         {/* Details */}
-        <div ref={setInitialStyles} className="overflow-hidden">
+        <motion.div
+          initial={false}
+          animate={{
+            height: isOpen ? "auto" : 0,
+            opacity: isOpen ? 1 : 0,
+          }}
+          transition={
+            prefersReducedMotion
+              ? { duration: 0 }
+              : { duration: isOpen ? 0.35 : 0.25, ease: "easeOut" }
+          }
+          className="overflow-hidden"
+        >
           <ul className="list-disc list-outside pl-4 mt-2">
             {details.map((detail, i) => (
               <li
@@ -196,7 +146,7 @@ export function WorkExperienceCard({
               </li>
             ))}
           </ul>
-        </div>
+        </motion.div>
       </button>
     </div>
   );
