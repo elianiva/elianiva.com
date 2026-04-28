@@ -139,9 +139,7 @@ function ProjectDetailPage() {
                   )}
                 </div>
               </div>
-              <div className="prose prose-pink max-w-full pt-4">
-                {project.mdx}
-              </div>
+              <div className="prose prose-pink max-w-full pt-4">{project.mdx}</div>
             </div>
           </div>
 

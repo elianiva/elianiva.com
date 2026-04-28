@@ -146,13 +146,9 @@ export const getGitHubPRs = createServerFn({ method: "GET" }).handler(async () =
   const username = "elianiva";
   const minStars = 5000;
 
-  return cached(
-    "github-prs",
-    TTL.long,
-    async () => {
-      const prs = await fetchAllPRs(username, minStars);
-      const grouped = groupPRs(prs);
-      return { grouped, totalPRs: prs.length };
-    },
-  );
+  return cached("github-prs", TTL.long, async () => {
+    const prs = await fetchAllPRs(username, minStars);
+    const grouped = groupPRs(prs);
+    return { grouped, totalPRs: prs.length };
+  });
 });

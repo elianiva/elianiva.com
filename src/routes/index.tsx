@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeroSection } from "~/components/section/hero-section";
 import { ScrollReveal } from "~/components/animation/scroll-reveal";
-import { BlogSection } from "~/components/section/blog-section";
+import { getBlogSection } from "~/components/section/blog-section";
+import { getProjectSection } from "~/components/section/project-section";
 import { WorkExperienceSection } from "~/components/section/work-experience-section";
 import { OpenSourceSection } from "~/components/section/open-source-section";
-import { PersonalProjectsSection } from "~/components/section/personal-projects-section";
 import { workExperiences } from "~/data/work-experience";
 
 export const Route = createFileRoute("/")({
@@ -12,9 +12,28 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [{ title: `Home | elianiva's home row` }],
   }),
+  staleTime: Infinity,
+  loader: async () => {
+    const [Blog, PersonalProjects] = await Promise.all([
+      getBlogSection(),
+      getProjectSection({
+        data: {
+          title: "Personal Projects",
+          description:
+            "These are some of my personal projects that I made in the past. Some of them are still in use, some are not. Mostly made them just for fun and to learn new things!",
+          type: "personal",
+          featured: true,
+          seeMoreUrl: "/projects",
+        },
+      }),
+    ]);
+    return { Blog, PersonalProjects };
+  },
 });
 
 function Home() {
+  const { Blog, PersonalProjects } = Route.useLoaderData();
+
   return (
     <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50">
       <HeroSection />
@@ -38,7 +57,7 @@ function Home() {
           </p>
         </section>
       </ScrollReveal>
-      <ScrollReveal delay={120}>
+      <ScrollReveal delay={80}>
         <section
           role="region"
           aria-labelledby="experience-heading"
@@ -47,7 +66,7 @@ function Home() {
           <WorkExperienceSection workExperiences={workExperiences} />
         </section>
       </ScrollReveal>
-      <ScrollReveal delay={240}>
+      <ScrollReveal delay={160}>
         <section
           role="region"
           aria-labelledby="open-source-contributions-heading"
@@ -56,18 +75,18 @@ function Home() {
           <OpenSourceSection />
         </section>
       </ScrollReveal>
-      <ScrollReveal delay={360}>
+      <ScrollReveal delay={320}>
         <section
           role="region"
           aria-labelledby="blog-heading"
           className="relative with-box-underline"
         >
-          <BlogSection />
+          {Blog}
         </section>
       </ScrollReveal>
-      <ScrollReveal delay={480}>
+      <ScrollReveal delay={400}>
         <section role="region" aria-labelledby="personal-projects-heading">
-          <PersonalProjectsSection />
+          {PersonalProjects}
         </section>
       </ScrollReveal>
     </div>

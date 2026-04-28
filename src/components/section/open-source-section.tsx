@@ -39,11 +39,7 @@ export function OpenSourceSection() {
       ) : (
         <div data-anime className="space-y-2">
           {repos.map(([repoName, group]) => (
-            <PRDropdown
-              key={repoName}
-              repository={group.repository}
-              prs={group.prs}
-            />
+            <PRDropdown key={repoName} repository={group.repository} prs={group.prs} />
           ))}
         </div>
       )}
