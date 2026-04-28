@@ -144,7 +144,7 @@ function groupPRs(prs: GitHubPullRequest[]): GroupedPRs {
 
 export const getGitHubPRs = createServerFn({ method: "GET" }).handler(async () => {
   const username = "elianiva";
-  const minStars = 10;
+  const minStars = 5000;
 
   return cached(
     "github-prs",
