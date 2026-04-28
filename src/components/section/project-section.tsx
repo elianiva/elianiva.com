@@ -1,9 +1,10 @@
+import { Suspense } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { allProjects } from "content-collections";
 import { ProjectCard } from "~/components/card/project-card";
 import { ViewAllButton } from "~/components/view-all-button";
-
+import { Skeleton } from "~/components/ui/skeleton";
 
 type ProjectType = "personal" | "open-source" | "assignment";
 
@@ -32,7 +33,29 @@ const getProjects = createServerFn({ method: "GET" })
       }));
   });
 
-export function ProjectSection({
+function ProjectSkeleton() {
+  return (
+    <section className="py-4 md:py-8 px-2 md:px-8">
+      <Skeleton className="h-8 w-48 mb-2" />
+      <Skeleton className="h-5 w-full max-w-xl mb-4" />
+      <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd items-stretch">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="bg-white/60 p-4 h-full flex flex-col gap-3">
+            <Skeleton className="w-full aspect-video" />
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-12 w-full" />
+            <div className="flex gap-1 mt-auto">
+              <Skeleton className="h-6 w-16" />
+              <Skeleton className="h-6 w-16" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ProjectSectionContent({
   title,
   description,
   type,
@@ -49,11 +72,11 @@ export function ProjectSection({
   const headingId =
     title
       .toLowerCase()
-      .replace(/s+/g, "-")
+      .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "") + "-heading";
 
   return (
-    <section className="py-4 md:py-8 px-2 md:px-8">
+    <>
       <h2
         data-anime
         id={headingId}
@@ -87,6 +110,16 @@ export function ProjectSection({
           />
         </div>
       )}
-    </section>
+    </>
+  );
+}
+
+export function ProjectSection(props: ProjectSectionProps) {
+  return (
+    <Suspense fallback={<ProjectSkeleton />}>
+      <section className="py-4 md:py-8 px-2 md:px-8">
+        <ProjectSectionContent {...props} />
+      </section>
+    </Suspense>
   );
 }
