@@ -6,17 +6,9 @@ interface ProjectCardProps {
   description: string;
   href: string;
   stack: string[][];
-  hasImage?: boolean;
 }
 
-export function ProjectCard({
-  slug,
-  title,
-  description,
-  href,
-  stack,
-  hasImage = true,
-}: ProjectCardProps) {
+export function ProjectCard({ slug, title, description, href, stack }: ProjectCardProps) {
   return (
     <div
       className="bg-white/60 text-left p-4 transition-all group hover:bg-white h-full flex flex-col"
@@ -24,24 +16,14 @@ export function ProjectCard({
     >
       <div className="relative overflow-hidden border-[0.5px] border-pink-200/50">
         <div className="absolute inset-0 bg-pink-200/10 z-10 group-hover:opacity-0 transition-all duration-150" />
-        {hasImage ? (
-          <img
-            src={`/assets/projects/${slug}/cover.webp`}
-            alt={`Screenshot of ${title} project interface`}
-            className="inline-block w-full h-auto aspect-video bg-white transition-all duration-150 grayscale group-hover:grayscale-0"
-            loading="lazy"
-            onError={(e) => {
-              const img = e.currentTarget;
-              img.style.display = "none";
-              const fallback = img.nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = "flex";
-            }}
-          />
-        ) : null}
-        <div
-          className="w-full h-auto aspect-video items-center justify-center text-xs font-light uppercase text-pink-800/50 tracking-wider bg-white"
-          style={{ display: hasImage ? "none" : "flex" }}
-        >
+        <img
+          src={`/assets/projects/${slug}/cover.webp`}
+          alt={`Screenshot of ${title} project interface`}
+          className="inline-block w-full h-auto aspect-video bg-white transition-all duration-150 grayscale group-hover:grayscale-0"
+          loading="lazy"
+          onError="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+        />
+        <div className="hidden w-full h-auto aspect-video items-center justify-center text-xs font-light uppercase text-pink-800/50 tracking-wider bg-white">
           {title}
         </div>
       </div>

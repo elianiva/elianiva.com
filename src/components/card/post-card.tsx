@@ -20,7 +20,7 @@ export function PostCard({ title, description, href, date, tags }: PostCardProps
       style={{ viewTransitionName: `post-card-${slug}` }}
     >
       <Link
-        to={href as any}
+        to={href}
         className="grid grid-rows-[auto_2rem_auto_2rem] p-4 h-full focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         aria-labelledby="post-title"
       >

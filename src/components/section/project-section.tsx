@@ -25,7 +25,6 @@ export const getProjectSection = createServerFn({ method: "GET" })
         title: p.title,
         description: p.description,
         date: p.date,
-        hasImage: p.hasImage,
         stack: p.stack,
         featured: p.featured,
       }));
@@ -59,7 +58,6 @@ export const getProjectSection = createServerFn({ method: "GET" })
                 description={project.description}
                 href={`/projects/${project.slug}`}
                 stack={project.stack || []}
-                hasImage={project.hasImage}
               />
             </div>
           ))}

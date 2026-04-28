@@ -139,11 +139,10 @@ export function PostList({ posts }: PostListProps) {
                 role="option"
                 aria-selected={i === activeOptionIndex}
                 onMouseDown={() => addTag(tag)}
-                className={`px-4 py-2 text-sm font-body cursor-pointer ${
-                  i === activeOptionIndex
+                className={`px-4 py-2 text-sm font-body cursor-pointer ${i === activeOptionIndex
                     ? "bg-pink-100 text-pink-900"
                     : "text-pink-950/70 hover:bg-pink-50"
-                }`}
+                  }`}
               >
                 #{tag}
               </li>
@@ -177,16 +176,14 @@ export function PostList({ posts }: PostListProps) {
       {/* Post grid */}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 items-stretch">
         {filteredPosts.map((post) => (
-          <div key={post.slug} className="h-full">
-            <PostCard
-              key={post.slug}
-              title={post.title}
-              description={post.description}
-              href={`/posts/${post.slug}`}
-              date={post.date}
-              tags={post.tags}
-            />
-          </div>
+          <PostCard
+            key={post.slug}
+            title={post.title}
+            description={post.description}
+            href={`/posts/${post.slug}`}
+            date={post.date}
+            tags={post.tags}
+          />
         ))}
       </div>
 

@@ -26,7 +26,6 @@ const getProjectBySlug = createServerFn({ method: "GET" })
     return {
       title: project.title,
       description: project.description,
-      hasImage: project.hasImage,
       slug: project.slug,
       source: project.source,
       demo: project.demo,
@@ -100,16 +99,14 @@ function ProjectDetailPage() {
           style={{ viewTransitionName: `project-content-${project.slug}` }}
         >
           <div className="space-y-4">
-            {project.hasImage && (
-              <div className="overflow-hidden border-[0.5px] border-pink-200/50">
-                <img
-                  src={`/assets/projects/${project.slug}/cover.webp`}
-                  alt={project.title}
-                  className="block w-full h-full bg-pink-100"
-                  loading="lazy"
-                />
-              </div>
-            )}
+            <div className="overflow-hidden border-[0.5px] border-pink-200/50">
+              <img
+                src={`/assets/projects/${project.slug}/cover.webp`}
+                alt={project.title}
+                className="block w-full h-full bg-pink-100"
+                loading="lazy"
+              />
+            </div>
 
             <div>
               <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center justify-between pb-4 border-pink-200/50 with-box-underline after:-translate-x-[700px]!">
@@ -153,9 +150,8 @@ function ProjectDetailPage() {
                   <div key={stackName} className="flex items-center gap-3 group">
                     <div className="flex items-center justify-center p-2 bg-pink-50/80 border-[0.5px] border-pink-200/50 w-12 h-12 shrink-0">
                       <img
-                        className={`w-full h-full object-contain ${
-                          stackName.toLowerCase() === "nextjs" ? "filter invert" : ""
-                        }`}
+                        className={`w-full h-full object-contain ${stackName.toLowerCase() === "nextjs" ? "filter invert" : ""
+                          }`}
                         src={`/assets/logo/${stackName.toLowerCase().replace(/\s+/g, "-")}.png`}
                         alt={stackName}
                       />

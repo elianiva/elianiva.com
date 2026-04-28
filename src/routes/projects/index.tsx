@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ScrollReveal } from "~/components/animation/scroll-reveal";
 import { BackButton } from "~/components/back-button";
 import { getProjectSection } from "~/components/section/project-section";
 import sites from "~/data/sites";
@@ -75,9 +76,9 @@ function ProjectsPage() {
     <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
         <BackButton />
-        {OpenSource}
-        {Personal}
-        {Assignment}
+        <ScrollReveal>{OpenSource}</ScrollReveal>
+        <ScrollReveal>{Personal}</ScrollReveal>
+        <ScrollReveal>{Assignment}</ScrollReveal>
       </div>
     </div>
   );

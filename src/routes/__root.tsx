@@ -10,10 +10,10 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
-import { SEO } from "../components/SEO";
-import { Frame } from "../components/Frame";
+import { SEO } from "../components/seo";
+import { Frame } from "../components/frame";
 import { CanvasBackground } from "../components/canvas-background.tsx";
-import { Footer } from "../components/Footer";
+import { Footer } from "../components/footer";
 
 import "@fontsource/hepta-slab";
 import "@fontsource/varela-round";
@@ -128,7 +128,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           Skip to main content
         </a>
 
-        <CanvasBackground />
+        {/* <CanvasBackground /> */}
         <Frame />
 
         <main id="main-content" role="main" className="relative z-0">

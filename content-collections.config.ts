@@ -46,14 +46,13 @@ const projects = defineCollection({
   parser: "frontmatter-only",
   schema: z.object({
     title: z.string(),
-    hasImage: z.boolean().optional().default(false),
     featured: z.boolean().optional().default(false),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     description: z.string(),
-    source: z.string().url(),
-    demo: z.string().url().optional().nullable(),
+    source: z.url(),
+    demo: z.url().optional().nullable(),
     type: z.enum(["personal", "open-source", "assignment"]),
-    stack: z.array(z.tuple([z.string(), z.string().url()])),
+    stack: z.array(z.tuple([z.string(), z.url()])),
   }),
   transform: async ({ _meta, ...project }) => {
     const mdx = createDefaultImport(
