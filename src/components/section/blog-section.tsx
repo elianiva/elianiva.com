@@ -1,19 +1,28 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createServerFn } from "@tanstack/react-start";
+import { allPosts } from "content-collections";
 import { PostCard } from "~/components/card/post-card";
 import { ViewAllButton } from "~/components/view-all-button";
 
-interface BlogPost {
-  slug: string;
-  title: string;
-  description: string;
-  date: string;
-  tags: string[];
-}
+const getPosts = createServerFn({ method: "GET" }).handler(async () => {
+  return allPosts
+    .filter((p) => !p.draft)
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      description: p.description,
+      date: p.date,
+      tags: p.tags,
+    }));
+});
 
-interface BlogSectionProps {
-  posts: BlogPost[];
-}
+export function BlogSection() {
+  const { data: posts } = useSuspenseQuery({
+    queryKey: ["posts"],
+    queryFn: () => getPosts(),
+  });
 
-export function BlogSection({ posts }: BlogSectionProps) {
   return (
     <section className="py-4 md:py-8 px-2 md:px-8">
       <h2

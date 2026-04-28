@@ -1,53 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { allProjects } from "content-collections";
 import { BackButton } from "~/components/back-button";
 import { ProjectSection } from "~/components/section/project-section";
 import sites from "~/data/sites";
 
-const getProjects = createServerFn({ method: "GET" }).handler(async () => {
-  const personalProjects = allProjects
-    .filter((p) => p.type === "personal")
-    .sort((a, b) => (a.date > b.date ? -1 : 1))
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      date: p.date,
-      description: p.description,
-      hasImage: p.hasImage,
-      type: p.type,
-      stack: p.stack,
-    }));
-  const openSourceProjects = allProjects
-    .filter((p) => p.type === "open-source")
-    .sort((a, b) => (a.date > b.date ? -1 : 1))
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      date: p.date,
-      description: p.description,
-      hasImage: p.hasImage,
-      type: p.type,
-      stack: p.stack,
-    }));
-  const assignmentProjects = allProjects
-    .filter((p) => p.type === "assignment")
-    .sort((a, b) => (a.date > b.date ? -1 : 1))
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      date: p.date,
-      description: p.description,
-      hasImage: p.hasImage,
-      type: p.type,
-      stack: p.stack,
-    }));
-  return { personalProjects, openSourceProjects, assignmentProjects };
-});
-
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
-  loader: () => getProjects(),
   head: () => ({ meta: [{ title: "Projects | " + sites.siteName }] }),
   notFoundComponent: ProjectsNotFoundPage,
 });
@@ -83,8 +40,6 @@ function ProjectsNotFoundPage() {
 }
 
 function ProjectsPage() {
-  const { personalProjects, openSourceProjects, assignmentProjects } = Route.useLoaderData();
-
   return (
     <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
@@ -92,17 +47,17 @@ function ProjectsPage() {
         <ProjectSection
           title="Open Source Projects"
           description="These are some open source projects I've helped building"
-          projects={openSourceProjects}
+          type="open-source"
         />
         <ProjectSection
           title="Personal Projects"
           description="These are some of my personal projects that I made in the past. Some of them are still in use, some are not. Mostly made them just for fun and to learn new things."
-          projects={personalProjects}
+          type="personal"
         />
         <ProjectSection
           title="Assignment Projects"
           description="These are some projects that I did as an assignment whether it's from when I was in high school or university. Guess I'd put them here anyway in case someone find them useful."
-          projects={assignmentProjects}
+          type="assignment"
         />
       </div>
     </div>

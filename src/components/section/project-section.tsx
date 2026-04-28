@@ -1,15 +1,51 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createServerFn } from "@tanstack/react-start";
+import { allProjects } from "content-collections";
 import { ProjectCard } from "~/components/card/project-card";
 import { ViewAllButton } from "~/components/view-all-button";
-import type { Project } from "content-collections";
+
+
+type ProjectType = "personal" | "open-source" | "assignment";
 
 interface ProjectSectionProps {
-  projects: Project[];
   title: string;
   description: string;
+  type: ProjectType;
+  featured?: boolean;
   seeMoreUrl?: string | null;
 }
 
-export function ProjectSection({ projects, title, description, seeMoreUrl }: ProjectSectionProps) {
+const getProjects = createServerFn({ method: "GET" })
+  .inputValidator((type: ProjectType) => type)
+  .handler(async ({ data: type }) => {
+    return allProjects
+      .filter((p) => p.type === type)
+      .sort((a, b) => (a.date > b.date ? -1 : 1))
+      .map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        description: p.description,
+        date: p.date,
+        hasImage: p.hasImage,
+        stack: p.stack,
+        featured: p.featured,
+      }));
+  });
+
+export function ProjectSection({
+  title,
+  description,
+  type,
+  featured = false,
+  seeMoreUrl,
+}: ProjectSectionProps) {
+  const { data: projects } = useSuspenseQuery({
+    queryKey: ["projects", type],
+    queryFn: () => getProjects({ data: type }),
+  });
+
+  const filtered = featured ? projects.filter((p) => p.featured) : projects;
+
   const headingId =
     title
       .toLowerCase()
@@ -29,7 +65,7 @@ export function ProjectSection({ projects, title, description, seeMoreUrl }: Pro
         {description}
       </p>
       <div className="relative grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 pb-4 card-tilt-odd items-stretch">
-        {projects.map((project) => (
+        {filtered.map((project) => (
           <div key={project.slug} data-anime className="h-full">
             <ProjectCard
               slug={project.slug}
