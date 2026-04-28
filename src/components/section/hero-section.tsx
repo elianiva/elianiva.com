@@ -6,6 +6,7 @@ import LinkedinLogoIcon from "~icons/ph/linkedin-logo-duotone";
 import CvLogoIcon from "~icons/ph/read-cv-logo-duotone";
 import XLogoIcon from "~icons/ph/x-logo-duotone";
 import { Heading } from "../ui/heading";
+import { Button } from "../ui/button";
 
 interface Social {
   icon: React.ComponentType<{ className?: string }>;
@@ -82,28 +83,30 @@ export function HeroSection() {
           {socials.map((social) => {
             const Icon = social.icon;
             return (
-              <motion.a
+              <Button
                 key={social.label}
-                variants={{
-                  hidden: { opacity: 0, y: 16 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: { duration: 0.4, ease: [0.19, 1, 0.22, 1] },
-                  },
-                }}
-                className="group focus:outline-none focus:ring-0"
-                href={social.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={social.label}
-                aria-label={`Visit ${social.label} profile`}
+                variant="ghost"
+                render={
+                  <motion.a
+                    variants={{
+                      hidden: { opacity: 0, y: 16 },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        transition: { duration: 0.4, ease: [0.19, 1, 0.22, 1] },
+                      },
+                    }}
+                    href={social.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={social.label}
+                    aria-label={`Visit ${social.label} profile`}
+                  />
+                }
               >
-                <div className="group-hover:rounded-2xl transition-all py-2 px-3 text-pink-950 group-hover:text-pink-950 bg-white/70 flex items-center gap-2 group-focus:outline-none group-focus:ring group-focus:ring-pink-400 group-focus:ring-offset-2">
-                  <Icon className="w-4 h-4" />
-                  <span className="text-xs font-mono uppercase">{social.label}</span>
-                </div>
-              </motion.a>
+                <Icon className="w-4 h-4" />
+                <span className="text-xs font-mono uppercase">{social.label}</span>
+              </Button>
             );
           })}
         </motion.div>
