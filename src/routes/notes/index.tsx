@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { loadNotes, buildGraph } from "~/lib/notes";
-import { BackButton } from "~/components/BackButton";
-import { Search } from "~/components/notes/Search";
-import { NotesTabs } from "~/components/notes/NotesTabs";
-import { GraphModal } from "~/components/notes/GraphModal";
+import { BackButton } from "~/components/back-button";
+import { Search } from "~/components/notes/search";
+import { NotesTabs } from "~/components/notes/notes-tabs";
+import { GraphModal } from "~/components/notes/graph-modal";
 import { useState, useMemo } from "react";
 import GraphIcon from "~icons/ph/graph";
 import type { Note } from "~/types/notes";

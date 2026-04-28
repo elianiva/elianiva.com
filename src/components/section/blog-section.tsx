@@ -1,5 +1,5 @@
-import { PostCard } from "~/components/card/PostCard";
-import { ViewAllButton } from "~/components/ViewAllButton";
+import { PostCard } from "~/components/card/post-card";
+import { ViewAllButton } from "~/components/view-all-button";
 
 interface BlogPost {
   slug: string;

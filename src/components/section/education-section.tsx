@@ -1,4 +1,4 @@
-import { EducationCard } from "~/components/card/EducationCard";
+import { EducationCard } from "~/components/card/education-card";
 import type { Education } from "~/types/education";
 
 const PAST_EDUCATIONS: Education[] = [

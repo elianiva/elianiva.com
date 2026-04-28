@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { PostCard } from "~/components/card/PostCard";
+import { PostCard } from "~/components/card/post-card";
 import XIcon from "~icons/ph/x";
 import type { Post } from "content-collections";
 

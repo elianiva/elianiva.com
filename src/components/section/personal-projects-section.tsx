@@ -1,4 +1,4 @@
-import { ProjectSection } from "~/components/section/ProjectSection";
+import { ProjectSection } from "~/components/section/project-section";
 
 interface Project {
   slug: string;

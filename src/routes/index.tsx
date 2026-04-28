@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { allPosts, allProjects } from "content-collections";
-import { HeroSection } from "~/components/section/HeroSection";
-import { ScrollReveal } from "~/components/animation/ScrollReveal";
-import { BlogSection } from "~/components/section/BlogSection";
-import { WorkExperienceSection } from "~/components/section/WorkExperienceSection";
-import { OpenSourceSection } from "~/components/section/OpenSourceSection";
-import { PersonalProjectsSection } from "~/components/section/PersonalProjectsSection";
+import { HeroSection } from "~/components/section/hero-section";
+import { ScrollReveal } from "~/components/animation/scroll-reveal";
+import { BlogSection } from "~/components/section/blog-section";
+import { WorkExperienceSection } from "~/components/section/work-experience-section";
+import { OpenSourceSection } from "~/components/section/open-source-section";
+import { PersonalProjectsSection } from "~/components/section/personal-projects-section";
 import { workExperiences } from "~/data/work-experience";
 
 const getHomeData = createServerFn({ method: "GET" }).handler(async () => {

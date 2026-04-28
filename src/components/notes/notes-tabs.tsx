@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import type { Note, NoteCategory } from "~/types/notes";
-import { ArticleCard } from "./ArticleCard";
-import { VaultCard } from "./VaultCard";
-import { MusicCard } from "./MusicCard";
-import { PeopleCard } from "./PeopleCard";
+import { ArticleCard } from "./article-card";
+import { VaultCard } from "./vault-card";
+import { MusicCard } from "./music-card";
+import { PeopleCard } from "./people-card";
 
 interface NotesTabsProps {
   notes: Note[];

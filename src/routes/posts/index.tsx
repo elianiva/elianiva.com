@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { allPosts } from "content-collections";
-import { PostList } from "~/components/PostList";
-import { BackButton } from "~/components/BackButton";
+import { PostList } from "~/components/post-list";
+import { BackButton } from "~/components/back-button";
 import sites from "~/data/sites";
 
 const getPosts = createServerFn({ method: "GET" }).handler(async () => {

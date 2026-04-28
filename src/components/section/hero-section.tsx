@@ -1,4 +1,4 @@
-import { HeroReveal } from "~/components/animation/HeroReveal";
+import { HeroReveal } from "~/components/animation/hero-reveal";
 import siteData from "~/data/sites";
 import EnvelopeIcon from "~icons/ph/envelope-duotone";
 import GithubLogoIcon from "~icons/ph/github-logo-duotone";

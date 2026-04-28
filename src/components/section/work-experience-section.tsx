@@ -1,4 +1,4 @@
-import { WorkExperienceCard } from "~/components/card/WorkExperienceCard";
+import { WorkExperienceCard } from "~/components/card/work-experience-card";
 import type { WorkExperience } from "~/data/work-experience";
 
 interface WorkExperienceSectionProps {

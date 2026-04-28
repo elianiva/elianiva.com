@@ -1,8 +1,8 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { loadNotes } from "~/lib/notes";
-import { BackButton } from "~/components/BackButton";
-import { Backlinks } from "~/components/notes/Backlinks";
-import { SEO } from "~/components/SEO";
+import { BackButton } from "~/components/back-button";
+import { Backlinks } from "~/components/notes/backlinks";
+import { SEO } from "~/components/seo";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import wikiLinkPlugin from "@flowershow/remark-wiki-link";

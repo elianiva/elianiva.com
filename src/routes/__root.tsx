@@ -12,7 +12,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import { SEO } from "../components/SEO";
 import { Frame } from "../components/Frame";
-import { CanvasBackground } from "../components/CanvasBackground";
+import { CanvasBackground } from "../components/canvas-background.tsx";
 import { Footer } from "../components/Footer";
 
 import "@fontsource/hepta-slab";

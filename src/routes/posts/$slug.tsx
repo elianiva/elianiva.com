@@ -2,9 +2,9 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allPosts } from "content-collections";
-import { BackButton } from "~/components/BackButton";
-import { CodeCopy } from "~/components/CodeCopy";
-import { SEO } from "~/components/SEO";
+import { BackButton } from "~/components/back-button";
+import { CodeCopy } from "~/components/code-copy";
+import { SEO } from "~/components/seo";
 import sites from "~/data/sites";
 import PencilIcon from "~icons/ph/note-pencil";
 

@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { allProjects } from "content-collections";
-import { BackButton } from "~/components/BackButton";
-import { ProjectSection } from "~/components/section/ProjectSection";
+import { BackButton } from "~/components/back-button";
+import { ProjectSection } from "~/components/section/project-section";
 import sites from "~/data/sites";
 
 const getProjects = createServerFn({ method: "GET" }).handler(async () => {

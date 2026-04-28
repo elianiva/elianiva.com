@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getGitHubPRs } from "~/lib/github";
-import { PRDropdown } from "~/components/opensource/PRDropdown";
+import { PRDropdown } from "~/components/opensource/pr-dropdown";
 
 export function OpenSourceSection() {
   const { data } = useSuspenseQuery({
