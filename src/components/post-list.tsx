@@ -4,7 +4,7 @@ import XIcon from "~icons/ph/x";
 import type { Post } from "content-collections";
 
 interface PostListProps {
-  posts: Post[];
+  posts: Omit<Post, "mdx">[];
 }
 
 function searchPosts(posts: Post[], query: string): Post[] {
@@ -174,7 +174,7 @@ export function PostList({ posts }: PostListProps) {
       </p>
 
       {/* Post grid */}
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 items-stretch">
+      <div className="space-y-1">
         {filteredPosts.map((post) => (
           <PostCard
             key={post.slug}

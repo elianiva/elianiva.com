@@ -1,5 +1,6 @@
 import { WorkExperienceCard } from "~/components/card/work-experience-card";
 import type { WorkExperience } from "~/data/work-experience";
+import { Heading } from "../ui/heading";
 
 interface WorkExperienceSectionProps {
   workExperiences: WorkExperience[];
@@ -8,13 +9,9 @@ interface WorkExperienceSectionProps {
 export function WorkExperienceSection({ workExperiences }: WorkExperienceSectionProps) {
   return (
     <section className="py-4 md:py-8 px-2 md:px-8">
-      <h2
-        id="experience-heading"
-        data-anime
-        className="work-experience-card text-2xl font-bold font-display text-pink-950 tracking-wide pb-4"
-      >
+      <Heading level={2} data-anime id="experience-heading">
         Work Experience
-      </h2>
+      </Heading>
       <div className="relative flex flex-col gap-2">
         {workExperiences.map((experience, index) => (
           <div key={experience.company} data-anime>

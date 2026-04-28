@@ -5,6 +5,7 @@ import GithubLogoIcon from "~icons/ph/github-logo-duotone";
 import LinkedinLogoIcon from "~icons/ph/linkedin-logo-duotone";
 import CvLogoIcon from "~icons/ph/read-cv-logo-duotone";
 import XLogoIcon from "~icons/ph/x-logo-duotone";
+import { Heading } from "../ui/heading";
 
 interface Social {
   icon: React.ComponentType<{ className?: string }>;
@@ -28,16 +29,13 @@ export function HeroSection() {
         className="relative flex flex-col-reverse md:flex-row gap-6 pb-8 px-2 md:px-8 with-box-underline"
       >
         <div className="flex-1">
-          <h1
-            data-hero-reveal="name"
-            className="text-2xl md:text-3xl font-bold font-display text-pink-950 tracking-wide"
-          >
+          <Heading level={1} className="first-letter:text-pink-950" data-hero-reveal="name">
             Dicha Z
-            <span className="text-pink-600" title="Yes, this is where the username comes from">
+            <span className="text-pink-500" title="Yes, this is where the username comes from">
               elianiva
             </span>
             n Arkana
-          </h1>
+          </Heading>
           <p
             data-hero-reveal="desc"
             className="text-sm md:text-base leading-relaxed font-body text-pink-950/80 py-3 max-w-[60ch]"

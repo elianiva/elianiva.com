@@ -6,6 +6,7 @@ import { getProjectSection } from "~/components/section/project-section";
 import { WorkExperienceSection } from "~/components/section/work-experience-section";
 import { OpenSourceSection } from "~/components/section/open-source-section";
 import { workExperiences } from "~/data/work-experience";
+import { Heading } from "~/components/ui/heading";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -43,13 +44,9 @@ function Home() {
           aria-labelledby="about-heading"
           className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline"
         >
-          <h2
-            data-anime
-            id="about-heading"
-            className="text-xl md:text-2xl font-bold font-display text-pink-950 pb-4 tracking-wide"
-          >
+          <Heading level={2} data-anime id="about-heading">
             About Me
-          </h2>
+          </Heading>
           <p data-anime className="text-sm md:text-base leading-relaxed font-body text-pink-950/80">
             Software Engineer doing frontend things. I like making interfaces that don&apos;t annoy
             people and enjoy removing AI slop. Currently trying to get better at the design side of

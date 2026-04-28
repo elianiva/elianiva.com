@@ -3,6 +3,7 @@ import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
 import { ProjectCard } from "~/components/card/project-card";
 import { ViewAllButton } from "~/components/view-all-button";
+import { Heading } from "../ui/heading";
 
 export type ProjectType = "personal" | "open-source" | "assignment";
 
@@ -39,13 +40,9 @@ export const getProjectSection = createServerFn({ method: "GET" })
 
     return renderServerComponent(
       <section className="py-4 md:py-8 px-2 md:px-8">
-        <h2
-          data-anime
-          id={headingId}
-          className="text-2xl font-bold font-display text-pink-950 tracking-wide pt-2"
-        >
+        <Heading level={2} data-anime id={headingId}>
           {title}
-        </h2>
+        </Heading>
         <p data-anime className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
           {description}
         </p>

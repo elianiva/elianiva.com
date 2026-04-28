@@ -4,6 +4,7 @@ import { allPosts } from "content-collections";
 import { PostList } from "~/components/post-list";
 import { BackButton } from "~/components/back-button";
 import sites from "~/data/sites";
+import { Heading } from "~/components/ui/heading";
 
 const getPosts = createServerFn({ method: "GET" }).handler(async () => {
   return allPosts
@@ -15,6 +16,7 @@ const getPosts = createServerFn({ method: "GET" }).handler(async () => {
       date: p.date,
       description: p.description,
       tags: p.tags,
+      draft: p.draft,
     }));
 });
 
@@ -64,13 +66,7 @@ function PostsPage() {
     <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
         <BackButton />
-        <h1 className="text-2xl md:text-3xl font-bold font-display text-pink-950 tracking-wide pt-6 pb-4">
-          Blog Posts
-        </h1>
-        <p className="text-sm md:text-base font-body text-pink-950/70 pb-6">
-          All my blog posts in one place. Use the search box to filter by title or use # to filter
-          by tags.
-        </p>
+        <Heading level={1} className="mb-4">Blog Posts</Heading>
         <PostList posts={posts} />
       </div>
     </div>

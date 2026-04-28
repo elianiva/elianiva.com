@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getGitHubPRs } from "~/lib/github";
 import { PRDropdown } from "~/components/opensource/pr-dropdown";
+import { Heading } from "../ui/heading";
 
 export function OpenSourceSection() {
   const { data } = useSuspenseQuery({
@@ -14,13 +15,9 @@ export function OpenSourceSection() {
 
   return (
     <section className="py-4 md:py-8 px-2 md:px-8">
-      <h2
-        id="open-source-contributions-heading"
-        data-anime
-        className="work-experience-card text-2xl font-bold font-display text-pink-950 tracking-wide pt-2"
-      >
+      <Heading level={2} data-anime id="open-source-heading">
         Open Source Contributions
-      </h2>
+      </Heading>
       <p data-anime className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
         Here are some of my merged pull requests across various open source projects.
         {totalPRs > 0 && (
@@ -37,7 +34,7 @@ export function OpenSourceSection() {
           </p>
         </div>
       ) : (
-        <div data-anime className="space-y-2">
+        <div data-anime className="space-y-1">
           {repos.map(([repoName, group]) => (
             <PRDropdown key={repoName} repository={group.repository} prs={group.prs} />
           ))}

@@ -1,15 +1,16 @@
+import type { JSX } from "react";
 import { Link } from "@tanstack/react-router";
 import CalendarIcon from "~icons/ph/calendar-blank";
 
-interface PostCardProps {
+type PostCardProps = {
   title: string;
   description: string;
   href: string;
   date: string;
   tags: string[];
-}
+} & JSX.IntrinsicElements["div"];
 
-export function PostCard({ title, description, href, date, tags }: PostCardProps) {
+export function PostCard({ title, description, href, date, tags, ...props }: PostCardProps) {
   const slug = href.split("/").pop() || "";
 
   return (
@@ -18,41 +19,46 @@ export function PostCard({ title, description, href, date, tags }: PostCardProps
       role="article"
       aria-labelledby="post-title"
       style={{ viewTransitionName: `post-card-${slug}` }}
+      {...props}
     >
       <Link
         to={href}
-        className="grid grid-rows-[auto_2rem_auto_2rem] p-4 h-full focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+        className="flex p-4 h-full focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         aria-labelledby="post-title"
       >
-        <h3
-          id="post-title"
-          className="font-display md:text-base font-bold capitalize text-pink-950 group-hover:text-pink-700 transition-property-color duration-100 ease-out"
-        >
-          {title}
-        </h3>
-        <div className="text-xs flex gap-1 items-center text-pink-950/70 border-b border-pink-200/50">
-          <CalendarIcon className="w-4 h-4 block" />
-          <span>
-            {new Date(date).toLocaleDateString("en-GB", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </span>
+        <div className="flex-1">
+          <h3
+            id="post-title"
+            className="font-display md:text-base font-bold capitalize text-pink-950 group-hover:text-pink-700 transition-property-color duration-100 ease-out"
+          >
+            {title}
+          </h3>
+          <p
+            className="font-body leading-normal text-pink-950/70 text-sm"
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
         </div>
-        <p
-          className="font-body leading-normal text-pink-950/70 pt-2 text-sm"
-          dangerouslySetInnerHTML={{ __html: description }}
-        />
-        <div className="flex gap-1 self-end flex-wrap">
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-xs font-mono text-pink-950/70 bg-pink-50/80 px-2 py-0.5"
-            >
-              #{tag}
+        <div className="flex-1 flex flex-col gap-1 justify-between align-end">
+          <div className="text-xs flex gap-1 justify-end text-pink-950/70">
+            <CalendarIcon className="w-4 h-4 block" />
+            <span>
+              {new Date(date).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </span>
-          ))}
+          </div>
+          <div className="flex gap-1 flex-wrap justify-end">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-xs font-mono text-pink-950/70 bg-pink-50/80 px-2 py-0.5"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
         </div>
       </Link>
     </div>

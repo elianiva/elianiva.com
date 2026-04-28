@@ -15,12 +15,6 @@ import { Frame } from "../components/frame";
 import { CanvasBackground } from "../components/canvas-background.tsx";
 import { Footer } from "../components/footer";
 
-import "@fontsource/hepta-slab";
-import "@fontsource/varela-round";
-import "@fontsource/ibm-plex-mono/400.css";
-import "@fontsource/ibm-plex-mono/500.css";
-import "@fontsource/ibm-plex-mono/400-italic.css";
-
 import appCss from "../styles.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
@@ -128,7 +122,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           Skip to main content
         </a>
 
-        {/* <CanvasBackground /> */}
+        <CanvasBackground />
         <Frame />
 
         <main id="main-content" role="main" className="relative z-0">

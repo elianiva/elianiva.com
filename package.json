@@ -13,13 +13,17 @@
     "deploy": "pnpm run build && wrangler deploy",
     "format": "oxfmt --write .",
     "lint": "oxlint .",
-    "cf-types": "wrangler types"
+    "cf-types": "wrangler types",
+    "ui": "pnpm dlx shadcn@latest"
   },
   "dependencies": {
     "@cf-wasm/resvg": "^0.3.3",
     "@cf-wasm/satori": "^0.3.5",
     "@cloudflare/vite-plugin": "^1.26.0",
     "@flowershow/remark-wiki-link": "^3.4.0",
+    "@fontsource-variable/google-sans": "^5.2.1",
+    "@fontsource-variable/instrument-sans": "^5.2.8",
+    "@fontsource-variable/space-grotesk": "^5.2.10",
     "@fontsource/hepta-slab": "^5.2.8",
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@fontsource/varela-round": "^5.2.8",
@@ -42,6 +46,7 @@
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.11.0",
     "octokit": "^5.0.5",
+    "radix-ui": "^1.4.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
@@ -53,6 +58,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "satori-html": "^0.3.2",
+    "shadcn": "^4.5.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.1.18",
     "tw-animate-css": "^1.3.6",
@@ -94,7 +100,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
-      "lightningcss"
+      "lightningcss",
+      "msw"
     ]
   }
 }
