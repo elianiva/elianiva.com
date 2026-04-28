@@ -114,9 +114,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
                 onClick={(e) => e.stopPropagation()}
               >
                 <span className="hidden sm:inline">{repository.full_name}</span>
-                <span className="inline sm:hidden">
-                  {repository.full_name.split("/").at(-1)}
-                </span>
+                <span className="inline sm:hidden">{repository.full_name.split("/").at(-1)}</span>
                 <ArrowUpRightIcon className="inline-block size-3" />
               </a>
             </h3>
@@ -130,9 +128,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
               </div>
               <div className="flex items-center justify-end gap-1 font-mono text-xs text-pink-950/70">
                 <StarIcon className="size-3 text-yellow-400" />
-                <span className="font-bold">
-                  {abbreviateNumber(repository.stargazerCount)}
-                </span>
+                <span className="font-bold">{abbreviateNumber(repository.stargazerCount)}</span>
               </div>
             </div>
             <p className="font-mono text-xs text-pink-950/50 mt-1 text-right">
@@ -147,10 +143,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
           <div id={`pr-details-${repository.name}`} className="p-3">
             <div className="space-y-2">
               {prs.map((pr) => (
-                <div
-                  key={pr.id}
-                  className="not-last:border-b border-pink-200/50 not-last:pb-2"
-                >
+                <div key={pr.id} className="not-last:border-b border-pink-200/50 not-last:pb-2">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <a
@@ -163,9 +156,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
                       </a>
                       <p className="font-mono text-xs text-pink-950/50 mt-1">
                         #{pr.number} • merged{" "}
-                        {pr.merged_at
-                          ? new Date(pr.merged_at).toLocaleDateString()
-                          : ""}
+                        {pr.merged_at ? new Date(pr.merged_at).toLocaleDateString("en-GB") : ""}
                       </p>
                     </div>
                     <div className="flex flex-col items-end gap-1 text-xs font-mono text-pink-950/70">
