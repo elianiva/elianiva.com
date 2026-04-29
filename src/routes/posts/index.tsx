@@ -66,7 +66,9 @@ function PostsPage() {
     <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
         <BackButton />
-        <Heading level={1} className="mb-4">Blog Posts</Heading>
+        <Heading level={1} className="mb-4">
+          Blog Posts
+        </Heading>
         <PostList posts={posts} />
       </div>
     </div>

@@ -86,6 +86,7 @@ export function HeroSection() {
               <Button
                 key={social.label}
                 variant="ghost"
+                nativeButton={false}
                 render={
                   <motion.a
                     variants={{

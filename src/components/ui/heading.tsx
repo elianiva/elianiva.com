@@ -43,7 +43,7 @@ export function Heading<TLevel extends HeadingLevel>({
           {
             "-bottom-1": level === 1,
             "bottom-0": level != 3,
-          }
+          },
         )}
       />
       <div

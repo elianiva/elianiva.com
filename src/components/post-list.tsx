@@ -139,10 +139,11 @@ export function PostList({ posts }: PostListProps) {
                 role="option"
                 aria-selected={i === activeOptionIndex}
                 onMouseDown={() => addTag(tag)}
-                className={`px-4 py-2 text-sm font-body cursor-pointer ${i === activeOptionIndex
+                className={`px-4 py-2 text-sm font-body cursor-pointer ${
+                  i === activeOptionIndex
                     ? "bg-pink-100 text-pink-900"
                     : "text-pink-950/70 hover:bg-pink-50"
-                  }`}
+                }`}
               >
                 #{tag}
               </li>

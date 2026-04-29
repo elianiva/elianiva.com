@@ -2,8 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { motion, useReducedMotion } from "motion/react";
 import { allPosts } from "content-collections";
 import { PostCard } from "~/components/card/post-card";
-import { ViewAllButton } from "~/components/view-all-button";
 import { Heading } from "../ui/heading";
+import { Link } from "@tanstack/react-router";
+import { Button } from "../ui/button";
 
 export const getBlogPosts = createServerFn({ method: "GET" }).handler(async () => {
   return allPosts
@@ -34,7 +35,7 @@ const item = {
     y: 0,
     transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] },
   },
-};
+} as const;
 
 interface BlogSectionProps {
   posts: Awaited<ReturnType<typeof getBlogPosts>>;
@@ -75,8 +76,10 @@ export function BlogSection({ posts }: BlogSectionProps) {
           </motion.div>
         ))}
       </div>
-      <motion.div variants={item}>
-        <ViewAllButton href="/posts" label="View all posts" ariaLabel="View all blog posts" />
+      <motion.div variants={item} className="flex justify-end">
+        <Button render={<Link to="/posts" />} variant="link" className="text-sm p-0 font-normal">
+          View All Posts
+        </Button>
       </motion.div>
     </motion.section>
   );

@@ -26,21 +26,9 @@ importers:
       '@fontsource-variable/google-sans':
         specifier: ^5.2.1
         version: 5.2.1
-      '@fontsource-variable/instrument-sans':
-        specifier: ^5.2.8
-        version: 5.2.8
-      '@fontsource-variable/space-grotesk':
-        specifier: ^5.2.10
-        version: 5.2.10
-      '@fontsource/hepta-slab':
-        specifier: ^5.2.8
-        version: 5.2.8
       '@fontsource/ibm-plex-mono':
         specifier: ^5.2.7
         version: 5.2.7
-      '@fontsource/varela-round':
-        specifier: ^5.2.8
-        version: 5.2.8
       '@mdx-js/rollup':
         specifier: ^3.1.1
         version: 3.1.1(rollup@4.60.2)
@@ -1069,20 +1057,8 @@ packages:
   '@fontsource-variable/google-sans@5.2.1':
     resolution: {integrity: sha512-dMyMlJVRJgQvvYlJLcrg2oiVzlKAuIMrbDxIMchEiMBGmpOA6VnVblj3cPfJyA0/fNPQS6krZaiJyJjHJZmkzw==}
 
-  '@fontsource-variable/instrument-sans@5.2.8':
-    resolution: {integrity: sha512-mTCaukbdIjjoipj2E3Q5XoZM3ZxJWdzyHevf/LG/0PHlfF9Q85pxOM7B7A9MerFyxmRzz5kVlumgIvgDSG4CPg==}
-
-  '@fontsource-variable/space-grotesk@5.2.10':
-    resolution: {integrity: sha512-yJQO/o35/hAP3CFnpdFTwQku2yzJOae2HIpBmqkOVoxhhXJaQP3g+b6Jrz7u+eI7A5ZdCIf88uMWpBJdFiGr5w==}
-
-  '@fontsource/hepta-slab@5.2.8':
-    resolution: {integrity: sha512-eanovOpfRSDMKqHfZEZqCE831L110FGWlNWw1auss5SG61AnO/4YbhvoSHii3ZULQ01Ig5wG4bqwBBbkfTOzMA==}
-
   '@fontsource/ibm-plex-mono@5.2.7':
     resolution: {integrity: sha512-MKAb8qV+CaiMQn2B0dIi1OV3565NYzp3WN5b4oT6LTkk+F0jR6j0ZN+5BKJiIhffDC3rtBULsYZE65+0018z9w==}
-
-  '@fontsource/varela-round@5.2.8':
-    resolution: {integrity: sha512-9jati7lFSnJlz95e8nxTDFqvKNs3XY9fqYb6f8bUXCLa0iDGp0cvdkwRaTNYjYtrpB+ymrHMeNoVo5oEd/ubcg==}
 
   '@hono/node-server@1.19.14':
     resolution: {integrity: sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw==}
@@ -6209,15 +6185,7 @@ snapshots:
 
   '@fontsource-variable/google-sans@5.2.1': {}
 
-  '@fontsource-variable/instrument-sans@5.2.8': {}
-
-  '@fontsource-variable/space-grotesk@5.2.10': {}
-
-  '@fontsource/hepta-slab@5.2.8': {}
-
   '@fontsource/ibm-plex-mono@5.2.7': {}
-
-  '@fontsource/varela-round@5.2.8': {}
 
   '@hono/node-server@1.19.14(hono@4.12.15)':
     dependencies:

@@ -150,8 +150,9 @@ function ProjectDetailPage() {
                   <div key={stackName} className="flex items-center gap-3 group">
                     <div className="flex items-center justify-center p-2 bg-pink-50/80 border-[0.5px] border-pink-200/50 w-12 h-12 shrink-0">
                       <img
-                        className={`w-full h-full object-contain ${stackName.toLowerCase() === "nextjs" ? "filter invert" : ""
-                          }`}
+                        className={`w-full h-full object-contain ${
+                          stackName.toLowerCase() === "nextjs" ? "filter invert" : ""
+                        }`}
                         src={`/assets/logo/${stackName.toLowerCase().replace(/\s+/g, "-")}.png`}
                         alt={stackName}
                       />

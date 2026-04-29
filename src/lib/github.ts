@@ -1,6 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { env } from "#/env";
-import type { GitHubPullRequest, GroupedPRs, GraphQLResponse } from "~/types/github-pr";
+import type {
+  GitHubPullRequest,
+  GroupedPRs,
+  GraphQLResponse,
+  GitHubContributionsResponse,
+  ContributionDay,
+} from "~/types/github-pr";
 
 type Entry<T> = { value: T; at: number };
 
@@ -150,5 +156,68 @@ export const getGitHubPRs = createServerFn({ method: "GET" }).handler(async () =
     const prs = await fetchAllPRs(username, minStars);
     const grouped = groupPRs(prs);
     return { grouped, totalPRs: prs.length };
+  });
+});
+const CONTRIBUTIONS_QUERY = `
+  query($username: String!) {
+    user(login: $username) {
+      contributionsCollection {
+        contributionCalendar {
+          totalContributions
+          weeks {
+            contributionDays {
+              date
+              contributionCount
+              contributionLevel
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const getGitHubContributions = createServerFn({ method: "GET" }).handler(async () => {
+  const username = "elianiva";
+
+  return cached("github-contributions", TTL.long, async () => {
+    const token = env.GH_TOKEN;
+    if (!token) {
+      console.warn("GH_TOKEN not set, cannot fetch GitHub contributions");
+      return null;
+    }
+
+    const { Octokit } = await import("octokit");
+    const octokit = new Octokit({ auth: token });
+
+    const response: GitHubContributionsResponse = await octokit.graphql(CONTRIBUTIONS_QUERY, {
+      username,
+    });
+
+    const calendar = response.user.contributionsCollection.contributionCalendar;
+
+    // Calculate longest streak
+    let longestStreak = 0;
+    let currentStreak = 0;
+    const allDays: ContributionDay[] = [];
+    for (const week of calendar.weeks) {
+      for (const day of week.contributionDays) {
+        allDays.push(day);
+      }
+    }
+    for (const day of allDays) {
+      if (day.contributionCount > 0) {
+        currentStreak++;
+        longestStreak = Math.max(longestStreak, currentStreak);
+      } else {
+        currentStreak = 0;
+      }
+    }
+
+    return {
+      totalContributions: calendar.totalContributions,
+      weeks: calendar.weeks,
+      longestStreak,
+    };
   });
 });

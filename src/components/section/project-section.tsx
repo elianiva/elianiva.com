@@ -4,6 +4,8 @@ import { allProjects } from "content-collections";
 import { ProjectCard } from "~/components/card/project-card";
 import { ViewAllButton } from "~/components/view-all-button";
 import { Heading } from "../ui/heading";
+import { Button } from "../ui/button";
+import { Link } from "@tanstack/react-router";
 
 export type ProjectType = "personal" | "open-source" | "assignment";
 
@@ -73,9 +75,7 @@ export function ProjectSection({ title, description, projects, seeMoreUrl }: Pro
         </Heading>
       </motion.div>
       <motion.div variants={item}>
-        <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
-          {description}
-        </p>
+        <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">{description}</p>
       </motion.div>
       <div className="relative space-y-1 pb-4 card-tilt-odd items-stretch">
         {projects.map((project) => (
@@ -91,12 +91,14 @@ export function ProjectSection({ title, description, projects, seeMoreUrl }: Pro
         ))}
       </div>
       {typeof seeMoreUrl === "string" && (
-        <motion.div variants={item}>
-          <ViewAllButton
-            href={seeMoreUrl}
-            label="View all projects"
-            ariaLabel="View all projects"
-          />
+        <motion.div variants={item} className="flex justify-end">
+          <Button
+            render={<Link to={seeMoreUrl} />}
+            variant="link"
+            className="text-sm p-0 font-normal"
+          >
+            View All Projects
+          </Button>
         </motion.div>
       )}
     </motion.section>
