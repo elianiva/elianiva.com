@@ -1,6 +1,5 @@
 import { cached, TTL } from "./cache";
 import { createServerFn } from "@tanstack/react-start";
-import { env } from "~/env";
 import type {
   GitHubPullRequest,
   GroupedPRs,
@@ -47,7 +46,7 @@ const GITHUB_GRAPHQL_QUERY = `
 `;
 
 async function fetchAllPRs(username: string, minStars: number): Promise<GitHubPullRequest[]> {
-  const token = env.GH_TOKEN;
+  const token = process.env.GH_TOKEN;
   if (!token) {
     console.warn("GH_TOKEN not set, cannot fetch GitHub PRs");
     return [];
@@ -158,7 +157,7 @@ export const getGitHubContributions = createServerFn({ method: "GET" }).handler(
   const username = "elianiva";
 
   return cached("github-contributions", TTL.long, async () => {
-    const token = env.GH_TOKEN;
+    const token = process.env.GH_TOKEN;
     if (!token) {
       console.warn("GH_TOKEN not set, cannot fetch GitHub contributions");
       return null;

@@ -1,5 +1,4 @@
 import matter from "gray-matter";
-import { env } from "~/env";
 import type { Note, NoteCategory, NotesGraph } from "~/types/notes";
 import { createServerFn } from "@tanstack/react-start";
 
@@ -159,16 +158,16 @@ async function loadNotesFromLocalFS(): Promise<Note[]> {
 
 async function loadNotesFromGithub(): Promise<Note[]> {
   const { Octokit } = await import("octokit");
-  const token = env.GH_TOKEN;
+  const token = process.env.GH_TOKEN;
   if (!token) {
     console.warn("GH_TOKEN not set, cannot load notes from GitHub");
     return [];
   }
 
   const octokit = new Octokit({ auth: token });
-  const owner = env.NOTES_OWNER || "elianiva";
-  const repo = env.NOTES_REPO || "notes";
-  const branch = env.NOTES_BRANCH || "main";
+  const owner = process.env.NOTES_OWNER || "elianiva";
+  const repo = process.env.NOTES_REPO || "notes";
+  const branch = process.env.NOTES_BRANCH || "main";
 
   try {
     const { data: treeData } = await octokit.rest.git.getTree({
