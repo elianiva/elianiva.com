@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
-import fragSource from "#/shaders/bg.frag.glsl?raw";
-import vertSource from "#/shaders/bg.vert.glsl?raw";
+import fragSource from "~/shaders/bg.frag.glsl?raw";
+import vertSource from "~/shaders/bg.vert.glsl?raw";
 
 const SCALE = 0.5;
 const TARGET_FPS = 30;

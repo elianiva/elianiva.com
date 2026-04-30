@@ -1,5 +1,5 @@
 import matter from "gray-matter";
-import { env } from "#/env";
+import { env } from "~/env";
 import type { Note, NoteCategory, NotesGraph } from "~/types/notes";
 import { createServerFn } from "@tanstack/react-start";
 
