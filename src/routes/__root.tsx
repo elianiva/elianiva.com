@@ -10,6 +10,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
+import TanstackQueryProvider from "../integrations/tanstack-query/root-provider";
 import { SEO } from "../components/seo";
 import { Frame } from "../components/frame";
 import { CanvasBackground } from "../components/canvas-background.tsx";
@@ -126,7 +127,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Frame />
 
         <main id="main-content" role="main" className="relative z-0">
-          {children}
+          <TanstackQueryProvider>{children}</TanstackQueryProvider>
         </main>
 
         <Footer />
