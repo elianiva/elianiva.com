@@ -3,8 +3,8 @@ title: Migrating from Sapper to SvelteKit
 date: 2021-04-14
 description: A post about my experience migrating my blog to SvelteKit.
 tags:
-    - svelte
-    - website
+  - svelte
+  - website
 ---
 
 [pre-link]: /posts/trying-out-sveltekit#introduction
@@ -70,20 +70,20 @@ It is called as `endpoints` according to [the docs][endpoint-link]. It looks a b
 import { getResources } from "../../utils/fetch-all.js";
 
 export async function get(req, res, next) {
-	const { limit, title } = req.query;
+  const { limit, title } = req.query;
 
-	let result = getResources("post");
+  let result = getResources("post");
 
-	if (limit) result = result.slice(0, limit);
-	if (title) result = result.filter((item) => item.title === title);
+  if (limit) result = result.slice(0, limit);
+  if (title) result = result.filter((item) => item.title === title);
 
-	if (result !== null) {
-		res.setHeader("Content-Type", "application/json");
-		res.end(JSON.stringify(result));
-		return;
-	}
+  if (result !== null) {
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(result));
+    return;
+  }
 
-	next();
+  next();
 }
 ```
 
@@ -94,28 +94,28 @@ import { getResources } from "$lib/utils/fetch-data";
 import type { RequestHandler } from "@sveltejs/kit";
 
 export const get: RequestHandler = async ({ query: q }) => {
-	let result = getResources("post");
+  let result = getResources("post");
 
-	const limit = parseInt(q.get("limit"));
-	const title = q.get("title");
+  const limit = parseInt(q.get("limit"));
+  const title = q.get("title");
 
-	if (limit) result = result.slice(0, limit);
-	if (title) result = result.filter((item) => item.title === title);
+  if (limit) result = result.slice(0, limit);
+  if (title) result = result.filter((item) => item.title === title);
 
-	if (result) {
-		return {
-			status: 200,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: result,
-		};
-	}
+  if (result) {
+    return {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: result,
+    };
+  }
 
-	return {
-		status: 404,
-		body: "Not Found",
-	};
+  return {
+    status: 404,
+    body: "Not Found",
+  };
 };
 ```
 

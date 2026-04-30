@@ -3,7 +3,7 @@ title: Turning issues into posts
 date: 2025-04-10
 description: Github issues combined with a simple workflow script to manage contents
 tags:
-    - website
+  - website
 ---
 
 If you don't know already, I'm using [Astro](https://astro.build/) to build this website. The code is hosted publicly at [elianiva/elianiva.com](https://github.com/elianiva/elianiva.com) if you want to check it out.
@@ -65,9 +65,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:                # Job-level permissions configuration starts here
-      contents: write           # 'write' access to repository contents
-      pull-requests: write      # 'write' access to pull requests
+    permissions: # Job-level permissions configuration starts here
+      contents: write # 'write' access to repository contents
+      pull-requests: write # 'write' access to pull requests
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -113,7 +113,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 ```
-<small class="block opacity-70 -mt-4 mb-4">Yeah, he vibe coded this, that's why it looks a bit dodgy, he probably improved it or something in his repo but this is the one I took</small>
+
+<small class="block opacity-70 -mt-4 mb-4">
+  Yeah, he vibe coded this, that's why it looks a bit dodgy, he probably improved it or something in
+  his repo but this is the one I took
+</small>
 
 Basically, it does the following:
 
@@ -133,7 +137,7 @@ It's pretty simple to do, I just have to add this one line for the job section.
 
 ```yaml
 if: github.actor == github.repository_owner
-````
+```
 
 It checks if the actor--the person who created this issue--is the same as the owner of the repository. If it's the same, then it will run the job. Otherwise, it won't. Pretty straight forward.
 
@@ -151,7 +155,8 @@ if (!issue) {
 const date = new Date().toISOString().split("T")[0];
 const title = issue.title;
 const body = issue.body || "";
-const type = issue.labels?.find(label => label.name.startsWith("type:"))?.name.split(":")[1] || "";
+const type =
+  issue.labels?.find((label) => label.name.startsWith("type:"))?.name.split(":")[1] || "";
 
 if (body.length === 0) {
   core.setFailed("Issue body is empty");
@@ -167,14 +172,17 @@ if (type.length === 0) {
 This part prepares the issue information that I need. I mark the issue as TIL or bookmark based on the issue label. If it has a label that starts with `type:` then it will be used. The rest are just handling some edge cases
 
 ```javascript
-const [content, links] = body.split("---").map(part => part.trim());
-const linksArray = links ? links.split("\n").map(link => link.trim()) : [];
+const [content, links] = body.split("---").map((part) => part.trim());
+const linksArray = links ? links.split("\n").map((link) => link.trim()) : [];
 
-const markdown = `---\n` +
+const markdown =
+  `---\n` +
   `title: ${title}\n` +
   `date: ${date}\n` +
   `type: ${type}\n` +
-  (linksArray.length > 0 ? `links:\n${linksArray.map(link => `  - url: ${link}`).join("\n")}\n` : '') +
+  (linksArray.length > 0
+    ? `links:\n${linksArray.map((link) => `  - url: ${link}`).join("\n")}\n`
+    : "") +
   `---\n\n${content}\n`;
 ```
 
@@ -183,16 +191,25 @@ This part just prepares the markdown file. The reason why I split the content by
 An example issue content would look something like this:
 
 ```markdown
-This is the content body, nothing too special about it.
----
+## This is the content body, nothing too special about it.
+
 https://elianiva.com/posts/today-i-learned
 ```
 
 It will take the first part as the content body and parse the second part as an array of links.
 
 ```javascript
-const snakeCasedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-const filePath = path.join('${{ github.workspace }}', "src", "content", "bookmarks", `${snakeCasedTitle}.mdx`);
+const snakeCasedTitle = title
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, "-")
+  .replace(/(^-|-$)/g, "");
+const filePath = path.join(
+  "${{ github.workspace }}",
+  "src",
+  "content",
+  "bookmarks",
+  `${snakeCasedTitle}.mdx`,
+);
 
 fs.writeFileSync(filePath, markdown);
 console.log(`Successfully created TIL file: ${filePath}`);

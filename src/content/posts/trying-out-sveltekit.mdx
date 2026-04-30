@@ -3,8 +3,8 @@ title: I tried Svelte-Kit and here's what I think
 date: 2021-02-13
 description: I've run out of my patience waiting for the stable release and got too hyped for it
 tags:
-    - svelte
-    - website
+  - svelte
+  - website
 ---
 
 [snowpack-v3-link]: https://www.snowpack.dev/posts/2021-01-13-snowpack-3-0
@@ -81,7 +81,7 @@ I thought I was editing a `$layout.svelte` file but I was editing a `.svelte` fi
 
 Two plugins that I use for my editor which are [telescope.nvim][telescope-nvim] and [nvim-tree.lua][nvim-tree-lua] has an issue with this filename, it doesn't escape it before opening it. So I fixed them both which then made me distracted and doing other stuff instead of finishing this app :p
 
-import Update from "~/components/Update.astro";
+import { Update } from "~/components/update.tsx";
 
 <Update date="2021-04-10">
 

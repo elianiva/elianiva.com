@@ -1,0 +1,76 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { allPosts } from "content-collections";
+import { PostList } from "~/components/post-list";
+import { BackButton } from "~/components/back-button";
+import sites from "~/data/sites";
+import { Heading } from "~/components/ui/heading";
+
+const getPosts = createServerFn({ method: "GET" }).handler(async () => {
+  return allPosts
+    .filter((p) => !p.draft)
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      date: p.date,
+      description: p.description,
+      tags: p.tags,
+      draft: p.draft,
+    }));
+});
+
+export const Route = createFileRoute("/posts/")({
+  component: PostsPage,
+  loader: () => getPosts(),
+  head: () => ({
+    meta: [{ title: `Posts | ${sites.siteName}` }],
+  }),
+  notFoundComponent: PostsNotFoundPage,
+});
+
+function PostsNotFoundPage() {
+  return (
+    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / posts</p>
+        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
+          This post shelf is empty here.
+        </h1>
+        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">
+          The post you asked for does not exist. Maybe it never did, maybe it moved into the stars.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            to="/"
+            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
+          >
+            Home
+          </Link>
+          <Link
+            to="/posts"
+            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
+          >
+            Posts index
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PostsPage() {
+  const posts = Route.useLoaderData();
+
+  return (
+    <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
+      <div className="py-4 md:py-8 px-2 md:px-8">
+        <BackButton />
+        <Heading level={1} className="mb-4">
+          Blog Posts
+        </Heading>
+        <PostList posts={posts} />
+      </div>
+    </div>
+  );
+}

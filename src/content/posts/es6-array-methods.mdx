@@ -3,7 +3,7 @@ title: ES6 high order array methods explained
 date: 2020-07-29
 description: A post where I try to explain ES6 array methods in a simplest way possible that I could think of.
 tags:
-    - javascript
+  - javascript
 ---
 
 # Introduction
@@ -18,21 +18,21 @@ The first method is `Array.prototype.find()`. Just like the name suggest, it wil
 
 ```javascript
 const users = [
-	{
-		id: 1,
-		name: "John Doe",
-		admin: false,
-	},
-	{
-		id: 2,
-		name: "Lukas Smith",
-		admin: true,
-	},
-	{
-		id: 3,
-		name: "Erina Matsumoto",
-		admin: false,
-	},
+  {
+    id: 1,
+    name: "John Doe",
+    admin: false,
+  },
+  {
+    id: 2,
+    name: "Lukas Smith",
+    admin: true,
+  },
+  {
+    id: 3,
+    name: "Erina Matsumoto",
+    admin: false,
+  },
 ];
 
 // will return {id: 1, name: "John Doe", admin: false}
@@ -57,12 +57,12 @@ Like I said earlier, if you want multiple results based off on your condition th
 
 ```javascript
 const cities = [
-	{ name: "Hiroshima", country: "Japan" },
-	{ name: "Sendai", country: "Japan" },
-	{ name: "London", country: "England" },
-	{ name: "Brighton", country: "England" },
-	{ name: "Jakarta", country: "Indonesia" },
-	{ name: "Bandung", country: "Indonesia" },
+  { name: "Hiroshima", country: "Japan" },
+  { name: "Sendai", country: "Japan" },
+  { name: "London", country: "England" },
+  { name: "Brighton", country: "England" },
+  { name: "Jakarta", country: "Indonesia" },
+  { name: "Bandung", country: "Indonesia" },
 ];
 
 // will return all cities in Japan
@@ -73,8 +73,8 @@ As you would expect, it returns an array with matching items. The code above wil
 
 ```javascript
 [
-	{ name: "Hiroshima", country: "Japan" },
-	{ name: "Sendai", country: "Japan" },
+  { name: "Hiroshima", country: "Japan" },
+  { name: "Sendai", country: "Japan" },
 ];
 ```
 
@@ -86,11 +86,11 @@ What if you want to check if an array have some condition that you want? Well, `
 
 ```javascript
 const items = [
-	{ name: "Phone", discount: true },
-	{ name: "Laptop", discount: false },
-	{ name: "Keyboard", discount: false },
-	{ name: "Mouse", discount: true },
-	{ name: "Monitor", discount: false },
+  { name: "Phone", discount: true },
+  { name: "Laptop", discount: false },
+  { name: "Keyboard", discount: false },
+  { name: "Mouse", discount: true },
+  { name: "Monitor", discount: false },
 ];
 
 // will return true
@@ -105,11 +105,11 @@ OK great, now you can check whether or not an array has some items that match yo
 
 ```javascript
 const students = [
-	{ name: "Erika", passed: true },
-	{ name: "Himawari", passed: false },
-	{ name: "Irene", passed: false },
-	{ name: "Suzuka", passed: true },
-	{ name: "Riku", passed: true },
+  { name: "Erika", passed: true },
+  { name: "Himawari", passed: false },
+  { name: "Irene", passed: false },
+  { name: "Suzuka", passed: true },
+  { name: "Riku", passed: true },
 ];
 
 // will return false
