@@ -9,6 +9,6 @@ export const env = createEnv({
     NOTES_OWNER: z.string().min(1).optional(),
     NOTES_BRANCH: z.string().min(1).optional(),
   },
-  runtimeEnv: process.env || import.meta.env || cfEnv,
+  runtimeEnv: cfEnv || process.env || import.meta.env,
   emptyStringAsUndefined: true,
 });
