@@ -1,6 +1,5 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
-import { env as cfEnv } from "cloudflare:workers";
 
 export const env = createEnv({
   server: {
@@ -9,6 +8,6 @@ export const env = createEnv({
     NOTES_OWNER: z.string().min(1).optional(),
     NOTES_BRANCH: z.string().min(1).optional(),
   },
-  runtimeEnv: cfEnv || process.env || import.meta.env,
+  runtimeEnv: process.env,
   emptyStringAsUndefined: true,
 });
