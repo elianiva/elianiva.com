@@ -1,13 +1,6 @@
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod";
-
-export const env = createEnv({
-  server: {
-    GH_TOKEN: z.string().min(1).optional(),
-    NOTES_REPO: z.string().min(1).optional(),
-    NOTES_OWNER: z.string().min(1).optional(),
-    NOTES_BRANCH: z.string().min(1).optional(),
-  },
-  runtimeEnv: process.env,
-  emptyStringAsUndefined: true,
-});
+export const env = {
+  get GH_TOKEN() { return process.env.GH_TOKEN; },
+  get NOTES_REPO() { return process.env.NOTES_REPO; },
+  get NOTES_OWNER() { return process.env.NOTES_OWNER; },
+  get NOTES_BRANCH() { return process.env.NOTES_BRANCH; },
+};
