@@ -4,6 +4,7 @@ import { ProjectCard } from "~/components/card/project-card";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getProjects } from "~/lib/projects";
 import { Heading } from "~/components/ui/heading";
+import { Skeleton } from "~/components/ui/skeleton";
 import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
 
@@ -31,7 +32,7 @@ interface ProjectSectionProps {
   seeMoreUrl?: string | null;
 }
 
-function ProjectSectionContent({ title, description, seeMoreUrl }: ProjectSectionProps) {
+function ProjectCardList() {
   const { data: projects } = useSuspenseQuery({
     queryKey: ["personal-projects"],
     queryFn: () =>
@@ -43,6 +44,25 @@ function ProjectSectionContent({ title, description, seeMoreUrl }: ProjectSectio
       }),
     staleTime: Infinity,
   });
+
+  return (
+    <>
+      {projects.map((project) => (
+        <motion.div key={project.slug} variants={item} className="h-full">
+          <ProjectCard
+            slug={project.slug}
+            title={project.title}
+            description={project.description}
+            href={`/projects/${project.slug}`}
+            stack={project.stack || []}
+          />
+        </motion.div>
+      ))}
+    </>
+  );
+}
+
+export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectionProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const headingId =
@@ -68,17 +88,17 @@ function ProjectSectionContent({ title, description, seeMoreUrl }: ProjectSectio
         <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">{description}</p>
       </motion.div>
       <div className="relative space-y-1 pb-4 card-tilt-odd items-stretch">
-        {projects.map((project) => (
-          <motion.div key={project.slug} variants={item} className="h-full">
-            <ProjectCard
-              slug={project.slug}
-              title={project.title}
-              description={project.description}
-              href={`/projects/${project.slug}`}
-              stack={project.stack || []}
-            />
-          </motion.div>
-        ))}
+        <Suspense
+          fallback={
+            <div className="space-y-1">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-18 w-full" />
+              ))}
+            </div>
+          }
+        >
+          <ProjectCardList />
+        </Suspense>
       </div>
       {typeof seeMoreUrl === "string" && (
         <motion.div variants={item} className="flex justify-end">
@@ -92,13 +112,5 @@ function ProjectSectionContent({ title, description, seeMoreUrl }: ProjectSectio
         </motion.div>
       )}
     </motion.section>
-  );
-}
-
-export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectionProps) {
-  return (
-    <Suspense fallback={<div className="py-8 px-8 text-sm text-pink-950/50">Loading projects...</div>}>
-      <ProjectSectionContent title={title} description={description} seeMoreUrl={seeMoreUrl} />
-    </Suspense>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getGitHubContributions } from "~/lib/github";
@@ -73,7 +73,7 @@ function getMonthLabels(weeks: { contributionDays: { date: string }[] }[]): stri
   return labels;
 }
 
-export function GitHubActivitySection() {
+function GitHubActivityGrid() {
   const { data } = useSuspenseQuery({
     queryKey: ["github-contributions"],
     queryFn: () => getGitHubContributions(),
@@ -85,23 +85,9 @@ export function GitHubActivitySection() {
 
   if (!data) {
     return (
-      <motion.section
-        className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline"
-        initial={prefersReducedMotion ? false : "hidden"}
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.1 }}
-        variants={{
-          hidden: { opacity: 0, y: 24 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] } },
-        }}
-      >
-        <Heading level={2} id="github-activity-heading">
-          Git Activity
-        </Heading>
-        <p className="text-sm font-body text-pink-950/60 pt-2">
-          Set GH_TOKEN to fetch contribution data.
-        </p>
-      </motion.section>
+      <p className="text-sm font-body text-pink-950/60 pt-2">
+        Set GH_TOKEN to fetch contribution data.
+      </p>
     );
   }
 
@@ -109,59 +95,16 @@ export function GitHubActivitySection() {
   const monthLabels = getMonthLabels(weeks);
 
   return (
-    <motion.section
-      className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline"
-      initial={prefersReducedMotion ? false : "hidden"}
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
-      variants={{
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: 0.08,
-          },
-        },
-      }}
-    >
-      <motion.div
-        variants={{
-          hidden: { opacity: 0, y: 24 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] } },
-        }}
-      >
-        <Heading level={2} id="github-activity-heading">
-          Git Activity
-        </Heading>
-      </motion.div>
-
-      <motion.div
-        variants={{
-          hidden: { opacity: 0, y: 24 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] } },
-        }}
-        className="pt-2 pb-4"
-      >
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="flex items-baseline gap-3">
-            <AnimatedCount target={totalContributions} />
-            <span className="text-sm font-mono text-pink-950/50">
-              contributions · past 365 days
-            </span>
-          </div>
-          <div className="text-sm font-mono text-pink-950/40">
-            longest streak · {longestStreak}d
-          </div>
+    <>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex items-baseline gap-3">
+          <AnimatedCount target={totalContributions} />
+          <span className="text-sm font-mono text-pink-950/50">contributions · past 365 days</span>
         </div>
-      </motion.div>
+        <div className="text-sm font-mono text-pink-950/40">longest streak · {longestStreak}d</div>
+      </div>
 
-      <motion.div
-        variants={{
-          hidden: { opacity: 0, y: 24 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] } },
-        }}
-        className="relative"
-      >
-        {/* Month labels */}
+      <div className="relative pt-4">
         <div className="flex gap-0.75 mb-1 text-[10px] font-mono text-pink-950/30 uppercase tracking-wider">
           {monthLabels.map((label, i) => (
             <div key={i} className="w-4 text-center shrink-0">
@@ -170,7 +113,6 @@ export function GitHubActivitySection() {
           ))}
         </div>
 
-        {/* Grid */}
         <div className="overflow-x-auto">
           <motion.div
             className="flex gap-0.75 w-full"
@@ -202,7 +144,6 @@ export function GitHubActivitySection() {
           </motion.div>
         </div>
 
-        {/* Legend */}
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-1.5">
             <span className="text-[10px] font-mono text-pink-950/30">less</span>
@@ -214,7 +155,6 @@ export function GitHubActivitySection() {
             <span className="text-[10px] font-mono text-pink-950/30">more</span>
           </div>
 
-          {/* Hover tooltip */}
           <div className="h-4">
             {hoveredCell && (
               <span className="text-[10px] font-mono text-pink-950/40">
@@ -224,7 +164,65 @@ export function GitHubActivitySection() {
             )}
           </div>
         </div>
+      </div>
+    </>
+  );
+}
+
+export function GitHubActivitySection() {
+  const prefersReducedMotion = useReducedMotion();
+
+  return (
+    <motion.section
+      className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline"
+      initial={prefersReducedMotion ? false : "hidden"}
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: 0.08,
+          },
+        },
+      }}
+    >
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 24 },
+          visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] } },
+        }}
+      >
+        <Heading level={2} id="github-activity-heading">
+          Git Activity
+        </Heading>
       </motion.div>
+
+      <Suspense
+        fallback={
+          <div className="pt-2 pb-4">
+            <div className="flex items-baseline gap-3">
+              <span className="text-4xl md:text-5xl font-mono font-bold tracking-tight text-pink-950/20">
+                0
+              </span>
+              <span className="text-sm font-mono text-pink-950/30">
+                contributions · past 365 days
+              </span>
+            </div>
+            <div className="pt-4 flex gap-0.75">
+              {Array.from({ length: 53 }).map((_, i) => (
+                <div key={i} className="flex flex-col gap-0.75">
+                  {Array.from({ length: 7 }).map((_, j) => (
+                    <div key={j} className="size-4 bg-pink-100/20 rounded-sm" />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        }
+      >
+        <GitHubActivityGrid />
+      </Suspense>
     </motion.section>
   );
 }

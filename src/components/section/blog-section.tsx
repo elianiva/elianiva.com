@@ -4,6 +4,7 @@ import { PostCard } from "~/components/card/post-card";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getPosts } from "~/lib/posts";
 import { Heading } from "~/components/ui/heading";
+import { Skeleton } from "~/components/ui/skeleton";
 import { Link } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
 
@@ -25,12 +26,31 @@ const item = {
   },
 } as const;
 
-function BlogSectionContent() {
+function BlogPostList() {
   const { data: posts } = useSuspenseQuery({
     queryKey: ["blog-posts"],
     queryFn: () => getPosts(),
     staleTime: Infinity,
   });
+
+  return (
+    <>
+      {posts.slice(0, 6).map((post) => (
+        <motion.div key={post.slug} variants={item}>
+          <PostCard
+            title={post.title}
+            description={post.description}
+            href={`/posts/${post.slug}`}
+            date={post.date}
+            tags={post.tags}
+          />
+        </motion.div>
+      ))}
+    </>
+  );
+}
+
+export function BlogSection() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -53,17 +73,9 @@ function BlogSectionContent() {
         </p>
       </motion.div>
       <div className="space-y-1 pb-4 items-stretch">
-        {posts.slice(0, 6).map((post) => (
-          <motion.div key={post.slug} variants={item}>
-            <PostCard
-              title={post.title}
-              description={post.description}
-              href={`/posts/${post.slug}`}
-              date={post.date}
-              tags={post.tags}
-            />
-          </motion.div>
-        ))}
+        <Suspense fallback={<div className="space-y-1"><Skeleton className="h-[72px] w-full" /><Skeleton className="h-[72px] w-full" /><Skeleton className="h-[72px] w-3/4" /></div>}>
+          <BlogPostList />
+        </Suspense>
       </div>
       <motion.div variants={item} className="flex justify-end">
         <Button render={<Link to="/posts" />} variant="link" className="text-sm p-0 font-normal">
@@ -71,13 +83,5 @@ function BlogSectionContent() {
         </Button>
       </motion.div>
     </motion.section>
-  );
-}
-
-export function BlogSection() {
-  return (
-    <Suspense fallback={<div className="py-8 px-8 text-sm text-pink-950/50">Loading posts...</div>}>
-      <BlogSectionContent />
-    </Suspense>
   );
 }

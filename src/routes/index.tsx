@@ -29,15 +29,15 @@ function Home() {
         aria-labelledby="open-source-contributions-heading"
         className="relative with-box-underline grid md:grid-cols-2 gap-2"
       >
-        {/* <ProjectSection */}
-        {/*   title="Personal Projects" */}
-        {/*   description="Mostly made them just for fun and to learn new things." */}
-        {/*   seeMoreUrl="/projects" */}
-        {/* /> */}
-        {/* <OpenSourceSection /> */}
+        <ProjectSection
+          title="Personal Projects"
+          description="Mostly made them just for fun and to learn new things."
+          seeMoreUrl="/projects"
+        />
+        <OpenSourceSection />
       </section>
       <section role="region" aria-labelledby="blog-heading" className="relative with-box-underline">
-        {/* <BlogSection /> */}
+        <BlogSection />
       </section>
       <section
         role="region"
