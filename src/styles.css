@@ -288,7 +288,7 @@
 
 :root {
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0.008 326);
+  --foreground: oklch(28.4% 0.109 3.907);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0.008 326);
   --popover: oklch(1 0 0);
@@ -319,6 +319,7 @@
   --sidebar-accent-foreground: oklch(0.212 0.019 322.12);
   --sidebar-border: oklch(0.922 0.005 325.62);
   --sidebar-ring: oklch(0.711 0.019 323.02);
+  --container: 1280px;
 }
 
 @theme inline {
@@ -360,5 +361,5 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --max-width-container: 1280px;
+  --max-width-container: var(--container);
 }

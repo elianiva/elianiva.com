@@ -18,6 +18,7 @@ import { Footer } from "../components/footer";
 import appCss from "../styles.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
+import { NavigationStrip } from "~/components/navigation";
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -123,6 +124,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
         <CanvasBackground />
         <Frame />
+        <NavigationStrip />
 
         <main id="main-content" role="main" className="relative z-0">
           <TanstackQueryProvider>{children}</TanstackQueryProvider>
