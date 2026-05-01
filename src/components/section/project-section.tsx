@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { motion, useReducedMotion } from "motion/react";
 import { ProjectCard } from "~/components/card/project-card";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getProjects } from "~/lib/projects";
@@ -7,24 +6,8 @@ import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
-
-const container = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-} as const;
-
-const item = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] },
-  },
-} as const;
+import { AnimatedSection } from "~/components/ui/animated-section";
+import { AnimatedItem } from "~/components/ui/animated-item";
 
 interface ProjectSectionProps {
   title: string;
@@ -48,7 +31,7 @@ function ProjectCardList() {
   return (
     <>
       {projects.map((project) => (
-        <motion.div key={project.slug} variants={item} className="h-full">
+        <AnimatedItem key={project.slug} className="h-full">
           <ProjectCard
             slug={project.slug}
             title={project.title}
@@ -56,15 +39,13 @@ function ProjectCardList() {
             href={`/projects/${project.slug}`}
             stack={project.stack || []}
           />
-        </motion.div>
+        </AnimatedItem>
       ))}
     </>
   );
 }
 
 export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectionProps) {
-  const prefersReducedMotion = useReducedMotion();
-
   const headingId =
     title
       .toLowerCase()
@@ -72,21 +53,15 @@ export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectio
       .replace(/[^a-z0-9-]/g, "") + "-heading";
 
   return (
-    <motion.section
-      className="py-4 md:py-8 pl-2 md:pl-8"
-      initial={prefersReducedMotion ? false : "hidden"}
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
-      variants={container}
-    >
-      <motion.div variants={item}>
+    <AnimatedSection className="py-4 md:py-8 pl-2 md:pl-8">
+      <AnimatedItem>
         <Heading level={2} id={headingId}>
           {title}
         </Heading>
-      </motion.div>
-      <motion.div variants={item}>
+      </AnimatedItem>
+      <AnimatedItem>
         <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">{description}</p>
-      </motion.div>
+      </AnimatedItem>
       <div className="relative space-y-1 pb-4 card-tilt-odd items-stretch">
         <Suspense
           fallback={
@@ -101,7 +76,7 @@ export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectio
         </Suspense>
       </div>
       {typeof seeMoreUrl === "string" && (
-        <motion.div variants={item} className="flex justify-end">
+        <AnimatedItem className="flex justify-end">
           <Button
             render={<Link to={seeMoreUrl} />}
             variant="link"
@@ -109,8 +84,8 @@ export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectio
           >
             View All Projects
           </Button>
-        </motion.div>
+        </AnimatedItem>
       )}
-    </motion.section>
+    </AnimatedSection>
   );
 }

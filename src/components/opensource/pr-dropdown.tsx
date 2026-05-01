@@ -1,10 +1,11 @@
 import { useState, useCallback } from "react";
-import { motion, useReducedMotion } from "motion/react";
 import type { GitHubPullRequest } from "~/types/github-pr";
 import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
 import CaretDownIcon from "~icons/ph/caret-down";
 import GitPullRequestIcon from "~icons/ph/git-pull-request-duotone";
 import StarIcon from "~icons/ph/star-fill";
+import { AccordionPanel } from "~/components/ui/accordion-panel";
+import { durations } from "~/lib/motion";
 
 interface PRDropdownProps {
   repository: {
@@ -25,7 +26,6 @@ function abbreviateNumber(num: number): string {
 
 export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const prefersReducedMotion = useReducedMotion();
 
   const totalChanges = prs.reduce((sum, pr) => sum + pr.additions + pr.deletions, 0);
 
@@ -47,7 +47,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
         <div className="flex flex-row sm:items-center justify-between focus:outline-none">
           <div className="flex items-center gap-2">
             <div
-              className={`text-pink-600 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+              className={`text-pink-600 transition-transform duration-${Math.round(durations.accordionOpen * 1000)} ease-out ${isOpen ? "rotate-180" : ""}`}
             >
               <CaretDownIcon className="inline-block size-3" />
             </div>
@@ -85,19 +85,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
         </div>
       </button>
 
-      <motion.div
-        initial={false}
-        animate={{
-          height: isOpen ? "auto" : 0,
-          opacity: isOpen ? 1 : 0,
-        }}
-        transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : { duration: isOpen ? 0.35 : 0.25, ease: "easeOut" }
-        }
-        className="overflow-hidden"
-      >
+      <AccordionPanel open={isOpen}>
         <div className="border-t border-pink-200/50">
           <div id={`pr-details-${repository.name}`} className="p-3">
             <div className="space-y-2">
@@ -134,7 +122,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
             </div>
           </div>
         </div>
-      </motion.div>
+      </AccordionPanel>
     </div>
   );
 }

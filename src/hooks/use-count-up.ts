@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useInView, animate } from "motion/react";
 import { useRef } from "react";
+import { easings } from "~/lib/motion";
 
 export function useCountUp(target: number, duration = 1.5) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -12,7 +13,7 @@ export function useCountUp(target: number, duration = 1.5) {
 
     const controls = animate(0, target, {
       duration,
-      ease: [0.19, 1, 0.22, 1],
+      ease: easings.out,
       onUpdate: (value) => {
         setDisplay(Math.round(value));
       },

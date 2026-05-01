@@ -28,7 +28,7 @@ export function ProjectCard({ slug, title, description, href, stack }: ProjectCa
         <div className="flex-1">
           <Link
             to={href as any}
-            className="text-base font-bold font-display text-pink-950 group-hover:text-pink-700 transition-property-color duration-100 ease-out focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+            className="text-base font-bold font-display text-pink-950 group-hover:text-pink-700 transition-colors duration-100 ease-out focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
           >
             {title}
           </Link>

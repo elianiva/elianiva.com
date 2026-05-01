@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
 import { Badge } from "~/components/ui/badge";
+import { AccordionPanel } from "~/components/ui/accordion-panel";
+import { durations } from "~/lib/motion";
 
 interface WorkExperienceCardProps {
   company: string;
@@ -24,7 +25,6 @@ export function WorkExperienceCard({
   defaultOpen = false,
 }: WorkExperienceCardProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const prefersReducedMotion = useReducedMotion();
 
   return (
     <div className="work-experience-card group rounded-2xl transition-colors" data-open={isOpen}>
@@ -51,10 +51,7 @@ export function WorkExperienceCard({
             </div>
           </div>
           <div
-            className={
-              "text-pink-600 transition-transform duration-200 shrink-0 mt-0.5 " +
-              (isOpen ? "rotate-180" : "")
-            }
+            className={`text-pink-600 transition-transform duration-${Math.round(durations.accordionOpen * 1000)} ease-out shrink-0 mt-0.5 ${isOpen ? "rotate-180" : ""}`}
           >
             <svg className="size-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -70,10 +67,7 @@ export function WorkExperienceCard({
         <div className="hidden md:flex md:flex-row items-start md:justify-between gap-4 -ml-8">
           <div className="flex items-start gap-3">
             <div
-              className={
-                "text-pink-600 transition-transform duration-200 shrink-0 " +
-                (isOpen ? "rotate-180" : "")
-              }
+              className={`text-pink-600 transition-transform duration-${Math.round(durations.accordionOpen * 1000)} ease-out shrink-0 ${isOpen ? "rotate-180" : ""}`}
             >
               <svg className="inline-block size-4 mt-1" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -106,19 +100,7 @@ export function WorkExperienceCard({
         </div>
 
         {/* Details */}
-        <motion.div
-          initial={false}
-          animate={{
-            height: isOpen ? "auto" : 0,
-            opacity: isOpen ? 1 : 0,
-          }}
-          transition={
-            prefersReducedMotion
-              ? { duration: 0 }
-              : { duration: isOpen ? 0.35 : 0.25, ease: "easeOut" }
-          }
-          className="overflow-hidden"
-        >
+        <AccordionPanel open={isOpen}>
           <ul className="list-disc list-outside pl-4 mt-2">
             {details.map((detail, i) => (
               <li
@@ -138,7 +120,7 @@ export function WorkExperienceCard({
               />
             ))}
           </ul>
-        </motion.div>
+        </AccordionPanel>
       </button>
     </div>
   );

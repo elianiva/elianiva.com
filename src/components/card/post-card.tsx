@@ -30,7 +30,7 @@ export function PostCard({ title, description, href, date, tags, ...props }: Pos
         <div className="flex-1">
           <h3
             id="post-title"
-            className="font-display md:text-base font-bold capitalize text-pink-950 group-hover:text-pink-700 transition-property-color duration-100 ease-out"
+            className="font-display md:text-base font-bold capitalize text-pink-950 group-hover:text-pink-700 transition-colors duration-100 ease-out"
           >
             {title}
           </h3>

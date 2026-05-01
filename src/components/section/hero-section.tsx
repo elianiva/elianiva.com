@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import siteData from "~/data/sites";
 import EnvelopeIcon from "~icons/ph/envelope-duotone";
 import GithubLogoIcon from "~icons/ph/github-logo-duotone";
@@ -7,6 +7,9 @@ import CvLogoIcon from "~icons/ph/read-cv-logo-duotone";
 import XLogoIcon from "~icons/ph/x-logo-duotone";
 import { Heading } from "~/components/ui/heading";
 import { Button } from "~/components/ui/button";
+import { AnimatedSection } from "~/components/ui/animated-section";
+import { AnimatedItem } from "~/components/ui/animated-item";
+import { easings, durations } from "~/lib/motion";
 
 interface Social {
   icon: React.ComponentType<{ className?: string }>;
@@ -22,37 +25,34 @@ const socials: Social[] = [
   { icon: CvLogoIcon, link: siteData.cv, label: "Résumé" },
 ];
 
-const container = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-} as const;
-
-const item = {
+const socialButtonItem = {
   hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] },
+    transition: { duration: 0.4, ease: easings.out },
+  },
+} as const;
+
+const socialContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.12,
+    },
   },
 } as const;
 
 export function HeroSection() {
-  const prefersReducedMotion = useReducedMotion();
-
   return (
-    <motion.header
+    <AnimatedSection
+      animateOnMount
       role="banner"
       className="relative flex flex-col-reverse md:flex-row gap-6 pb-8 px-2 md:px-8 with-box-underline"
-      initial={prefersReducedMotion ? false : "hidden"}
-      animate="visible"
-      variants={container}
     >
       <div className="flex-1">
-        <motion.div variants={item}>
+        <AnimatedItem>
           <Heading level={1} className="first-letter:text-pink-950">
             Dicha Z
             <span className="text-pink-500" title="Yes, this is where the username comes from">
@@ -60,8 +60,8 @@ export function HeroSection() {
             </span>
             n Arkana
           </Heading>
-        </motion.div>
-        <motion.div variants={item}>
+        </AnimatedItem>
+        <AnimatedItem>
           <p className="text-sm md:text-base leading-relaxed font-body text-pink-950 py-3 max-w-[90ch] text-pretty">
             I'm a software engineer with 4+ years mostly in web frontend, though I've dipped into
             backend, databases, and infra when needed. I like building interfaces that don't annoy
@@ -69,17 +69,9 @@ export function HeroSection() {
             engineering. Outside work, I tinker with side projects, contribute to OSS, and drink a
             lot of coffee.
           </p>
-        </motion.div>
+        </AnimatedItem>
         <motion.div
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: 0.06,
-                delayChildren: 0.12,
-              },
-            },
-          }}
+          variants={socialContainer}
           className="flex items-center flex-wrap gap-2 pt-2 justify-center md:justify-start"
         >
           {socials.map((social) => {
@@ -91,14 +83,7 @@ export function HeroSection() {
                 nativeButton={false}
                 render={
                   <motion.a
-                    variants={{
-                      hidden: { opacity: 0, y: 16 },
-                      visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: { duration: 0.4, ease: [0.19, 1, 0.22, 1] },
-                      },
-                    }}
+                    variants={socialButtonItem}
                     href={social.link}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -114,7 +99,7 @@ export function HeroSection() {
           })}
         </motion.div>
       </div>
-      <motion.div variants={item} className="relative mb-4 md:mb-0 mx-auto">
+      <AnimatedItem className="relative mb-4 md:mb-0 mx-auto">
         <a
           href={siteData.github}
           target="_blank"
@@ -135,8 +120,7 @@ export function HeroSection() {
             />
           </div>
         </a>
-      </motion.div>
-    </motion.header>
+      </AnimatedItem>
+    </AnimatedSection>
   );
 }
-

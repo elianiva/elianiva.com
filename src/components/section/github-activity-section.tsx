@@ -1,9 +1,12 @@
 import { Suspense, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getGitHubContributions } from "~/lib/github";
 import { useCountUp } from "~/hooks/use-count-up";
 import { Heading } from "~/components/ui/heading";
+import { AnimatedSection } from "~/components/ui/animated-section";
+import { AnimatedItem } from "~/components/ui/animated-item";
+import { useReducedMotion } from "~/lib/motion";
 
 const LEVEL_COLORS: Record<string, string> = {
   NONE: "bg-pink-100/40",
@@ -21,21 +24,21 @@ const LEVEL_HOVER: Record<string, string> = {
   FOURTH_QUARTILE: "hover:bg-pink-600",
 };
 
-const container = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.004,
-    },
-  },
-} as const;
-
 const cell = {
   hidden: { opacity: 0, scale: 0.5 },
   visible: {
     opacity: 1,
     scale: 1,
     transition: { duration: 0.15, ease: [0.19, 1, 0.22, 1] },
+  },
+} as const;
+
+const gridContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.004,
+    },
   },
 } as const;
 
@@ -116,7 +119,7 @@ function GitHubActivityGrid() {
         <div className="overflow-x-auto">
           <motion.div
             className="flex gap-0.75 w-full"
-            variants={prefersReducedMotion ? undefined : container}
+            variants={prefersReducedMotion ? undefined : gridContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -170,33 +173,13 @@ function GitHubActivityGrid() {
 }
 
 export function GitHubActivitySection() {
-  const prefersReducedMotion = useReducedMotion();
-
   return (
-    <motion.section
-      className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline"
-      initial={prefersReducedMotion ? false : "hidden"}
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
-      variants={{
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: 0.08,
-          },
-        },
-      }}
-    >
-      <motion.div
-        variants={{
-          hidden: { opacity: 0, y: 24 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] } },
-        }}
-      >
+    <AnimatedSection className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline">
+      <AnimatedItem>
         <Heading level={2} id="github-activity-heading">
           Git Activity
         </Heading>
-      </motion.div>
+      </AnimatedItem>
 
       <Suspense
         fallback={
@@ -223,6 +206,6 @@ export function GitHubActivitySection() {
       >
         <GitHubActivityGrid />
       </Suspense>
-    </motion.section>
+    </AnimatedSection>
   );
 }
