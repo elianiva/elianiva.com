@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { WorkExperienceCard } from "~/components/card/work-experience-card";
-import type { WorkExperience } from "~/data/work-experience";
-import { Heading } from "../ui/heading";
+import type { WorkExperience } from "~/types/work-experience";
+import { Heading } from "~/components/ui/heading";
 
 interface WorkExperienceSectionProps {
   workExperiences: WorkExperience[];

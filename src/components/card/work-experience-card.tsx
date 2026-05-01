@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { Badge } from "../ui/badge";
+import { Badge } from "~/components/ui/badge";
 
 interface WorkExperienceCardProps {
   company: string;

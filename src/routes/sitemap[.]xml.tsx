@@ -3,7 +3,7 @@ import { allPosts, allProjects } from "content-collections";
 import { loadNotes } from "~/lib/notes";
 import sites from "~/data/sites";
 
-export const Route = createFileRoute("/api/sitemap/xml")({
+export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {

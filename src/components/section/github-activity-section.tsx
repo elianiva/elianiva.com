@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getGitHubContributions } from "~/lib/github";
 import { useCountUp } from "~/hooks/use-count-up";
-import { Heading } from "../ui/heading";
+import { Heading } from "~/components/ui/heading";
 
 const LEVEL_COLORS: Record<string, string> = {
   NONE: "bg-pink-100/40",

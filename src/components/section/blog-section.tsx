@@ -1,23 +1,9 @@
-import { createServerFn } from "@tanstack/react-start";
 import { motion, useReducedMotion } from "motion/react";
-import { allPosts } from "content-collections";
 import { PostCard } from "~/components/card/post-card";
-import { Heading } from "../ui/heading";
+import { getPosts } from "~/lib/posts";
+import { Heading } from "~/components/ui/heading";
 import { Link } from "@tanstack/react-router";
-import { Button } from "../ui/button";
-
-export const getBlogPosts = createServerFn({ method: "GET" }).handler(async () => {
-  return allPosts
-    .filter((p) => !p.draft)
-    .sort((a, b) => (a.date > b.date ? -1 : 1))
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      description: p.description,
-      date: p.date,
-      tags: p.tags,
-    }));
-});
+import { Button } from "~/components/ui/button";
 
 const container = {
   hidden: {},

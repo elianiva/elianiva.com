@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { Link } from "@tanstack/react-router";
 import CalendarIcon from "~icons/ph/calendar-blank";
-import { Badge } from "../ui/badge";
+import { Badge } from "~/components/ui/badge";
 
 type PostCardProps = {
   title: string;

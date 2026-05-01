@@ -23,6 +23,7 @@
     "@cloudflare/vite-plugin": "^1.26.0",
     "@flowershow/remark-wiki-link": "^3.4.0",
     "@fontsource-variable/google-sans": "^5.2.1",
+    "@fontsource/hepta-slab": "^5.2.8",
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@mdx-js/rollup": "^3.1.1",
     "@tailwindcss/vite": "^4.1.18",

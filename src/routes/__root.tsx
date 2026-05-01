@@ -11,7 +11,6 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import TanstackQueryProvider from "../integrations/tanstack-query/root-provider";
-import { SEO } from "../components/seo";
 import { Frame } from "../components/frame";
 import { CanvasBackground } from "../components/canvas-background.tsx";
 import { Footer } from "../components/footer";
@@ -26,7 +25,7 @@ interface MyRouterContext {
 
 function NotFoundPage() {
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-[1080px] items-center justify-center px-4 py-20">
+    <div className="mx-auto flex min-h-[70vh] max-w-container items-center justify-center px-4 py-20">
       <div className="w-full max-w-2xl border border-pink-200 bg-gradient-to-br from-white/90 via-pink-50/80 to-orange-50/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">
           404 / lost in the blush
@@ -103,7 +102,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
       <head>
-        <SEO />
         <HeadContent />
         {import.meta.env.PROD && (
           <script

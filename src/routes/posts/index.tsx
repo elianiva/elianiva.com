@@ -1,24 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { allPosts } from "content-collections";
 import { PostList } from "~/components/post-list";
 import { BackButton } from "~/components/back-button";
+import { getPosts } from "~/lib/posts";
 import sites from "~/data/sites";
 import { Heading } from "~/components/ui/heading";
-
-const getPosts = createServerFn({ method: "GET" }).handler(async () => {
-  return allPosts
-    .filter((p) => !p.draft)
-    .sort((a, b) => (a.date > b.date ? -1 : 1))
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      date: p.date,
-      description: p.description,
-      tags: p.tags,
-      draft: p.draft,
-    }));
-});
 
 export const Route = createFileRoute("/posts/")({
   component: PostsPage,
@@ -31,7 +16,7 @@ export const Route = createFileRoute("/posts/")({
 
 function PostsNotFoundPage() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+    <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
       <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / posts</p>
         <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
@@ -63,7 +48,7 @@ function PostsPage() {
   const posts = Route.useLoaderData();
 
   return (
-    <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
+    <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
         <BackButton />
         <Heading level={1} className="mb-4">

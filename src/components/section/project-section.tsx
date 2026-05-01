@@ -1,31 +1,10 @@
-import { createServerFn } from "@tanstack/react-start";
 import { motion, useReducedMotion } from "motion/react";
-import { allProjects } from "content-collections";
 import { ProjectCard } from "~/components/card/project-card";
 import { ViewAllButton } from "~/components/view-all-button";
-import { Heading } from "../ui/heading";
-import { Button } from "../ui/button";
+import { getProjects, type ProjectType } from "~/lib/projects";
+import { Heading } from "~/components/ui/heading";
+import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
-
-export type ProjectType = "personal" | "open-source" | "assignment";
-
-export const getProjects = createServerFn({ method: "GET" })
-  .inputValidator((input: { type: ProjectType; featured?: boolean }) => input)
-  .handler(async ({ data: { type, featured = false } }) => {
-    const projects = allProjects
-      .filter((p) => p.type === type)
-      .sort((a, b) => (a.date > b.date ? -1 : 1))
-      .map((p) => ({
-        slug: p.slug,
-        title: p.title,
-        description: p.description,
-        date: p.date,
-        stack: p.stack,
-        featured: p.featured,
-      }));
-
-    return featured ? projects.filter((p) => p.featured) : projects;
-  });
 
 const container = {
   hidden: {},

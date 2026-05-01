@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
-import { ProjectSection, getProjects } from "~/components/section/project-section";
+import { ProjectSection } from "~/components/section/project-section";
+import { getProjects } from "~/lib/projects";
 import sites from "~/data/sites";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
-  head: () => ({ meta: [{ title: "Projects | " + sites.siteName }] }),
+  head: () => ({ meta: [{ title: `Projects | ${sites.siteName}` }] }),
   notFoundComponent: ProjectsNotFoundPage,
   staleTime: Infinity,
   loader: async () => {
@@ -32,7 +33,7 @@ export const Route = createFileRoute("/projects/")({
 
 function ProjectsNotFoundPage() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+    <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
       <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / projects</p>
         <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
@@ -64,7 +65,7 @@ function ProjectsPage() {
   const { openSource, personal, assignment } = Route.useLoaderData();
 
   return (
-    <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50 min-h-screen">
+    <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
         <BackButton />
         <ProjectSection

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { allPosts, allProjects } from "content-collections";
 import sites from "~/data/sites";
 
-export const Route = createFileRoute("/api/rss/xml")({
+export const Route = createFileRoute("/rss.xml")({
   server: {
     handlers: {
       GET: async () => {

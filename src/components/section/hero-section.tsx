@@ -5,8 +5,8 @@ import GithubLogoIcon from "~icons/ph/github-logo-duotone";
 import LinkedinLogoIcon from "~icons/ph/linkedin-logo-duotone";
 import CvLogoIcon from "~icons/ph/read-cv-logo-duotone";
 import XLogoIcon from "~icons/ph/x-logo-duotone";
-import { Heading } from "../ui/heading";
-import { Button } from "../ui/button";
+import { Heading } from "~/components/ui/heading";
+import { Button } from "~/components/ui/button";
 
 interface Social {
   icon: React.ComponentType<{ className?: string }>;

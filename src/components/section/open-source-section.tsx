@@ -2,7 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "motion/react";
 import { getGitHubPRs } from "~/lib/github";
 import { PRDropdown } from "~/components/opensource/pr-dropdown";
-import { Heading } from "../ui/heading";
+import { Heading } from "~/components/ui/heading";
 
 const container = {
   hidden: {},

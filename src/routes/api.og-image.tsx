@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { createFileRoute } from "@tanstack/react-router";
 import { html } from "satori-html";
 import { satori } from "@cf-wasm/satori";
@@ -56,9 +57,9 @@ export const Route = createFileRoute("/api/og-image")({
         const decodedDescription = decodeURIComponent(description);
 
         // Load Hepta Slab font from @fontsource
-        const heptaSlabFont = await Bun.file(
+        const heptaSlabFont = await readFile(
           "node_modules/@fontsource/hepta-slab/files/hepta-slab-latin-400-normal.woff2",
-        ).arrayBuffer();
+        );
 
         const markup = html`
           <div

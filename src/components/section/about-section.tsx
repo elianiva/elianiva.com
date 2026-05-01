@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
-import { Heading } from "../ui/heading";
+import { Heading } from "~/components/ui/heading";
 
 const aboutItem = {
   hidden: { opacity: 0, y: 24 },

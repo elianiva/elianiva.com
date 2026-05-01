@@ -2,7 +2,7 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { loadNotes } from "~/lib/notes";
 import { BackButton } from "~/components/back-button";
 import { Backlinks } from "~/components/notes/backlinks";
-import { SEO } from "~/components/seo";
+import sites from "~/data/sites";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import wikiLinkPlugin from "@flowershow/remark-wiki-link";
@@ -19,10 +19,15 @@ export const Route = createFileRoute("/notes/$slug")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.note.title ?? "Note"} | elianiva's home row` },
-      { name: "description", content: loaderData?.note.title ?? sites.description },
+      { title: `${loaderData?.note.title ?? "Note"} | ${sites.siteName}` },
+      { name: "description", content: loaderData?.note.description ?? loaderData?.note.title ?? sites.description },
+      { name: "author", content: sites.author },
       { property: "og:title", content: loaderData?.note.title ?? "Note" },
-      { property: "og:description", content: loaderData?.note.title ?? sites.description },
+      { property: "og:description", content: loaderData?.note.description ?? loaderData?.note.title ?? sites.description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:site", content: sites.twitter },
+      { name: "twitter:creator", content: sites.twitter },
     ],
   }),
   notFoundComponent: NoteNotFoundPage,
@@ -39,7 +44,7 @@ const categoryLabels: Record<string, string> = {
 
 function NoteNotFoundPage() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+    <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
       <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / notes</p>
         <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
@@ -91,7 +96,6 @@ function NoteDetailPage() {
 
   return (
     <>
-      <SEO title={note.title} />
       <div className="mx-auto max-w-3xl px-4 py-10">
         <BackButton />
 

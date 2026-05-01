@@ -3,7 +3,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
 import { BackButton } from "~/components/back-button";
-import { SEO } from "~/components/seo";
 import sites from "~/data/sites";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
@@ -41,10 +40,16 @@ export const Route = createFileRoute("/projects/$slug")({
   loader: ({ params: { slug } }) => getProjectBySlug({ data: slug }),
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.title ?? "Project"} | elianiva's home row` },
+      { title: `${loaderData?.title ?? "Project"} | ${sites.siteName}` },
       { name: "description", content: loaderData?.description ?? sites.description },
+      { name: "author", content: sites.author },
       { property: "og:title", content: loaderData?.title ?? "Project" },
       { property: "og:description", content: loaderData?.description ?? sites.description },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: `${sites.siteUrl}/assets/projects/${loaderData?.slug}/cover.webp` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: sites.twitter },
+      { name: "twitter:creator", content: sites.twitter },
     ],
   }),
   notFoundComponent: ProjectNotFoundPage,
@@ -52,7 +57,7 @@ export const Route = createFileRoute("/projects/$slug")({
 
 function ProjectNotFoundPage() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+    <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
       <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / projects</p>
         <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
@@ -83,13 +88,10 @@ function ProjectNotFoundPage() {
 function ProjectDetailPage() {
   const project = Route.useLoaderData();
 
-  const thumbnail = `${sites.siteUrl}/assets/projects/${project.slug}/cover.webp`;
-
   return (
     <>
-      <SEO title={project.title} description={project.description} thumbnail={thumbnail} />
       <main
-        className="mx-auto max-w-[1080px] px-2 md:px-4 py-10 border-x border-pink-200/50"
+        className="mx-auto max-w-container px-2 md:px-4 py-10 border-x border-pink-200/50"
         style={{ viewTransitionName: `project-card-${project.slug}` }}
       >
         <BackButton />

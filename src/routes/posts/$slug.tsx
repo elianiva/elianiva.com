@@ -4,7 +4,6 @@ import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allPosts } from "content-collections";
 import { BackButton } from "~/components/back-button";
 import { CodeCopy } from "~/components/code-copy";
-import { SEO } from "~/components/seo";
 import { Badge } from "~/components/ui/badge";
 import { Heading } from "~/components/ui/heading";
 import sites from "~/data/sites";
@@ -60,8 +59,16 @@ export const Route = createFileRoute("/posts/$slug")({
     meta: [
       { title: `${loaderData?.title ?? "Post"} | ${sites.siteName}` },
       { name: "description", content: loaderData?.description ?? sites.description },
+      { name: "author", content: sites.author },
+      { name: "keywords", content: loaderData?.tags?.join(", ") ?? sites.keywords.join(", ") },
       { property: "og:title", content: loaderData?.title ?? "Post" },
       { property: "og:description", content: loaderData?.description ?? sites.description },
+      { property: "og:type", content: "article" },
+      { property: "og:image", content: `${sites.siteUrl}/api/og-image?title=${encodeURIComponent(loaderData?.title ?? "")}&date=${loaderData?.date ?? ""}&tags=${encodeURIComponent(loaderData?.tags?.join(",") ?? "")}&description=${encodeURIComponent(loaderData?.description ?? "")}` },
+      { property: "article:published_time", content: loaderData?.date },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: sites.twitter },
+      { name: "twitter:creator", content: sites.twitter },
     ],
   }),
   notFoundComponent: PostNotFoundPage,
@@ -69,7 +76,7 @@ export const Route = createFileRoute("/posts/$slug")({
 
 function PostNotFoundPage() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-[1080px] items-center justify-center px-4 py-16">
+    <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
       <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / posts</p>
         <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
@@ -100,23 +107,8 @@ function PostNotFoundPage() {
 function PostDetailPage() {
   const post = Route.useLoaderData();
 
-  const ogImageParams = new URLSearchParams({
-    title: post.title,
-    date: post.date,
-    tags: post.tags.join(","),
-    description: post.description,
-  });
-
   return (
     <>
-      <SEO
-        title={post.title}
-        description={post.description}
-        keywords={post.tags}
-        isPost
-        publishedAt={post.date}
-        thumbnail={`${sites.siteUrl}/api/og-image?${ogImageParams.toString()}`}
-      />
       <div className="mx-auto max-w-[64ch] px-4 lg:px-0 py-10">
         <BackButton />
 

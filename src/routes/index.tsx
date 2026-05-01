@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeroSection } from "~/components/section/hero-section";
-import { BlogSection, getBlogPosts } from "~/components/section/blog-section";
-import { ProjectSection, getProjects } from "~/components/section/project-section";
+import { BlogSection } from "~/components/section/blog-section";
+import { ProjectSection } from "~/components/section/project-section";
+import { getPosts as getBlogPosts } from "~/lib/posts";
+import { getProjects } from "~/lib/projects";
 import { WorkExperienceSection } from "~/components/section/work-experience-section";
 import { OpenSourceSection } from "~/components/section/open-source-section";
 import { workExperiences } from "~/data/work-experience";
@@ -32,7 +34,7 @@ function Home() {
   const { blogPosts, personalProjects } = Route.useLoaderData();
 
   return (
-    <div className="mx-auto max-w-[1080px] pt-20 border-x border-pink-200/50">
+    <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
       <HeroSection />
       <AboutSection />
       <section
