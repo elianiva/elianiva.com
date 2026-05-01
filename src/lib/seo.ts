@@ -69,9 +69,7 @@ export function seo(options: SeoProps) {
     author = sites.author,
   } = options;
 
-  const meta: Record<string, string>[] = [
-    { title: `${title} | ${sites.siteName}` },
-  ];
+  const meta: Record<string, string>[] = [{ title: `${title} | ${sites.siteName}` }];
 
   if (description) {
     meta.push({ name: "description", content: truncate(description, 160) });

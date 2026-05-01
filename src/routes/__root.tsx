@@ -1,12 +1,11 @@
 import {
   HeadContent,
   Link,
-  Outlet,
   Scripts,
   createRootRouteWithContext,
   useLocation,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { PropsWithChildren, useEffect } from "react";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
@@ -77,7 +76,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
-
   notFoundComponent: NotFoundPage,
   shellComponent: RootDocument,
 });
@@ -90,7 +88,7 @@ function ScrollToTop() {
   return null;
 }
 
-function RootDocument() {
+function RootDocument(props: PropsWithChildren<{}>) {
   return (
     <html lang="en" className="h-full">
       <head>
@@ -118,9 +116,7 @@ function RootDocument() {
         <NavigationStrip />
 
         <main id="main-content" role="main" className="relative z-0 flex-1">
-          <TanstackQueryProvider>
-            <Outlet />
-          </TanstackQueryProvider>
+          <TanstackQueryProvider>{props.children}</TanstackQueryProvider>
         </main>
 
         <Footer />

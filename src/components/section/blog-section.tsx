@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { PostCard } from "~/components/card/post-card";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { getPosts } from "~/lib/posts";
 import { Heading } from "~/components/ui/heading";
 import { Link } from "@tanstack/react-router";
@@ -23,11 +25,12 @@ const item = {
   },
 } as const;
 
-interface BlogSectionProps {
-  posts: Awaited<ReturnType<typeof getPosts>>;
-}
-
-export function BlogSection({ posts }: BlogSectionProps) {
+function BlogSectionContent() {
+  const { data: posts } = useSuspenseQuery({
+    queryKey: ["blog-posts"],
+    queryFn: () => getPosts(),
+    staleTime: Infinity,
+  });
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -68,5 +71,13 @@ export function BlogSection({ posts }: BlogSectionProps) {
         </Button>
       </motion.div>
     </motion.section>
+  );
+}
+
+export function BlogSection() {
+  return (
+    <Suspense fallback={<div className="py-8 px-8 text-sm text-pink-950/50">Loading posts...</div>}>
+      <BlogSectionContent />
+    </Suspense>
   );
 }

@@ -2,8 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HeroSection } from "~/components/section/hero-section";
 import { BlogSection } from "~/components/section/blog-section";
 import { ProjectSection } from "~/components/section/project-section";
-import { getPosts as getBlogPosts } from "~/lib/posts";
-import { getProjects } from "~/lib/projects";
 import { WorkExperienceSection } from "~/components/section/work-experience-section";
 import { OpenSourceSection } from "~/components/section/open-source-section";
 import { workExperiences } from "~/data/work-experience";
@@ -12,25 +10,10 @@ import { homeSeo } from "~/lib/seo";
 
 export const Route = createFileRoute("/")({
   component: Home,
-  head: () => homeSeo(),
-  staleTime: Infinity,
-  loader: async () => {
-    const [blogPosts, personalProjects] = await Promise.all([
-      getBlogPosts(),
-      getProjects({
-        data: {
-          type: "personal",
-          featured: true,
-        },
-      }),
-    ]);
-    return { blogPosts, personalProjects };
-  },
+  // head: () => homeSeo(),
 });
 
 function Home() {
-  const { blogPosts, personalProjects } = Route.useLoaderData();
-
   return (
     <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
       <HeroSection />
@@ -49,13 +32,12 @@ function Home() {
         <ProjectSection
           title="Personal Projects"
           description="Mostly made them just for fun and to learn new things."
-          projects={personalProjects}
           seeMoreUrl="/projects"
         />
         <OpenSourceSection />
       </section>
       <section role="region" aria-labelledby="blog-heading" className="relative with-box-underline">
-        <BlogSection posts={blogPosts} />
+        <BlogSection />
       </section>
       <section
         role="region"

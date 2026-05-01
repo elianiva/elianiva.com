@@ -1,7 +1,8 @@
+import { Suspense } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ProjectCard } from "~/components/card/project-card";
-import { ViewAllButton } from "~/components/view-all-button";
-import { getProjects, type ProjectType } from "~/lib/projects";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getProjects } from "~/lib/projects";
 import { Heading } from "~/components/ui/heading";
 import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
@@ -27,11 +28,21 @@ const item = {
 interface ProjectSectionProps {
   title: string;
   description: string;
-  projects: Awaited<ReturnType<typeof getProjects>>;
   seeMoreUrl?: string | null;
 }
 
-export function ProjectSection({ title, description, projects, seeMoreUrl }: ProjectSectionProps) {
+function ProjectSectionContent({ title, description, seeMoreUrl }: ProjectSectionProps) {
+  const { data: projects } = useSuspenseQuery({
+    queryKey: ["personal-projects"],
+    queryFn: () =>
+      getProjects({
+        data: {
+          type: "personal" as const,
+          featured: true,
+        },
+      }),
+    staleTime: Infinity,
+  });
   const prefersReducedMotion = useReducedMotion();
 
   const headingId =
@@ -81,5 +92,13 @@ export function ProjectSection({ title, description, projects, seeMoreUrl }: Pro
         </motion.div>
       )}
     </motion.section>
+  );
+}
+
+export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectionProps) {
+  return (
+    <Suspense fallback={<div className="py-8 px-8 text-sm text-pink-950/50">Loading projects...</div>}>
+      <ProjectSectionContent title={title} description={description} seeMoreUrl={seeMoreUrl} />
+    </Suspense>
   );
 }
