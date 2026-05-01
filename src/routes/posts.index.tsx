@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PostList } from "~/components/post-list";
+import { PostList } from "~/features/posts/components/post-list";
 import { BackButton } from "~/components/back-button";
-import { getPosts } from "~/lib/posts";
+import { getPosts } from "~/features/posts/lib/posts";
 import { seo } from "~/lib/seo";
 import { Heading } from "~/components/ui/heading";
 

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { allPosts, allProjects } from "content-collections";
-import { loadNotes } from "~/lib/notes";
+import { loadNotes } from "~/features/notes/lib/notes";
 import sites from "~/data/sites";
 
 export const Route = createFileRoute("/sitemap.xml")({

@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HeroSection } from "~/components/section/hero-section";
-import { BlogSection } from "~/components/section/blog-section";
-import { ProjectSection } from "~/components/section/project-section";
-import { WorkExperienceSection } from "~/components/section/work-experience-section";
-import { OpenSourceSection } from "~/components/section/open-source-section";
+import { HeroSection } from "~/features/home/components/hero-section";
+import { BlogSection } from "~/features/home/components/blog-section";
+import { ProjectSection } from "~/features/projects/components/project-section";
+import { WorkExperienceSection } from "~/features/home/components/work-experience-section";
+import { OpenSourceSection } from "~/features/github/components/open-source-section";
 import { workExperiences } from "~/data/work-experience";
-import { GitHubActivitySection } from "~/components/section/github-activity-section";
+import { GitHubActivitySection } from "~/features/github/components/github-activity-section";
 import { homeSeo } from "~/lib/seo";
 
 export const Route = createFileRoute("/")({

@@ -1,7 +1,7 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { loadNotes } from "~/lib/notes";
+import { loadNotes } from "~/features/notes/lib/notes";
 import { BackButton } from "~/components/back-button";
-import { Backlinks } from "~/components/notes/backlinks";
+import { Backlinks } from "~/features/notes/components/backlinks";
 import { seo } from "~/lib/seo";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -95,7 +95,6 @@ function NoteDetailPage() {
         <BackButton />
 
         <article className="pt-6" style={{ viewTransitionName: `note-card-${note.slug}` }}>
-          {/* Breadcrumb */}
           <nav className="text-sm text-pink-950/50 mb-6">
             <Link to="/notes" className="hover:text-pink-700 transition-colors">
               Notes
@@ -104,7 +103,6 @@ function NoteDetailPage() {
             <span>{categoryLabels[note.category] || note.category}</span>
           </nav>
 
-          {/* Header */}
           <header className="mb-8">
             <h1 className="font-display text-3xl md:text-4xl font-bold text-pink-950 tracking-wide">
               {note.title}
@@ -132,7 +130,6 @@ function NoteDetailPage() {
             )}
           </header>
 
-          {/* Content */}
           <div className="prose prose-pink max-w-none">
             <ReactMarkdown
               remarkPlugins={[remarkGfm, [wikiLinkPlugin, { aliasDivider: "|" }]]}
@@ -165,7 +162,6 @@ function NoteDetailPage() {
             </ReactMarkdown>
           </div>
 
-          {/* Backlinks */}
           <Backlinks notes={notes} currentSlug={note.slug} />
         </article>
       </div>

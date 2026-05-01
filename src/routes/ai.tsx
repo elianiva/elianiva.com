@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useLoaderData } from "@tanstack/react-router";
-import { getAiUsage } from "~/lib/tokscale";
+import { getAiUsage } from "~/features/ai/lib/tokscale";
 import { seo } from "~/lib/seo";
-import { AiPageBody } from "~/components/ai/ai-page-body";
+import { AiPageBody } from "~/features/ai/components/ai-page-body";
 
 export const Route = createFileRoute("/ai")({
   component: AiPage,
