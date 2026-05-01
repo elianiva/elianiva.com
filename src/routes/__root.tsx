@@ -19,6 +19,7 @@ import appCss from "../styles.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
 import { NavigationStrip } from "~/components/navigation";
+import { TooltipProvider } from "~/components/ui/tooltip";
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -116,7 +117,9 @@ function RootDocument(props: PropsWithChildren<{}>) {
         <NavigationStrip />
 
         <main id="main-content" role="main" className="relative z-0 flex-1">
-          <TanstackQueryProvider>{props.children}</TanstackQueryProvider>
+          <TooltipProvider>
+            <TanstackQueryProvider>{props.children}</TanstackQueryProvider>
+          </TooltipProvider>
         </main>
 
         <Footer />

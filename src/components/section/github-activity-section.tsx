@@ -1,46 +1,11 @@
-import { Suspense, useState } from "react";
-import { motion } from "motion/react";
+import { Suspense } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getGitHubContributions } from "~/lib/github";
 import { useCountUp } from "~/hooks/use-count-up";
 import { Heading } from "~/components/ui/heading";
 import { AnimatedSection } from "~/components/ui/animated-section";
 import { AnimatedItem } from "~/components/ui/animated-item";
-import { useReducedMotion } from "~/lib/motion";
-
-const LEVEL_COLORS: Record<string, string> = {
-  NONE: "bg-pink-100/40",
-  FIRST_QUARTILE: "bg-pink-200/70",
-  SECOND_QUARTILE: "bg-pink-300/80",
-  THIRD_QUARTILE: "bg-pink-400/80",
-  FOURTH_QUARTILE: "bg-pink-500",
-};
-
-const LEVEL_HOVER: Record<string, string> = {
-  NONE: "hover:bg-pink-200/50",
-  FIRST_QUARTILE: "hover:bg-pink-300",
-  SECOND_QUARTILE: "hover:bg-pink-400",
-  THIRD_QUARTILE: "hover:bg-pink-500",
-  FOURTH_QUARTILE: "hover:bg-pink-600",
-};
-
-const cell = {
-  hidden: { opacity: 0, scale: 0.5 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.15, ease: [0.19, 1, 0.22, 1] },
-  },
-} as const;
-
-const gridContainer = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.004,
-    },
-  },
-} as const;
+import { HeatmapGrid, type HeatmapCell } from "~/components/ui/heatmap-grid";
 
 function AnimatedCount({ target }: { target: number }) {
   const { ref, display } = useCountUp(target, 1.8);
@@ -58,22 +23,15 @@ function formatNumber(n: number): string {
   return n.toLocaleString("en-US");
 }
 
-function getMonthLabels(weeks: { contributionDays: { date: string }[] }[]): string[] {
-  const labels: string[] = [];
-  let lastMonth = -1;
-  for (const week of weeks) {
-    const firstDay = week.contributionDays[0];
-    if (!firstDay) continue;
-    const date = new Date(firstDay.date);
-    const month = date.getMonth();
-    if (month !== lastMonth) {
-      labels.push(date.toLocaleDateString("en-US", { month: "short" }).toLowerCase());
-      lastMonth = month;
-    } else {
-      labels.push("");
-    }
-  }
-  return labels;
+function toHeatmapLevel(level: string): number {
+  const map: Record<string, number> = {
+    NONE: 0,
+    FIRST_QUARTILE: 1,
+    SECOND_QUARTILE: 2,
+    THIRD_QUARTILE: 3,
+    FOURTH_QUARTILE: 4,
+  };
+  return map[level] ?? 0;
 }
 
 function GitHubActivityGrid() {
@@ -82,9 +40,6 @@ function GitHubActivityGrid() {
     queryFn: () => getGitHubContributions(),
     staleTime: 1000 * 60 * 60 * 24,
   });
-
-  const prefersReducedMotion = useReducedMotion();
-  const [hoveredCell, setHoveredCell] = useState<{ date: string; count: number } | null>(null);
 
   if (!data) {
     return (
@@ -95,7 +50,18 @@ function GitHubActivityGrid() {
   }
 
   const { totalContributions, weeks, longestStreak } = data;
-  const monthLabels = getMonthLabels(weeks);
+
+  const heatmapWeeks = weeks.map((week) => ({
+    days: week.contributionDays.map(
+      (day) =>
+        ({
+          date: day.date,
+          dateLabel: day.date,
+          intensity: toHeatmapLevel(day.contributionLevel),
+          tooltip: `${day.date} · ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`,
+        }) as HeatmapCell,
+    ),
+  }));
 
   return (
     <>
@@ -106,68 +72,7 @@ function GitHubActivityGrid() {
         </div>
         <div className="text-sm font-mono text-pink-950/40">longest streak · {longestStreak}d</div>
       </div>
-
-      <div className="relative pt-4">
-        <div className="flex gap-0.75 mb-1 text-[10px] font-mono text-pink-950/30 uppercase tracking-wider">
-          {monthLabels.map((label, i) => (
-            <div key={i} className="w-4 text-center shrink-0">
-              {label}
-            </div>
-          ))}
-        </div>
-
-        <div className="overflow-x-auto">
-          <motion.div
-            className="flex gap-0.75 w-full"
-            variants={prefersReducedMotion ? undefined : gridContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {weeks.map((week, weekIdx) => (
-              <div key={weekIdx} className="flex flex-col gap-0.75">
-                {week.contributionDays.map((day, dayIdx) => (
-                  <motion.div
-                    key={dayIdx}
-                    variants={prefersReducedMotion ? undefined : cell}
-                    className={`
-                      size-4 cursor-default transition-colors duration-150
-                      ${LEVEL_COLORS[day.contributionLevel] || LEVEL_COLORS.NONE}
-                      ${LEVEL_HOVER[day.contributionLevel] || LEVEL_HOVER.NONE}
-                    `}
-                    title={`${day.date}: ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`}
-                    onMouseEnter={() =>
-                      setHoveredCell({ date: day.date, count: day.contributionCount })
-                    }
-                    onMouseLeave={() => setHoveredCell(null)}
-                  />
-                ))}
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        <div className="flex items-center justify-between mt-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-mono text-pink-950/30">less</span>
-            {["NONE", "FIRST_QUARTILE", "SECOND_QUARTILE", "THIRD_QUARTILE", "FOURTH_QUARTILE"].map(
-              (level) => (
-                <div key={level} className={`size-4 ${LEVEL_COLORS[level]}`} />
-              ),
-            )}
-            <span className="text-[10px] font-mono text-pink-950/30">more</span>
-          </div>
-
-          <div className="h-4">
-            {hoveredCell && (
-              <span className="text-[10px] font-mono text-pink-950/40">
-                {hoveredCell.date} · {hoveredCell.count} contribution
-                {hoveredCell.count === 1 ? "" : "s"}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+      <HeatmapGrid weeks={heatmapWeeks} />
     </>
   );
 }

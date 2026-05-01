@@ -9,12 +9,14 @@ type HeadingProps<TLevel extends HeadingLevel> = {
   children: React.ReactNode;
   className?: string;
   level: TLevel;
+  right?: React.ReactNode;
 } & JSX.IntrinsicElements[`h${TLevel}`];
 
 export function Heading<TLevel extends HeadingLevel>({
   children,
   className,
   level,
+  right,
   ...props
 }: HeadingProps<TLevel>) {
   const Tag = `h${level}` as HeadingTag;
@@ -34,7 +36,6 @@ export function Heading<TLevel extends HeadingLevel>({
       )}
       {...props}
     >
-      {children}
       <div
         className={cn(
           "absolute bg-pink-200/50 left-0 right-0 -bottom-1 h-px",
@@ -53,6 +54,12 @@ export function Heading<TLevel extends HeadingLevel>({
           "after:content-[''] after:bg-pink-200 after:size-2.5",
         )}
       />
+      <div className="flex items-baseline justify-between w-full">
+        <span>{children}</span>
+        {right && (
+          <span className="font-mono text-xs font-normal text-pink-950/30 shrink-0">{right}</span>
+        )}
+      </div>
     </Tag>
   );
 }
