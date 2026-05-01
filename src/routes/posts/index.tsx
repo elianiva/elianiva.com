@@ -2,15 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PostList } from "~/components/post-list";
 import { BackButton } from "~/components/back-button";
 import { getPosts } from "~/lib/posts";
-import sites from "~/data/sites";
+import { seo } from "~/lib/seo";
 import { Heading } from "~/components/ui/heading";
 
 export const Route = createFileRoute("/posts/")({
   component: PostsPage,
   loader: () => getPosts(),
-  head: () => ({
-    meta: [{ title: `Posts | ${sites.siteName}` }],
-  }),
+  head: () => seo({ title: "Posts", description: "All blog posts" }),
   notFoundComponent: PostsNotFoundPage,
 });
 

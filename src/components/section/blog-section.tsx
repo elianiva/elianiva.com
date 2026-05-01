@@ -24,7 +24,7 @@ const item = {
 } as const;
 
 interface BlogSectionProps {
-  posts: Awaited<ReturnType<typeof getBlogPosts>>;
+  posts: Awaited<ReturnType<typeof getPosts>>;
 }
 
 export function BlogSection({ posts }: BlogSectionProps) {

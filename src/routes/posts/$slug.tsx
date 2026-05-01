@@ -6,7 +6,7 @@ import { BackButton } from "~/components/back-button";
 import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
 import { Heading } from "~/components/ui/heading";
-import sites from "~/data/sites";
+import { postSeo } from "~/lib/seo";
 import PencilIcon from "~icons/ph/note-pencil";
 
 const getPostBySlug = createServerFn({ method: "GET" })
@@ -55,22 +55,15 @@ const getPostBySlug = createServerFn({ method: "GET" })
 export const Route = createFileRoute("/posts/$slug")({
   component: PostDetailPage,
   loader: ({ params: { slug } }) => getPostBySlug({ data: slug }),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.title ?? "Post"} | ${sites.siteName}` },
-      { name: "description", content: loaderData?.description ?? sites.description },
-      { name: "author", content: sites.author },
-      { name: "keywords", content: loaderData?.tags?.join(", ") ?? sites.keywords.join(", ") },
-      { property: "og:title", content: loaderData?.title ?? "Post" },
-      { property: "og:description", content: loaderData?.description ?? sites.description },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: `${sites.siteUrl}/api/og-image?title=${encodeURIComponent(loaderData?.title ?? "")}&date=${loaderData?.date ?? ""}&tags=${encodeURIComponent(loaderData?.tags?.join(",") ?? "")}&description=${encodeURIComponent(loaderData?.description ?? "")}` },
-      { property: "article:published_time", content: loaderData?.date },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: sites.twitter },
-      { name: "twitter:creator", content: sites.twitter },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    if (!loaderData) return postSeo({ title: "Post", description: "", date: "", tags: [] });
+    return postSeo({
+      title: loaderData.title,
+      description: loaderData.description,
+      date: loaderData.date,
+      tags: loaderData.tags,
+    });
+  },
   notFoundComponent: PostNotFoundPage,
 });
 

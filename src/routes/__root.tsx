@@ -1,6 +1,7 @@
 import {
   HeadContent,
   Link,
+  Outlet,
   Scripts,
   createRootRouteWithContext,
   useLocation,
@@ -12,7 +13,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import TanstackQueryProvider from "../integrations/tanstack-query/root-provider";
 import { Frame } from "../components/frame";
-import { CanvasBackground } from "../components/canvas-background.tsx";
+import { CanvasBackground } from "../components/canvas-background";
 import { Footer } from "../components/footer";
 
 import appCss from "../styles.css?url";
@@ -71,20 +72,10 @@ function NotFoundPage() {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
 
   notFoundComponent: NotFoundPage,
@@ -99,7 +90,7 @@ function ScrollToTop() {
   return null;
 }
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument() {
   return (
     <html lang="en" className="h-full">
       <head>
@@ -112,7 +103,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           />
         )}
       </head>
-      <body className="h-full">
+      <body className="h-full flex flex-col">
         <ScrollToTop />
         {/* Skip Navigation Link */}
         <a
@@ -126,8 +117,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Frame />
         <NavigationStrip />
 
-        <main id="main-content" role="main" className="relative z-0">
-          <TanstackQueryProvider>{children}</TanstackQueryProvider>
+        <main id="main-content" role="main" className="relative z-0 flex-1">
+          <TanstackQueryProvider>
+            <Outlet />
+          </TanstackQueryProvider>
         </main>
 
         <Footer />

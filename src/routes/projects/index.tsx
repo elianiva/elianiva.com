@@ -2,11 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
 import { ProjectSection } from "~/components/section/project-section";
 import { getProjects } from "~/lib/projects";
-import sites from "~/data/sites";
+import { seo } from "~/lib/seo";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
-  head: () => ({ meta: [{ title: `Projects | ${sites.siteName}` }] }),
+  head: () => seo({ title: "Projects", description: "Things I've built" }),
   notFoundComponent: ProjectsNotFoundPage,
   staleTime: Infinity,
   loader: async () => {

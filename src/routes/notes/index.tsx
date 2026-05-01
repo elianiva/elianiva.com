@@ -7,7 +7,7 @@ import { GraphModal } from "~/components/notes/graph-modal";
 import { useState, useMemo } from "react";
 import GraphIcon from "~icons/ph/graph";
 import type { Note } from "~/types/notes";
-import sites from "~/data/sites";
+import { seo } from "~/lib/seo";
 
 export const Route = createFileRoute("/notes/")({
   component: NotesPage,
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/notes/")({
     const [notes, graph] = await Promise.all([loadNotes(), buildGraph()]);
     return { notes, graph };
   },
-  head: () => ({ meta: [{ title: `Notes | ${sites.siteName}` }] }),
+  head: () => seo({ title: "Notes", description: "Digital garden and collection of thoughts" }),
   notFoundComponent: NotesNotFoundPage,
 });
 

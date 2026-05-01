@@ -2,7 +2,7 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { loadNotes } from "~/lib/notes";
 import { BackButton } from "~/components/back-button";
 import { Backlinks } from "~/components/notes/backlinks";
-import sites from "~/data/sites";
+import { seo } from "~/lib/seo";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import wikiLinkPlugin from "@flowershow/remark-wiki-link";
@@ -17,19 +17,14 @@ export const Route = createFileRoute("/notes/$slug")({
     }
     return { note, notes };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.note.title ?? "Note"} | ${sites.siteName}` },
-      { name: "description", content: loaderData?.note.description ?? loaderData?.note.title ?? sites.description },
-      { name: "author", content: sites.author },
-      { property: "og:title", content: loaderData?.note.title ?? "Note" },
-      { property: "og:description", content: loaderData?.note.description ?? loaderData?.note.title ?? sites.description },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: sites.twitter },
-      { name: "twitter:creator", content: sites.twitter },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    if (!loaderData) return {};
+    return seo({
+      title: loaderData.note.title,
+      description: loaderData.note.description || loaderData.note.title,
+      ogType: "website",
+    });
+  },
   notFoundComponent: NoteNotFoundPage,
 });
 

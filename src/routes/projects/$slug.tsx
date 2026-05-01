@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
 import { BackButton } from "~/components/back-button";
-import sites from "~/data/sites";
+import { seo, defaultOgImageUrl } from "~/lib/seo";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
 
@@ -38,20 +38,16 @@ const getProjectBySlug = createServerFn({ method: "GET" })
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
   loader: ({ params: { slug } }) => getProjectBySlug({ data: slug }),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.title ?? "Project"} | ${sites.siteName}` },
-      { name: "description", content: loaderData?.description ?? sites.description },
-      { name: "author", content: sites.author },
-      { property: "og:title", content: loaderData?.title ?? "Project" },
-      { property: "og:description", content: loaderData?.description ?? sites.description },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: `${sites.siteUrl}/assets/projects/${loaderData?.slug}/cover.webp` },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: sites.twitter },
-      { name: "twitter:creator", content: sites.twitter },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    if (!loaderData) return {};
+    return seo({
+      title: loaderData.title,
+      description: loaderData.description,
+      ogTitle: loaderData.title,
+      ogType: "website",
+      ogImage: defaultOgImageUrl(loaderData.title, loaderData.description),
+    });
+  },
   notFoundComponent: ProjectNotFoundPage,
 });
 

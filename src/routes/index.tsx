@@ -8,12 +8,11 @@ import { WorkExperienceSection } from "~/components/section/work-experience-sect
 import { OpenSourceSection } from "~/components/section/open-source-section";
 import { workExperiences } from "~/data/work-experience";
 import { GitHubActivitySection } from "~/components/section/github-activity-section";
+import { homeSeo } from "~/lib/seo";
 
 export const Route = createFileRoute("/")({
   component: Home,
-  head: () => ({
-    meta: [{ title: `Home | elianiva's home row` }],
-  }),
+  head: () => homeSeo(),
   staleTime: Infinity,
   loader: async () => {
     const [blogPosts, personalProjects] = await Promise.all([
