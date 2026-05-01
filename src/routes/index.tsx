@@ -39,14 +39,9 @@ function Home() {
       <section role="region" aria-labelledby="blog-heading" className="relative with-box-underline">
         <BlogSection />
       </section>
-      <section
-        role="region"
-        aria-labelledby="github-activity-heading"
-        className="relative with-box-underline"
-      >
+      <section role="region" aria-labelledby="github-activity-heading">
         <GitHubActivitySection />
       </section>
     </div>
   );
 }
-
