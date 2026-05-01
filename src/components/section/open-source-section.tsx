@@ -11,7 +11,7 @@ const container = {
       staggerChildren: 0.08,
     },
   },
-};
+} as const;
 
 const item = {
   hidden: { opacity: 0, y: 24 },
@@ -20,7 +20,7 @@ const item = {
     y: 0,
     transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] },
   },
-};
+} as const;
 
 export function OpenSourceSection() {
   const { data } = useSuspenseQuery({
@@ -30,12 +30,12 @@ export function OpenSourceSection() {
   });
 
   const prefersReducedMotion = useReducedMotion();
-  const { grouped, totalPRs } = data;
+  const { grouped } = data;
   const repos = Object.entries(grouped);
 
   return (
     <motion.section
-      className="py-4 md:py-8 px-2 md:px-8"
+      className="py-4 md:py-8 pr-2 md:pr-8"
       initial={prefersReducedMotion ? false : "hidden"}
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}
@@ -48,12 +48,7 @@ export function OpenSourceSection() {
       </motion.div>
       <motion.div variants={item}>
         <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
-          Here are some of my merged pull requests across various open source projects.
-          {totalPRs > 0 && (
-            <span className="ml-1">
-              ({totalPRs} PRs across {repos.length} repositories)
-            </span>
-          )}
+          Some of my merged pull requests across various open source projects.
         </p>
       </motion.div>
 

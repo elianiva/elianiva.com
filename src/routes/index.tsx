@@ -7,7 +7,6 @@ import { getProjects } from "~/lib/projects";
 import { WorkExperienceSection } from "~/components/section/work-experience-section";
 import { OpenSourceSection } from "~/components/section/open-source-section";
 import { workExperiences } from "~/data/work-experience";
-import { AboutSection } from "~/components/section/about-section";
 import { GitHubActivitySection } from "~/components/section/github-activity-section";
 
 export const Route = createFileRoute("/")({
@@ -36,7 +35,6 @@ function Home() {
   return (
     <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
       <HeroSection />
-      <AboutSection />
       <section
         role="region"
         aria-labelledby="experience-heading"
@@ -47,24 +45,18 @@ function Home() {
       <section
         role="region"
         aria-labelledby="open-source-contributions-heading"
-        className="relative with-box-underline"
+        className="relative with-box-underline grid md:grid-cols-2 gap-2"
       >
+        <ProjectSection
+          title="Personal Projects"
+          description="Mostly made them just for fun and to learn new things."
+          projects={personalProjects}
+          seeMoreUrl="/projects"
+        />
         <OpenSourceSection />
       </section>
       <section role="region" aria-labelledby="blog-heading" className="relative with-box-underline">
         <BlogSection posts={blogPosts} />
-      </section>
-      <section
-        role="region"
-        aria-labelledby="personal-projects-heading"
-        className="relative with-box-underline"
-      >
-        <ProjectSection
-          title="Personal Projects"
-          description="These are some of my personal projects that I made in the past. Some of them are still in use, some are not. Mostly made them just for fun and to learn new things!"
-          projects={personalProjects}
-          seeMoreUrl="/projects"
-        />
       </section>
       <section
         role="region"
@@ -76,3 +68,4 @@ function Home() {
     </div>
   );
 }
+

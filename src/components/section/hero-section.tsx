@@ -62,10 +62,12 @@ export function HeroSection() {
           </Heading>
         </motion.div>
         <motion.div variants={item}>
-          <p className="text-sm md:text-base leading-relaxed font-body text-pink-950/80 py-3 max-w-[60ch]">
-            Software Engineer doing frontend things. I like making interfaces that don&apos;t annoy
-            people and enjoy removing AI slop. Currently trying to get better at the design side of
-            things. Also I rebuilt this site like 5 times.
+          <p className="text-sm md:text-base leading-relaxed font-body text-pink-950 py-3 max-w-[90ch] text-pretty">
+            I'm a software engineer with 4+ years mostly in web frontend, though I've dipped into
+            backend, databases, and infra when needed. I like building interfaces that don't annoy
+            people and cleaning up AI slop from codebases. Lately I've been leaning more into design
+            engineering. Outside work, I tinker with side projects, contribute to OSS, and drink a
+            lot of coffee.
           </p>
         </motion.div>
         <motion.div
@@ -120,7 +122,11 @@ export function HeroSection() {
           className="relative block w-40 h-40 group"
           aria-label="Visit GitHub profile"
         >
-          <div className="relative w-full h-full overflow-hidden border border-pink-200/50 transition-transform duration-300 group-hover:-translate-y-1">
+          <div className="relative w-full h-full border border-pink-200/50 transition-transform duration-300 group-hover:-translate-y-1">
+            <div className="absolute left-0 top-0 border border-pink-200/50 bg-white size-3 z-10 -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute left-0 bottom-0 border border-pink-200/50 bg-white size-3 z-10 -translate-x-1/2 translate-y-1/2" />
+            <div className="absolute right-0 top-0 border border-pink-200/50 bg-white size-3 z-10 translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute right-0 bottom-0 border border-pink-200/50 bg-white size-3 z-10 translate-x-1/2 translate-y-1/2" />
             <img
               src="https://avatars.githubusercontent.com/u/51877647?v=4"
               alt="Profile photo of Dicha Zelianiva Arkana"
@@ -133,3 +139,4 @@ export function HeroSection() {
     </motion.header>
   );
 }
+

@@ -42,7 +42,7 @@ export function ProjectSection({ title, description, projects, seeMoreUrl }: Pro
 
   return (
     <motion.section
-      className="py-4 md:py-8 px-2 md:px-8"
+      className="py-4 md:py-8 pl-2 md:pl-8"
       initial={prefersReducedMotion ? false : "hidden"}
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}

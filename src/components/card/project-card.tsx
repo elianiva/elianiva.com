@@ -16,10 +16,10 @@ export function ProjectCard({ slug, title, description, href, stack }: ProjectCa
       className="bg-white/60 text-left p-4 transition-all group hover:bg-white h-full flex flex-col"
       style={{ viewTransitionName: `project-card-${slug}` }}
     >
-      <div className="flex gap-4 flex-1">
+      <div className="flex gap-4 flex-1 items-center">
         <div
           className={cn(
-            "relative flex items-center justify-center border-2 border-border uppercase w-11 font-black",
+            "relative flex items-center justify-center border-2 border-border uppercase h-11 w-11 font-black",
             "before:absolute before:content-[''] before:-left-0.5 before:-bottom-0.5 before:size-0 before:border-t-44 before:border-r-44 before:border-t-pink-100/50 before:border-r-pink-200/50",
           )}
         >
