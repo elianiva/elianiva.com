@@ -302,3 +302,4 @@ export const buildGraph = createServerFn({ method: "GET" }).handler(async () => 
 
   return { nodes, links } as NotesGraph;
 });
+
