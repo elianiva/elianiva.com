@@ -1,16 +1,25 @@
-import { useQuery } from "@tanstack/react-query";
+import { useLoaderData } from "@tanstack/react-router";
 import { Heading } from "~/components/ui/heading";
-import { getRecentTracks, LASTFM_PROFILE_URL } from "../lib/lastfm";
-import { BodySkel } from "./body-skeleton";
+import { type MusicData, LASTFM_PROFILE_URL } from "../lib/lastfm";
 import { TrackList } from "./track-list";
 import { cn } from "~/lib/utils";
+import { NotFound } from "~/components/not-found";
 
 export function MusicPage() {
-  const { data: music, isLoading } = useQuery({
-    queryKey: ["lastfm", "tracks"],
-    queryFn: () => getRecentTracks(),
-  });
+  const music = useLoaderData({ from: "/music" }) as MusicData | null;
   const isLive = music?.tracks.some((t) => t.nowPlaying);
+
+  if (!music) {
+    return (
+      <NotFound
+        path="music"
+        label="Music"
+        title="No scrobbles found"
+        description="Failed to load recent tracks from Last.fm. Try again later."
+        backTo={{ to: "/music", label: "Music" }}
+      />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
@@ -53,10 +62,7 @@ export function MusicPage() {
             </div>
           )}
         </header>
-
-        {isLoading ? (
-          <BodySkel />
-        ) : music && music.tracks.length > 0 ? (
+        {music.tracks.length > 0 ? (
           <TrackList data={music} />
         ) : (
           <div className="py-20 text-center border border-dashed border-pink-200/50 mt-8">

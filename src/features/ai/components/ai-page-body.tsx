@@ -1,7 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLoaderData } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
 import type { AiUsage, AiContribution } from "../lib/tokscale";
 import { useMemo } from "react";
+import { NotFound } from "~/components/not-found";
 import { fmtTokens, fmtCost, fmtRel } from "./fmt";
 import { SummarySection } from "./summary-section";
 import { HeatmapSection } from "./heatmap-section";
@@ -53,7 +54,19 @@ function aggregateClients(clients: string[], contributions: AiContribution[]) {
   return [...m.entries()].map(([client, v]) => ({ client, ...v })).sort((a, b) => b.cost - a.cost);
 }
 
-export function AiPage({ data }: { data: AiUsage }) {
+export function AiPage() {
+  const data = useLoaderData({ from: "/ai" }) as AiUsage | null;
+  if (!data) {
+    return (
+      <NotFound
+        path="ai"
+        label="AI Usage"
+        title="Couldn't reach tokscale"
+        description="AI usage data is currently unavailable. Try again later."
+        backTo={{ to: "/ai", label: "AI Usage" }}
+      />
+    );
+  }
   const contributions = data.contributions;
 
   const heatmapWeeks = useMemo(() => groupContributions(contributions), [contributions]);
