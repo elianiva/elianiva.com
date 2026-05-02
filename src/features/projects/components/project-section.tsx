@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { ProjectCard } from "./project-card";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getProjects } from "../lib/projects";
+import { getProjects, type ProjectType } from "../lib/projects";
 import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Button } from "~/components/ui/button";
@@ -11,16 +11,18 @@ interface ProjectSectionProps {
   title: string;
   description: string;
   seeMoreUrl?: string | null;
+  type?: ProjectType;
+  featured?: boolean;
 }
 
-function ProjectCardList() {
+function ProjectCardList({ type = "personal", featured = true }: { type: ProjectType; featured: boolean }) {
   const { data: projects } = useSuspenseQuery({
-    queryKey: ["personal-projects"],
+    queryKey: ["projects", type, featured],
     queryFn: () =>
       getProjects({
         data: {
-          type: "personal" as const,
-          featured: true,
+          type,
+          featured,
         },
       }),
     staleTime: Infinity,
@@ -35,7 +37,7 @@ function ProjectCardList() {
             title={project.title}
             description={project.description}
             href={`/projects/${project.slug}`}
-            stack={project.stack || []}
+            stack={project.stack}
           />
         </div>
       ))}
@@ -43,11 +45,11 @@ function ProjectCardList() {
   );
 }
 
-export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectionProps) {
+export function ProjectSection({ title, description, seeMoreUrl, type = "personal", featured = true }: ProjectSectionProps) {
   const headingId =
     title
       .toLowerCase()
-      .replace(/s+/g, "-")
+      .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "") + "-heading";
 
   return (
@@ -70,19 +72,15 @@ export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectio
             </div>
           }
         >
-          <ProjectCardList />
+          <ProjectCardList type={type} featured={featured} />
         </Suspense>
       </div>
-      {typeof seeMoreUrl === "string" && (
-        <div className="flex justify-end">
-          <Button
-            render={<Link to={seeMoreUrl} />}
-            variant="link"
-            className="text-sm p-0 font-normal"
-          >
-            View All Projects
+      {seeMoreUrl && (
+        <Link to={seeMoreUrl}>
+          <Button variant="outline" className="text-sm">
+            See more →
           </Button>
-        </div>
+        </Link>
       )}
     </section>
   );
