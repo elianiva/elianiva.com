@@ -1,8 +1,6 @@
-import { Link, useLoaderData } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
 import type { AiUsage, AiContribution } from "../lib/tokscale";
-import { useMemo } from "react";
-import { NotFound } from "~/components/not-found";
 import { fmtTokens, fmtCost, fmtRel } from "./fmt";
 import { SummarySection } from "./summary-section";
 import { HeatmapSection } from "./heatmap-section";
@@ -24,7 +22,7 @@ function groupContributions(contributions: AiContribution[]) {
     week[dow] = {
       date: day.date,
       dateLabel: day.date,
-      intensity: Math.min(4, day.intensity),
+      level: day.level ?? 0,
       tooltip: `${day.date} · ${fmtTokens(day.totals.tokens)} tokens · ${fmtCost(day.totals.cost)}`,
     };
   }
@@ -36,50 +34,34 @@ function groupContributions(contributions: AiContribution[]) {
   return sortedWeeks;
 }
 
-function aggregateClients(clients: string[], contributions: AiContribution[]) {
-  const m = new Map<string, { cost: number; tokens: number }>();
-  for (const c of clients) m.set(c, { cost: 0, tokens: 0 });
+function aggregateClients(
+  clients: string[],
+  contributions: AiContribution[],
+) {
+  const map = new Map<string, { cost: number; tokens: number }>();
   for (const day of contributions) {
-    for (const c of day.clients) {
-      const row = m.get(c.client) ?? { cost: 0, tokens: 0 };
-      const tokenSum =
-        c.tokens.input +
-        c.tokens.output +
-        c.tokens.cacheRead +
-        c.tokens.cacheWrite +
-        c.tokens.reasoning;
-      m.set(c.client, { cost: row.cost + c.cost, tokens: row.tokens + tokenSum });
-    }
+    if (!day.client) continue;
+    const entry = map.get(day.client) || { cost: 0, tokens: 0 };
+    entry.cost += day.totals.cost;
+    entry.tokens += day.totals.tokens;
+    map.set(day.client, entry);
   }
-  return [...m.entries()].map(([client, v]) => ({ client, ...v })).sort((a, b) => b.cost - a.cost);
+  return [...map.entries()]
+    .map(([client, totals]) => ({ client, ...totals }))
+    .sort((a, b) => b.tokens - a.tokens);
 }
 
-export function AiPage() {
-  const data = useLoaderData({ from: "/ai" }) as AiUsage | null;
-  if (!data) {
-    return (
-      <NotFound
-        path="ai"
-        label="AI Usage"
-        title="Couldn't reach tokscale"
-        description="AI usage data is currently unavailable. Try again later."
-        backTo={{ to: "/ai", label: "AI Usage" }}
-      />
-    );
-  }
+export function AiPage({ data }: { data: AiUsage }) {
   const contributions = data.contributions;
-
-  const heatmapWeeks = useMemo(() => groupContributions(contributions), [contributions]);
-  const clientTotals = useMemo(
-    () => aggregateClients(data.clients, contributions),
-    [data.clients, contributions],
-  );
+  const heatmapWeeks = groupContributions(contributions);
+  const clientTotals = aggregateClients(data.clients, contributions);
   const avgDaily = data.stats.activeDays > 0 ? data.stats.totalCost / data.stats.activeDays : 0;
 
   return (
-    <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
+    <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
-        <header className="relative with-box-underline pb-8">
+        <BackButton />
+        <div className="mb-8 with-box-underline relative">
           <Heading level={1}>AI Usage</Heading>
           <p className="text-pink-950/60 mt-4 leading-relaxed">
             All of AI tokens spent across{" "}
@@ -91,24 +73,13 @@ export function AiPage() {
               rel="noopener noreferrer"
               className="text-pink-500 underline decoration-pink-200 hover:decoration-pink-400"
             >
-              tokscale
-            </a>{" "}
-            not 100% representative of the actual cost as some of them comes from subscriptions.
+              tokscale.ai
+            </a>
+            .
           </p>
-          <div className="flex gap-3 flex-wrap mt-4 font-mono text-sm text-pink-950/40">
-            <span>
-              rank <b className="text-pink-800 font-normal">#{data.user.rank}</b>
-            </span>
-            ·
-            <span>
-              range{" "}
-              <b className="text-pink-800 font-normal">
-                {data.dateRange.start} ~ {data.dateRange.end}
-              </b>
-            </span>
-            ·
-            <span>
-              synced{" "}
+          <p className="text-pink-950/60 mt-1 leading-relaxed">
+            <span className="font-mono text-sm text-pink-400">
+              last synced{" "}
               <b
                 className={
                   data.freshness.isStale
@@ -119,9 +90,8 @@ export function AiPage() {
                 {fmtRel(data.freshness.lastUpdated)}
               </b>
             </span>
-          </div>
-        </header>
-
+          </p>
+        </div>
         <section
           role="region"
           aria-labelledby="ai-summary-heading"
