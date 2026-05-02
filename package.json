@@ -97,7 +97,9 @@
     "onlyBuiltDependencies": [
       "esbuild",
       "lightningcss",
-      "msw"
+      "msw",
+      "sharp",
+      "workerd"
     ]
   }
 }
