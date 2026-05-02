@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import siteData from "~/data/sites";
 import EnvelopeIcon from "~icons/ph/envelope-duotone";
 import GithubLogoIcon from "~icons/ph/github-logo-duotone";
@@ -7,9 +6,6 @@ import CvLogoIcon from "~icons/ph/read-cv-logo-duotone";
 import XLogoIcon from "~icons/ph/x-logo-duotone";
 import { Heading } from "~/components/ui/heading";
 import { Button } from "~/components/ui/button";
-import { AnimatedSection } from "~/components/ui/animated-section";
-import { AnimatedItem } from "~/components/ui/animated-item";
-import { easings, durations } from "~/lib/motion";
 
 interface Social {
   icon: React.ComponentType<{ className?: string }>;
@@ -25,34 +21,14 @@ const socials: Social[] = [
   { icon: CvLogoIcon, link: siteData.cv, label: "Résumé" },
 ];
 
-const socialButtonItem = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: easings.out },
-  },
-} as const;
-
-const socialContainer = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.12,
-    },
-  },
-} as const;
-
 export function HeroSection() {
   return (
-    <AnimatedSection
-      animateOnMount
+    <section
       role="banner"
       className="relative flex flex-col-reverse md:flex-row gap-6 pb-8 px-2 md:px-8 with-box-underline"
     >
       <div className="flex-1">
-        <AnimatedItem>
+        <div>
           <Heading level={1} className="first-letter:text-pink-950">
             Dicha Z
             <span className="text-pink-500" title="Yes, this is where the username comes from">
@@ -60,8 +36,8 @@ export function HeroSection() {
             </span>
             n Arkana
           </Heading>
-        </AnimatedItem>
-        <AnimatedItem>
+        </div>
+        <div>
           <p className="text-sm md:text-base leading-relaxed font-body text-pink-950 py-3 max-w-[90ch] text-pretty">
             I'm a software engineer with 4+ years mostly in web frontend, though I've dipped into
             backend, databases, and infra when needed. I like building interfaces that don't annoy
@@ -69,11 +45,8 @@ export function HeroSection() {
             engineering. Outside work, I tinker with side projects, contribute to OSS, and drink a
             lot of coffee.
           </p>
-        </AnimatedItem>
-        <motion.div
-          variants={socialContainer}
-          className="flex items-center flex-wrap gap-2 pt-2 justify-center md:justify-start"
-        >
+        </div>
+        <div className="flex items-center flex-wrap gap-2 pt-2 justify-center md:justify-start">
           {socials.map((social) => {
             const Icon = social.icon;
             return (
@@ -82,8 +55,7 @@ export function HeroSection() {
                 variant="ghost"
                 nativeButton={false}
                 render={
-                  <motion.a
-                    variants={socialButtonItem}
+                  <a
                     href={social.link}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -97,9 +69,9 @@ export function HeroSection() {
               </Button>
             );
           })}
-        </motion.div>
+        </div>
       </div>
-      <AnimatedItem className="relative mb-4 md:mb-0 mx-auto">
+      <div className="relative mb-4 md:mb-0 mx-auto">
         <a
           href={siteData.github}
           target="_blank"
@@ -120,7 +92,7 @@ export function HeroSection() {
             />
           </div>
         </a>
-      </AnimatedItem>
-    </AnimatedSection>
+      </div>
+    </section>
   );
 }

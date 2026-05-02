@@ -27,14 +27,14 @@ function Home() {
       <section
         role="region"
         aria-labelledby="open-source-contributions-heading"
-        className="relative with-box-underline grid md:grid-cols-2 gap-2"
+        className="relative with-box-underline grid md:grid-cols-2 gap-4 px-2 md:px-8"
       >
+        <OpenSourceSection />
         <ProjectSection
           title="Personal Projects"
           description="Mostly made them just for fun and to learn new things."
           seeMoreUrl="/projects"
         />
-        <OpenSourceSection />
       </section>
       <section role="region" aria-labelledby="blog-heading" className="relative with-box-underline">
         <BlogSection />

@@ -3,8 +3,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { getGitHubContributions } from "../lib/github";
 import { useCountUp } from "~/hooks/use-count-up";
 import { Heading } from "~/components/ui/heading";
-import { AnimatedSection } from "~/components/ui/animated-section";
-import { AnimatedItem } from "~/components/ui/animated-item";
 import { HeatmapGrid, type HeatmapCell } from "~/components/ui/heatmap-grid";
 
 function AnimatedCount({ target }: { target: number }) {
@@ -79,12 +77,12 @@ function GitHubActivityGrid() {
 
 export function GitHubActivitySection() {
   return (
-    <AnimatedSection className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline">
-      <AnimatedItem>
+    <section className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline">
+      <div>
         <Heading level={2} id="github-activity-heading">
           Git Activity
         </Heading>
-      </AnimatedItem>
+      </div>
 
       <Suspense
         fallback={
@@ -111,6 +109,6 @@ export function GitHubActivitySection() {
       >
         <GitHubActivityGrid />
       </Suspense>
-    </AnimatedSection>
+    </section>
   );
 }

@@ -1,5 +1,3 @@
-import { AnimatedSection } from "~/components/ui/animated-section";
-import { AnimatedItem } from "~/components/ui/animated-item";
 import { Heading } from "~/components/ui/heading";
 import { fmtTokens, fmtCost } from "./fmt";
 
@@ -17,13 +15,13 @@ interface Props {
 
 export function AiClientsSection({ clientTotals, contributionsLength, totalCost }: Props) {
   return (
-    <AnimatedSection className="py-4 md:py-8">
-      <AnimatedItem>
+    <section className="py-4 md:py-8">
+      <div>
         <Heading level={2} right={`${clientTotals.length} clients`}>
           Clients
         </Heading>
-      </AnimatedItem>
-      <AnimatedItem>
+      </div>
+      <div>
         {clientTotals.length === 0 ? (
           <p className="text-sm font-body text-pink-950/60">No client data available.</p>
         ) : (
@@ -40,7 +38,7 @@ export function AiClientsSection({ clientTotals, contributionsLength, totalCost 
             ))}
           </div>
         )}
-      </AnimatedItem>
-    </AnimatedSection>
+      </div>
+    </section>
   );
 }

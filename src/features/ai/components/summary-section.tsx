@@ -1,5 +1,3 @@
-import { AnimatedSection } from "~/components/ui/animated-section";
-import { AnimatedItem } from "~/components/ui/animated-item";
 import { Heading } from "~/components/ui/heading";
 import { fmtTokens, fmtCost } from "./fmt";
 import type { AiUsage } from "../lib/tokscale";
@@ -41,14 +39,14 @@ function StatCard(props: StatCardProps) {
 
 export function AiSummarySection({ data, avgDaily }: Props) {
   return (
-    <AnimatedSection className="py-4 md:py-8">
-      <AnimatedItem>
+    <section className="py-4 md:py-8">
+      <div>
         <Heading level={2} right={"totals since " + data.dateRange.start}>
           Summary
         </Heading>
-      </AnimatedItem>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        <AnimatedItem>
+        <div>
           <StatCard
             className="border-r pr-2"
             title="cost total"
@@ -65,8 +63,8 @@ export function AiSummarySection({ data, avgDaily }: Props) {
               </>
             }
           />
-        </AnimatedItem>
-        <AnimatedItem>
+        </div>
+        <div>
           <StatCard
             className="border-r pr-2"
             title="tokens total"
@@ -87,8 +85,8 @@ export function AiSummarySection({ data, avgDaily }: Props) {
               </>
             }
           />
-        </AnimatedItem>
-        <AnimatedItem>
+        </div>
+        <div>
           <StatCard
             title="cache hit"
             label="prompt caching"
@@ -116,8 +114,8 @@ export function AiSummarySection({ data, avgDaily }: Props) {
               </>
             }
           />
-        </AnimatedItem>
+        </div>
       </div>
-    </AnimatedSection>
+    </section>
   );
 }

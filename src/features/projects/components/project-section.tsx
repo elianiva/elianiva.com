@@ -6,8 +6,6 @@ import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
-import { AnimatedSection } from "~/components/ui/animated-section";
-import { AnimatedItem } from "~/components/ui/animated-item";
 
 interface ProjectSectionProps {
   title: string;
@@ -31,7 +29,7 @@ function ProjectCardList() {
   return (
     <>
       {projects.map((project) => (
-        <AnimatedItem key={project.slug} className="h-full">
+        <div key={project.slug} className="h-full">
           <ProjectCard
             slug={project.slug}
             title={project.title}
@@ -39,7 +37,7 @@ function ProjectCardList() {
             href={`/projects/${project.slug}`}
             stack={project.stack || []}
           />
-        </AnimatedItem>
+        </div>
       ))}
     </>
   );
@@ -53,15 +51,15 @@ export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectio
       .replace(/[^a-z0-9-]/g, "") + "-heading";
 
   return (
-    <AnimatedSection className="py-4 md:py-8 pl-2 md:pl-8">
-      <AnimatedItem>
+    <section className="py-4 md:py-8">
+      <div>
         <Heading level={2} id={headingId}>
           {title}
         </Heading>
-      </AnimatedItem>
-      <AnimatedItem>
+      </div>
+      <div>
         <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">{description}</p>
-      </AnimatedItem>
+      </div>
       <div className="relative space-y-1 pb-4 card-tilt-odd items-stretch">
         <Suspense
           fallback={
@@ -76,7 +74,7 @@ export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectio
         </Suspense>
       </div>
       {typeof seeMoreUrl === "string" && (
-        <AnimatedItem className="flex justify-end">
+        <div className="flex justify-end">
           <Button
             render={<Link to={seeMoreUrl} />}
             variant="link"
@@ -84,8 +82,8 @@ export function ProjectSection({ title, description, seeMoreUrl }: ProjectSectio
           >
             View All Projects
           </Button>
-        </AnimatedItem>
+        </div>
       )}
-    </AnimatedSection>
+    </section>
   );
 }
