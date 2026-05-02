@@ -37,7 +37,7 @@ function StatCard(props: StatCardProps) {
   );
 }
 
-export function AiSummarySection({ data, avgDaily }: Props) {
+export function SummarySection({ data, avgDaily }: Props) {
   return (
     <section className="py-4 md:py-8">
       <div>

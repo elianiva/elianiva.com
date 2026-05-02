@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MusicPage } from "~/features/music";
+import { MusicPage } from "~/features/music/components/music-page";
 import { seo } from "~/lib/seo";
 
 export const Route = createFileRoute("/music")({

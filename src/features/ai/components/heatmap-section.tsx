@@ -8,7 +8,7 @@ interface Props {
   weeks: { days: (HeatmapCell | null)[] }[];
 }
 
-export function AiHeatmapSection({ contributions, weeks }: Props) {
+export function HeatmapSection({ contributions, weeks }: Props) {
   const monthlyCost = contributions.reduce((s, d) => s + d.totals.cost, 0);
   const monthlyTokens = contributions.reduce((s, d) => s + d.totals.tokens, 0);
 

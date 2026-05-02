@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useLoaderData } from "@tanstack/react-router";
 import { getAiUsage } from "~/features/ai/lib/tokscale";
 import { seo } from "~/lib/seo";
-import { AiPageBody } from "~/features/ai/components/ai-page-body";
+import { AiPage } from "~/features/ai/components/ai-page-body";
 
 export const Route = createFileRoute("/ai")({
   component: AiPage,
@@ -25,5 +25,5 @@ function AiPage() {
     );
   }
 
-  return <AiPageBody data={data} />;
+  return <AiPage data={data} />;
 }

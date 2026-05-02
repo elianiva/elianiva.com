@@ -6,7 +6,7 @@ interface Props {
   models: AiModelUsage[];
 }
 
-export function AiModelsSection({ models }: Props) {
+export function ModelsSection({ models }: Props) {
   return (
     <section className="py-4 md:py-8">
       <div>

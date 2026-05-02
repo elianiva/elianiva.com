@@ -3,10 +3,10 @@ import { BackButton } from "~/components/back-button";
 import type { AiUsage, AiContribution } from "../lib/tokscale";
 import { useMemo } from "react";
 import { fmtTokens, fmtCost, fmtRel } from "./fmt";
-import { AiSummarySection } from "./summary-section";
-import { AiHeatmapSection } from "./heatmap-section";
-import { AiModelsSection } from "./models-section";
-import { AiClientsSection } from "./clients-section";
+import { SummarySection } from "./summary-section";
+import { HeatmapSection } from "./heatmap-section";
+import { ModelsSection } from "./models-section";
+import { ClientsSection } from "./clients-section";
 import { type HeatmapCell } from "~/components/ui/heatmap-grid";
 import { Heading } from "~/components/ui/heading";
 
@@ -53,7 +53,7 @@ function aggregateClients(clients: string[], contributions: AiContribution[]) {
   return [...m.entries()].map(([client, v]) => ({ client, ...v })).sort((a, b) => b.cost - a.cost);
 }
 
-export function AiPageBody({ data }: { data: AiUsage }) {
+export function AiPage({ data }: { data: AiUsage }) {
   const contributions = data.contributions;
 
   const heatmapWeeks = useMemo(() => groupContributions(contributions), [contributions]);
@@ -114,24 +114,24 @@ export function AiPageBody({ data }: { data: AiUsage }) {
           aria-labelledby="ai-summary-heading"
           className="relative with-box-underline"
         >
-          <AiSummarySection data={data} avgDaily={avgDaily} />
+          <SummarySection data={data} avgDaily={avgDaily} />
         </section>
         <section
           role="region"
           aria-labelledby="ai-activity-heading"
           className="relative with-box-underline"
         >
-          <AiHeatmapSection contributions={contributions} weeks={heatmapWeeks} />
+          <HeatmapSection contributions={contributions} weeks={heatmapWeeks} />
         </section>
         <section
           role="region"
           aria-labelledby="ai-models-heading"
           className="relative with-box-underline"
         >
-          <AiModelsSection models={data.modelUsage} />
+          <ModelsSection models={data.modelUsage} />
         </section>
         <section role="region" aria-labelledby="ai-clients-heading">
-          <AiClientsSection
+          <ClientsSection
             clientTotals={clientTotals}
             contributionsLength={contributions.length}
             totalCost={data.stats.totalCost}

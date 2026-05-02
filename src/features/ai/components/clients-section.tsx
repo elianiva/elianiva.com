@@ -13,7 +13,7 @@ interface Props {
   totalCost: number;
 }
 
-export function AiClientsSection({ clientTotals, contributionsLength, totalCost }: Props) {
+export function ClientsSection({ clientTotals, contributionsLength, totalCost }: Props) {
   return (
     <section className="py-4 md:py-8">
       <div>
