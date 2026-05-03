@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getRecentTracks } from "~/features/music/lib/lastfm";
 import { MusicPage } from "~/features/music/components/music-page";
-import { seo } from "~/lib/seo";
+import { seo, defaultOgImageUrl } from "~/lib/seo";
 
 export const Route = createFileRoute("/music")({
   component: MusicPage,
@@ -10,5 +10,6 @@ export const Route = createFileRoute("/music")({
     seo({
       title: "Music",
       description: "Recently played tracks via Last.fm",
+      ogImage: defaultOgImageUrl("Music", "Recently played tracks via Last.fm"),
     }),
 });

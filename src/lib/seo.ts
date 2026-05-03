@@ -84,7 +84,11 @@ export function seo(options: SeoProps) {
   );
 
   if (ogImage) {
-    meta.push({ property: "og:image", content: ogImage });
+    meta.push(
+      { property: "og:image", content: ogImage },
+      { name: "twitter:image", content: ogImage },
+      { name: "twitter:image:alt", content: ogTitle },
+    );
   }
 
   if (keywords) {
@@ -99,6 +103,8 @@ export function seo(options: SeoProps) {
     { name: "twitter:card", content: ogImage ? "summary_large_image" : "summary" },
     { name: "twitter:site", content: sites.twitter },
     { name: "twitter:creator", content: sites.twitter },
+    { name: "twitter:title", content: ogTitle },
+    { name: "twitter:description", content: ogDescription ? truncate(ogDescription, 160) : "" },
   );
 
   return { meta };
