@@ -6,24 +6,20 @@ import { Badge } from "~/components/ui/badge";
 type PostCardProps = {
   title: string;
   description: string;
-  href: string;
   date: string;
   tags: string[];
 } & JSX.IntrinsicElements["div"];
 
-export function PostCard({ title, description, href, date, tags, ...props }: PostCardProps) {
-  const slug = href.split("/").pop() || "";
-
+export function PostCard({ title, description, date, tags, ...props }: PostCardProps) {
   return (
     <div
       className="bg-white/60 text-left transition-all group hover:bg-white"
       role="article"
       aria-labelledby="post-title"
-      style={{ viewTransitionName: `post-card-${slug}` }}
+      style={{ viewTransitionName: title }}
       {...props}
     >
-      <Link
-        to={href}
+      <div
         className="flex p-4 h-full focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         aria-labelledby="post-title"
       >
@@ -58,7 +54,7 @@ export function PostCard({ title, description, href, date, tags, ...props }: Pos
             ))}
           </div>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }

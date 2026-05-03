@@ -196,8 +196,8 @@ export function HeatmapGrid({ weeks, legendLabel, emptyLabel = "No data availabl
 
       <div className="flex items-center gap-1 mt-3">
         <span className="text-xs font-mono text-pink-950/30">{legendLabel ?? "less"}</span>
-        {[0, 1, 2, 3, 4].map((level) => (
-          <div key={level} className={["size-4", INTENSITY_COLORS[level]].join(" ")} />
+        {[0, 1, 2, 3, 4].map((level, i) => (
+          <div key={i} className={["size-4", INTENSITY_COLORS[level]].join(" ")} />
         ))}
         <span className="text-xs font-mono text-pink-950/30">more</span>
       </div>

@@ -1,6 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { useLoaderData } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
 import type { AiUsage, AiContribution } from "../lib/tokscale";
+import { useMemo } from "react";
+import { NotFound } from "~/components/not-found";
 import { fmtTokens, fmtCost, fmtRel } from "./fmt";
 import { SummarySection } from "./summary-section";
 import { HeatmapSection } from "./heatmap-section";
@@ -22,7 +24,7 @@ function groupContributions(contributions: AiContribution[]) {
     week[dow] = {
       date: day.date,
       dateLabel: day.date,
-      level: day.level ?? 0,
+      intensity: day.intensity ?? 0,
       tooltip: `${day.date} · ${fmtTokens(day.totals.tokens)} tokens · ${fmtCost(day.totals.cost)}`,
     };
   }
@@ -34,13 +36,10 @@ function groupContributions(contributions: AiContribution[]) {
   return sortedWeeks;
 }
 
-function aggregateClients(
-  clients: string[],
-  contributions: AiContribution[],
-) {
+function aggregateClients(clients: string[], contributions: AiContribution[]) {
   const map = new Map<string, { cost: number; tokens: number }>();
   for (const day of contributions) {
-    if (!day.client) continue;
+    if (!day.clients) continue;
     const entry = map.get(day.client) || { cost: 0, tokens: 0 };
     entry.cost += day.totals.cost;
     entry.tokens += day.totals.tokens;
@@ -51,17 +50,33 @@ function aggregateClients(
     .sort((a, b) => b.tokens - a.tokens);
 }
 
-export function AiPage({ data }: { data: AiUsage }) {
+export function AiPage() {
+  const data = useLoaderData({ from: "/ai" }) as AiUsage | null;
+
+  if (!data) {
+    return (
+      <NotFound
+        path="ai"
+        label="AI Usage"
+        title="Couldn't reach tokscale"
+        description="AI usage data is currently unavailable. Try again later."
+        backTo={{ to: "/ai", label: "AI Usage" }}
+      />
+    );
+  }
+
   const contributions = data.contributions;
-  const heatmapWeeks = groupContributions(contributions);
-  const clientTotals = aggregateClients(data.clients, contributions);
+  const heatmapWeeks = useMemo(() => groupContributions(contributions), [contributions]);
+  const clientTotals = useMemo(
+    () => aggregateClients(data.clients, contributions),
+    [data.clients, contributions],
+  );
   const avgDaily = data.stats.activeDays > 0 ? data.stats.totalCost / data.stats.activeDays : 0;
 
   return (
-    <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50 min-h-screen">
+    <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
-        <BackButton />
-        <div className="mb-8 with-box-underline relative">
+        <div className="pb-8 with-box-underline relative">
           <Heading level={1}>AI Usage</Heading>
           <p className="text-pink-950/60 mt-4 leading-relaxed">
             All of AI tokens spent across{" "}
@@ -78,7 +93,7 @@ export function AiPage({ data }: { data: AiUsage }) {
             .
           </p>
           <p className="text-pink-950/60 mt-1 leading-relaxed">
-            <span className="font-mono text-sm text-pink-400">
+            <span className="font-mono text-sm text-foreground/60">
               last synced{" "}
               <b
                 className={

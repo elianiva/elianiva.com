@@ -40,82 +40,74 @@ function StatCard(props: StatCardProps) {
 export function SummarySection({ data, avgDaily }: Props) {
   return (
     <section className="py-4 md:py-8">
-      <div>
-        <Heading level={2} right={"totals since " + data.dateRange.start}>
-          Summary
-        </Heading>
-      </div>
+      <Heading level={2} right={"totals since " + data.dateRange.start}>
+        Summary
+      </Heading>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        <div>
-          <StatCard
-            className="border-r pr-2"
-            title="cost total"
-            label="usd"
-            value={fmtCost(data.stats.totalCost)}
-            unit="burned"
-            extras={
-              <>
-                <span>
-                  avg <b className="text-pink-800 font-normal">{fmtCost(avgDaily)}/active day</b>
-                </span>
-                <span>·</span>
-                <span>{data.stats.activeDays}d active</span>
-              </>
-            }
-          />
-        </div>
-        <div>
-          <StatCard
-            className="border-r pr-2"
-            title="tokens total"
-            label="counted"
-            value={fmtTokens(data.stats.totalTokens)}
-            unit="tokens"
-            extras={
-              <>
-                <span>
-                  {fmtTokens(
-                    data.stats.totalTokens
-                      ? Math.round(data.stats.totalTokens / data.stats.submissionCount || 1)
-                      : 0,
-                  )} avg/sub
-                </span>
-                <span>·</span>
-                <span>{data.stats.submissionCount} submissions</span>
-              </>
-            }
-          />
-        </div>
-        <div>
-          <StatCard
-            title="cache hit"
-            label="prompt caching"
-            value={
-              data.stats.totalTokens > 0
-                ? ((data.stats.cacheReadTokens / data.stats.totalTokens) * 100).toFixed(1) + "%"
-                : "0%"
-            }
-            unit="hit rate"
-            extras={
-              <>
-                <span>
-                  read{" "}
-                  <b className="text-pink-800 font-normal">
-                    {fmtTokens(data.stats.cacheReadTokens)}
-                  </b>
-                </span>
-                <span>·</span>
-                <span>
-                  write{" "}
-                  <b className="text-pink-800 font-normal">
-                    {fmtTokens(data.stats.cacheWriteTokens)}
-                  </b>
-                </span>
-              </>
-            }
-          />
-        </div>
+        <StatCard
+          className="border-r pr-2"
+          title="cost total"
+          label="usd"
+          value={fmtCost(data.stats.totalCost)}
+          unit="burned"
+          extras={
+            <>
+              <span>
+                avg <b className="text-pink-800 font-normal">{fmtCost(avgDaily)}/active day</b>
+              </span>
+              <span>·</span>
+              <span>{data.stats.activeDays}d active</span>
+            </>
+          }
+        />
+        <StatCard
+          className="border-r pr-2"
+          title="tokens total"
+          label="counted"
+          value={fmtTokens(data.stats.totalTokens)}
+          unit="tokens"
+          extras={
+            <>
+              <span>
+                {fmtTokens(
+                  data.stats.totalTokens
+                    ? Math.round(data.stats.totalTokens / data.stats.submissionCount || 1)
+                    : 0,
+                )}{" "}
+                avg/sub
+              </span>
+              <span>·</span>
+              <span>{data.stats.submissionCount} submissions</span>
+            </>
+          }
+        />
+        <StatCard
+          title="cache hit"
+          label="prompt caching"
+          value={
+            data.stats.totalTokens > 0
+              ? ((data.stats.cacheReadTokens / data.stats.totalTokens) * 100).toFixed(1) + "%"
+              : "0%"
+          }
+          unit="hit rate"
+          extras={
+            <>
+              <span>
+                read{" "}
+                <b className="text-pink-800 font-normal">{fmtTokens(data.stats.cacheReadTokens)}</b>
+              </span>
+              <span>·</span>
+              <span>
+                write{" "}
+                <b className="text-pink-800 font-normal">
+                  {fmtTokens(data.stats.cacheWriteTokens)}
+                </b>
+              </span>
+            </>
+          }
+        />
       </div>
     </section>
   );
 }
+

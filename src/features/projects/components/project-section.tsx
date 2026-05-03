@@ -15,7 +15,13 @@ interface ProjectSectionProps {
   featured?: boolean;
 }
 
-function ProjectCardList({ type = "personal", featured = true }: { type: ProjectType; featured: boolean }) {
+function ProjectCardList({
+  type = "personal",
+  featured = true,
+}: {
+  type: ProjectType;
+  featured: boolean;
+}) {
   const { data: projects } = useSuspenseQuery({
     queryKey: ["projects", type, featured],
     queryFn: () =>
@@ -45,7 +51,13 @@ function ProjectCardList({ type = "personal", featured = true }: { type: Project
   );
 }
 
-export function ProjectSection({ title, description, seeMoreUrl, type = "personal", featured = true }: ProjectSectionProps) {
+export function ProjectSection({
+  title,
+  description,
+  seeMoreUrl,
+  type = "personal",
+  featured = true,
+}: ProjectSectionProps) {
   const headingId =
     title
       .toLowerCase()
@@ -53,16 +65,12 @@ export function ProjectSection({ title, description, seeMoreUrl, type = "persona
       .replace(/[^a-z0-9-]/g, "") + "-heading";
 
   return (
-    <section className="py-4 md:py-8">
-      <div>
-        <Heading level={2} id={headingId}>
-          {title}
-        </Heading>
-      </div>
-      <div>
-        <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">{description}</p>
-      </div>
-      <div className="relative space-y-1 pb-4 card-tilt-odd items-stretch">
+    <section>
+      <Heading level={2} id={headingId}>
+        {title}
+      </Heading>
+      <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">{description}</p>
+      <div className="relative space-y-1 pb-4 items-stretch">
         <Suspense
           fallback={
             <div className="space-y-1">

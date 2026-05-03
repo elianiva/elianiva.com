@@ -3,7 +3,6 @@ import { useLoaderData, Link } from "@tanstack/react-router";
 import { PostCard } from "./post-card";
 import { BackButton } from "~/components/back-button";
 import { Heading } from "~/components/ui/heading";
-import { NotFound } from "~/components/not-found";
 import XIcon from "~icons/ph/x";
 import type { Post } from "content-collections";
 
@@ -19,19 +18,7 @@ function searchPosts(posts: Post[], query: string): Post[] {
 }
 
 export function PostList() {
-  const posts = useLoaderData({ from: "/posts" }) as Post[] | null;
-
-  if (!posts) {
-    return (
-      <NotFound
-        path="posts"
-        label="Blog Posts"
-        title="This post shelf is empty here."
-        description="The post you asked for does not exist. Maybe it never did, maybe it moved into the stars."
-        backTo={{ to: "/posts", label: "Posts index" }}
-      />
-    );
-  }
+  const posts = useLoaderData({ from: "/posts/" });
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -116,9 +103,8 @@ export function PostList() {
   );
 
   return (
-    <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50 min-h-screen">
+    <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
-        <BackButton />
         <Heading level={1} className="mb-4">
           Blog Posts
         </Heading>
@@ -163,9 +149,10 @@ export function PostList() {
                     key={tag}
                     role="option"
                     aria-selected={i === activeOptionIndex}
-                    className={`px-3 py-2 text-sm font-mono cursor-pointer ${
-                      i === activeOptionIndex ? "bg-pink-50 text-pink-800" : "text-pink-700 hover:bg-pink-50"
-                    }`}
+                    className={`px-3 py-2 text-sm font-mono cursor-pointer ${i === activeOptionIndex
+                        ? "bg-pink-50 text-pink-800"
+                        : "text-pink-700 hover:bg-pink-50"
+                      }`}
                     onClick={() => addTag(tag)}
                   >
                     #{tag}
@@ -196,9 +183,14 @@ export function PostList() {
           )}
           {/* Post grid */}
           {filteredPosts.length > 0 ? (
-            <div className="grid sm:grid-cols-2 gap-4 mt-6">
+            <div className="grid gap-1">
               {filteredPosts.map((post) => (
-                <Link key={post.slug} to={`/posts/${post.slug}`} className="h-full">
+                <Link
+                  key={post.slug}
+                  to="/posts/$slug"
+                  params={{ slug: post.slug }}
+                  className="h-full"
+                >
                   <PostCard
                     title={post.title}
                     description={post.description}

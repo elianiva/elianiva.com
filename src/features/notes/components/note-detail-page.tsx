@@ -1,6 +1,7 @@
-import { Link } from "@tanstack/react-router";
+import { useLoaderData, Link } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
 import { Backlinks } from "./backlinks";
+import { NotFound } from "~/components/not-found";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import wikiLinkPlugin from "@flowershow/remark-wiki-link";
@@ -15,12 +16,22 @@ const categoryLabels: Record<string, string> = {
   people: "Person",
 };
 
-interface NoteDetailPageProps {
-  note: Note;
-  notes: Note[];
-}
+export function NoteDetailPage() {
+  const data = useLoaderData({ from: "/notes/$slug" }) as { note: Note; notes: Note[] } | null;
 
-export function NoteDetailPage({ note, notes }: NoteDetailPageProps) {
+  if (!data) {
+    return (
+      <NotFound
+        path="notes"
+        label="Digital Garden"
+        title="This note faded out of the vault."
+        description="The note you asked for is missing or private. Try another path back into the garden."
+        backTo={{ to: "/notes", label: "Notes index" }}
+      />
+    );
+  }
+
+  const { note, notes } = data;
   const displayTags = note.tags.filter((t) => t !== "public");
   const createdDate = new Date(note.date).toLocaleDateString("en-US", {
     year: "numeric",

@@ -10,7 +10,7 @@ import { homeSeo } from "~/lib/seo";
 
 export const Route = createFileRoute("/")({
   component: Home,
-  // head: () => homeSeo(),
+  head: () => homeSeo(),
 });
 
 function Home() {
