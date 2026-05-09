@@ -64,7 +64,7 @@ export function HeroSection() {
                   />
                 }
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="size-4" />
                 <span className="text-xs font-mono uppercase">{social.label}</span>
               </Button>
             );
@@ -76,7 +76,7 @@ export function HeroSection() {
           href={siteData.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="relative block w-40 h-40 group"
+          className="relative block size-40 group"
           aria-label="Visit GitHub profile"
         >
           <div className="relative w-full h-full border border-pink-200/50 transition-transform duration-300 group-hover:-translate-y-1">

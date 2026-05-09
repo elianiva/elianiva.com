@@ -1,0 +1,12 @@
+{
+  "ignore": {
+    "rules": [
+      "react-doctor/no-inline-exhaustive-style",
+      "react/no-danger",
+      "react-doctor/async-await-in-loop",
+      "react-doctor/rendering-hydration-mismatch-time",
+      "knip/files",
+      "react-doctor/no-array-index-as-key"
+    ]
+  }
+}

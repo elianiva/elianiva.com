@@ -20,17 +20,12 @@ export interface PostSeoProps {
   tags: string[];
 }
 
-export interface DefaultSeoProps {
-  title: string;
-  subtitle?: string;
-}
-
 const siteUrl = sites.siteUrl;
 
 /**
  * Build the OG image URL for a post.
  */
-export function postOgImageUrl(title: string, date: string, tags: string[], description: string) {
+function postOgImageUrl(title: string, date: string, tags: string[], description: string) {
   const params = new URLSearchParams({
     type: "post",
     title,
@@ -139,4 +134,3 @@ export function homeSeo() {
   });
 }
 
-export type { SeoProps as SeoMeta };

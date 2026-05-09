@@ -8,7 +8,13 @@ interface RegexHighlighterProps {
   text: string;
 }
 
+import { useMemo } from "react";
+
 export function RegexHighlighter({ patterns, text }: RegexHighlighterProps) {
+  const compiled = useMemo(
+    () => patterns.map((p) => ({ regex: new RegExp(p.pattern, "g"), color: p.color })),
+    [patterns],
+  );
   const lines = text.trim().split("\n");
 
   return (
@@ -21,8 +27,7 @@ export function RegexHighlighter({ patterns, text }: RegexHighlighterProps) {
           while (remaining.length > 0) {
             let bestMatch: { start: number; end: number; color: string } | null = null;
 
-            for (const { pattern, color } of patterns) {
-              const regex = new RegExp(pattern, "g");
+            for (const { regex, color } of compiled) {
               regex.lastIndex = 0;
               const match = regex.exec(remaining);
               if (match && match.index === 0) {

@@ -294,7 +294,7 @@ function PostLayout(
                 style={{
                   fontFamily: "'Google Sans',sans-serif",
                   fontSize: 54,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   color: COLORS.textPrimary,
                   lineHeight: 1.15,
                   margin: 0,
@@ -469,7 +469,7 @@ function DefaultLayout(title: string, subtitle: string) {
               style={{
                 fontFamily: "'Google Sans',sans-serif",
                 fontSize: 68,
-                fontWeight: 800,
+                fontWeight: 600,
                 color: COLORS.textPrimary,
                 lineHeight: 1.1,
                 margin: 0,

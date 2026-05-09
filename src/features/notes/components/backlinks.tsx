@@ -10,15 +10,17 @@ export function Backlinks({ notes, currentSlug }: BacklinksProps) {
   const currentNote = notes.find((n) => n.slug === currentSlug);
   if (!currentNote || currentNote.backlinks.length === 0) return null;
 
-  const backlinkNotes = currentNote.backlinks
-    .map((slug) => notes.find((n) => n.slug === slug))
-    .filter((n): n is Note => n !== undefined);
+  const backlinkNotes = currentNote.backlinks.reduce<Note[]>((acc, slug) => {
+    const note = notes.find((n) => n.slug === slug);
+    if (note) acc.push(note);
+    return acc;
+  }, []);
 
   if (backlinkNotes.length === 0) return null;
 
   return (
     <div className="mt-12 pt-6 border-t border-pink-200/50">
-      <h2 className="font-display text-lg font-bold text-pink-950 mb-4">
+      <h2 className="font-display text-lg font-semibold text-pink-950 mb-4">
         Backlinks
       </h2>
       <div className="flex flex-col gap-2">

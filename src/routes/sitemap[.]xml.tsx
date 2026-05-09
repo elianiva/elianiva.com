@@ -13,7 +13,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/posts",
           "/notes",
           "/projects",
-          ...allPosts.filter((p) => !p.draft).map((p) => "/posts/" + p.slug),
+          ...allPosts.reduce<string[]>((acc, p) => {
+            if (!p.draft) acc.push("/posts/" + p.slug);
+            return acc;
+          }, []),
           ...notes.map((n) => "/notes/" + n.slug),
           ...allProjects.map((p) => "/projects/" + p.slug),
         ];

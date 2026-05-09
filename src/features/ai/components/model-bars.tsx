@@ -2,7 +2,7 @@ import type { AiModelUsage } from "../lib/tokscale";
 import { fmtCost } from "./fmt";
 
 export function ModelBars({ models }: { models: AiModelUsage[] }) {
-  const sorted = [...models].sort((a, b) => b.cost - a.cost).filter((m) => m.cost >= 0.01);
+  const sorted = models.toSorted((a, b) => b.cost - a.cost).filter((m) => m.cost >= 0.01);
   const max = sorted[0]?.cost ?? 1;
 
   return (

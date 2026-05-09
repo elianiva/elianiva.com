@@ -5,11 +5,11 @@ import { AiPage } from "~/features/ai/components/ai-page-body";
 
 export const Route = createFileRoute("/ai")({
   component: AiPage,
+  loader: () => getAiUsage(),
   head: () =>
     seo({
       title: "AI Usage",
       description: "AI token usage tracked by tokscale.ai",
       ogImage: defaultOgImageUrl("AI Usage", "AI token usage tracked by tokscale.ai"),
     }),
-  loader: () => getAiUsage(),
 });

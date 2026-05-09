@@ -88,9 +88,11 @@ export const getRecentTracks = createServerFn({ method: "GET" }).handler(
         return { tracks: [], total: 0 };
       }
       const raw = data.recenttracks?.track ?? [];
-      const tracks = raw
-        .map(normalizeTrack)
-        .filter((t): t is LastFmTrack => t != null);
+      const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
+        const normalized = normalizeTrack(t);
+        if (normalized) acc.push(normalized);
+        return acc;
+      }, []);
       const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length);
       return { tracks, total };
     }).catch((err) => {

@@ -24,7 +24,7 @@ export function WorkExperienceCard({
   technologies,
   defaultOpen = false,
 }: WorkExperienceCardProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="work-experience-card group rounded-2xl transition-colors" data-open={isOpen}>
@@ -37,7 +37,7 @@ export function WorkExperienceCard({
         {/* Mobile Layout */}
         <div className="flex items-start justify-between gap-3 md:hidden">
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold font-display text-pink-950 leading-tight">{company}</h3>
+            <h3 className="font-semibold font-display text-pink-950 leading-tight">{company}</h3>
             <p className="text-sm font-mono text-pink-950/90 mb-1">{position}</p>
             <p className="text-xs font-mono text-pink-950/60">
               {period[0].toLocaleDateString("en-GB", { month: "short", year: "numeric" })}-
@@ -79,7 +79,7 @@ export function WorkExperienceCard({
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-row items-center gap-3">
-                <h3 className="font-bold font-display text-pink-950 whitespace-nowrap">
+                <h3 className="font-semibold font-display text-pink-950 whitespace-nowrap">
                   {company}
                 </h3>
                 <div className="flex items-center gap-2 uppercase">
@@ -102,9 +102,9 @@ export function WorkExperienceCard({
         {/* Details */}
         <AccordionPanel open={isOpen}>
           <ul className="list-disc list-outside pl-4 mt-2">
-            {details.map((detail, i) => (
+            {details.map((detail) => (
               <li
-                key={i}
+                key={detail}
                 className="text-sm md:text-base leading-relaxed font-body text-pink-950/80"
               >
                 {detail}

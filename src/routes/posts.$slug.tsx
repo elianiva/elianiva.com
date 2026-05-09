@@ -110,7 +110,7 @@ function PostDetailPage() {
 
           <div className="flex flex-col md:flex-row items-center gap-2 font-body text-sm md:text-base md:leading-loose text-pink-950/70">
             Posted on
-            <span className="text-pink-600 font-medium">
+            <span className="text-pink-600 font-medium" suppressHydrationWarning>
               {new Date(post.date).toLocaleDateString("en-GB", {
                 weekday: "long",
                 day: "numeric",

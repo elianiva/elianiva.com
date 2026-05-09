@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { LazyMotion, m, domAnimation } from "motion/react";
 import { useReducedMotion } from "~/lib/motion";
 import { Tooltip, TooltipTrigger, TooltipContent } from "~/components/ui/tooltip";
 
@@ -143,27 +143,31 @@ export function HeatmapGrid({ weeks, legendLabel, emptyLabel = "No data availabl
     <div className="relative pt-4 w-full">
       <div className="flex gap-0.75 mb-1 text-[10px] font-mono text-pink-950/30 uppercase tracking-wider">
         {monthLabels.map((label, i) => (
-          <div key={i} className="flex-1 text-center truncate" title={label || undefined}>
+          <div key={`${label}-${i}`} className="flex-1 text-center truncate" title={label || undefined}>
             {label}
           </div>
         ))}
       </div>
 
       <div className="overflow-x-auto w-full">
-        <motion.div
+        <LazyMotion features={domAnimation}>
+        <m.div
           className="flex gap-0.75 w-full"
           variants={prefersReducedMotion ? undefined : gridAnim}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {cols.map((col, colIdx) => (
-            <div key={colIdx} className="flex flex-col gap-0.75 flex-1 min-w-0">
+          {cols.map((col, colIdx) => {
+            const firstCell = col.find(Boolean);
+            const weekKey = firstCell?.date ?? `empty-${colIdx}`;
+            return (
+            <div key={weekKey} className="flex flex-col gap-0.75 flex-1 min-w-0">
               {col.map((d, rowIdx) => {
                 if (!d) {
                   return (
                     <div
-                      key={"e" + colIdx + "-" + rowIdx}
+                      key={`empty-${weekKey}-${rowIdx}`}
                       className="bg-pink-100/20"
                       style={{ aspectRatio: "1" }}
                     />
@@ -171,11 +175,10 @@ export function HeatmapGrid({ weeks, legendLabel, emptyLabel = "No data availabl
                 }
                 const colorIdx = Math.min(4, Math.max(0, d.intensity));
                 return (
-                  <Tooltip>
+                  <Tooltip key={d.date}>
                     <TooltipTrigger
                       render={
-                        <motion.div
-                          key={d.date}
+                        <m.div
                           variants={prefersReducedMotion ? undefined : cellAnim}
                           style={{ aspectRatio: "1" }}
                           className={[
@@ -190,14 +193,16 @@ export function HeatmapGrid({ weeks, legendLabel, emptyLabel = "No data availabl
                 );
               })}
             </div>
-          ))}
-        </motion.div>
+            );
+          })}
+        </m.div>
+        </LazyMotion>
       </div>
 
       <div className="flex items-center gap-1 mt-3">
         <span className="text-xs font-mono text-pink-950/30">{legendLabel ?? "less"}</span>
-        {[0, 1, 2, 3, 4].map((level, i) => (
-          <div key={i} className={["size-4", INTENSITY_COLORS[level]].join(" ")} />
+        {[0, 1, 2, 3, 4].map((level) => (
+          <div key={level} className={["size-4", INTENSITY_COLORS[level]].join(" ")} />
         ))}
         <span className="text-xs font-mono text-pink-950/30">more</span>
       </div>

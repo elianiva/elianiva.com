@@ -7,28 +7,36 @@ interface SearchProps {
   onSearch: (query: string, results: Note[]) => void;
 }
 
+function searchNotes(notes: Note[], query: string): Note[] {
+  if (!query.trim()) return [];
+  const q = query.toLowerCase();
+  return notes
+    .filter(
+      (note) =>
+        note.title.toLowerCase().includes(q) ||
+        note.tags.some((t) => t.toLowerCase().includes(q)) ||
+        note.description.toLowerCase().includes(q),
+    )
+    .slice(0, 10);
+}
+
 export function Search({ notes, onSearch }: SearchProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
   const listboxRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const results = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
-    return notes
-      .filter(
-        (note) =>
-          note.title.toLowerCase().includes(q) ||
-          note.tags.some((t) => t.toLowerCase().includes(q)) ||
-          note.description.toLowerCase().includes(q),
-      )
-      .slice(0, 10);
-  }, [notes, query]);
+  const results = useMemo(() => searchNotes(notes, query), [notes, query]);
 
-  useEffect(() => {
-    onSearch(query, results);
-  }, [query, results, onSearch]);
+  const updateSearchQuery = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newQuery = e.target.value;
+      setQuery(newQuery);
+      setActiveIndex(-1);
+      onSearch(newQuery, searchNotes(notes, newQuery));
+    },
+    [notes, onSearch],
+  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -52,10 +60,7 @@ export function Search({ notes, onSearch }: SearchProps) {
         ref={inputRef}
         type="text"
         value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setActiveIndex(-1);
-        }}
+        onChange={updateSearchQuery}
         onKeyDown={handleKeyDown}
         placeholder="Search notes..."
         role="combobox"

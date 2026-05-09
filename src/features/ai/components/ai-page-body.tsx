@@ -28,8 +28,8 @@ function groupContributions(contributions: AiContribution[]) {
       tooltip: `${day.date} · ${fmtTokens(day.totals.tokens)} tokens · ${fmtCost(day.totals.cost)}`,
     };
   }
-  const sortedWeeks = [...weeksMap.entries()]
-    .sort(([a], [b]) => a - b)
+  const sortedWeeks = Array.from(weeksMap.entries())
+    .toSorted(([a], [b]) => a - b)
     .map(([_, days]) => ({
       days: days.map((d) => d),
     }));
@@ -53,6 +53,13 @@ function aggregateClients(clients: string[], contributions: AiContribution[]) {
 export function AiPage() {
   const data = useLoaderData({ from: "/ai" }) as AiUsage | null;
 
+  const contributions = data?.contributions;
+  const heatmapWeeks = useMemo(() => contributions ? groupContributions(contributions) : [], [contributions]);
+  const clientTotals = useMemo(
+    () => data ? aggregateClients(data.clients, contributions ?? []) : [],
+    [data?.clients, contributions],
+  );
+
   if (!data) {
     return (
       <NotFound
@@ -64,13 +71,6 @@ export function AiPage() {
       />
     );
   }
-
-  const contributions = data.contributions;
-  const heatmapWeeks = useMemo(() => groupContributions(contributions), [contributions]);
-  const clientTotals = useMemo(
-    () => aggregateClients(data.clients, contributions),
-    [data.clients, contributions],
-  );
   const avgDaily = data.stats.activeDays > 0 ? data.stats.totalCost / data.stats.activeDays : 0;
 
   return (

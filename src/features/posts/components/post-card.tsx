@@ -26,7 +26,7 @@ export function PostCard({ title, description, date, tags, ...props }: PostCardP
         <div className="flex-1">
           <h3
             id="post-title"
-            className="font-display md:text-base font-bold capitalize text-pink-950 group-hover:text-pink-700 transition-colors duration-100 ease-out"
+            className="font-display md:text-base font-semibold capitalize text-pink-950 group-hover:text-pink-700 transition-colors duration-100 ease-out"
           >
             {title}
           </h3>
@@ -37,8 +37,8 @@ export function PostCard({ title, description, date, tags, ...props }: PostCardP
         </div>
         <div className="flex-1 flex flex-col gap-1 justify-between align-end">
           <div className="text-xs flex gap-1 justify-end text-pink-950/70">
-            <CalendarIcon className="w-4 h-4 block" />
-            <span>
+            <CalendarIcon className="size-4 block" />
+            <span suppressHydrationWarning>
               {new Date(date).toLocaleDateString("en-GB", {
                 day: "numeric",
                 month: "long",

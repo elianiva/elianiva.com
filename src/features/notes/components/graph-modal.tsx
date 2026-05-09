@@ -42,7 +42,7 @@ export function GraphModal({ graph, isOpen, onClose, onNodeClick }: GraphModalPr
     >
       <div className="bg-white border border-pink-200 p-6 shadow-soft min-w-[300px] min-h-[300px]">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="font-display text-lg font-bold text-pink-950">Notes Graph</h2>
+          <h2 className="font-display text-lg font-semibold text-pink-950">Notes Graph</h2>
           <button
             onClick={onClose}
             className="text-pink-950/50 hover:text-pink-950 text-xl leading-none focus:outline-none focus:ring focus:ring-pink-400"

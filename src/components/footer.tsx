@@ -13,7 +13,7 @@ export function Footer() {
           tanstack start · react · tailwind
         </p>
 
-        <script
+        <script suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html:
               "(" +

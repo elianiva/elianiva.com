@@ -31,7 +31,7 @@ export function PostList() {
   const allTags = useMemo(() => {
     const tags = new Set<string>();
     posts.forEach((p) => p.tags?.forEach((t) => tags.add(t)));
-    return [...tags].sort();
+    return tags.toSorted();
   }, [posts]);
 
   const suggestions = useMemo(() => {
@@ -133,7 +133,7 @@ export function PostList() {
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-pink-400 hover:text-pink-600"
                 aria-label="Clear search"
               >
-                <XIcon className="w-4 h-4" />
+                <XIcon className="size-4" />
               </button>
             )}
             {/* Tag suggestions */}
@@ -154,6 +154,9 @@ export function PostList() {
                         : "text-pink-700 hover:bg-pink-50"
                       }`}
                     onClick={() => addTag(tag)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") addTag(tag);
+                    }}
                   >
                     #{tag}
                   </li>
@@ -175,7 +178,7 @@ export function PostList() {
                     className="text-pink-400 hover:text-pink-600"
                     aria-label={`Remove tag ${tag}`}
                   >
-                    <XIcon className="w-3 h-3" />
+                    <XIcon className="size-3" />
                   </button>
                 </span>
               ))}

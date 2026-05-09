@@ -62,7 +62,7 @@ export function NoteDetailPage() {
               </span>
             )}
           </div>
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-pink-950 tracking-wide">
+          <h1 className="font-display text-3xl md:text-4xl font-semibold text-pink-950 tracking-wide">
             {note.title}
           </h1>
           {note.description && (

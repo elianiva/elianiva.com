@@ -108,7 +108,7 @@ function ProjectDetailPage() {
 
             <div>
               <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center justify-between pb-4 border-pink-200/50 with-box-underline after:-translate-x-[700px]!">
-                <h1 className="text-2xl font-bold font-display text-pink-950 tracking-wide">
+                <h1 className="text-2xl font-semibold font-display text-pink-950 tracking-wide">
                   {project.title}
                 </h1>
                 <div className="flex gap-2">
@@ -118,7 +118,7 @@ function ProjectDetailPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <GithubIcon className="w-5 h-5" />
+                    <GithubIcon className="size-5" />
                     <span className="text-sm font-mono uppercase">Source</span>
                   </a>
                   {project.demo !== null && project.demo !== undefined && (
@@ -128,7 +128,7 @@ function ProjectDetailPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <GlobeIcon className="w-5 h-5" />
+                      <GlobeIcon className="size-5" />
                       <span className="text-sm font-mono uppercase">Visit</span>
                     </a>
                   )}
@@ -140,13 +140,13 @@ function ProjectDetailPage() {
 
           <aside className="h-fit">
             <div>
-              <h2 className="text-xl font-bold font-display text-pink-950 tracking-wide pb-3 border-b border-pink-200/50">
+              <h2 className="text-xl font-semibold font-display text-pink-950 tracking-wide pb-3 border-b border-pink-200/50">
                 Tech Stack
               </h2>
               <div className="space-y-3 pt-4">
                 {(project.stack || []).map(([stackName, stackHomepage]) => (
                   <div key={stackName} className="flex items-center gap-3 group">
-                    <div className="flex items-center justify-center p-2 bg-pink-50/80 border-[0.5px] border-pink-200/50 w-12 h-12 shrink-0">
+                    <div className="flex items-center justify-center p-2 bg-pink-50/80 border-[0.5px] border-pink-200/50 size-12 shrink-0">
                       <img
                         className={`w-full h-full object-contain ${
                           stackName.toLowerCase() === "nextjs" ? "filter invert" : ""

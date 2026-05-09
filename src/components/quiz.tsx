@@ -93,11 +93,11 @@ export function Quiz({ question, options, correctResponse, errorResponse }: Quiz
           disabled={!selected}
           className="bg-pink-50/80 hover:bg-pink-50 border border-pink-200/50 hover:border-pink-200 py-2 px-6 text-sm font-mono text-pink-950 transition-all disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         >
-          Submit
+          Check Answer
         </button>
       ) : (
         <div
-          className={`border-l-4 p-4 ${isCorrect ? "border-green-400 bg-green-50/30" : "border-red-400 bg-red-50/30"}`}
+          className={`border-l p-4 ${isCorrect ? "border-green-400 bg-green-50/30" : "border-red-400 bg-red-50/30"}`}
         >
           <p
             className={`font-display font-semibold mb-1 ${isCorrect ? "text-green-700" : "text-red-700"}`}

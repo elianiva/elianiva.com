@@ -11,6 +11,15 @@ import GraphIcon from "~icons/ph/graph";
 export function NotesPage() {
   const data = useLoaderData({ from: "/notes" }) as { notes: Note[]; graph: NotesGraph } | null;
 
+  const [, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Note[] | null>(null);
+  const [graphOpen, setGraphOpen] = useState(false);
+
+  const displayedNotes = useMemo(() => {
+    if (searchResults !== null) return searchResults;
+    return data?.notes ?? [];
+  }, [data?.notes, searchResults]);
+
   if (!data) {
     return (
       <NotFound
@@ -24,14 +33,6 @@ export function NotesPage() {
   }
 
   const { notes, graph } = data;
-  const [, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<Note[] | null>(null);
-  const [graphOpen, setGraphOpen] = useState(false);
-
-  const displayedNotes = useMemo(() => {
-    if (searchResults !== null) return searchResults;
-    return notes;
-  }, [notes, searchResults]);
 
   const handleSearch = (query: string, results: Note[] | null) => {
     setSearchQuery(query);
@@ -44,7 +45,7 @@ export function NotesPage() {
     <div className="mx-auto max-w-4xl px-4 py-10">
       <BackButton />
       <div className="mb-4 pt-6">
-        <h1 className="font-display text-3xl md:text-4xl font-bold text-pink-950 tracking-wide">
+        <h1 className="font-display text-3xl md:text-4xl font-semibold text-pink-950 tracking-wide">
           Personal Notes Vault
         </h1>
         <p className="text-pink-950/70 mt-2 font-body">
@@ -75,7 +76,7 @@ export function NotesPage() {
             onClick={() => setGraphOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-white/60 border border-pink-200 text-sm font-body text-pink-950 hover:bg-white hover:shadow-card transition-all"
           >
-            <GraphIcon className="w-4 h-4" />
+            <GraphIcon className="size-4" />
             View Graph
           </button>
         </div>

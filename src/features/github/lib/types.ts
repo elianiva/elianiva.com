@@ -35,36 +35,6 @@ export type GroupedPRs = {
   };
 };
 
-export type GitHubLoaderOptions = {
-  username: string;
-  minStars: number;
-};
-
-export type GraphQLPullRequest = {
-  id: string;
-  number: number;
-  title: string;
-  state: string;
-  mergedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  url: string;
-  repository: {
-    name: string;
-    nameWithOwner: string;
-    url: string;
-    stargazerCount: number;
-    isArchived: boolean;
-  };
-  author: {
-    login: string;
-    url: string;
-  };
-  additions: number;
-  deletions: number;
-  changedFiles: number;
-};
-
 export type GraphQLResponse = {
   user: {
     pullRequests: {
@@ -88,19 +58,15 @@ export type ContributionDay = {
     | "FOURTH_QUARTILE";
 };
 
-export type ContributionWeek = {
-  contributionDays: ContributionDay[];
-};
-
-export type ContributionCalendar = {
-  totalContributions: number;
-  weeks: ContributionWeek[];
-};
-
 export type GitHubContributionsResponse = {
   user: {
     contributionsCollection: {
-      contributionCalendar: ContributionCalendar;
+      contributionCalendar: {
+        totalContributions: number;
+        weeks: {
+          contributionDays: ContributionDay[];
+        }[];
+      };
     };
   };
 };

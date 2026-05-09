@@ -19,7 +19,7 @@ export function BackButton() {
         className="flex items-center gap-1 bg-white/60 py-2 px-4 text-pink-900 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         aria-label="Go back"
       >
-        <ArrowLeftIcon className="w-4 h-4" />
+        <ArrowLeftIcon className="size-4" />
         <span className="font-body uppercase font-medium tracking-wider text-xs">Back</span>
       </button>
       <Link
@@ -27,7 +27,7 @@ export function BackButton() {
         className="flex items-center gap-1 bg-white/60 py-2 px-4 text-pink-900 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         aria-label="Go to home"
       >
-        <HouseIcon className="w-4 h-4" />
+        <HouseIcon className="size-4" />
         <span className="font-body uppercase font-medium tracking-wider text-xs">Home</span>
       </Link>
     </div>

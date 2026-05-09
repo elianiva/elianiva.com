@@ -1,4 +1,4 @@
-import { motion, type HTMLMotionProps } from "motion/react";
+import { LazyMotion, m, domAnimation, type HTMLMotionProps } from "motion/react";
 import { durations, useReducedMotion } from "~/lib/motion";
 
 interface AccordionPanelProps extends Omit<HTMLMotionProps<"div">, "animate" | "initial" | "transition"> {
@@ -9,7 +9,8 @@ export function AccordionPanel({ open, children, className, ...props }: Accordio
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <motion.div
+    <LazyMotion features={domAnimation}>
+    <m.div
       initial={false}
       animate={{
         height: open ? "auto" : 0,
@@ -24,6 +25,7 @@ export function AccordionPanel({ open, children, className, ...props }: Accordio
       {...props}
     >
       {children}
-    </motion.div>
+    </m.div>
+    </LazyMotion>
   );
 }

@@ -61,14 +61,14 @@ async function loadNotesFromLocalFS(): Promise<Note[]> {
     const notesPath = path.join(os.homedir(), "Development/personal/notes");
 
     const allFiles: string[] = [];
-    const excludeDirs = ["Archive", "Daily", "Inbox"];
+    const excludeDirs = new Set(["Archive", "Daily", "Inbox"]);
 
     async function scanDir(dir: string): Promise<void> {
       const entries = await fs.readdir(dir, { withFileTypes: true });
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         if (entry.isDirectory()) {
-          if (!excludeDirs.includes(entry.name)) {
+          if (!excludeDirs.has(entry.name)) {
             await scanDir(fullPath);
           }
         } else if (entry.isFile() && (entry.name.endsWith(".md") || entry.name.endsWith(".mdx"))) {
@@ -80,51 +80,66 @@ async function loadNotesFromLocalFS(): Promise<Note[]> {
     await scanDir(notesPath);
 
     const notes: Note[] = [];
-    for (const filePath of allFiles) {
-      try {
-        const content = await fs.readFile(filePath, "utf-8");
-        const parsed = matter(content);
-        const tags = Array.isArray(parsed.data.tags)
-          ? parsed.data.tags.map((t: unknown) => String(t))
-          : [];
+    const fileResults = await Promise.all(
+      allFiles.map(async (filePath) => {
+        try {
+          const [content, stat] = await Promise.all([
+            fs.readFile(filePath, "utf-8"),
+            fs.stat(filePath),
+          ]);
+          const parsed = matter(content);
+          const tags = Array.isArray(parsed.data.tags)
+            ? parsed.data.tags.map((t: unknown) => String(t))
+            : [];
 
-        if (!tags.includes("public")) continue;
+          if (!tags.includes("public")) return null;
 
-        const relPath = path.relative(notesPath, filePath);
-        const slug = parsed.data.slug || slugifyFilename(path.basename(filePath));
-        const wikiLinks = extractWikiLinks(parsed.content);
-        const category = getCategoryFromPath(relPath);
+          const relPath = path.relative(notesPath, filePath);
+          const slug = parsed.data.slug || slugifyFilename(path.basename(filePath));
+          const wikiLinks = extractWikiLinks(parsed.content);
+          const category = getCategoryFromPath(relPath);
 
-        const hasH1 = parsed.content.trim().startsWith("#");
-        const description = hasH1 ? extractDescription(parsed.content) : "";
+          const hasH1 = parsed.content.trim().startsWith("#");
+          const description = hasH1 ? extractDescription(parsed.content) : "";
+          const { url: parsedUrl, title: parsedTitle, id: parsedId, description: parsedDesc, created_at: createdAt, date: parsedDate, author: parsedAuthor, links: parsedLinks, artist: parsedArtist, album: parsedAlbum, year: parsedYear } = parsed.data;
 
-        const stat = await fs.stat(filePath);
+          return { slug, relPath, wikiLinks, category, hasH1, description, parsedUrl, parsedTitle, parsedId, parsedDesc, createdAt, parsedDate, parsedAuthor, parsedLinks, parsedArtist, parsedAlbum, parsedYear, stat, content, filePath };
+        } catch (err) {
+          console.error(`Error loading ${filePath}:`, err);
+          return null;
+        }
+      }),
+    );
 
-        notes.push({
-          id: slug,
+    for (const result of fileResults) {
+      if (!result) continue;
+      const { slug, wikiLinks, category, description, parsedUrl, parsedTitle, parsedId, parsedDesc, createdAt, parsedDate, parsedAuthor, parsedLinks, parsedArtist, parsedAlbum, parsedYear, stat } = result;
+
+      notes.push({
+        id: slug,
           slug,
-          title: parsed.data.title || parsed.data.id || slug,
-          description: parsed.data.description || description,
+          title: parsedTitle || parsedId || slug,
+          description: parsedDesc || description,
           content: parsed.content,
           category,
           tags,
-          date: parsed.data.created_at || parsed.data.date || stat.birthtime.toISOString(),
+          date: createdAt || parsedDate || stat.birthtime.toISOString(),
           modifiedAt: stat.mtime.toISOString(),
           backlinks: [],
           outboundLinks: wikiLinks,
           isPublic: true,
-          domain: parsed.data.url
-            ? new URL(parsed.data.url).hostname.replace(/^www\./, "")
+          domain: parsedUrl
+            ? new URL(parsedUrl).hostname.replace(/^www\./, "")
             : undefined,
-          url: parsed.data.url,
-          author: parsed.data.author,
-          links: parsed.data.links,
-          artist: parsed.data.artist,
-          album: parsed.data.album,
-          year: parsed.data.year
-            ? Array.isArray(parsed.data.year)
-              ? parsed.data.year
-              : [parsed.data.year]
+          url: parsedUrl,
+          author: parsedAuthor,
+          links: parsedLinks,
+          artist: parsedArtist,
+          album: parsedAlbum,
+          year: parsedYear
+            ? Array.isArray(parsedYear)
+              ? parsedYear
+              : [parsedYear]
             : undefined,
         });
       } catch (err) {
@@ -135,17 +150,20 @@ async function loadNotesFromLocalFS(): Promise<Note[]> {
     // Build backlinks
     const slugMap = new Map(notes.map((n) => [n.slug, n]));
     const titleToSlug = new Map(notes.map((n) => [n.title.toLowerCase(), n.slug]));
+    const backlinkSets = new Map(notes.map((n) => [n.slug, new Set<string>()]));
 
     for (const note of notes) {
       for (const link of note.outboundLinks) {
         const targetSlug = titleToSlug.get(link.toLowerCase());
         if (targetSlug) {
-          const target = slugMap.get(targetSlug);
-          if (target && !target.backlinks.includes(note.slug)) {
-            target.backlinks.push(note.slug);
-          }
+          backlinkSets.get(targetSlug)?.add(note.slug);
         }
       }
+    }
+
+    for (const note of notes) {
+      const set = backlinkSets.get(note.slug);
+      if (set) note.backlinks = [...set];
     }
 
     return notes;
@@ -208,32 +226,33 @@ async function loadNotesFromGithub(): Promise<Note[]> {
 
           const hasH1 = parsed.content.trim().startsWith("#");
           const description = hasH1 ? extractDescription(parsed.content) : "";
+          const { url: parsedUrl, title: parsedTitle, id: parsedId, description: parsedDesc, created_at: createdAt, date: parsedDate, author: parsedAuthor, links: parsedLinks, artist: parsedArtist, album: parsedAlbum, year: parsedYear } = parsed.data;
 
           notes.push({
             id: slug,
             slug,
-            title: parsed.data.title || parsed.data.id || slug,
-            description: parsed.data.description || description,
+            title: parsedTitle || parsedId || slug,
+            description: parsedDesc || description,
             content: parsed.content,
             category,
             tags,
-            date: parsed.data.created_at || parsed.data.date || now,
+            date: createdAt || parsedDate || now,
             modifiedAt: now,
             backlinks: [],
             outboundLinks: wikiLinks,
             isPublic: true,
-            domain: parsed.data.url
-              ? new URL(parsed.data.url).hostname.replace(/^www\./, "")
+            domain: parsedUrl
+              ? new URL(parsedUrl).hostname.replace(/^www\./, "")
               : undefined,
-            url: parsed.data.url,
-            author: parsed.data.author,
-            links: parsed.data.links,
-            artist: parsed.data.artist,
-            album: parsed.data.album,
-            year: parsed.data.year
-              ? Array.isArray(parsed.data.year)
-                ? parsed.data.year
-                : [parsed.data.year]
+            url: parsedUrl,
+            author: parsedAuthor,
+            links: parsedLinks,
+            artist: parsedArtist,
+            album: parsedAlbum,
+            year: parsedYear
+              ? Array.isArray(parsedYear)
+                ? parsedYear
+                : [parsedYear]
               : undefined,
           });
         }
@@ -244,17 +263,20 @@ async function loadNotesFromGithub(): Promise<Note[]> {
 
     const slugMap = new Map(notes.map((n) => [n.slug, n]));
     const titleToSlug = new Map(notes.map((n) => [n.title.toLowerCase(), n.slug]));
+    const backlinkSets = new Map(notes.map((n) => [n.slug, new Set<string>()]));
 
     for (const note of notes) {
       for (const link of note.outboundLinks) {
         const targetSlug = titleToSlug.get(link.toLowerCase());
         if (targetSlug) {
-          const target = slugMap.get(targetSlug);
-          if (target && !target.backlinks.includes(note.slug)) {
-            target.backlinks.push(note.slug);
-          }
+          backlinkSets.get(targetSlug)?.add(note.slug);
         }
       }
+    }
+
+    for (const note of notes) {
+      const set = backlinkSets.get(note.slug);
+      if (set) note.backlinks = [...set];
     }
 
     return notes;

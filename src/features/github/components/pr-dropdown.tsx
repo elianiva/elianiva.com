@@ -25,7 +25,7 @@ function abbreviateNumber(num: number): string {
 }
 
 export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isOpen, setIsOpen] = useState(false);
 
   const totalChanges = prs.reduce((sum, pr) => sum + pr.additions + pr.deletions, 0);
 
@@ -101,7 +101,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
                       >
                         {pr.title}
                       </a>
-                      <p className="font-mono text-xs text-pink-950/50 mt-1">
+                      <p className="font-mono text-xs text-pink-950/50 mt-1" suppressHydrationWarning>
                         #{pr.number} • merged{" "}
                         {pr.merged_at ? new Date(pr.merged_at).toLocaleDateString("en-GB") : ""}
                       </p>
