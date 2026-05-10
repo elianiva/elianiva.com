@@ -1,4 +1,4 @@
-import { useLoaderData, Link } from "@tanstack/react-router";
+import { useLoaderData } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
 import { Backlinks } from "./backlinks";
 import { NotFound } from "~/components/not-found";
@@ -17,7 +17,10 @@ const categoryLabels: Record<string, string> = {
 };
 
 export function NoteDetailPage() {
-  const data = useLoaderData({ from: "/notes/$slug" }) as { note: Note; notes: Note[] } | null;
+  const data = useLoaderData({ from: "/notes/$slug" }) as {
+    note: Note;
+    notes: Note[];
+  } | null;
 
   if (!data) {
     return (
@@ -46,10 +49,6 @@ export function NoteDetailPage() {
       })
     : null;
 
-  const backlinks = notes.filter((n) =>
-    n.content?.includes(`[[${note.slug}]]`),
-  );
-
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <BackButton />
@@ -71,8 +70,6 @@ export function NoteDetailPage() {
           <div className="flex flex-wrap items-center gap-4 mt-4 font-mono text-xs text-pink-400">
             <span>Created {createdDate}</span>
             {modifiedDate && <span>Updated {modifiedDate}</span>}
-            {note.readingTime && <span>{note.readingTime} min read</span>}
-            {note.wordCount && <span>{note.wordCount} words</span>}
           </div>
           {displayTags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4">
@@ -88,43 +85,12 @@ export function NoteDetailPage() {
           )}
         </header>
         <div className="prose prose-pink max-w-none">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm, wikiLinkPlugin]}
-          >
+          <ReactMarkdown remarkPlugins={[remarkGfm, wikiLinkPlugin]}>
             {note.content}
           </ReactMarkdown>
         </div>
       </article>
-      {backlinks.length > 0 && (
-        <section className="mt-12 pt-8 border-t border-pink-200/50">
-          <h2 className="font-display text-xl text-pink-800 mb-4">Backlinks</h2>
-          <Backlinks backlinks={backlinks} />
-        </section>
-      )}
-      <nav className="mt-12 pt-8 border-t border-pink-200/50 flex justify-between font-mono text-sm">
-        {note.prevSlug ? (
-          <Link
-            to="/notes/$slug"
-            params={{ slug: note.prevSlug }}
-            className="text-pink-600 hover:text-pink-800"
-          >
-            ← prev
-          </Link>
-        ) : (
-          <span />
-        )}
-        {note.nextSlug ? (
-          <Link
-            to="/notes/$slug"
-            params={{ slug: note.nextSlug }}
-            className="text-pink-600 hover:text-pink-800"
-          >
-            next →
-          </Link>
-        ) : (
-          <span />
-        )}
-      </nav>
+      <Backlinks notes={notes} currentSlug={note.slug} />
     </div>
   );
 }
