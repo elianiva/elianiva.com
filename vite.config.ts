@@ -58,16 +58,7 @@ const config = defineConfig({
         enabled: true,
       },
       prerender: {
-        enabled: true,
-        autoStaticPathsDiscovery: true,
-        crawlLinks: true,
-        failOnError: true,
-        filter: ({ path }) => {
-          // Skip dynamic routes that don't exist yet or aren't static
-          if (path.startsWith("/notes")) return false;
-          if (path.startsWith("/assets/")) return false;
-          return true;
-        },
+        enabled: false,
       },
     }),
     viteReact({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),
