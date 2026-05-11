@@ -104,6 +104,7 @@ function HeadingAccent({ width }: { width: number }) {
   return (
     <div
       style={{
+        display: "flex",
         position: "absolute",
         bottom: -8,
         left: 0,
@@ -480,6 +481,7 @@ function DefaultLayout(title: string, subtitle: string) {
             </h1>
             <div
               style={{
+                display: "flex",
                 position: "relative",
                 width: "60%",
                 height: 1,
