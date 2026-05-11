@@ -29,7 +29,7 @@ function groupContributions(contributions: AiContribution[]) {
     };
   }
   const sortedWeeks = Array.from(weeksMap.entries())
-    .toSorted(([a], [b]) => a - b)
+    .slice().sort(([a], [b]) => a - b)
     .map(([_, days]) => ({
       days: days.map((d) => d),
     }));

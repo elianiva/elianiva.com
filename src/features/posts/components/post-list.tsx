@@ -31,7 +31,7 @@ export function PostList() {
   const allTags = useMemo(() => {
     const tags = new Set<string>();
     posts.forEach((p) => p.tags?.forEach((t) => tags.add(t)));
-    return tags.toSorted();
+    return tags.slice().sort();
   }, [posts]);
 
   const suggestions = useMemo(() => {
