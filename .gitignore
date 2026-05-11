@@ -10,7 +10,6 @@ dist-ssr
 .output
 .vinxi
 __unconfig*
-todos.json
-
+.dev.vars
 .content-collections
 .cache
