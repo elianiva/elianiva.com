@@ -81,14 +81,12 @@ export function NotesPage() {
           </button>
         </div>
       )}
-      {graphOpen && (
-        <GraphModal
-          graph={graph}
-          isOpen={graphOpen}
-          onClose={() => setGraphOpen(false)}
-          onNodeClick={() => {}}
-        />
-      )}
+      <GraphModal
+        graph={graph}
+        isOpen={graphOpen}
+        onClose={() => setGraphOpen(false)}
+        onNodeClick={() => {}}
+      />
     </div>
   );
 }

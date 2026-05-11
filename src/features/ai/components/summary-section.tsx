@@ -2,6 +2,7 @@ import { Heading } from "~/components/ui/heading";
 import { fmtTokens, fmtCost } from "./fmt";
 import type { AiUsage } from "../lib/tokscale";
 import { cn } from "~/lib/utils";
+import { Card } from "~/components/ui/card";
 
 interface Props {
   data: AiUsage;
@@ -19,7 +20,7 @@ type StatCardProps = {
 
 function StatCard(props: StatCardProps) {
   return (
-    <div className={cn("border-border py-5 flex flex-col gap-3", props.className)}>
+    <Card className={cn("flex flex-col gap-3 py-5 px-4 border-0 ring-0", props.className)}>
       <div className="flex justify-between items-center text-xs text-pink-950/40 uppercase tracking-wide pb-2 border-b border-dashed border-pink-200">
         <span className="text-pink-400 font-semibold tracking-wider">{props.title}</span>
         <span>{props.label}</span>
@@ -33,7 +34,7 @@ function StatCard(props: StatCardProps) {
       <div className="flex gap-2 flex-wrap items-baseline font-mono text-xs text-pink-950/40">
         {props.extras}
       </div>
-    </div>
+    </Card>
   );
 }
 

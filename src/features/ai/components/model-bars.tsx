@@ -1,5 +1,12 @@
 import type { AiModelUsage } from "../lib/tokscale";
 import { fmtCost } from "./fmt";
+import {
+  Progress,
+  ProgressTrack,
+  ProgressIndicator,
+  ProgressLabel,
+  ProgressValue,
+} from "~/components/ui/progress";
 
 export function ModelBars({ models }: { models: AiModelUsage[] }) {
   const sorted = models.toSorted((a, b) => b.cost - a.cost).filter((m) => m.cost >= 0.01);
@@ -8,19 +15,24 @@ export function ModelBars({ models }: { models: AiModelUsage[] }) {
   return (
     <div className="flex flex-col gap-2 font-mono text-xs">
       {sorted.map((m) => (
-        <div key={m.model} className="grid grid-cols-[3fr_12fr_0.5fr_0.5fr] gap-3 items-center">
-          <span className="text-pink-800 truncate" title={m.model}>
+        <Progress
+          key={m.model}
+          value={(m.cost / max) * 100}
+          className="grid grid-cols-[3fr_12fr_0.5fr_0.5fr] gap-3 items-center flex-nowrap"
+        >
+          <ProgressLabel className="text-pink-800 truncate text-xs" title={m.model}>
             {m.model}
+          </ProgressLabel>
+          <ProgressTrack className="h-2 bg-pink-100">
+            <ProgressIndicator className="h-full bg-pink-400 transition-all duration-200" />
+          </ProgressTrack>
+          <ProgressValue className="text-pink-900 text-right text-xs">
+            {fmtCost(m.cost)}
+          </ProgressValue>
+          <span className="text-pink-950/40 text-right text-xs">
+            {m.percentage.toFixed(1)}%
           </span>
-          <div className="h-2 bg-pink-100 overflow-hidden">
-            <div
-              className="h-full bg-pink-400 transition-all duration-200"
-              style={{ width: `${(m.cost / max) * 100}%` }}
-            />
-          </div>
-          <span className="text-pink-900 text-right">{fmtCost(m.cost)}</span>
-          <span className="text-pink-950/40 text-right">{m.percentage.toFixed(1)}%</span>
-        </div>
+        </Progress>
       ))}
     </div>
   );

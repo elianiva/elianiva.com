@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Card } from "~/components/ui/card";
 import type { Note } from "../lib/types";
 
 interface BacklinksProps {
@@ -28,21 +29,23 @@ export function Backlinks({ notes, currentSlug }: BacklinksProps) {
           <Link
             key={note.slug}
             to={`/notes/${note.slug}`}
-            className="group flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-all"
+            className="group no-underline"
           >
-            <div className="flex-1 min-w-0">
-              <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors text-sm">
-                {note.title}
+            <Card className="flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-all ring-0">
+              <div className="flex-1 min-w-0">
+                <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors text-sm">
+                  {note.title}
+                </span>
+                {note.description && (
+                  <p className="text-xs text-pink-950/60 mt-0.5 line-clamp-1">
+                    {note.description}
+                  </p>
+                )}
+              </div>
+              <span className="text-xs font-mono text-pink-950/40 uppercase shrink-0">
+                {note.category}
               </span>
-              {note.description && (
-                <p className="text-xs text-pink-950/60 mt-0.5 line-clamp-1">
-                  {note.description}
-                </p>
-              )}
-            </div>
-            <span className="text-xs font-mono text-pink-950/40 uppercase shrink-0">
-              {note.category}
-            </span>
+            </Card>
           </Link>
         ))}
       </div>

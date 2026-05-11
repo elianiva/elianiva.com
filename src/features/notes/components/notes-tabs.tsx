@@ -1,5 +1,11 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "~/components/ui/tabs";
 import type { Note, NoteCategory } from "../lib/types";
 
 interface NotesTabsProps {
@@ -15,9 +21,31 @@ const categoryLabels: Record<string, string> = {
 
 const categoryOrder: NoteCategory[] = ["vault", "articles", "people", "music"];
 
-export function NotesTabs({ notes }: NotesTabsProps) {
-  const [activeTab, setActiveTab] = useState<NoteCategory | "all">("all");
+function NoteLink({ note }: { note: Note }) {
+  return (
+    <Link
+      to={`/notes/${note.slug}`}
+      className="group flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-all"
+      style={{ viewTransitionName: `note-card-${note.slug}` }}
+    >
+      <div className="flex-1 min-w-0">
+        <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors text-sm">
+          {note.title}
+        </span>
+        {note.description && (
+          <p className="text-xs text-pink-950/60 mt-0.5 line-clamp-1">
+            {note.description}
+          </p>
+        )}
+      </div>
+      <span className="text-xs font-mono text-pink-950/40 uppercase shrink-0">
+        {categoryLabels[note.category] || note.category}
+      </span>
+    </Link>
+  );
+}
 
+export function NotesTabs({ notes }: NotesTabsProps) {
   const tabCounts = useMemo(() => {
     const counts: Record<string, number> = { all: notes.length };
     for (const cat of categoryOrder) {
@@ -26,61 +54,48 @@ export function NotesTabs({ notes }: NotesTabsProps) {
     return counts;
   }, [notes]);
 
-  const filtered = useMemo(() => {
-    if (activeTab === "all") return notes;
-    return notes.filter((n) => n.category === activeTab);
-  }, [notes, activeTab]);
+  const notesByCategory = useMemo(() => {
+    const byCat: Record<string, typeof notes> = { all: notes };
+    for (const cat of categoryOrder) {
+      byCat[cat] = notes.filter((n) => n.category === cat);
+    }
+    return byCat;
+  }, [notes]);
 
   return (
-    <div>
-      <div className="flex gap-1 mb-6 border-b border-pink-200/50" role="tablist">
+    <Tabs defaultValue="all" className="gap-0">
+      <TabsList variant="line" className="w-full justify-start border-b border-pink-200/50 rounded-none bg-transparent gap-0">
         {(["all", ...categoryOrder] as const).map((tab) => (
-          <button
+          <TabsTrigger
             key={tab}
-            role="tab"
-            aria-selected={activeTab === tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-body transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2 ${
-              activeTab === tab
-                ? "text-pink-900 border-b-2 border-pink-500"
-                : "text-pink-950/50 hover:text-pink-950/70"
-            }`}
+            value={tab}
+            className="px-4 py-2 text-sm font-body data-active:text-pink-900 data-active:after:opacity-100 after:absolute after:bottom-0 after:inset-x-0 after:h-0.5 after:bg-pink-500 text-pink-950/50 hover:text-pink-950/70"
           >
             {tab === "all" ? "All" : categoryLabels[tab] || tab}
             <span className="ml-1.5 text-xs opacity-60">({tabCounts[tab]})</span>
-          </button>
+          </TabsTrigger>
         ))}
-      </div>
+      </TabsList>
 
-      <div className="space-y-2" role="tabpanel">
-        {filtered.map((note) => (
-          <Link
-            key={note.slug}
-            to={`/notes/${note.slug}`}
-            className="group flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-all"
-            style={{ viewTransitionName: `note-card-${note.slug}` }}
-          >
-            <div className="flex-1 min-w-0">
-              <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors text-sm">
-                {note.title}
-              </span>
-              {note.description && (
-                <p className="text-xs text-pink-950/60 mt-0.5 line-clamp-1">
-                  {note.description}
-                </p>
-              )}
-            </div>
-            <span className="text-xs font-mono text-pink-950/40 uppercase shrink-0">
-              {categoryLabels[note.category] || note.category}
-            </span>
-          </Link>
+      <TabsContent value="all" className="mt-0 space-y-2">
+        {notesByCategory.all.map((note) => (
+          <NoteLink key={note.slug} note={note} />
         ))}
-        {filtered.length === 0 && (
-          <p className="text-center text-sm font-body text-pink-950/50 py-8">
-            No notes in this category.
-          </p>
-        )}
-      </div>
-    </div>
+      </TabsContent>
+
+      {categoryOrder.map((cat) => (
+        <TabsContent key={cat} value={cat} className="mt-0 space-y-2">
+          {notesByCategory[cat].length > 0 ? (
+            notesByCategory[cat].map((note) => (
+              <NoteLink key={note.slug} note={note} />
+            ))
+          ) : (
+            <p className="text-center text-sm font-body text-pink-950/50 py-8">
+              No notes in this category.
+            </p>
+          )}
+        </TabsContent>
+      ))}
+    </Tabs>
   );
 }

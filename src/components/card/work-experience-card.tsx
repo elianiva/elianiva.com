@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
-import { AccordionPanel } from "~/components/ui/accordion-panel";
-import { durations } from "~/lib/motion";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "~/components/ui/collapsible";
 
 interface WorkExperienceCardProps {
   company: string;
@@ -27,13 +30,12 @@ export function WorkExperienceCard({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="work-experience-card group rounded-2xl transition-colors" data-open={isOpen}>
-      <button
-        type="button"
-        className="list-none w-full cursor-pointer focus:ring-0 focus:outline-none p-2 text-left"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-      >
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="work-experience-card group rounded-2xl transition-colors"
+    >
+      <CollapsibleTrigger className="list-none w-full cursor-pointer focus:ring-0 focus:outline-none p-2 text-left">
         {/* Mobile Layout */}
         <div className="flex items-start justify-between gap-3 md:hidden">
           <div className="flex-1 min-w-0">
@@ -51,7 +53,7 @@ export function WorkExperienceCard({
             </div>
           </div>
           <div
-            className={`text-pink-600 transition-transform duration-${Math.round(durations.accordionOpen * 1000)} ease-out shrink-0 mt-0.5 ${isOpen ? "rotate-180" : ""}`}
+            className={`text-pink-600 transition-transform duration-200 ease-out shrink-0 mt-0.5 ${isOpen ? "rotate-180" : ""}`}
           >
             <svg className="size-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -67,7 +69,7 @@ export function WorkExperienceCard({
         <div className="hidden md:flex md:flex-row items-start md:justify-between gap-4 -ml-8">
           <div className="flex items-start gap-3">
             <div
-              className={`text-pink-600 transition-transform duration-${Math.round(durations.accordionOpen * 1000)} ease-out shrink-0 ${isOpen ? "rotate-180" : ""}`}
+              className={`text-pink-600 transition-transform duration-200 ease-out shrink-0 ${isOpen ? "rotate-180" : ""}`}
             >
               <svg className="inline-block size-4 mt-1" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -98,31 +100,31 @@ export function WorkExperienceCard({
               : period[1].toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
           </span>
         </div>
+      </CollapsibleTrigger>
 
-        {/* Details */}
-        <AccordionPanel open={isOpen}>
-          <ul className="list-disc list-outside pl-4 mt-2">
-            {details.map((detail) => (
-              <li
-                key={detail}
-                className="text-sm md:text-base leading-relaxed font-body text-pink-950/80"
-              >
-                {detail}
-              </li>
-            ))}
-          </ul>
-          <ul className="flex flex-wrap items-center pt-2 gap-1">
-            {technologies.map((technology) => (
-              <Badge
-                key={technology}
-                variant="outline"
-                render={<li key={technology}>#{technology}</li>}
-              />
-            ))}
-          </ul>
-        </AccordionPanel>
-      </button>
-    </div>
+      {/* Details */}
+      <CollapsibleContent>
+        <ul className="list-disc list-outside pl-4 mt-2">
+          {details.map((detail) => (
+            <li
+              key={detail}
+              className="text-sm md:text-base leading-relaxed font-body text-pink-950/80"
+            >
+              {detail}
+            </li>
+          ))}
+        </ul>
+        <ul className="flex flex-wrap items-center pt-2 gap-1">
+          {technologies.map((technology) => (
+            <Badge
+              key={technology}
+              variant="outline"
+              render={<li key={technology}>#{technology}</li>}
+            />
+          ))}
+        </ul>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 

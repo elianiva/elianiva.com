@@ -1,7 +1,7 @@
 import type { JSX } from "react";
-import { Link } from "@tanstack/react-router";
 import CalendarIcon from "~icons/ph/calendar-blank";
 import { Badge } from "~/components/ui/badge";
+import { Card } from "~/components/ui/card";
 
 type PostCardProps = {
   title: string;
@@ -12,15 +12,15 @@ type PostCardProps = {
 
 export function PostCard({ title, description, date, tags, ...props }: PostCardProps) {
   return (
-    <div
-      className="bg-white/60 text-left transition-all group hover:bg-white"
+    <Card
+      className="bg-white/60 text-left transition-all group hover:bg-white border-0 ring-0"
       role="article"
       aria-labelledby="post-title"
       style={{ viewTransitionName: title }}
       {...props}
     >
       <div
-        className="flex p-4 h-full focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+        className="flex p-4 h-full"
         aria-labelledby="post-title"
       >
         <div className="flex-1">
@@ -55,6 +55,6 @@ export function PostCard({ title, description, date, tags, ...props }: PostCardP
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

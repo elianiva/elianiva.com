@@ -1,4 +1,12 @@
 import { Heading } from "~/components/ui/heading";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "~/components/ui/table";
 import { fmtTokens, fmtCost } from "./fmt";
 
 interface ClientTotal {
@@ -25,32 +33,32 @@ export function ClientsSection({ clientTotals, contributionsLength, totalCost }:
         {clientTotals.length === 0 ? (
           <p className="text-sm font-body text-pink-950/60">No client data available.</p>
         ) : (
-          <table className="w-full border-collapse font-mono text-sm">
-            <thead>
-              <tr>
+          <Table className="font-mono text-sm">
+            <TableHeader>
+              <TableRow>
                 {["client", "cost", "tokens", "share"].map((label) => (
-                  <th
+                  <TableHead
                     key={label}
-                    className="text-left py-2 text-[10px] text-pink-950/40 uppercase tracking-widest font-normal border-b border-pink-200"
+                    className="text-[10px] text-pink-950/40 uppercase tracking-widest font-normal"
                   >
                     {label}
-                  </th>
+                  </TableHead>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {clientTotals.map((c) => (
-                <tr key={c.client}>
-                  <td className="py-2 text-pink-500">{c.client}</td>
-                  <td className="py-2 text-pink-800">{fmtCost(c.cost)}</td>
-                  <td className="py-2 text-pink-950/60">{fmtTokens(c.tokens)}</td>
-                  <td className="py-2 text-pink-950/40">
+                <TableRow key={c.client}>
+                  <TableCell className="text-pink-500">{c.client}</TableCell>
+                  <TableCell className="text-pink-800">{fmtCost(c.cost)}</TableCell>
+                  <TableCell className="text-pink-950/60">{fmtTokens(c.tokens)}</TableCell>
+                  <TableCell className="text-pink-950/40">
                     {((c.cost / totalCost) * 100).toFixed(1)}%
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         )}
       </div>
     </section>

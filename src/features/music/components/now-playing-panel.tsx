@@ -1,9 +1,10 @@
 import MusicIcon from '~icons/ph/music-note-duotone'
 import type { LastFmTrack } from "../lib/lastfm";
+import { Card } from "~/components/ui/card";
 
 export function NowPlayingPanel({ track }: { track: LastFmTrack }) {
   return (
-    <section className="my-6 border border-pink-300/50 bg-pink-50/30">
+    <Card className="my-6 border border-pink-300/50 bg-pink-50/30 p-0 ring-0">
       <a
         href={track.url}
         target="_blank"
@@ -33,6 +34,6 @@ export function NowPlayingPanel({ track }: { track: LastFmTrack }) {
           </div>
         )}
       </a>
-    </section>
+    </Card>
   );
 }

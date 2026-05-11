@@ -1,11 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import type { GitHubPullRequest, GroupedPRs } from "../lib/types";
 import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
 import CaretDownIcon from "~icons/ph/caret-down";
 import GitPullRequestIcon from "~icons/ph/git-pull-request-duotone";
 import StarIcon from "~icons/ph/star-fill";
-import { AccordionPanel } from "~/components/ui/accordion-panel";
-import { durations } from "~/lib/motion";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "~/components/ui/collapsible";
 
 interface PRDropdownProps {
   repository: {
@@ -29,25 +32,17 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
 
   const totalChanges = prs.reduce((sum, pr) => sum + pr.additions + pr.deletions, 0);
 
-  const toggleOpen = useCallback(() => {
-    setIsOpen((prev) => !prev);
-  }, []);
-
   return (
-    <div
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
       className="bg-blur-xl bg-white/60 hover:bg-white focus:bg-white focus:outline-none"
-      data-open={isOpen}
     >
-      <button
-        type="button"
-        className="list-none w-full px-4 py-3 cursor-pointer focus:outline-none text-left"
-        onClick={toggleOpen}
-        aria-expanded={isOpen}
-      >
+      <CollapsibleTrigger className="list-none w-full px-4 py-3 cursor-pointer focus:outline-none text-left">
         <div className="flex flex-row sm:items-center justify-between focus:outline-none">
           <div className="flex items-center gap-2">
             <div
-              className={`text-pink-600 transition-transform duration-${Math.round(durations.accordionOpen * 1000)} ease-out ${isOpen ? "rotate-180" : ""}`}
+              className={`text-pink-600 transition-transform duration-200 ease-out ${isOpen ? "rotate-180" : ""}`}
             >
               <CaretDownIcon className="inline-block size-3" />
             </div>
@@ -83,9 +78,9 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
             </p>
           </div>
         </div>
-      </button>
+      </CollapsibleTrigger>
 
-      <AccordionPanel open={isOpen}>
+      <CollapsibleContent>
         <div className="border-t border-pink-200/50">
           <div id={`pr-details-${repository.name}`} className="p-3">
             <div className="space-y-2">
@@ -122,7 +117,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
             </div>
           </div>
         </div>
-      </AccordionPanel>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
