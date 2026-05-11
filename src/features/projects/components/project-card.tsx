@@ -14,7 +14,7 @@ interface ProjectCardProps {
 export function ProjectCard({ slug, title, description, href, stack }: ProjectCardProps) {
   return (
     <Card
-      className="bg-white/60 text-left p-4 transition-all group hover:bg-white h-full flex flex-col border-0 ring-0"
+      className="bg-white/60 text-left px-4 py-3 transition-all group hover:bg-white h-full flex flex-col border-0 ring-0"
       style={{ viewTransitionName: `project-card-${slug}` }}
     >
       <div className="flex gap-4 flex-1 items-center">
@@ -33,7 +33,7 @@ export function ProjectCard({ slug, title, description, href, stack }: ProjectCa
           >
             {title}
           </Link>
-          <p className="font-body text-sm text-pink-950/70">{description}</p>
+          <p className="font-body text-sm text-pink-950/70 text-clip line-clamp-1">{description}</p>
         </div>
         <div className="flex flex-wrap items-start gap-1 font-mono uppercase">
           {stack.map((item) => {

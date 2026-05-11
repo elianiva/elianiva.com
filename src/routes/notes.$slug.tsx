@@ -2,9 +2,11 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { loadNotes } from "~/features/notes/lib/notes";
 import { NoteDetailPage } from "~/features/notes/components/note-detail-page";
 import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { NoteDetailSkeleton } from "~/components/ui/page-skeleton";
 
 export const Route = createFileRoute("/notes/$slug")({
   component: NoteDetailPage,
+  pendingComponent: NoteDetailSkeleton,
   loader: async ({ params }) => {
     const notes = await loadNotes();
     const note = notes.find((n) => n.slug === params.slug);

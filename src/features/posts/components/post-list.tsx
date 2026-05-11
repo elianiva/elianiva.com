@@ -31,7 +31,7 @@ export function PostList() {
   const allTags = useMemo(() => {
     const tags = new Set<string>();
     posts.forEach((p) => p.tags?.forEach((t) => tags.add(t)));
-    return tags.slice().sort();
+    return Array.from(tags).sort();
   }, [posts]);
 
   const suggestions = useMemo(() => {
@@ -119,8 +119,8 @@ export function PostList() {
               value={searchQuery}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder="Search posts... (use # to filter by tag)"
-              className="w-full border border-pink-200 bg-white/80 px-3 py-2 text-sm font-mono text-pink-950 placeholder-pink-300 focus:outline-none focus:border-pink-400"
+              placeholder="Search posts… (use # to filter by tag)"
+              className="w-full border border-pink-200 bg-white/80 px-3 py-2 text-sm font-mono text-pink-950 placeholder-pink-900/50 focus:outline-none focus:border-pink-400"
               aria-label="Search posts"
               aria-autocomplete="list"
               aria-controls="tag-suggestions"

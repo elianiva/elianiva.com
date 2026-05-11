@@ -13,6 +13,8 @@ export function getRouter() {
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
     defaultViewTransition: true,
+    defaultPendingMs: 0,
+    defaultPendingMinMs: 0,
   });
 
   setupRouterSsrQueryIntegration({ router, queryClient: context.queryClient });

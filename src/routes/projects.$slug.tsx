@@ -4,6 +4,7 @@ import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
 import { BackButton } from "~/components/back-button";
 import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { ProjectDetailSkeleton } from "~/components/ui/page-skeleton";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
 
@@ -37,6 +38,7 @@ const getProjectBySlug = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
+  pendingComponent: ProjectDetailSkeleton,
   loader: ({ params: { slug } }) => getProjectBySlug({ data: slug }),
   head: ({ loaderData }) => {
     if (!loaderData) return {};

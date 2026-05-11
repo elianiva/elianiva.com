@@ -4,11 +4,7 @@ import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
 import CaretDownIcon from "~icons/ph/caret-down";
 import GitPullRequestIcon from "~icons/ph/git-pull-request-duotone";
 import StarIcon from "~icons/ph/star-fill";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "~/components/ui/collapsible";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "~/components/ui/collapsible";
 
 interface PRDropdownProps {
   repository: {
@@ -18,7 +14,6 @@ interface PRDropdownProps {
     stargazerCount: number;
   };
   prs: GitHubPullRequest[];
-  defaultOpen?: boolean;
 }
 
 function abbreviateNumber(num: number): string {
@@ -27,7 +22,7 @@ function abbreviateNumber(num: number): string {
   return num.toString();
 }
 
-export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownProps) {
+export function PRDropdown({ repository, prs }: PRDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const totalChanges = prs.reduce((sum, pr) => sum + pr.additions + pr.deletions, 0);
@@ -36,7 +31,7 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="bg-blur-xl bg-white/60 hover:bg-white focus:bg-white focus:outline-none"
+      className="bg-blur-xl bg-white/70 hover:bg-white focus:bg-white focus:outline-none"
     >
       <CollapsibleTrigger className="list-none w-full px-4 py-3 cursor-pointer focus:outline-none text-left">
         <div className="flex flex-row sm:items-center justify-between focus:outline-none">
@@ -96,7 +91,10 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
                       >
                         {pr.title}
                       </a>
-                      <p className="font-mono text-xs text-pink-950/50 mt-1" suppressHydrationWarning>
+                      <p
+                        className="font-mono text-xs text-pink-950/50 mt-1"
+                        suppressHydrationWarning
+                      >
                         #{pr.number} • merged{" "}
                         {pr.merged_at ? new Date(pr.merged_at).toLocaleDateString("en-GB") : ""}
                       </p>
@@ -121,3 +119,4 @@ export function PRDropdown({ repository, prs, defaultOpen = false }: PRDropdownP
     </Collapsible>
   );
 }
+

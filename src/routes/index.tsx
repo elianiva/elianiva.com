@@ -27,7 +27,7 @@ function Home() {
       <section
         role="region"
         aria-labelledby="open-source-contributions-heading"
-        className="relative with-box-underline grid md:grid-cols-2 gap-4 px-2 md:px-8"
+        className="relative with-box-underline grid md:grid-cols-2 gap-4 px-2 md:px-8 py-4 md:py-8"
       >
         <OpenSourceSection />
         <ProjectSection

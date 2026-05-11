@@ -3,6 +3,7 @@ import { fmtTokens, fmtCost } from "./fmt";
 import type { AiUsage } from "../lib/tokscale";
 import { cn } from "~/lib/utils";
 import { Card } from "~/components/ui/card";
+import { Separator } from "~/components/ui/separator.js";
 
 interface Props {
   data: AiUsage;
@@ -20,7 +21,9 @@ type StatCardProps = {
 
 function StatCard(props: StatCardProps) {
   return (
-    <Card className={cn("flex flex-col gap-3 py-5 px-4 border-0 ring-0", props.className)}>
+    <Card
+      className={cn("flex flex-col gap-3 py-5 border-0 ring-0 bg-transparent", props.className)}
+    >
       <div className="flex justify-between items-center text-xs text-pink-950/40 uppercase tracking-wide pb-2 border-b border-dashed border-pink-200">
         <span className="text-pink-400 font-semibold tracking-wider">{props.title}</span>
         <span>{props.label}</span>
@@ -44,9 +47,9 @@ export function SummarySection({ data, avgDaily }: Props) {
       <Heading level={2} right={"totals since " + data.dateRange.start}>
         Summary
       </Heading>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+      <div className="flex flex-wrap gap-4">
         <StatCard
-          className="border-r pr-2"
+          className="flex-1"
           title="cost total"
           label="usd"
           value={fmtCost(data.stats.totalCost)}
@@ -61,8 +64,9 @@ export function SummarySection({ data, avgDaily }: Props) {
             </>
           }
         />
+        <Separator orientation="vertical" />
         <StatCard
-          className="border-r pr-2"
+          className="flex-1"
           title="tokens total"
           label="counted"
           value={fmtTokens(data.stats.totalTokens)}
@@ -82,7 +86,9 @@ export function SummarySection({ data, avgDaily }: Props) {
             </>
           }
         />
+        <Separator orientation="vertical" />
         <StatCard
+          className="flex-1"
           title="cache hit"
           label="prompt caching"
           value={
@@ -111,4 +117,3 @@ export function SummarySection({ data, avgDaily }: Props) {
     </section>
   );
 }
-

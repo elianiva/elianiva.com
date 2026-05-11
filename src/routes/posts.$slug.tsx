@@ -7,6 +7,7 @@ import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
 import { Heading } from "~/components/ui/heading";
 import { postSeo } from "~/lib/seo";
+import { PostDetailSkeleton } from "~/components/ui/page-skeleton";
 import PencilIcon from "~icons/ph/note-pencil";
 
 const getPostBySlug = createServerFn({ method: "GET" })
@@ -54,6 +55,7 @@ const getPostBySlug = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/posts/$slug")({
   component: PostDetailPage,
+  pendingComponent: PostDetailSkeleton,
   loader: ({ params: { slug } }) => getPostBySlug({ data: slug }),
   head: ({ loaderData }) => {
     if (!loaderData) return postSeo({ title: "Post", description: "", date: "", tags: [] });

@@ -37,7 +37,7 @@ function OpenSourcePRList() {
 
 export function OpenSourceSection() {
   return (
-    <section className="py-4 md:py-8">
+    <section>
       <div>
         <Heading level={2} id="open-source-heading">
           Open Source Contributions

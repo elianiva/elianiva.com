@@ -1,6 +1,6 @@
 import { useLoaderData } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
-import type { AiUsage, AiContribution } from "../lib/tokscale";
+import { type AiUsage, type AiContribution, aggregateClients } from "../lib/tokscale";
 import { useMemo } from "react";
 import { NotFound } from "~/components/not-found";
 import { fmtTokens, fmtCost, fmtRel } from "./fmt";
@@ -29,37 +29,16 @@ function groupContributions(contributions: AiContribution[]) {
     };
   }
   const sortedWeeks = Array.from(weeksMap.entries())
-    .slice().sort(([a], [b]) => a - b)
+    .slice()
+    .sort(([a], [b]) => a - b)
     .map(([_, days]) => ({
       days: days.map((d) => d),
     }));
   return sortedWeeks;
 }
 
-function aggregateClients(clients: string[], contributions: AiContribution[]) {
-  const map = new Map<string, { cost: number; tokens: number }>();
-  for (const day of contributions) {
-    if (!day.clients) continue;
-    const entry = map.get(day.client) || { cost: 0, tokens: 0 };
-    entry.cost += day.totals.cost;
-    entry.tokens += day.totals.tokens;
-    map.set(day.client, entry);
-  }
-  return [...map.entries()]
-    .map(([client, totals]) => ({ client, ...totals }))
-    .sort((a, b) => b.tokens - a.tokens);
-}
-
 export function AiPage() {
-  const data = useLoaderData({ from: "/ai" }) as AiUsage | null;
-
-  const contributions = data?.contributions;
-  const heatmapWeeks = useMemo(() => contributions ? groupContributions(contributions) : [], [contributions]);
-  const clientTotals = useMemo(
-    () => data ? aggregateClients(data.clients, contributions ?? []) : [],
-    [data?.clients, contributions],
-  );
-
+  const data = useLoaderData({ from: "/ai" });
   if (!data) {
     return (
       <NotFound
@@ -71,6 +50,9 @@ export function AiPage() {
       />
     );
   }
+
+  const heatmapWeeks = groupContributions(data.contributions);
+  const clientTotals = aggregateClients(data.contributions ?? []);
   const avgDaily = data.stats.activeDays > 0 ? data.stats.totalCost / data.stats.activeDays : 0;
 
   return (
@@ -119,7 +101,7 @@ export function AiPage() {
           aria-labelledby="ai-activity-heading"
           className="relative with-box-underline"
         >
-          <HeatmapSection contributions={contributions} weeks={heatmapWeeks} />
+          <HeatmapSection contributions={data.contributions ?? []} weeks={heatmapWeeks} />
         </section>
         <section
           role="region"
@@ -131,7 +113,7 @@ export function AiPage() {
         <section role="region" aria-labelledby="ai-clients-heading">
           <ClientsSection
             clientTotals={clientTotals}
-            contributionsLength={contributions.length}
+            contributionsLength={data.contributions?.length ?? 0}
             totalCost={data.stats.totalCost}
           />
         </section>

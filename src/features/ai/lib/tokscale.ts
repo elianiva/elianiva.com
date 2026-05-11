@@ -1,6 +1,23 @@
 import { createServerFn } from "@tanstack/react-start";
 import { cached, TTL } from "~/lib/cache";
 
+export function aggregateClients(contributions: AiContribution[]) {
+  const map = new Map<string, { cost: number; tokens: number }>();
+  for (const day of contributions) {
+    if (!day.clients) continue;
+    for (const c of day.clients) {
+      const entry = map.get(c.client) || { cost: 0, tokens: 0 };
+      entry.cost += c.cost;
+      entry.tokens +=
+        c.tokens.input + c.tokens.output + c.tokens.cacheRead + c.tokens.cacheWrite + c.tokens.reasoning;
+      map.set(c.client, entry);
+    }
+  }
+  return [...map.entries()]
+    .map(([client, totals]) => ({ client, ...totals }))
+    .sort((a, b) => b.tokens - a.tokens);
+}
+
 export type AiModelUsage = {
   model: string;
   tokens: number;

@@ -64,3 +64,4 @@ export function ClientsSection({ clientTotals, contributionsLength, totalCost }:
     </section>
   );
 }
+

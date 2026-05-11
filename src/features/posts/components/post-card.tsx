@@ -19,10 +19,7 @@ export function PostCard({ title, description, date, tags, ...props }: PostCardP
       style={{ viewTransitionName: title }}
       {...props}
     >
-      <div
-        className="flex p-4 h-full"
-        aria-labelledby="post-title"
-      >
+      <div className="flex p-4 h-full" aria-labelledby="post-title">
         <div className="flex-1">
           <h3
             id="post-title"
