@@ -1,5 +1,9 @@
-import { createServerFn } from "@tanstack/react-start";
-import { cached, TTL } from "~/lib/cache";
+import { Context, Duration, Effect, Layer } from "effect"
+import { HttpClient, HttpClientResponse } from "effect/unstable/http"
+import { createServerFn } from "@tanstack/react-start"
+import { KvCache } from "~/lib/cache"
+import { AppRuntime } from "~/lib/effect"
+import * as E from "~/lib/errors"
 
 export function aggregateClients(contributions: AiContribution[]) {
   const map = new Map<string, { cost: number; tokens: number }>();
@@ -72,35 +76,69 @@ export type AiUsage = {
 
 const USERNAME = "elianiva";
 
-export const getAiUsage = createServerFn({ method: "GET" }).handler((): Promise<AiUsage | null> =>
-  cached("ai:tokscale", TTL.long, async () => {
-    const res = await fetch(`https://tokscale.ai/api/users/${USERNAME}`);
-    if (!res.ok) return null;
-    const d = (await res.json()) as {
-      user: AiUsage["user"];
-      stats: AiUsage["stats"];
-      dateRange: AiUsage["dateRange"];
-      updatedAt: string;
-      submissionFreshness: { lastUpdated: string; cliVersion: string; isStale: boolean };
-      clients: string[];
-      models: string[];
-      modelUsage: AiModelUsage[];
-      contributions: AiContribution[];
-    };
-    return {
-      user: d.user,
-      stats: d.stats,
-      dateRange: d.dateRange,
-      updatedAt: d.updatedAt,
-      freshness: {
-        lastUpdated: d.submissionFreshness.lastUpdated,
-        cliVersion: d.submissionFreshness.cliVersion,
-        isStale: d.submissionFreshness.isStale,
-      },
-      clients: d.clients,
-      models: d.models,
-      modelUsage: d.modelUsage,
-      contributions: d.contributions,
-    };
-  }),
-);
+type RawResponse = {
+  user: AiUsage["user"];
+  stats: AiUsage["stats"];
+  dateRange: AiUsage["dateRange"];
+  updatedAt: string;
+  submissionFreshness: { lastUpdated: string; cliVersion: string; isStale: boolean };
+  clients: string[];
+  models: string[];
+  modelUsage: AiModelUsage[];
+  contributions: AiContribution[];
+};
+
+function toAiUsage(d: RawResponse): AiUsage {
+  return {
+    user: d.user,
+    stats: d.stats,
+    dateRange: d.dateRange,
+    updatedAt: d.updatedAt,
+    freshness: {
+      lastUpdated: d.submissionFreshness.lastUpdated,
+      cliVersion: d.submissionFreshness.cliVersion,
+      isStale: d.submissionFreshness.isStale,
+    },
+    clients: d.clients,
+    models: d.models,
+    modelUsage: d.modelUsage,
+    contributions: d.contributions,
+  };
+}
+
+export class Tokscale extends Context.Service<Tokscale, {
+  readonly getUsage: Effect.Effect<AiUsage | null, E.TokscaleError>
+}>()("Tokscale") {
+  static readonly layer = Layer.effect(
+    Tokscale,
+    Effect.gen(function*() {
+      const client = yield* HttpClient.HttpClient
+      const cache = yield* KvCache
+
+      return {
+        getUsage: Effect.fn("Tokscale.getUsage")(function*() {
+          return yield* cache.getOrSet("ai:tokscale", Duration.hours(6),
+            Effect.gen(function*() {
+              const resp = yield* client.get(`https://tokscale.ai/api/users/${USERNAME}`)
+              if (resp.status !== 200) return null
+              const d = yield* HttpClientResponse.json(resp) as Effect.Effect<RawResponse>
+              return toAiUsage(d)
+            }).pipe(
+              Effect.catchTag("HttpClientError", () => Effect.succeed(null)),
+              Effect.catchTag("KvCacheError", () => Effect.succeed(null)),
+            ),
+          )
+        }),
+      }
+    }),
+  )
+}
+
+export const getAiUsage = createServerFn({ method: "GET" }).handler(() =>
+  AppRuntime.runPromise(
+    Effect.gen(function*() {
+      const svc = yield* Tokscale
+      return yield* svc.getUsage
+    }),
+  ),
+)
