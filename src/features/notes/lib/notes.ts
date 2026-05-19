@@ -1,7 +1,12 @@
-import matter from "gray-matter";
-import type { Note, NoteCategory, NotesGraph } from "./types";
-import { createServerFn } from "@tanstack/react-start";
-import { createContentLoader } from "~/features/content/lib/content";
+import { Config, Context, Duration, Effect, Layer, Redacted } from "effect"
+import { FileSystem } from "effect"
+import { createServerFn } from "@tanstack/react-start"
+import { Octokit } from "octokit"
+import matter from "gray-matter"
+import { KvCache } from "~/lib/cache"
+import { AppRuntime } from "~/lib/effect"
+import * as E from "~/lib/errors"
+import type { Note, NoteCategory, NotesGraph } from "./types"
 
 function extractWikiLinks(content: string): string[] {
   const links: string[] = [];
@@ -131,161 +136,185 @@ function resolveBacklinks(notes: Note[]): Note[] {
   return notes;
 }
 
-// ── Local FS loader ──────────────────────────────────────────────
+// ── Local FS loader (dev) ────────────────────────────────────────
 
-async function loadNotesFromLocalFS(): Promise<Note[]> {
-  try {
-    const fs = await import("node:fs/promises");
-    const path = await import("node:path");
-    const os = await import("node:os");
-    const notesPath = path.join(os.homedir(), "Development/personal/notes");
+function loadNotesFromLocalFS(fs: FileSystem.FileSystem, osHomedir: string): Effect.Effect<Note[], E.NotesError> {
+  return Effect.gen(function*() {
+    const notesPath = `${osHomedir}/Development/personal/notes`
 
-    const allFiles: string[] = [];
-    const excludeDirs = new Set(["Archive", "Daily", "Inbox"]);
+    const allFiles: string[] = []
+    const excludeDirs = new Set(["Archive", "Daily", "Inbox"])
 
-    async function scanDir(dir: string): Promise<void> {
-      const entries = await fs.readdir(dir, { withFileTypes: true });
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          if (!excludeDirs.has(entry.name)) {
-            await scanDir(fullPath);
+    const scanDir = (dir: string): Effect.Effect<void, E.NotesError> =>
+      Effect.gen(function*() {
+        const entries = yield* Effect.tryPromise({
+          try: () => fs.readDirectory(dir),
+          catch: (e) => new E.NotesError({ message: `readDirectory error ${dir}: ${String(e)}` }),
+        })
+        for (const entry of entries) {
+          const fullPath = `${dir}/${entry}`
+          const stat = yield* Effect.tryPromise({
+            try: () => fs.stat(fullPath),
+            catch: () => undefined, // skip unreadable
+          })
+          if (stat?.type === "Directory" && !excludeDirs.has(entry)) {
+            yield* scanDir(fullPath)
+          } else if (entry.endsWith(".md") || entry.endsWith(".mdx")) {
+            allFiles.push(fullPath)
           }
-        } else if (entry.isFile() && (entry.name.endsWith(".md") || entry.name.endsWith(".mdx"))) {
-          allFiles.push(fullPath);
         }
-      }
-    }
+      })
 
-    await scanDir(notesPath);
+    yield* scanDir(notesPath)
 
-    const notes: Note[] = [];
-    const errors: string[] = [];
+    const notes: Note[] = []
+    const errors: string[] = []
 
-    const results = await Promise.allSettled(
-      allFiles.map(async (filePath) => {
-        const relPath = path.relative(notesPath, filePath);
-        const content = await fs.readFile(filePath, "utf-8");
-        const stat = await fs.stat(filePath);
+    for (const filePath of allFiles) {
+      const result = yield* Effect.gen(function*() {
+        const relPath = filePath.replace(`${notesPath}/`, "")
+        const content = yield* Effect.tryPromise({
+          try: () => fs.readFileString(filePath),
+          catch: () => "",
+        })
+        if (!content) return null
+        const stat = yield* Effect.tryPromise({
+          try: () => fs.stat(filePath),
+          catch: () => undefined,
+        })
         return parseNoteFromRaw(relPath, content, {
-          date: stat.birthtime.toISOString(),
-          modifiedAt: stat.mtime.toISOString(),
-        });
-      }),
-    );
-
-    for (const result of results) {
-      if (result.status === "fulfilled" && result.value) {
-        notes.push(result.value);
-      } else if (result.status === "rejected") {
-        errors.push(result.reason?.message ?? String(result.reason));
-      }
+          date: stat?.birthtime ? new Date(stat.birthtime).toISOString() : new Date().toISOString(),
+          modifiedAt: stat?.mtime ? new Date(stat.mtime).toISOString() : undefined,
+        })
+      }).pipe(
+        Effect.catchAll((e) => {
+          errors.push(String(e))
+          return Effect.succeed(null as Note | null)
+        }),
+      )
+      if (result) notes.push(result)
     }
 
-    if (errors.length > 0) {
-      console.error("Errors loading notes:", errors);
-    }
-
-    return resolveBacklinks(notes);
-  } catch (error) {
-    console.error("Failed to load notes from local FS:", error);
-    return [];
-  }
+    return resolveBacklinks(notes)
+  })
 }
 
-// ── GitHub loader ────────────────────────────────────────────────
+// ── GitHub loader (prod) ─────────────────────────────────────────
 
-async function loadNotesFromGithub(): Promise<Note[]> {
-  const { Octokit } = await import("octokit");
-  const token = process.env.GH_TOKEN;
-  if (!token) {
-    console.warn("GH_TOKEN not set, cannot load notes from GitHub");
-    return [];
-  }
+function loadNotesFromGithub(ghToken: string): Effect.Effect<Note[], E.NotesError> {
+  return Effect.gen(function*() {
+    const octokit = new Octokit({ auth: ghToken })
+    const owner = yield* Config.string("NOTES_OWNER").pipe(Config.withDefault("elianiva"))
+    const repo = yield* Config.string("NOTES_REPO").pipe(Config.withDefault("notes"))
+    const branch = yield* Config.string("NOTES_BRANCH").pipe(Config.withDefault("main"))
 
-  const octokit = new Octokit({ auth: token });
-  const owner = process.env.NOTES_OWNER || "elianiva";
-  const repo = process.env.NOTES_REPO || "notes";
-  const branch = process.env.NOTES_BRANCH || "main";
-
-  try {
-    const { data: treeData } = await octokit.rest.git.getTree({
-      owner,
-      repo,
-      tree_sha: branch,
-      recursive: "true",
-    });
+    const { data: treeData } = yield* Effect.tryPromise({
+      try: () => octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: "true" }),
+      catch: (e) => new E.NotesError({ message: `Failed to get tree: ${String(e)}` }),
+    })
 
     const mdFiles = treeData.tree.filter(
       (item) =>
         item.type === "blob" &&
         (item.path?.endsWith(".md") || item.path?.endsWith(".mdx")),
-    );
+    )
 
-    const notes: Note[] = [];
-    const now = new Date().toISOString();
+    const notes: Note[] = []
+    const now = new Date().toISOString()
 
     for (const file of mdFiles) {
-      if (!file.path) continue;
-      try {
-        const { data: fileData } = await octokit.rest.repos.getContent({
-          owner,
-          repo,
-          path: file.path,
-          ref: branch,
-        });
-
-        if ("content" in fileData) {
-          const content = Buffer.from(fileData.content, "base64").toString("utf-8");
-          const note = parseNoteFromRaw(file.path, content, { date: now });
-          if (note) notes.push(note);
-        }
-      } catch (err) {
-        console.error(`Error fetching ${file.path}:`, err);
-      }
+      if (!file.path) continue
+      const note = yield* Effect.gen(function*() {
+        const { data: fileData } = yield* Effect.tryPromise({
+          try: () => octokit.rest.repos.getContent({ owner, repo, path: file.path, ref: branch }),
+          catch: () => undefined,
+        })
+        if (!fileData || !("content" in fileData)) return null
+        const content = Buffer.from(fileData.content, "base64").toString("utf-8")
+        return parseNoteFromRaw(file.path, content, { date: now })
+      }).pipe(Effect.catchAll(() => Effect.succeed(null)))
+      if (note) notes.push(note)
     }
 
-    return resolveBacklinks(notes);
-  } catch (error) {
-    console.error("Failed to load notes from GitHub:", error);
-    return [];
-  }
+    return resolveBacklinks(notes)
+  })
+}
+
+// ── Service ──────────────────────────────────────────────────────
+
+export class Notes extends Context.Service<Notes, {
+  readonly load: Effect.Effect<Note[], E.NotesError>
+  readonly buildGraph: Effect.Effect<NotesGraph, E.NotesError>
+}>()("Notes") {
+  static readonly layer = Layer.effect(
+    Notes,
+    Effect.gen(function*() {
+      const ghToken = Redacted.value(yield* Config.redacted("GH_TOKEN").pipe(Config.withDefault(Redacted.make(""))))
+      const cache = yield* KvCache
+
+      return {
+        load: Effect.fn("Notes.load")(function*() {
+          if (import.meta.env.DEV) {
+            const fs = yield* FileSystem.FileSystem
+            const os = yield* Effect.promise(() => import("node:os"))
+            const homedir = yield* Effect.sync(() => os.homedir())
+            return yield* loadNotesFromLocalFS(fs, homedir).pipe(
+              Effect.catchAll(() => Effect.succeed([])),
+            )
+          }
+          return yield* loadNotesFromGithub(ghToken).pipe(
+            Effect.catchAll(() => Effect.succeed([])),
+          )
+        }),
+
+        buildGraph: Effect.fn("Notes.buildGraph")(function*() {
+          const notes = yield* this.load
+          const nodes = notes.map((note) => ({
+            id: note.slug,
+            name: note.title,
+            category: note.category,
+            val: Math.max(4, note.backlinks.length + 2),
+          }))
+
+          const links: NotesGraph["links"] = []
+          const seen = new Set<string>()
+
+          for (const note of notes) {
+            for (const link of note.outboundLinks) {
+              const targetSlug = link.toLowerCase().replace(/\s+/g, "-")
+              if (notes.some((n) => n.slug === targetSlug)) {
+                const key = [note.slug, targetSlug].sort().join("-")
+                if (!seen.has(key)) {
+                  seen.add(key)
+                  links.push({ source: note.slug, target: targetSlug })
+                }
+              }
+            }
+          }
+
+          return { nodes, links } as NotesGraph
+        }),
+      }
+    }),
+  )
 }
 
 // ── Server functions ─────────────────────────────────────────────
 
-export const loadNotes = createServerFn({ method: "GET" }).handler(async () => {
-  return createContentLoader({
-    dev: loadNotesFromLocalFS,
-    prod: loadNotesFromGithub,
-  });
-});
+export const loadNotes = createServerFn({ method: "GET" }).handler(() =>
+  AppRuntime.runPromise(
+    Effect.gen(function*() {
+      const svc = yield* Notes
+      return yield* svc.load
+    }),
+  ),
+)
 
-export const buildGraph = createServerFn({ method: "GET" }).handler(async () => {
-  const notes = await loadNotes();
-
-  const nodes = notes.map((note) => ({
-    id: note.slug,
-    name: note.title,
-    category: note.category,
-    val: Math.max(4, note.backlinks.length + 2),
-  }));
-
-  const links: NotesGraph["links"] = [];
-  const seen = new Set<string>();
-
-  for (const note of notes) {
-    for (const link of note.outboundLinks) {
-      const targetSlug = link.toLowerCase().replace(/\s+/g, "-");
-      if (notes.some((n) => n.slug === targetSlug)) {
-        const key = [note.slug, targetSlug].sort().join("-");
-        if (!seen.has(key)) {
-          seen.add(key);
-          links.push({ source: note.slug, target: targetSlug });
-        }
-      }
-    }
-  }
-
-  return { nodes, links } as NotesGraph;
-});
+export const buildGraph = createServerFn({ method: "GET" }).handler(() =>
+  AppRuntime.runPromise(
+    Effect.gen(function*() {
+      const svc = yield* Notes
+      return yield* svc.buildGraph
+    }),
+  ),
+)
