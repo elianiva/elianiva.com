@@ -35,6 +35,33 @@ export type GroupedPRs = {
   };
 };
 
+// Raw shape returned by the GitHub GraphQL API
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type GraphQLPRNode = {
+  id: string;
+  number: number;
+  title: string;
+  state: string;
+  mergedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  url: string;
+  repository: {
+    name: string;
+    nameWithOwner: string;
+    url: string;
+    stargazerCount: number;
+    isArchived: boolean;
+  };
+  author: {
+    login: string;
+    url: string;
+  };
+  additions: number;
+  deletions: number;
+  changedFiles: number;
+};
+
 export type GraphQLResponse = {
   user: {
     pullRequests: {
@@ -42,7 +69,7 @@ export type GraphQLResponse = {
         hasNextPage: boolean;
         endCursor: string | null;
       };
-      nodes: GraphQLPullRequest[];
+      nodes: GraphQLPRNode[];
     };
   };
 };

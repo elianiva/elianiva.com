@@ -65,7 +65,7 @@ export type MusicData = {
 };
 
 export class LastFM extends Context.Service<LastFM, {
-  readonly getRecentTracks: Effect.Effect<MusicData>
+  readonly getRecentTracks: () => Effect.Effect<MusicData>
 }>()("LastFM") {
   static readonly layer = Layer.effect(
     LastFM,
@@ -74,37 +74,37 @@ export class LastFM extends Context.Service<LastFM, {
       const client = yield* HttpClient.HttpClient
       const cache = yield* KvCache
 
-      return {
-        getRecentTracks: Effect.fn("LastFM.getRecentTracks")(function*() {
-          if (!apiKey) return { tracks: [], total: 0 }
+      const getRecentTracks = Effect.fn("LastFM.getRecentTracks")(function*() {
+        if (!apiKey) return { tracks: [], total: 0 }
 
-          return yield* cache.getOrSet("music:tracks", Duration.seconds(20),
-            Effect.gen(function*() {
-              const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${apiKey}&format=json&limit=100&extended=1`
-              const resp = yield* client.get(url, {
-                headers: { "User-Agent": "elianiva.com" },
-              })
-              yield* HttpClientResponse.filterStatusOk(resp)
-              const data = yield* HttpClientResponse.json(resp) as Effect.Effect<
-                LastFmResp & { recenttracks?: { "@attr"?: { total?: string } }; error?: number; message?: string }
-              >
-              if (data.error) {
-                return yield* Effect.fail(`LastFM API error ${data.error}: ${data.message}`)
-              }
-              const raw = data.recenttracks?.track ?? []
-              const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
-                const normalized = normalizeTrack(t);
-                if (normalized) acc.push(normalized);
-                return acc;
-              }, [])
-              const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length)
-              return { tracks, total }
-            }).pipe(
-              Effect.catchAll(() => Effect.succeed({ tracks: [], total: 0 } satisfies MusicData)),
-            ),
-          )
-        }),
-      }
+        const result = yield* cache.getOrSet("music:tracks", Duration.seconds(20),
+          Effect.gen(function*() {
+            const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${apiKey}&format=json&limit=100&extended=1`
+            const resp = yield* client.get(url, {
+              headers: { "User-Agent": "elianiva.com" },
+            })
+            yield* HttpClientResponse.filterStatusOk(resp)
+            const data = yield* resp.json as Effect.Effect<
+              LastFmResp & { recenttracks?: { "@attr"?: { total?: string } }; error?: number; message?: string }
+            >
+            if (data.error) return { tracks: [], total: 0 }
+            const raw = data.recenttracks?.track ?? []
+            const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
+              const normalized = normalizeTrack(t);
+              if (normalized) acc.push(normalized);
+              return acc;
+            }, [])
+            const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length)
+            return { tracks, total }
+          }),
+        ).pipe(
+          Effect.catchTag("KvCacheError", () => Effect.succeed({ tracks: [], total: 0 })),
+          Effect.catchTag("HttpClientError", () => Effect.succeed({ tracks: [], total: 0 })),
+        )
+        return result
+      })
+
+      return { getRecentTracks }
     }),
   )
 }
@@ -113,7 +113,7 @@ export const getRecentTracks = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
     Effect.gen(function*() {
       const svc = yield* LastFM
-      return yield* svc.getRecentTracks
+      return yield* svc.getRecentTracks()
     }),
   ),
 )

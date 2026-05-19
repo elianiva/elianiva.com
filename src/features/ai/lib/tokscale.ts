@@ -1,9 +1,8 @@
 import { Context, Duration, Effect, Layer } from "effect"
-import { HttpClient, HttpClientResponse } from "effect/unstable/http"
+import { HttpClient } from "effect/unstable/http"
 import { createServerFn } from "@tanstack/react-start"
 import { KvCache } from "~/lib/cache"
 import { AppRuntime } from "~/lib/effect"
-import * as E from "~/lib/errors"
 
 export function aggregateClients(contributions: AiContribution[]) {
   const map = new Map<string, { cost: number; tokens: number }>();
@@ -107,7 +106,7 @@ function toAiUsage(d: RawResponse): AiUsage {
 }
 
 export class Tokscale extends Context.Service<Tokscale, {
-  readonly getUsage: Effect.Effect<AiUsage | null, E.TokscaleError>
+  readonly getUsage: () => Effect.Effect<AiUsage | null>
 }>()("Tokscale") {
   static readonly layer = Layer.effect(
     Tokscale,
@@ -115,21 +114,22 @@ export class Tokscale extends Context.Service<Tokscale, {
       const client = yield* HttpClient.HttpClient
       const cache = yield* KvCache
 
-      return {
-        getUsage: Effect.fn("Tokscale.getUsage")(function*() {
-          return yield* cache.getOrSet("ai:tokscale", Duration.hours(6),
-            Effect.gen(function*() {
-              const resp = yield* client.get(`https://tokscale.ai/api/users/${USERNAME}`)
-              if (resp.status !== 200) return null
-              const d = yield* HttpClientResponse.json(resp) as Effect.Effect<RawResponse>
-              return toAiUsage(d)
-            }).pipe(
-              Effect.catchTag("HttpClientError", () => Effect.succeed(null)),
-              Effect.catchTag("KvCacheError", () => Effect.succeed(null)),
-            ),
-          )
-        }),
-      }
+      const getUsage = Effect.fn("Tokscale.getUsage")(function*() {
+        const result = yield* cache.getOrSet("ai:tokscale", Duration.hours(6),
+          Effect.gen(function*() {
+            const resp = yield* client.get(`https://tokscale.ai/api/users/${USERNAME}`)
+            if (resp.status !== 200) return null
+            const d = yield* resp.json as Effect.Effect<RawResponse>
+            return toAiUsage(d)
+          }),
+        ).pipe(
+          Effect.catchTag("KvCacheError", () => Effect.succeed(null)),
+          Effect.catchTag("HttpClientError", () => Effect.succeed(null)),
+        )
+        return result
+      })
+
+      return { getUsage }
     }),
   )
 }
@@ -138,7 +138,7 @@ export const getAiUsage = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
     Effect.gen(function*() {
       const svc = yield* Tokscale
-      return yield* svc.getUsage
+      return yield* svc.getUsage()
     }),
   ),
 )

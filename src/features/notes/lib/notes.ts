@@ -1,8 +1,7 @@
-import { Config, Context, Duration, Effect, Layer, Redacted } from "effect"
+import { Config, Context, Effect, Layer, Redacted } from "effect"
 import { createServerFn } from "@tanstack/react-start"
 import { Octokit } from "octokit"
 import matter from "gray-matter"
-import { KvCache } from "~/lib/cache"
 import { AppRuntime } from "~/lib/effect"
 import * as E from "~/lib/errors"
 import type { Note, NoteCategory, NotesGraph } from "./types"
@@ -171,34 +170,28 @@ function loadNotesFromLocalFS(): Effect.Effect<Note[], E.NotesError> {
     const notes: Note[] = []
     const errors: string[] = []
 
-    const results = yield* Effect.all(
-      allFiles.map((filePath) =>
-        Effect.gen(function*() {
-          const relPath = relative(notesPath, filePath)
-          const content = yield* Effect.tryPromise({
-            try: () => fsp.readFile(filePath, "utf-8") as Promise<string>,
-            catch: () => "" as string,
-          })
-          if (!content) return null
-          const stat = yield* Effect.tryPromise({
-            try: () => fsp.stat(filePath),
-            catch: () => undefined,
-          })
-          return parseNoteFromRaw(relPath, content, {
-            date: stat?.birthtime ? stat.birthtime.toISOString() : new Date().toISOString(),
-            modifiedAt: stat?.mtime ? stat.mtime.toISOString() : undefined,
-          })
-        }).pipe(
-          Effect.catchAll((e) => {
-            errors.push(String(e))
-            return Effect.succeed(null as Note | null)
-          }),
-        ),
-      ),
-      { concurrency: 10 },
-    )
-
-    for (const result of results) {
+    for (const filePath of allFiles) {
+      const result = yield* Effect.gen(function*() {
+        const relPath = relative(notesPath, filePath)
+        const content = yield* Effect.tryPromise({
+          try: () => fsp.readFile(filePath, "utf-8") as Promise<string>,
+          catch: () => "" as string,
+        })
+        if (!content) return null
+        const stat = yield* Effect.tryPromise({
+          try: () => fsp.stat(filePath),
+          catch: () => undefined as import("node:fs").Stats | undefined,
+        })
+        return parseNoteFromRaw(relPath, content, {
+          date: stat?.birthtime ? stat.birthtime.toISOString() : new Date().toISOString(),
+          modifiedAt: stat?.mtime ? stat.mtime.toISOString() : undefined,
+        })
+      }).pipe(
+        Effect.catchCause((cause) => {
+          errors.push(String(cause))
+          return Effect.succeed(null as Note | null)
+        }),
+      )
       if (result) notes.push(result)
     }
 
@@ -208,12 +201,9 @@ function loadNotesFromLocalFS(): Effect.Effect<Note[], E.NotesError> {
 
 // ── GitHub loader (prod) ─────────────────────────────────────────
 
-function loadNotesFromGithub(ghToken: string): Effect.Effect<Note[], E.NotesError> {
+function loadNotesFromGithub(ghToken: string, owner: string, repo: string, branch: string): Effect.Effect<Note[], E.NotesError> {
   return Effect.gen(function*() {
     const octokit = new Octokit({ auth: ghToken })
-    const owner = yield* Config.string("NOTES_OWNER").pipe(Config.withDefault("elianiva"))
-    const repo = yield* Config.string("NOTES_REPO").pipe(Config.withDefault("notes"))
-    const branch = yield* Config.string("NOTES_BRANCH").pipe(Config.withDefault("main"))
 
     const { data: treeData } = yield* Effect.tryPromise({
       try: () => octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: "true" }),
@@ -234,12 +224,12 @@ function loadNotesFromGithub(ghToken: string): Effect.Effect<Note[], E.NotesErro
       const note = yield* Effect.gen(function*() {
         const { data: fileData } = yield* Effect.tryPromise({
           try: () => octokit.rest.repos.getContent({ owner, repo, path: file.path, ref: branch }),
-          catch: () => undefined,
+          catch: () => undefined as { content?: string } | undefined,
         })
         if (!fileData || !("content" in fileData)) return null
         const content = Buffer.from(fileData.content, "base64").toString("utf-8")
         return parseNoteFromRaw(file.path, content, { date: now })
-      }).pipe(Effect.catchAll(() => Effect.succeed(null)))
+      }).pipe(Effect.catchCause(() => Effect.succeed(null as Note | null)))
       if (note) notes.push(note)
     }
 
@@ -250,55 +240,58 @@ function loadNotesFromGithub(ghToken: string): Effect.Effect<Note[], E.NotesErro
 // ── Service ──────────────────────────────────────────────────────
 
 export class Notes extends Context.Service<Notes, {
-  readonly load: Effect.Effect<Note[], E.NotesError>
-  readonly buildGraph: Effect.Effect<NotesGraph, E.NotesError>
+  readonly load: () => Effect.Effect<Note[], E.NotesError>
+  readonly buildGraph: () => Effect.Effect<NotesGraph, E.NotesError>
 }>()("Notes") {
   static readonly layer = Layer.effect(
     Notes,
     Effect.gen(function*() {
       const ghToken = Redacted.value(yield* Config.redacted("GH_TOKEN").pipe(Config.withDefault(Redacted.make(""))))
-      const cache = yield* KvCache
 
-      return {
-        load: Effect.fn("Notes.load")(function*() {
-          if (import.meta.env.DEV) {
-            return yield* loadNotesFromLocalFS().pipe(
-              Effect.catchAll(() => Effect.succeed([])),
-            )
-          }
-          return yield* loadNotesFromGithub(ghToken).pipe(
-            Effect.catchAll(() => Effect.succeed([])),
+      const owner = yield* Config.string("NOTES_OWNER").pipe(Config.withDefault("elianiva"))
+      const repo = yield* Config.string("NOTES_REPO").pipe(Config.withDefault("notes"))
+      const branch = yield* Config.string("NOTES_BRANCH").pipe(Config.withDefault("main"))
+
+      const load = Effect.fn("Notes.load")(function*() {
+        if (import.meta.env.DEV) {
+          return yield* loadNotesFromLocalFS().pipe(
+            Effect.catchCause(() => Effect.succeed([] as Note[])),
           )
-        }),
+        }
+        return yield* loadNotesFromGithub(ghToken, owner, repo, branch).pipe(
+          Effect.catchCause(() => Effect.succeed([] as Note[])),
+        )
+      })
 
-        buildGraph: Effect.fn("Notes.buildGraph")(function*() {
-          const notes = yield* this.load
-          const nodes = notes.map((note) => ({
-            id: note.slug,
-            name: note.title,
-            category: note.category,
-            val: Math.max(4, note.backlinks.length + 2),
-          }))
+      const buildGraph = Effect.fn("Notes.buildGraph")(function*() {
+        const notes = yield* load()
+        const nodes = notes.map((note: Note) => ({
+          id: note.slug,
+          name: note.title,
+          category: note.category,
+          val: Math.max(4, note.backlinks.length + 2),
+        }))
 
-          const links: NotesGraph["links"] = []
-          const seen = new Set<string>()
+        const links: NotesGraph["links"] = []
+        const seen = new Set<string>()
 
-          for (const note of notes) {
-            for (const link of note.outboundLinks) {
-              const targetSlug = link.toLowerCase().replace(/\s+/g, "-")
-              if (notes.some((n) => n.slug === targetSlug)) {
-                const key = [note.slug, targetSlug].sort().join("-")
-                if (!seen.has(key)) {
-                  seen.add(key)
-                  links.push({ source: note.slug, target: targetSlug })
-                }
+        for (const note of notes) {
+          for (const link of note.outboundLinks) {
+            const targetSlug = link.toLowerCase().replace(/\s+/g, "-")
+            if (notes.some((n: Note) => n.slug === targetSlug)) {
+              const key = [note.slug, targetSlug].sort().join("-")
+              if (!seen.has(key)) {
+                seen.add(key)
+                links.push({ source: note.slug, target: targetSlug })
               }
             }
           }
+        }
 
-          return { nodes, links } as NotesGraph
-        }),
-      }
+        return { nodes, links } as NotesGraph
+      })
+
+      return { load, buildGraph }
     }),
   )
 }
@@ -309,7 +302,7 @@ export const loadNotes = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
     Effect.gen(function*() {
       const svc = yield* Notes
-      return yield* svc.load
+      return yield* svc.load()
     }),
   ),
 )
@@ -318,7 +311,7 @@ export const buildGraph = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
     Effect.gen(function*() {
       const svc = yield* Notes
-      return yield* svc.buildGraph
+      return yield* svc.buildGraph()
     }),
   ),
 )

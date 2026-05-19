@@ -59,7 +59,7 @@ function fetchAllPRs(octokit: Octokit, username: string, minStars: number): Effe
 
     while (hasNextPage && pagesFetched < MAX_PAGES) {
       const response: GraphQLResponse = yield* Effect.tryPromise({
-        try: () => octokit.graphql(GITHUB_GRAPHQL_QUERY, { username, after }),
+        try: () => octokit.graphql(GITHUB_GRAPHQL_QUERY, { username, after }) as Promise<GraphQLResponse>,
         catch: (e) => new E.GitHubError({ message: String(e) }),
       })
 
@@ -146,7 +146,7 @@ const CONTRIBUTIONS_QUERY = `
 function fetchContributions(octokit: Octokit, username: string): Effect.Effect<ContributionsResponse, E.GitHubError> {
   return Effect.gen(function*() {
     const response: GitHubContributionsResponse = yield* Effect.tryPromise({
-      try: () => octokit.graphql(CONTRIBUTIONS_QUERY, { username }),
+      try: () => octokit.graphql(CONTRIBUTIONS_QUERY, { username }) as Promise<GitHubContributionsResponse>,
       catch: (e) => new E.GitHubError({ message: String(e) }),
     })
 
@@ -187,8 +187,8 @@ const USERNAME = "elianiva"
 const MIN_STARS = 5000
 
 export class GitHub extends Context.Service<GitHub, {
-  readonly getPRs: Effect.Effect<{ grouped: GroupedPRs; totalPRs: number }, E.GitHubError>
-  readonly getContributions: Effect.Effect<ContributionsResponse | null, E.GitHubError>
+  readonly getPRs: () => Effect.Effect<{ grouped: GroupedPRs; totalPRs: number }>
+  readonly getContributions: () => Effect.Effect<ContributionsResponse | null>
 }>()("GitHub") {
   static readonly layer = Layer.effect(
     GitHub,
@@ -197,31 +197,37 @@ export class GitHub extends Context.Service<GitHub, {
       const cache = yield* KvCache
       const octokit = new Octokit({ auth: token || undefined })
 
-      return {
-        getPRs: Effect.fn("GitHub.getPRs")(function*() {
-          if (!token) return { grouped: {}, totalPRs: 0 }
-          return yield* cache.getOrSet("github-prs", Duration.hours(6),
-            Effect.gen(function*() {
-              const prs = yield* fetchAllPRs(octokit, USERNAME, MIN_STARS)
-              return { grouped: groupPRs(prs), totalPRs: prs.length }
-            }).pipe(
-              Effect.catchTag("GitHubError", () => Effect.succeed({ grouped: {}, totalPRs: 0 })),
-            ),
-          )
-        }),
+      const getPRs = Effect.fn("GitHub.getPRs")(function*() {
+        if (!token) return { grouped: {}, totalPRs: 0 }
+        const result = yield* cache.getOrSet("github-prs", Duration.hours(6),
+          Effect.gen(function*() {
+            const prs = yield* fetchAllPRs(octokit, USERNAME, MIN_STARS)
+            return { grouped: groupPRs(prs), totalPRs: prs.length }
+          }).pipe(
+            Effect.catchTag("GitHubError", () => Effect.succeed({ grouped: {}, totalPRs: 0 })),
+          ),
+        ).pipe(
+          Effect.catchTag("KvCacheError", () => Effect.succeed({ grouped: {}, totalPRs: 0 })),
+        )
+        return result
+      })
 
-        getContributions: Effect.fn("GitHub.getContributions")(function*() {
-          if (!token) return null
-          return yield* cache.getOrSet("github-contributions", Duration.hours(6),
-            Effect.gen(function*() {
-              const result = yield* fetchContributions(octokit, USERNAME)
-              return result
-            }).pipe(
-              Effect.catchTag("GitHubError", () => Effect.succeed(null)),
-            ),
-          )
-        }),
-      }
+      const getContributions = Effect.fn("GitHub.getContributions")(function*() {
+        if (!token) return null
+        const result = yield* cache.getOrSet("github-contributions", Duration.hours(6),
+          Effect.gen(function*() {
+            const result = yield* fetchContributions(octokit, USERNAME)
+            return result
+          }).pipe(
+            Effect.catchTag("GitHubError", () => Effect.succeed(null)),
+          ),
+        ).pipe(
+          Effect.catchTag("KvCacheError", () => Effect.succeed(null)),
+        )
+        return result
+      })
+
+      return { getPRs, getContributions }
     }),
   )
 }
@@ -230,7 +236,7 @@ export const getGitHubPRs = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
     Effect.gen(function*() {
       const svc = yield* GitHub
-      return yield* svc.getPRs
+      return yield* svc.getPRs()
     }),
   ),
 )
@@ -239,7 +245,7 @@ export const getGitHubContributions = createServerFn({ method: "GET" }).handler(
   AppRuntime.runPromise(
     Effect.gen(function*() {
       const svc = yield* GitHub
-      return yield* svc.getContributions
+      return yield* svc.getContributions()
     }),
   ),
 )

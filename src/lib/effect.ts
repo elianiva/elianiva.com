@@ -6,13 +6,15 @@ import { LastFM } from "~/features/music/lib/lastfm"
 import { Tokscale } from "~/features/ai/lib/tokscale"
 import { Notes } from "~/features/notes/lib/notes"
 
-const AppLayer = Layer.mergeAll(
-  FetchHttpClient.layer,
-  KvCache.layer,
-  GitHub.layer,
-  LastFM.layer,
-  Tokscale.layer,
+// Infrastructure: provides HttpClient + KvCache
+const infra = Layer.merge(FetchHttpClient.layer, KvCache.layer)
+
+// Each service layer gets its requirements fed by infra
+const AppLayer = Layer.orDie(Layer.mergeAll(
+  GitHub.layer.pipe(Layer.provideMerge(infra)),
+  LastFM.layer.pipe(Layer.provideMerge(infra)),
+  Tokscale.layer.pipe(Layer.provideMerge(infra)),
   Notes.layer,
-)
+))
 
 export const AppRuntime = ManagedRuntime.make(AppLayer)
