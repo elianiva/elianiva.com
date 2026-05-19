@@ -1,5 +1,4 @@
 import { Config, Context, Duration, Effect, Layer, Redacted } from "effect"
-import { FileSystem } from "effect"
 import { createServerFn } from "@tanstack/react-start"
 import { Octokit } from "octokit"
 import matter from "gray-matter"
@@ -138,9 +137,13 @@ function resolveBacklinks(notes: Note[]): Note[] {
 
 // ── Local FS loader (dev) ────────────────────────────────────────
 
-function loadNotesFromLocalFS(fs: FileSystem.FileSystem, osHomedir: string): Effect.Effect<Note[], E.NotesError> {
+function loadNotesFromLocalFS(): Effect.Effect<Note[], E.NotesError> {
   return Effect.gen(function*() {
-    const notesPath = `${osHomedir}/Development/personal/notes`
+    const { promises: fsp } = yield* Effect.promise(() => import("node:fs"))
+    const { homedir } = yield* Effect.promise(() => import("node:os"))
+    const { join, relative } = yield* Effect.promise(() => import("node:path"))
+
+    const notesPath = join(homedir(), "Development/personal/notes")
 
     const allFiles: string[] = []
     const excludeDirs = new Set(["Archive", "Daily", "Inbox"])
@@ -148,18 +151,16 @@ function loadNotesFromLocalFS(fs: FileSystem.FileSystem, osHomedir: string): Eff
     const scanDir = (dir: string): Effect.Effect<void, E.NotesError> =>
       Effect.gen(function*() {
         const entries = yield* Effect.tryPromise({
-          try: () => fs.readDirectory(dir),
-          catch: (e) => new E.NotesError({ message: `readDirectory error ${dir}: ${String(e)}` }),
+          try: () => fsp.readdir(dir, { withFileTypes: true }),
+          catch: (e) => new E.NotesError({ message: `readdir error ${dir}: ${String(e)}` }),
         })
         for (const entry of entries) {
-          const fullPath = `${dir}/${entry}`
-          const stat = yield* Effect.tryPromise({
-            try: () => fs.stat(fullPath),
-            catch: () => undefined, // skip unreadable
-          })
-          if (stat?.type === "Directory" && !excludeDirs.has(entry)) {
-            yield* scanDir(fullPath)
-          } else if (entry.endsWith(".md") || entry.endsWith(".mdx")) {
+          const fullPath = join(dir, entry.name)
+          if (entry.isDirectory()) {
+            if (!excludeDirs.has(entry.name)) {
+              yield* scanDir(fullPath)
+            }
+          } else if (entry.isFile() && (entry.name.endsWith(".md") || entry.name.endsWith(".mdx"))) {
             allFiles.push(fullPath)
           }
         }
@@ -170,28 +171,34 @@ function loadNotesFromLocalFS(fs: FileSystem.FileSystem, osHomedir: string): Eff
     const notes: Note[] = []
     const errors: string[] = []
 
-    for (const filePath of allFiles) {
-      const result = yield* Effect.gen(function*() {
-        const relPath = filePath.replace(`${notesPath}/`, "")
-        const content = yield* Effect.tryPromise({
-          try: () => fs.readFileString(filePath),
-          catch: () => "",
-        })
-        if (!content) return null
-        const stat = yield* Effect.tryPromise({
-          try: () => fs.stat(filePath),
-          catch: () => undefined,
-        })
-        return parseNoteFromRaw(relPath, content, {
-          date: stat?.birthtime ? new Date(stat.birthtime).toISOString() : new Date().toISOString(),
-          modifiedAt: stat?.mtime ? new Date(stat.mtime).toISOString() : undefined,
-        })
-      }).pipe(
-        Effect.catchAll((e) => {
-          errors.push(String(e))
-          return Effect.succeed(null as Note | null)
-        }),
-      )
+    const results = yield* Effect.all(
+      allFiles.map((filePath) =>
+        Effect.gen(function*() {
+          const relPath = relative(notesPath, filePath)
+          const content = yield* Effect.tryPromise({
+            try: () => fsp.readFile(filePath, "utf-8") as Promise<string>,
+            catch: () => "" as string,
+          })
+          if (!content) return null
+          const stat = yield* Effect.tryPromise({
+            try: () => fsp.stat(filePath),
+            catch: () => undefined,
+          })
+          return parseNoteFromRaw(relPath, content, {
+            date: stat?.birthtime ? stat.birthtime.toISOString() : new Date().toISOString(),
+            modifiedAt: stat?.mtime ? stat.mtime.toISOString() : undefined,
+          })
+        }).pipe(
+          Effect.catchAll((e) => {
+            errors.push(String(e))
+            return Effect.succeed(null as Note | null)
+          }),
+        ),
+      ),
+      { concurrency: 10 },
+    )
+
+    for (const result of results) {
       if (result) notes.push(result)
     }
 
@@ -255,10 +262,7 @@ export class Notes extends Context.Service<Notes, {
       return {
         load: Effect.fn("Notes.load")(function*() {
           if (import.meta.env.DEV) {
-            const fs = yield* FileSystem.FileSystem
-            const os = yield* Effect.promise(() => import("node:os"))
-            const homedir = yield* Effect.sync(() => os.homedir())
-            return yield* loadNotesFromLocalFS(fs, homedir).pipe(
+            return yield* loadNotesFromLocalFS().pipe(
               Effect.catchAll(() => Effect.succeed([])),
             )
           }
