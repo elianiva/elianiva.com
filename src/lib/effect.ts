@@ -1,9 +1,9 @@
 import { FetchHttpClient } from "effect/unstable/http"
 import { Layer, ManagedRuntime } from "effect"
 import { KvCache } from "./cache"
-import { GitHub } from "~/features/github/lib/github"
-import { LastFM } from "~/features/music/lib/lastfm"
-import { Tokscale } from "~/features/ai/lib/tokscale"
+import { GitHub } from "~/features/github/lib/github.service"
+import { LastFM } from "~/features/music/lib/lastfm.service"
+import { Tokscale } from "~/features/ai/lib/tokscale.service"
 import { Notes } from "~/features/notes/lib/notes"
 
 // Infrastructure: provides HttpClient + KvCache
