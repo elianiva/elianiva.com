@@ -38,6 +38,7 @@
     "@vitejs/plugin-rsc": "^0.5.26",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "effect": "4.0.0-beta.68",
     "force-graph": "^1.51.4",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.16.0",
@@ -100,6 +101,9 @@
       "msw",
       "sharp",
       "workerd"
+    ],
+    "ignoredBuiltDependencies": [
+      "msgpackr-extract"
     ]
   }
 }

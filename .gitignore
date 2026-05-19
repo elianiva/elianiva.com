@@ -13,3 +13,4 @@ __unconfig*
 .dev.vars
 .content-collections
 .cache
+.references
