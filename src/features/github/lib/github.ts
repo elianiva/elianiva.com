@@ -58,8 +58,10 @@ async function fetchAllPRs(username: string, minStars: number): Promise<GitHubPu
   const allPRs: GitHubPullRequest[] = [];
   let hasNextPage = true;
   let after: string | null = null;
+  let pagesFetched = 0;
+  const MAX_PAGES = 3;
 
-  while (hasNextPage) {
+  while (hasNextPage && pagesFetched < MAX_PAGES) {
     const response: GraphQLResponse = await octokit.graphql(GITHUB_GRAPHQL_QUERY, {
       username,
       after,
@@ -99,6 +101,7 @@ async function fetchAllPRs(username: string, minStars: number): Promise<GitHubPu
 
     hasNextPage = pageInfo.hasNextPage;
     after = pageInfo.endCursor;
+    pagesFetched++;
   }
 
   return allPRs;
