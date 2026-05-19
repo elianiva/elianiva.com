@@ -7,6 +7,7 @@ declare namespace Cloudflare {
     NOTES_REPO: string;
     NOTES_OWNER: string;
     NOTES_BRANCH: string;
+    CACHE: KVNamespace;
   }
 }
 interface Env extends Cloudflare.Env {}
