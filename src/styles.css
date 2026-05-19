@@ -122,26 +122,6 @@
   }
 }
 
-[data-hero-reveal] {
-  opacity: 0;
-  transform: translateY(16px);
-  will-change: transform, opacity;
-}
-
-[data-anime] {
-  opacity: 0;
-  transform: translateY(24px);
-  will-change: transform, opacity;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html [data-hero-reveal],
-  html [data-anime] {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @layer utilities {
   /* Prose overrides */
   .prose {
@@ -256,41 +236,12 @@
   @apply text-xs font-mono text-pink-700/70 mb-1 block;
 }
 
-/* Wiki-link styling */
-.wiki-link {
-  @apply text-pink-600 border-b border-dashed border-pink-400 no-underline;
-}
-
-.wiki-link:hover {
-  @apply text-pink-800 border-pink-600;
-}
-
 .with-box-underline {
   @apply after:content-[""] after:absolute after:bottom-0 after:w-dvw after:left-1/2 after:-translate-x-1/2 after:bg-pink-200/50 after:h-px;
 }
 
 .with-box-upperline {
   @apply before:content-[""] before:absolute before:top-0 before:w-dvw before:left-1/2 before:-translate-x-1/2 before:bg-pink-200/50 before:h-px;
-}
-
-/* Tab indicator for notes */
-.tab-indicator {
-  position: absolute;
-  position-anchor: --active-tab;
-  bottom: -1px;
-  left: anchor(left);
-  width: anchor-size(width);
-  height: 2px;
-  background-color: var(--color-pink-500);
-  transition:
-    left 0.2s ease,
-    width 0.2s ease;
-}
-
-@supports not (position-anchor: --active-tab) {
-  .tab-indicator {
-    display: none;
-  }
 }
 
 :root {
