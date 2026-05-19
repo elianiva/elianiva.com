@@ -17,15 +17,14 @@ function BlogPostList() {
   return (
     <>
       {posts.slice(0, 6).map((post) => (
-        <div key={post.slug}>
+        <Link key={post.slug} to="/posts/$slug" params={{ slug: post.slug }} className="block">
           <PostCard
             title={post.title}
             description={post.description}
-            href={`/posts/${post.slug}`}
             date={post.date}
             tags={post.tags}
           />
-        </div>
+        </Link>
       ))}
     </>
   );
@@ -46,7 +45,15 @@ export function BlogSection() {
         </p>
       </div>
       <div className="space-y-1 pb-4 items-stretch">
-        <Suspense fallback={<div className="space-y-1"><Skeleton className="h-[72px] w-full" /><Skeleton className="h-[72px] w-full" /><Skeleton className="h-[72px] w-3/4" /></div>}>
+        <Suspense
+          fallback={
+            <div className="space-y-1">
+              <Skeleton className="h-[72px] w-full" />
+              <Skeleton className="h-[72px] w-full" />
+              <Skeleton className="h-[72px] w-3/4" />
+            </div>
+          }
+        >
           <BlogPostList />
         </Suspense>
       </div>
@@ -58,3 +65,4 @@ export function BlogSection() {
     </section>
   );
 }
+
