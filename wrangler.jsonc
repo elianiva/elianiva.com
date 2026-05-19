@@ -2,12 +2,14 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "elianiva-com",
   "compatibility_date": "2026-01-01",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "main": "@tanstack/react-start/server-entry",
   "kv_namespaces": [
     {
       "binding": "CACHE",
-      "id": "cache",
+      "id": "c5df4649d19e47578b2c399aab2b76e5",
     },
   ],
   "observability": {
