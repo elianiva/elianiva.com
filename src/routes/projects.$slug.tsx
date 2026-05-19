@@ -176,7 +176,8 @@ function ProjectDetailPage() {
           <div className="grid grid-cols-2 gap-4">
             {project.prevProject ? (
               <Link
-                to={`/projects/${project.prevProject.slug}` as any}
+                to="/projects/$slug"
+                params={{ slug: project.prevProject.slug }}
                 className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
@@ -191,7 +192,8 @@ function ProjectDetailPage() {
             )}
             {project.nextProject ? (
               <Link
-                to={`/projects/${project.nextProject.slug}` as any}
+                to="/projects/$slug"
+                params={{ slug: project.nextProject.slug }}
                 className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">

@@ -1,16 +1,4 @@
-/**
- * Content loader abstraction for hybrid dev/prod data sources.
- *
- * In development, attempts the dev loader first for fast feedback (local FS).
- * Falls back to the production loader if dev source is unavailable.
- * In production, always uses the prod loader.
- *
- * Usage:
- *   const loadNotes = createContentLoader({
- *     dev: loadNotesFromLocalFS,
- *     prod: loadNotesFromGithub,
- *   });
- */
+// Hybrid dev/prod loader: try dev first, fall back to prod
 export async function createContentLoader<T>(loaders: {
   dev?: () => Promise<T[]>;
   prod: () => Promise<T[]>;

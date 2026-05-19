@@ -7,11 +7,10 @@ interface ProjectCardProps {
   slug: string;
   title: string;
   description: string;
-  href: string;
   stack: string[][];
 }
 
-export function ProjectCard({ slug, title, description, href, stack }: ProjectCardProps) {
+export function ProjectCard({ slug, title, description, stack }: ProjectCardProps) {
   return (
     <Card
       className="bg-white/60 text-left px-4 py-3 transition-all group hover:bg-white h-full flex flex-col border-0 ring-0"
@@ -28,7 +27,8 @@ export function ProjectCard({ slug, title, description, href, stack }: ProjectCa
         </div>
         <div className="flex-1">
           <Link
-            to={href as any}
+            to="/projects/$slug"
+            params={{ slug }}
             className="text-base font-bold font-display text-pink-950 group-hover:text-pink-700 transition-colors duration-100 ease-out focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
           >
             {title}

@@ -255,11 +255,11 @@ export class Notes extends Context.Service<Notes, {
       const load = Effect.fn("Notes.load")(function*() {
         if (import.meta.env.DEV) {
           return yield* loadNotesFromLocalFS().pipe(
-            Effect.catchCause(() => Effect.succeed([] as Note[])),
+            Effect.catchCause(() => Effect.succeed<Note[]>([])),
           )
         }
         return yield* loadNotesFromGithub(ghToken, owner, repo, branch).pipe(
-          Effect.catchCause(() => Effect.succeed([] as Note[])),
+          Effect.catchCause(() => Effect.succeed<Note[]>([])),
         )
       })
 
@@ -288,7 +288,7 @@ export class Notes extends Context.Service<Notes, {
           }
         }
 
-        return { nodes, links } as NotesGraph
+        return { nodes, links }
       })
 
       return { load, buildGraph }

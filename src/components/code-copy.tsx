@@ -26,17 +26,15 @@ export function CodeCopy() {
 
       const onClick = async () => {
         const code = pre.querySelector("code")?.textContent || pre.textContent || "";
-        try {
-          await navigator.clipboard.writeText(code);
-          button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg>`;
-          button.setAttribute("aria-label", "Copied!");
-          const timeoutId = setTimeout(() => {
-            timeouts.delete(timeoutId);
-            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M216 32H88a8 8 0 0 0-8 8v16H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-16h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V64h112Zm48-48h-32V56a8 8 0 0 0-8-8H96V48h112z"/></svg>`;
-            button.setAttribute("aria-label", "Copy code");
-          }, 2000);
-          timeouts.add(timeoutId);
-        } catch {}
+        await navigator.clipboard.writeText(code);
+        button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg>`;
+        button.setAttribute("aria-label", "Copied!");
+        const timeoutId = setTimeout(() => {
+          timeouts.delete(timeoutId);
+          button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M216 32H88a8 8 0 0 0-8 8v16H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-16h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V64h112Zm48-48h-32V56a8 8 0 0 0-8-8H96V48h112z"/></svg>`;
+          button.setAttribute("aria-label", "Copy code");
+        }, 2000);
+        timeouts.add(timeoutId);
       };
 
       button.addEventListener("click", onClick);

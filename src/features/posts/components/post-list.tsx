@@ -197,7 +197,6 @@ export function PostList() {
                   <PostCard
                     title={post.title}
                     description={post.description}
-                    href={`/posts/${post.slug}`}
                     date={post.date}
                     tags={post.tags}
                   />

@@ -24,7 +24,8 @@ const categoryOrder: NoteCategory[] = ["vault", "articles", "people", "music"];
 function NoteLink({ note }: { note: Note }) {
   return (
     <Link
-      to={`/notes/${note.slug}`}
+      to="/notes/$slug"
+      params={{ slug: note.slug }}
       className="group flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-all"
       style={{ viewTransitionName: `note-card-${note.slug}` }}
     >

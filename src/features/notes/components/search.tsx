@@ -87,7 +87,8 @@ export function Search({ notes, onSearch }: SearchProps) {
               }`}
             >
               <Link
-                to={`/notes/${note.slug}`}
+                to="/notes/$slug"
+                params={{ slug: note.slug }}
                 className="block px-4 py-3 text-sm font-body text-pink-950 hover:bg-pink-50 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-inset"
               >
                 <span className="font-medium">{note.title}</span>

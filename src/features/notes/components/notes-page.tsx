@@ -9,7 +9,7 @@ import type { Note, NotesGraph } from "../lib/types";
 import GraphIcon from "~icons/ph/graph";
 
 export function NotesPage() {
-  const data = useLoaderData({ from: "/notes" }) as { notes: Note[]; graph: NotesGraph } | null;
+  const data = useLoaderData({ from: "/notes/" }) as { notes: Note[]; graph: NotesGraph } | null;
 
   const [, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Note[] | null>(null);
@@ -27,7 +27,7 @@ export function NotesPage() {
         label="Digital Garden"
         title="This note faded out of the vault."
         description="The note you asked for is missing or private. Try another path back into the garden."
-        backTo={{ to: "/notes", label: "Notes index" }}
+        backTo={{ to: "/notes/", label: "Notes index" }}
       />
     );
   }

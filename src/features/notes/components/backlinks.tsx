@@ -28,7 +28,8 @@ export function Backlinks({ notes, currentSlug }: BacklinksProps) {
         {backlinkNotes.map((note) => (
           <Link
             key={note.slug}
-            to={`/notes/${note.slug}`}
+            to="/notes/$slug"
+            params={{ slug: note.slug }}
             className="group no-underline"
           >
             <Card className="flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-all ring-0">

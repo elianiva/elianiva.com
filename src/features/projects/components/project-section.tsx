@@ -42,7 +42,6 @@ function ProjectCardList({
             slug={project.slug}
             title={project.title}
             description={project.description}
-            href={`/projects/${project.slug}`}
             stack={project.stack}
           />
         </div>
