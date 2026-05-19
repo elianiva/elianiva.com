@@ -1,5 +1,8 @@
-import { createServerFn } from "@tanstack/react-start";
-import { cached, TTL } from "~/lib/cache";
+import { Config, Context, Duration, Effect, Layer, Redacted } from "effect"
+import { HttpClient, HttpClientResponse } from "effect/unstable/http"
+import { createServerFn } from "@tanstack/react-start"
+import { KvCache } from "~/lib/cache"
+import { AppRuntime } from "~/lib/effect"
 
 const LASTFM_USER = "elianiva";
 
@@ -61,42 +64,56 @@ export type MusicData = {
   total: number;
 };
 
-export const getRecentTracks = createServerFn({ method: "GET" }).handler(
-  (): Promise<MusicData> =>
-    cached("music:tracks", TTL.live, async (): Promise<MusicData> => {
-      const key = process.env.LASTFM_API_KEY;
-      if (!key) {
-        console.error("lastfm: LASTFM_API_KEY not set");
-        return { tracks: [], total: 0 };
+export class LastFM extends Context.Service<LastFM, {
+  readonly getRecentTracks: Effect.Effect<MusicData>
+}>()("LastFM") {
+  static readonly layer = Layer.effect(
+    LastFM,
+    Effect.gen(function*() {
+      const apiKey = Redacted.value(yield* Config.redacted("LASTFM_API_KEY").pipe(Config.withDefault(Redacted.make(""))))
+      const client = yield* HttpClient.HttpClient
+      const cache = yield* KvCache
+
+      return {
+        getRecentTracks: Effect.fn("LastFM.getRecentTracks")(function*() {
+          if (!apiKey) return { tracks: [], total: 0 }
+
+          return yield* cache.getOrSet("music:tracks", Duration.seconds(20),
+            Effect.gen(function*() {
+              const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${apiKey}&format=json&limit=100&extended=1`
+              const resp = yield* client.get(url, {
+                headers: { "User-Agent": "elianiva.com" },
+              })
+              yield* HttpClientResponse.filterStatusOk(resp)
+              const data = yield* HttpClientResponse.json(resp) as Effect.Effect<
+                LastFmResp & { recenttracks?: { "@attr"?: { total?: string } }; error?: number; message?: string }
+              >
+              if (data.error) {
+                return yield* Effect.fail(`LastFM API error ${data.error}: ${data.message}`)
+              }
+              const raw = data.recenttracks?.track ?? []
+              const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
+                const normalized = normalizeTrack(t);
+                if (normalized) acc.push(normalized);
+                return acc;
+              }, [])
+              const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length)
+              return { tracks, total }
+            }).pipe(
+              Effect.catchAll(() => Effect.succeed({ tracks: [], total: 0 } satisfies MusicData)),
+            ),
+          )
+        }),
       }
-      const url =
-        `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${key}&format=json&limit=100&extended=1`;
-      const res = await fetch(url, {
-        headers: { "User-Agent": "elianiva.com" },
-      });
-      if (!res.ok) {
-        console.error(`lastfm http: ${res.status}`);
-        return { tracks: [], total: 0 };
-      }
-      const data = (await res.json()) as LastFmResp & {
-        recenttracks?: { "@attr"?: { total?: string } };
-        error?: number;
-        message?: string;
-      };
-      if (data.error) {
-        console.error(`lastfm api error ${data.error}: ${data.message}`);
-        return { tracks: [], total: 0 };
-      }
-      const raw = data.recenttracks?.track ?? [];
-      const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
-        const normalized = normalizeTrack(t);
-        if (normalized) acc.push(normalized);
-        return acc;
-      }, []);
-      const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length);
-      return { tracks, total };
-    }).catch((err) => {
-      console.error("music:tracks error:", err);
-      return { tracks: [], total: 0 };
     }),
-);
+  )
+}
+
+export const getRecentTracks = createServerFn({ method: "GET" }).handler(() =>
+  AppRuntime.runPromise(
+    Effect.gen(function*() {
+      const svc = yield* LastFM
+      return yield* svc.getRecentTracks
+    }),
+  ),
+)
