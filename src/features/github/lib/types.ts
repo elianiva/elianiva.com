@@ -35,9 +35,8 @@ export type GroupedPRs = {
   };
 };
 
-// Raw shape returned by the GitHub GraphQL API
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type GraphQLPRNode = {
+type SearchPRNode = {
   id: string;
   number: number;
   title: string;
@@ -51,7 +50,6 @@ type GraphQLPRNode = {
     nameWithOwner: string;
     url: string;
     stargazerCount: number;
-    isArchived: boolean;
   };
   author: {
     login: string;
@@ -63,14 +61,12 @@ type GraphQLPRNode = {
 };
 
 export type GraphQLResponse = {
-  user: {
-    pullRequests: {
-      pageInfo: {
-        hasNextPage: boolean;
-        endCursor: string | null;
-      };
-      nodes: GraphQLPRNode[];
+  search: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
     };
+    nodes: (SearchPRNode | null)[];
   };
 };
 

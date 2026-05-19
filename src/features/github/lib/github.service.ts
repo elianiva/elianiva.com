@@ -10,15 +10,15 @@ import type {
   ContributionDay,
 } from "./types"
 
-const GITHUB_GRAPHQL_QUERY = `
-  query($username: String!, $after: String) {
-    user(login: $username) {
-      pullRequests(first: 100, after: $after, states: MERGED, orderBy: {field: UPDATED_AT, direction: DESC}) {
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-        nodes {
+const GITHUB_SEARCH_QUERY = `
+  query($searchQuery: String!, $after: String) {
+    search(query: $searchQuery, type: ISSUE, first: 100, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        ... on PullRequest {
           id
           number
           title
@@ -32,7 +32,6 @@ const GITHUB_GRAPHQL_QUERY = `
             nameWithOwner
             url
             stargazerCount
-            isArchived
           }
           author {
             login
@@ -53,19 +52,19 @@ function fetchAllPRs(octokit: Octokit, username: string, minStars: number): Effe
     let hasNextPage = true
     let after: string | null = null
     let pagesFetched = 0
-    const MAX_PAGES = 3
+    const MAX_PAGES = 2
+    const searchQuery = `author:${username} is:pr is:merged archived:false`
 
     while (hasNextPage && pagesFetched < MAX_PAGES) {
       const response: GraphQLResponse = yield* Effect.tryPromise({
-        try: () => octokit.graphql(GITHUB_GRAPHQL_QUERY, { username, after }) as Promise<GraphQLResponse>,
+        try: () => octokit.graphql(GITHUB_SEARCH_QUERY, { searchQuery, after }) as Promise<GraphQLResponse>,
         catch: (e) => new E.GitHubError({ message: String(e) }),
       })
 
-      const prs = response.user.pullRequests.nodes
-      const pageInfo = response.user.pullRequests.pageInfo
+      const prs = response.search.nodes.filter((n): n is NonNullable<typeof n> => n !== null)
+      const pageInfo = response.search.pageInfo
 
       for (const pr of prs) {
-        if (pr.repository.isArchived) continue
         if (pr.repository.stargazerCount < minStars) continue
 
         allPRs.push({
