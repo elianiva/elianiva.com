@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { PostCard } from "~/features/posts/components/post-card";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getPosts } from "~/features/posts/lib/posts";
 import { Heading } from "~/components/ui/heading";
@@ -13,21 +12,7 @@ function BlogPostList() {
     queryFn: () => getPosts(),
     staleTime: Infinity,
   });
-
-  return (
-    <>
-      {posts.slice(0, 6).map((post) => (
-        <Link key={post.slug} to="/posts/$slug" params={{ slug: post.slug }} className="block">
-          <PostCard
-            title={post.title}
-            description={post.description}
-            date={post.date}
-            tags={post.tags}
-          />
-        </Link>
-      ))}
-    </>
-  );
+  return posts;
 }
 
 export function BlogSection() {
@@ -48,9 +33,9 @@ export function BlogSection() {
         <Suspense
           fallback={
             <div className="space-y-1">
-              <Skeleton className="h-[72px] w-full" />
-              <Skeleton className="h-[72px] w-full" />
-              <Skeleton className="h-[72px] w-3/4" />
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-18 w-full" />
+              ))}
             </div>
           }
         >
@@ -65,4 +50,3 @@ export function BlogSection() {
     </section>
   );
 }
-

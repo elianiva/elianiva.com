@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
+import { ProjectCard } from "../components/project-card";
 
 export type ProjectType = "personal" | "open-source" | "assignment";
 
@@ -14,9 +16,9 @@ export type ProjectSummary = {
 
 export const getProjects = createServerFn({ method: "GET" })
   .inputValidator((input: { type: ProjectType; featured?: boolean }) => input)
-  .handler(async ({ data: { type, featured = false } }): Promise<ProjectSummary[]> => {
-    const projects = allProjects
-      .filter((p) => p.type === type)
+  .handler(async ({ data: { type, featured = false } }) => {
+    let projects = allProjects
+      .filter((p) => p.type === type && (featured ? p.featured : true))
       .sort((a, b) => (a.date > b.date ? -1 : 1))
       .map((p) => ({
         slug: p.slug,
@@ -27,5 +29,16 @@ export const getProjects = createServerFn({ method: "GET" })
         featured: p.featured,
       }));
 
-    return featured ? projects.filter((p) => p.featured) : projects;
+    return renderServerComponent(
+      projects.map((project) => (
+        <div key={project.slug} className="h-full">
+          <ProjectCard
+            slug={project.slug}
+            title={project.title}
+            description={project.description}
+            stack={project.stack}
+          />
+        </div>
+      )),
+    );
   });

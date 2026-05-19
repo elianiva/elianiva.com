@@ -1,7 +1,7 @@
-import { Effect } from "effect"
-import { createServerFn } from "@tanstack/react-start"
-import { AppRuntime } from "~/lib/effect"
-import { LastFM } from "./lastfm.service"
+import { Effect } from "effect";
+import { createServerFn } from "@tanstack/react-start";
+import { AppRuntime } from "~/lib/effect";
+import { LastFM } from "./lastfm.service";
 
 const LASTFM_USER = "elianiva";
 
@@ -26,8 +26,8 @@ export type MusicData = {
 export const getRecentTracks = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
     Effect.gen(function*() {
-      const svc = yield* LastFM
-      return yield* svc.getRecentTracks()
+      const svc = yield* LastFM;
+      return yield* svc.getRecentTracks();
     }),
   ),
-)
+);

@@ -35,38 +35,45 @@ export type GroupedPRs = {
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type SearchPRNode = {
-  id: string;
-  number: number;
-  title: string;
-  state: string;
-  mergedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  url: string;
-  repository: {
-    name: string;
-    nameWithOwner: string;
-    url: string;
-    stargazerCount: number;
-  };
-  author: {
-    login: string;
-    url: string;
-  };
-  additions: number;
-  deletions: number;
-  changedFiles: number;
-};
-
-export type GraphQLResponse = {
-  search: {
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string | null;
+export type PRContributionsResponse = {
+  user: {
+    contributionsCollection: {
+      pullRequestContributionsByRepository: Array<{
+        repository: {
+          name: string;
+          nameWithOwner: string;
+          url: string;
+          stargazerCount: number;
+        };
+        contributions: {
+          nodes: Array<{
+            pullRequest: {
+              id: string;
+              number: number;
+              title: string;
+              state: string;
+              mergedAt: string | null;
+              createdAt: string;
+              updatedAt: string;
+              url: string;
+              additions: number;
+              deletions: number;
+              changedFiles: number;
+              repository: {
+                name: string;
+                nameWithOwner: string;
+                url: string;
+                stargazerCount: number;
+              };
+              author: {
+                login: string;
+                url: string;
+              };
+            };
+          } | null>;
+        };
+      }>;
     };
-    nodes: (SearchPRNode | null)[];
   };
 };
 

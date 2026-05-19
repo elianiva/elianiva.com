@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { ProjectCard } from "./project-card";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getProjects, type ProjectType } from "../lib/projects";
 import { Heading } from "~/components/ui/heading";
@@ -33,21 +32,7 @@ function ProjectCardList({
       }),
     staleTime: Infinity,
   });
-
-  return (
-    <>
-      {projects.map((project) => (
-        <div key={project.slug} className="h-full">
-          <ProjectCard
-            slug={project.slug}
-            title={project.title}
-            description={project.description}
-            stack={project.stack}
-          />
-        </div>
-      ))}
-    </>
-  );
+  return projects;
 }
 
 export function ProjectSection({

@@ -112,7 +112,7 @@ function RootDocument(props: PropsWithChildren<{}>) {
           Skip to main content
         </a>
 
-        <CanvasBackground />
+        {/* <CanvasBackground /> */}
         <Frame />
         <NavigationStrip />
 

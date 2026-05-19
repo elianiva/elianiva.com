@@ -1,22 +1,41 @@
-import { useLoaderData } from "@tanstack/react-router";
 import { Heading } from "~/components/ui/heading";
 import { type MusicData, LASTFM_PROFILE_URL } from "../lib/lastfm";
 import { TrackList } from "./track-list";
 import { cn } from "~/lib/utils";
-import { NotFound } from "~/components/not-found";
 
-export function MusicPage() {
-  const music = useLoaderData({ from: "/music" }) as MusicData | null;
-
+export function MusicPage({ music }: { music: MusicData | null }) {
   if (!music) {
     return (
-      <NotFound
-        path="music"
-        label="Music"
-        title="No scrobbles found"
-        description="Failed to load recent tracks from Last.fm. Try again later."
-        backTo={{ to: "/music", label: "Music" }}
-      />
+      <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
+        <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">
+            404 / music
+          </p>
+          <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
+            No scrobbles found
+          </h1>
+          <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">
+            Failed to load recent tracks from Last.fm. Try again later.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="/"
+              className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
+            >
+              Home
+            </a>
+            <a
+              href="/music"
+              className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
+            >
+              Music
+            </a>
+          </div>
+          <p className="mt-6 font-mono text-[0.65rem] uppercase tracking-[0.25em] text-pink-300">
+            Music
+          </p>
+        </div>
+      </div>
     );
   }
 

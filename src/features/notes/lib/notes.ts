@@ -1,8 +1,9 @@
-import { Config, Context, Effect, Layer, Redacted } from "effect"
+import { Context, Effect, Layer, Redacted } from "effect"
 import { createServerFn } from "@tanstack/react-start"
 import { Octokit } from "octokit"
 import matter from "gray-matter"
 import { AppRuntime } from "~/lib/effect"
+import { GH_TOKEN, NOTES_OWNER, NOTES_REPO, NOTES_BRANCH } from "~/lib/env"
 import * as E from "~/lib/errors"
 import type { Note, NoteCategory, NotesGraph } from "./types"
 
@@ -246,11 +247,10 @@ export class Notes extends Context.Service<Notes, {
   static readonly layer = Layer.effect(
     Notes,
     Effect.gen(function*() {
-      const ghToken = Redacted.value(yield* Config.redacted("GH_TOKEN").pipe(Config.withDefault(Redacted.make(""))))
-
-      const owner = yield* Config.string("NOTES_OWNER").pipe(Config.withDefault("elianiva"))
-      const repo = yield* Config.string("NOTES_REPO").pipe(Config.withDefault("notes"))
-      const branch = yield* Config.string("NOTES_BRANCH").pipe(Config.withDefault("main"))
+      const ghToken = Redacted.value(yield* GH_TOKEN)
+      const owner = yield* NOTES_OWNER
+      const repo = yield* NOTES_REPO
+      const branch = yield* NOTES_BRANCH
 
       const load = Effect.fn("Notes.load")(function*() {
         if (import.meta.env.DEV) {
