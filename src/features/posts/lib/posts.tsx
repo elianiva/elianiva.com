@@ -14,7 +14,7 @@ export type PostSummary = {
 
 export const getPosts = createServerFn({ method: "GET" }).handler(async () => {
   const posts = allPosts
-    .filter((p) => !p.draft)
+    .filter((p) => !p.hidden)
     .sort((a, b) => (a.date > b.date ? -1 : 1))
     .map((p) => ({
       slug: p.slug,

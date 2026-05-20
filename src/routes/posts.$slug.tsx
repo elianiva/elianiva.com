@@ -14,11 +14,11 @@ const getPostBySlug = createServerFn({ method: "GET" })
   .inputValidator((slug: string) => slug)
   .handler(async ({ data: slug }) => {
     const post = allPosts.find((p) => p.slug === slug);
-    if (!post || post.draft) {
+    if (!post || post.hidden) {
       throw notFound();
     }
 
-    const sortedPosts = allPosts.filter((p) => !p.draft).sort((a, b) => (a.date > b.date ? -1 : 1));
+    const sortedPosts = allPosts.filter((p) => !p.hidden).sort((a, b) => (a.date > b.date ? -1 : 1));
     const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
     const prevPost = sortedPosts[currentIndex + 1] || null;
     const nextPost = sortedPosts[currentIndex - 1] || null;

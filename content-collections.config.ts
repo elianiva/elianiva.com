@@ -26,7 +26,7 @@ const posts = defineCollection({
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     description: z.string(),
     tags: z.array(z.string()),
-    draft: z.boolean().optional().default(false),
+    hidden: z.boolean().optional().default(false),
     content: z.string(),
   }),
   transform: async ({ _meta, ...post }) => {

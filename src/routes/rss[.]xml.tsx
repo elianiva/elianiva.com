@@ -6,7 +6,7 @@ export const Route = createFileRoute("/rss.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const posts = allPosts.filter((p) => !p.draft).sort((a, b) => (a.date > b.date ? -1 : 1));
+        const posts = allPosts.filter((p) => !p.hidden).sort((a, b) => (a.date > b.date ? -1 : 1));
         const projects = allProjects.sort((a, b) => (a.date > b.date ? -1 : 1));
         const items = [
           ...posts.map((post) => ({

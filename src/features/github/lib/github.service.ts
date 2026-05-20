@@ -208,7 +208,7 @@ type ContributionsResponse = {
 };
 
 const USERNAME = "elianiva";
-const MIN_STARS = 1000;
+const MIN_STARS = 500;
 
 interface GithubServiceShape {
   readonly getPRs: () => Effect.Effect<{ grouped: GroupedPRs; totalPRs: number }>;
