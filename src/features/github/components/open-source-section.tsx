@@ -37,7 +37,7 @@ function OpenSourcePRList() {
 
 export function OpenSourceSection() {
   return (
-    <section>
+    <section className="min-w-0">
       <div>
         <Heading level={2} id="open-source-heading">
           Open Source Contributions

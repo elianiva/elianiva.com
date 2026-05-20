@@ -14,20 +14,13 @@ export function BackButton() {
   }, []);
 
   return (
-    <div className="flex gap-2 mb-4 items-center">
-      <Button
-        onClick={handleBack}
-        variant="ghost"
-        className="bg-white/60 hover:bg-white text-pink-900"
-      >
+    <div className="flex gap-2 mb-4 items-center justify-center">
+      <Button onClick={handleBack} variant="ghost">
         <ArrowLeftIcon className="size-4" />
         <span className="font-body uppercase font-medium tracking-wider text-xs">Back</span>
       </Button>
       <Link to="/">
-        <Button
-          variant="ghost"
-          className="bg-white/60 hover:bg-white text-pink-900"
-        >
+        <Button variant="ghost">
           <HouseIcon className="size-4" />
           <span className="font-body uppercase font-medium tracking-wider text-xs">Home</span>
         </Button>

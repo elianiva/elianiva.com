@@ -38,7 +38,7 @@ export function HeroSection() {
           </Heading>
         </div>
         <div>
-          <p className="text-sm md:text-base leading-relaxed font-body text-pink-950/70 py-3 max-w-[90ch] text-pretty">
+          <p className="text-base leading-relaxed font-body text-pink-950/70 py-3 max-w-[90ch] text-pretty">
             I'm a software engineer with 4+ years mostly in web frontend, though I've dipped into
             backend, databases, and infra when needed. I like building interfaces that don't annoy
             people and cleaning up AI slop from codebases. Lately I've been leaning more into design
@@ -76,7 +76,7 @@ export function HeroSection() {
           href={siteData.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="relative block size-40 group"
+          className="relative block size-30 md:size-40 group"
           aria-label="Visit GitHub profile"
         >
           <div className="relative w-full h-full border border-pink-200/50 transition-transform duration-300 group-hover:-translate-y-1">

@@ -2,7 +2,6 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allPosts } from "content-collections";
-import { BackButton } from "~/components/back-button";
 import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
 import { Heading } from "~/components/ui/heading";
@@ -18,7 +17,9 @@ const getPostBySlug = createServerFn({ method: "GET" })
       throw notFound();
     }
 
-    const sortedPosts = allPosts.filter((p) => !p.hidden).sort((a, b) => (a.date > b.date ? -1 : 1));
+    const sortedPosts = allPosts
+      .filter((p) => !p.hidden)
+      .sort((a, b) => (a.date > b.date ? -1 : 1));
     const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
     const prevPost = sortedPosts[currentIndex + 1] || null;
     const nextPost = sortedPosts[currentIndex - 1] || null;
@@ -104,14 +105,11 @@ function PostDetailPage() {
 
   return (
     <>
-      <div className="mx-auto max-w-[64ch] px-4 lg:px-0 py-10">
-        <BackButton />
-
-        <article className="pt-6">
+      <div className="px-2 md:px-0 pt-16 border-x mx-auto max-w-container">
+        <header className="mx-auto max-w-[64ch]">
           <Heading level={1}>{post.title}</Heading>
-
-          <div className="flex flex-col md:flex-row items-center gap-2 font-body text-sm md:text-base md:leading-loose text-pink-950/70">
-            Posted on
+          <div className="items-center font-body text-sm md:text-base leading-relaxed text-pink-950/70">
+            Posted on{" "}
             <span className="text-pink-600 font-medium" suppressHydrationWarning>
               {new Date(post.date).toLocaleDateString("en-GB", {
                 weekday: "long",
@@ -119,13 +117,12 @@ function PostDetailPage() {
                 month: "long",
                 year: "numeric",
               })}
-            </span>
-            <span className="font-medium">
+            </span>{" "}
+            <span className="font-medium max-sm:inline-block">
               <span className="hidden md:inline">- </span> {post.readingTime} min read ·{" "}
               {post.wordCount.toLocaleString("en-GB")} words
             </span>
           </div>
-
           <a
             className="block relative no-underline hover:underline hover:text-pink-400 font-body text-sm md:text-base text-pink-950/70 mb-2 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2 rounded"
             href={`https://github.com/elianiva/elianiva.com/blob/master/src/content/posts/${post.slug}.mdx`}
@@ -136,7 +133,6 @@ function PostDetailPage() {
             Suggest An Edit
             <PencilIcon width="16" height="16" className="inline-block" />
           </a>
-
           <div className="flex gap-2 mb-4">
             {post.tags.map((tag) => (
               <Badge key={tag} variant="secondary">
@@ -144,42 +140,41 @@ function PostDetailPage() {
               </Badge>
             ))}
           </div>
+        </header>
+        <article className="font-body mx-auto max-w-[64ch] prose prose-pink">
+          <CodeCopy />
+          {post.mdx}
 
-          <div className="font-body mx-auto max-w-[64ch] prose prose-pink">
-            <CodeCopy />
-            {post.mdx}
-
-            <div>
-              <script
-                src="https://giscus.app/client.js"
-                data-repo="elianiva/elianiva.com"
-                data-repo-id="MDEwOlJlcG9zaXRvcnkzMDE0NjE4NDU="
-                data-category="General"
-                data-category-id="DIC_kwDOEffxVc4CRq7s"
-                data-mapping="pathname"
-                data-strict="0"
-                data-reactions-enabled="1"
-                data-emit-metadata="0"
-                data-input-position="bottom"
-                data-theme="light"
-                data-lang="en"
-                crossOrigin="anonymous"
-                async
-              />
-            </div>
-            <p className="mt-4! text-sm text-pink-950/70">
-              If you don&apos;t see any comment section, please turn off your adblocker :)
-            </p>
+          <div>
+            <script
+              src="https://giscus.app/client.js"
+              data-repo="elianiva/elianiva.com"
+              data-repo-id="MDEwOlJlcG9zaXRvcnkzMDE0NjE4NDU="
+              data-category="General"
+              data-category-id="DIC_kwDOEffxVc4CRq7s"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="light"
+              data-lang="en"
+              crossOrigin="anonymous"
+              async
+            />
           </div>
+          <p className="mt-4! text-sm text-pink-950/70">
+            If you don&apos;t see any comment section, please turn off your adblocker :)
+          </p>
         </article>
 
-        <nav className="mt-12 pt-6 border-t border-pink-200/50">
-          <div className="grid grid-cols-2 gap-4">
+        <nav className="mt-12 border-t border-pink-200/50 max-sm:-mx-2">
+          <div className="grid md:grid-cols-2">
             {post.prevPost ? (
               <Link
                 to="/posts/$slug"
                 params={{ slug: post.prevPost.slug }}
-                className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+                className="max-sm:border-b md:border-r group flex flex-col p-4 hover:bg-white/20 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Previous
@@ -195,7 +190,7 @@ function PostDetailPage() {
               <Link
                 to="/posts/$slug"
                 params={{ slug: post.nextPost.slug }}
-                className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+                className="max-sm:border-b group flex flex-col items-end text-right p-4 hover:bg-white/20 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Next

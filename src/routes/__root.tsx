@@ -116,7 +116,7 @@ function RootDocument(props: PropsWithChildren<{}>) {
         <Frame />
         <NavigationStrip />
 
-        <main id="main-content" role="main" className="relative z-0 flex-1">
+        <main id="main-content" role="main" className="relative z-0 flex-1 p-2 md:p-0">
           <TooltipProvider>
             <TanstackQueryProvider>{props.children}</TanstackQueryProvider>
           </TooltipProvider>

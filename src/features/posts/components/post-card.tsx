@@ -19,7 +19,7 @@ export function PostCard({ title, description, date, tags, ...props }: PostCardP
       style={{ viewTransitionName: title }}
       {...props}
     >
-      <div className="flex p-4 h-full" aria-labelledby="post-title">
+      <div className="flex flex-col md:flex-row p-4 h-full" aria-labelledby="post-title">
         <div className="flex-1">
           <h3
             id="post-title"
@@ -32,7 +32,7 @@ export function PostCard({ title, description, date, tags, ...props }: PostCardP
             dangerouslySetInnerHTML={{ __html: description }}
           />
         </div>
-        <div className="flex-1 flex flex-col gap-1 justify-between align-end">
+        <div className="flex flex-col gap-1 justify-between align-end md:flex-1">
           <div className="text-xs flex gap-1 justify-end text-pink-950/70">
             <CalendarIcon className="size-4 block" />
             <span suppressHydrationWarning>
