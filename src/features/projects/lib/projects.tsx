@@ -31,14 +31,13 @@ export const getProjects = createServerFn({ method: "GET" })
 
     return renderServerComponent(
       projects.map((project) => (
-        <div key={project.slug} className="h-full">
-          <ProjectCard
-            slug={project.slug}
-            title={project.title}
-            description={project.description}
-            stack={project.stack}
-          />
-        </div>
+        <ProjectCard
+          key={project.slug}
+          slug={project.slug}
+          title={project.title}
+          description={project.description}
+          stack={project.stack}
+        />
       )),
     );
   });

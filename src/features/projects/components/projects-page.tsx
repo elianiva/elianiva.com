@@ -5,20 +5,20 @@ export function ProjectsPage() {
     <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8 space-y-4">
         <ProjectSection
-          title="Open Source Projects"
-          description="These are some open source projects I've helped building"
-          type="open-source"
-          featured={false}
-        />
-        <ProjectSection
           title="Personal Projects"
           description="Mostly made them just for fun and to learn new things."
           type="personal"
           featured={false}
         />
         <ProjectSection
+          title="Open Source Projects"
+          description="These are some open source projects I've helped building"
+          type="open-source"
+          featured={false}
+        />
+        <ProjectSection
           title="Assignments"
-          description="Projects I've worked on for university courses."
+          description="Projects I've worked on during high school and university courses."
           type="assignment"
           featured={false}
         />

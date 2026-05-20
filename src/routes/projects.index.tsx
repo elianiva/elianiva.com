@@ -4,5 +4,10 @@ import { seo, defaultOgImageUrl } from "~/lib/seo";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
-  head: () => seo({ title: "Projects", description: "Things I've built", ogImage: defaultOgImageUrl("Projects", "Things I've built") }),
+  head: () =>
+    seo({
+      title: "Projects",
+      description: "Things I've built",
+      ogImage: defaultOgImageUrl("Projects", "Things I've built"),
+    }),
 });

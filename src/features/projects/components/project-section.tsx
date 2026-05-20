@@ -54,7 +54,7 @@ export function ProjectSection({
         {title}
       </Heading>
       <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">{description}</p>
-      <div className="relative space-y-1 pb-4 items-stretch">
+      <div className="relative pb-4 items-stretch grid grid-cols-2 gap-1">
         <Suspense
           fallback={
             <div className="space-y-1">
