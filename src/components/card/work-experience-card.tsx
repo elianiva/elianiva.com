@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "~/components/ui/collapsible";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "~/components/ui/collapsible";
 
 interface WorkExperienceCardProps {
   company: string;
@@ -27,7 +23,7 @@ export function WorkExperienceCard({
   technologies,
   defaultOpen = false,
 }: WorkExperienceCardProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
     <Collapsible
@@ -35,7 +31,7 @@ export function WorkExperienceCard({
       onOpenChange={setIsOpen}
       className="work-experience-card group rounded-2xl transition-colors"
     >
-      <CollapsibleTrigger className="list-none w-full cursor-pointer focus:ring-0 focus:outline-none p-2 text-left">
+      <CollapsibleTrigger className="list-none w-full cursor-pointer focus:ring-0 focus:outline-none text-left">
         {/* Mobile Layout */}
         <div className="flex items-start justify-between gap-3 md:hidden">
           <div className="flex-1 min-w-0">
@@ -103,18 +99,18 @@ export function WorkExperienceCard({
       </CollapsibleTrigger>
 
       {/* Details */}
-      <CollapsibleContent>
-        <ul className="list-disc list-outside pl-4 mt-2">
+      <CollapsibleContent className="pb-2">
+        <ul className="list-disc list-outside pl-4">
           {details.map((detail) => (
             <li
               key={detail}
-              className="text-sm md:text-base leading-relaxed font-body text-pink-950/80"
+              className="text-sm md:text-base leading-relaxed font-body text-pink-950/70 list-[square]"
             >
               {detail}
             </li>
           ))}
         </ul>
-        <ul className="flex flex-wrap items-center pt-2 gap-1">
+        <ul className="flex flex-wrap items-center gap-1">
           {technologies.map((technology) => (
             <Badge
               key={technology}
@@ -127,4 +123,3 @@ export function WorkExperienceCard({
     </Collapsible>
   );
 }
-

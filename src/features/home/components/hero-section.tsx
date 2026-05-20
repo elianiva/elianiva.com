@@ -38,7 +38,7 @@ export function HeroSection() {
           </Heading>
         </div>
         <div>
-          <p className="text-sm md:text-base leading-relaxed font-body text-pink-950 py-3 max-w-[90ch] text-pretty">
+          <p className="text-sm md:text-base leading-relaxed font-body text-pink-950/70 py-3 max-w-[90ch] text-pretty">
             I'm a software engineer with 4+ years mostly in web frontend, though I've dipped into
             backend, databases, and infra when needed. I like building interfaces that don't annoy
             people and cleaning up AI slop from codebases. Lately I've been leaning more into design
