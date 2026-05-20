@@ -1,7 +1,9 @@
 import { Effect } from "effect";
 import { createServerFn } from "@tanstack/react-start";
+import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { AppRuntime } from "~/lib/effect";
 import { LastFM } from "./lastfm.service";
+import { MusicPage } from "~/features/music/components/music-page";
 
 const LASTFM_USER = "elianiva";
 
@@ -31,3 +33,8 @@ export const getRecentTracks = createServerFn({ method: "GET" }).handler(() =>
     }),
   ),
 );
+
+export const getMusicTracksRsc = createServerFn({ method: "GET" }).handler(async () => {
+  const music = await getRecentTracks();
+  return renderServerComponent(<MusicPage music={music} />);
+});

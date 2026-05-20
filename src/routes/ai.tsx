@@ -1,13 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getAiUsage } from "~/features/ai/lib/tokscale";
+import { AiSection } from "~/features/ai/components/ai-section";
 import { seo, defaultOgImageUrl } from "~/lib/seo";
-import { AiPage } from "~/features/ai/components/ai-page-body";
-import { AiPageSkeleton } from "~/components/ui/page-skeleton";
 
 export const Route = createFileRoute("/ai")({
-  component: AiPage,
-  pendingComponent: AiPageSkeleton,
-  loader: () => getAiUsage(),
+  component: AiSection,
   head: () =>
     seo({
       title: "AI Usage",

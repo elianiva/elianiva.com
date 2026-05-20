@@ -5,7 +5,7 @@ export function fmtTokens(n: number): string {
   return n.toString();
 }
 
-export function fmtCost(n = 0): string {
+export function fmtCost(n = 0) {
   if (n >= 1000) return `$${(n / 1000).toFixed(2)}k`;
   return `$${n.toFixed(2)}`;
 }

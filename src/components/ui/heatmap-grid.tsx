@@ -1,3 +1,5 @@
+"use client";
+
 import { LazyMotion, m, domAnimation } from "motion/react";
 import { useReducedMotion } from "~/lib/motion";
 import { Tooltip, TooltipTrigger, TooltipContent } from "~/components/ui/tooltip";

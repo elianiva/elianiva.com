@@ -1,7 +1,9 @@
-import { Effect } from "effect"
-import { createServerFn } from "@tanstack/react-start"
-import { AppRuntime } from "~/lib/effect"
-import { Tokscale } from "./tokscale.service"
+import { Effect } from "effect";
+import { createServerFn } from "@tanstack/react-start";
+import { renderServerComponent } from "@tanstack/react-start/rsc";
+import { AppRuntime } from "~/lib/effect";
+import { Tokscale } from "./tokscale.service";
+import { AiPage } from "~/features/ai/components/ai-page-body";
 
 export type AiModelUsage = {
   model: string;
@@ -23,18 +25,39 @@ export type AiContribution = {
   };
   clients: Array<{
     client: string;
-    tokens: { input: number; output: number; cacheRead: number; cacheWrite: number; reasoning: number };
+    tokens: {
+      input: number;
+      output: number;
+      cacheRead: number;
+      cacheWrite: number;
+      reasoning: number;
+    };
     cost: number;
     messages: number;
     models: Record<
       string,
-      { cost: number; input: number; output: number; tokens: number; messages: number; cacheRead: number; reasoning: number; cacheWrite: number }
+      {
+        cost: number;
+        input: number;
+        output: number;
+        tokens: number;
+        messages: number;
+        cacheRead: number;
+        reasoning: number;
+        cacheWrite: number;
+      }
     >;
   }>;
 };
 
 export type AiUsage = {
-  user: { username: string; displayName: string; avatarUrl: string; rank: number; createdAt: string };
+  user: {
+    username: string;
+    displayName: string;
+    avatarUrl: string;
+    rank: number;
+    createdAt: string;
+  };
   stats: {
     totalTokens: number;
     totalCost: number;
@@ -63,7 +86,11 @@ export function aggregateClients(contributions: AiContribution[]) {
       const entry = map.get(c.client) || { cost: 0, tokens: 0 };
       entry.cost += c.cost;
       entry.tokens +=
-        c.tokens.input + c.tokens.output + c.tokens.cacheRead + c.tokens.cacheWrite + c.tokens.reasoning;
+        c.tokens.input +
+        c.tokens.output +
+        c.tokens.cacheRead +
+        c.tokens.cacheWrite +
+        c.tokens.reasoning;
       map.set(c.client, entry);
     }
   }
@@ -75,8 +102,13 @@ export function aggregateClients(contributions: AiContribution[]) {
 export const getAiUsage = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
     Effect.gen(function*() {
-      const svc = yield* Tokscale
-      return yield* svc.getUsage()
+      const svc = yield* Tokscale;
+      return yield* svc.getUsage();
     }),
   ),
-)
+);
+
+export const getAiUsageRsc = createServerFn({ method: "GET" }).handler(async () => {
+  const data = await getAiUsage();
+  return renderServerComponent(<AiPage data={data} />);
+});

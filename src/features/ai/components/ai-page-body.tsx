@@ -1,7 +1,4 @@
-import { useLoaderData } from "@tanstack/react-router";
-import { BackButton } from "~/components/back-button";
 import { type AiUsage, type AiContribution, aggregateClients } from "../lib/tokscale";
-import { useMemo } from "react";
 import { NotFound } from "~/components/not-found";
 import { fmtTokens, fmtCost, fmtRel } from "./fmt";
 import { SummarySection } from "./summary-section";
@@ -37,8 +34,7 @@ function groupContributions(contributions: AiContribution[]) {
   return sortedWeeks;
 }
 
-export function AiPage() {
-  const data = useLoaderData({ from: "/ai" });
+export function AiPage({ data }: { data: AiUsage | null }) {
   if (!data) {
     return (
       <NotFound
