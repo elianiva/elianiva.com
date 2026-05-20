@@ -1,9 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MusicSection } from "~/features/music/components/music-section";
+import { RscSection } from "~/components/rsc-section";
+import { getMusicTracksRsc } from "~/features/music/lib/lastfm";
+import { MusicPageSkeleton } from "~/components/ui/page-skeleton";
 import { seo, defaultOgImageUrl } from "~/lib/seo";
 
+function MusicRoute() {
+  return (
+    <RscSection
+      queryKey={["recent-tracks"]}
+      queryFn={getMusicTracksRsc}
+      fallback={<MusicPageSkeleton />}
+    />
+  );
+}
+
 export const Route = createFileRoute("/music")({
-  component: MusicSection,
+  component: MusicRoute,
   head: () =>
     seo({
       title: "Music",

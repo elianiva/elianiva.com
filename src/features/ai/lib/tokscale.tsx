@@ -99,16 +99,12 @@ export function aggregateClients(contributions: AiContribution[]) {
     .sort((a, b) => b.tokens - a.tokens);
 }
 
-export const getAiUsage = createServerFn({ method: "GET" }).handler(() =>
-  AppRuntime.runPromise(
+export const getAiUsageRsc = createServerFn({ method: "GET" }).handler(async () => {
+  const data = await AppRuntime.runPromise(
     Effect.gen(function*() {
       const svc = yield* Tokscale;
       return yield* svc.getUsage();
     }),
-  ),
-);
-
-export const getAiUsageRsc = createServerFn({ method: "GET" }).handler(async () => {
-  const data = await getAiUsage();
+  );
   return renderServerComponent(<AiPage data={data} />);
 });

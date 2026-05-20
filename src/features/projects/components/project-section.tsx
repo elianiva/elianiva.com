@@ -1,5 +1,4 @@
-import { Suspense } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { RscSection } from "~/components/rsc-section";
 import { getProjects, type ProjectType } from "../lib/projects";
 import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -14,25 +13,14 @@ interface ProjectSectionProps {
   featured?: boolean;
 }
 
-function ProjectCardList({
-  type = "personal",
-  featured = true,
-}: {
-  type: ProjectType;
-  featured: boolean;
-}) {
-  const { data: projects } = useSuspenseQuery({
-    queryKey: ["projects", type, featured],
-    queryFn: () =>
-      getProjects({
-        data: {
-          type,
-          featured,
-        },
-      }),
-    staleTime: Infinity,
-  });
-  return projects;
+function ProjectCardFallback() {
+  return (
+    <div className="space-y-1">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <Skeleton key={i} className="h-18 w-full" />
+      ))}
+    </div>
+  );
 }
 
 export function ProjectSection({
@@ -55,17 +43,12 @@ export function ProjectSection({
       </Heading>
       <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">{description}</p>
       <div className="relative pb-4 items-stretch grid grid-cols-[repeat(auto-fit,minmax(min(600px,100%),1fr))] gap-1">
-        <Suspense
-          fallback={
-            <div className="space-y-1">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-18 w-full" />
-              ))}
-            </div>
-          }
-        >
-          <ProjectCardList type={type} featured={featured} />
-        </Suspense>
+        <RscSection
+          queryKey={["projects", type, featured]}
+          queryFn={() => getProjects({ data: { type, featured } })}
+          fallback={<ProjectCardFallback />}
+          staleTime={Infinity}
+        />
       </div>
       {seeMoreUrl && (
         <Link to={seeMoreUrl}>

@@ -25,16 +25,12 @@ export type MusicData = {
   total: number;
 };
 
-export const getRecentTracks = createServerFn({ method: "GET" }).handler(() =>
-  AppRuntime.runPromise(
+export const getMusicTracksRsc = createServerFn({ method: "GET" }).handler(async () => {
+  const music = await AppRuntime.runPromise(
     Effect.gen(function*() {
       const svc = yield* LastFM;
       return yield* svc.getRecentTracks();
     }),
-  ),
-);
-
-export const getMusicTracksRsc = createServerFn({ method: "GET" }).handler(async () => {
-  const music = await getRecentTracks();
+  );
   return renderServerComponent(<MusicPage music={music} />);
 });
