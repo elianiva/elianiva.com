@@ -10,11 +10,9 @@ type SortBy = (typeof tabs)[number];
 export function ModelBars({ models }: { models: AiModelUsage[] }) {
   const [sortBy, setSortBy] = useState<SortBy>("by cost");
 
-  const sorted = models
-    .slice()
-    .sort((a, b) => (sortBy === "by cost" ? b.cost - a.cost : b.tokens - a.tokens));
-  const key = sortBy === "by cost" ? "cost" : "tokens";
-  const max = sorted[0]?.[key] ?? 1;
+  const by = (m: AiModelUsage) => (sortBy === "by cost" ? m.cost : m.tokens);
+  const sorted = models.slice().sort((a, b) => by(b) - by(a));
+  const max = by(sorted[0] ?? { cost: 1, tokens: 1 } as AiModelUsage);
 
   return (
     <div className="flex flex-col gap-3 font-mono text-xs">
@@ -34,7 +32,7 @@ export function ModelBars({ models }: { models: AiModelUsage[] }) {
         ))}
       </div>
       {sorted.map((m) => {
-        const pct = (m[key] / max) * 100;
+        const pct = (by(m) / max) * 100;
         return (
           <div key={m.model} className="grid grid-cols-[14rem_auto_3rem_3rem] gap-3 items-center">
             <span className="text-pink-800 truncate text-xs" title={m.model}>
