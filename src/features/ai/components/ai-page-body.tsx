@@ -59,7 +59,7 @@ export function AiPage({ data }: { data: AiUsage | null }) {
             <b className="text-pink-500 font-medium">{data.clients.length}</b> clients (
             {data.clients.join(", ")}). These data are all extracted by{" "}
             <a
-              href={`https://tokscale.ai/users/${data.user.username}`}
+              href={`https://tokscale.ai/u/${data.user.username}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-pink-500 underline decoration-pink-200 hover:decoration-pink-400"
