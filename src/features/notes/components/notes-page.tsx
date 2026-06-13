@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useLoaderData, Link } from "@tanstack/react-router";
+import { useLoaderData } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
 import { Search } from "./search";
 import { NotesTabs } from "./notes-tabs";

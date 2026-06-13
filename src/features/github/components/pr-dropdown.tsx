@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { GitHubPullRequest, GroupedPRs } from "../lib/types";
+import type { GitHubPullRequest } from "../lib/types";
 import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
 import CaretDownIcon from "~icons/ph/caret-down";
 import GitPullRequestIcon from "~icons/ph/git-pull-request-duotone";

@@ -10,10 +10,10 @@ interface GraphModalProps {
   graph: NotesGraph;
   isOpen: boolean;
   onClose: () => void;
-  onNodeClick: (slug: string) => void;
+  onNodeClick?: (slug: string) => void;
 }
 
-export function GraphModal({ graph, isOpen, onClose, onNodeClick }: GraphModalProps) {
+export function GraphModal({ graph: _graph, isOpen, onClose, onNodeClick: _onNodeClick }: GraphModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

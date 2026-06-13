@@ -1,12 +1,11 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useLoaderData, Link } from "@tanstack/react-router";
 import { PostCard } from "./post-card";
-import { BackButton } from "~/components/back-button";
 import { Heading } from "~/components/ui/heading";
 import XIcon from "~icons/ph/x";
-import type { Post } from "content-collections";
+import type { PostSummary } from "../lib/posts";
 
-function searchPosts(posts: Post[], query: string): Post[] {
+function searchPosts(posts: PostSummary[], query: string): PostSummary[] {
   const q = query.toLowerCase();
   return posts.filter((post) => {
     if (post.title.toLowerCase().includes(q)) return true;
@@ -18,7 +17,7 @@ function searchPosts(posts: Post[], query: string): Post[] {
 }
 
 export function PostList() {
-  const posts = useLoaderData({ from: "/posts/" });
+  const posts = useLoaderData({ from: "/posts/" }) as PostSummary[];
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);

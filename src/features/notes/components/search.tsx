@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
 import type { Note } from "../lib/types";
 

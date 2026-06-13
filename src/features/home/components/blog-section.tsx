@@ -5,14 +5,29 @@ import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Link } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
+import { PostCard } from "~/features/posts/components/post-card";
 
 function BlogPostList() {
   const { data: posts } = useSuspenseQuery({
     queryKey: ["blog-posts"],
-    queryFn: () => getPosts(),
+    queryFn: () => getPosts({ data: { limit: 6 } }),
     staleTime: Infinity,
   });
-  return posts;
+
+  return (
+    <div className="grid gap-1">
+      {posts.map((post) => (
+        <Link key={post.slug} to="/posts/$slug" params={{ slug: post.slug }} className="block">
+          <PostCard
+            title={post.title}
+            description={post.description}
+            date={post.date}
+            tags={post.tags}
+          />
+        </Link>
+      ))}
+    </div>
+  );
 }
 
 export function BlogSection() {
