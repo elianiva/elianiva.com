@@ -1,7 +1,7 @@
-import { Context, Duration, Effect, Layer } from "effect"
-import { HttpClient } from "effect/unstable/http"
-import { KvCache } from "~/lib/cache"
-import type { AiUsage, AiContribution, AiModelUsage } from "./tokscale"
+import { Context, Duration, Effect, Layer } from "effect";
+import { HttpClient } from "effect/unstable/http";
+import { KvCache } from "~/lib/cache";
+import type { AiUsage, AiContribution, AiModelUsage } from "./tokscale";
 
 const USERNAME = "elianiva";
 
@@ -35,31 +35,38 @@ function toAiUsage(d: RawResponse): AiUsage {
   };
 }
 
-export class Tokscale extends Context.Service<Tokscale, {
-  readonly getUsage: () => Effect.Effect<AiUsage | null>
-}>()("Tokscale") {
+export class Tokscale extends Context.Service<
+  Tokscale,
+  {
+    readonly getUsage: () => Effect.Effect<AiUsage | null>;
+  }
+>()("Tokscale") {
   static readonly layer = Layer.effect(
     Tokscale,
-    Effect.gen(function*() {
-      const client = yield* HttpClient.HttpClient
-      const cache = yield* KvCache
+    Effect.gen(function* () {
+      const client = yield* HttpClient.HttpClient;
+      const cache = yield* KvCache;
 
-      const getUsage = Effect.fn("Tokscale.getUsage")(function*() {
-        const result = yield* cache.getOrSet("ai:tokscale", Duration.hours(6),
-          Effect.gen(function*() {
-            const resp = yield* client.get(`https://tokscale.ai/api/users/${USERNAME}`)
-            if (resp.status !== 200) return null
-            const d = yield* resp.json as Effect.Effect<RawResponse>
-            return toAiUsage(d)
-          }),
-        ).pipe(
-          Effect.catchTag("KvCacheError", () => Effect.succeed(null)),
-          Effect.catchTag("HttpClientError", () => Effect.succeed(null)),
-        )
-        return result
-      })
+      const getUsage = Effect.fn("Tokscale.getUsage")(function* () {
+        const result = yield* cache
+          .getOrSet(
+            "ai:tokscale",
+            Duration.hours(6),
+            Effect.gen(function* () {
+              const resp = yield* client.get(`https://tokscale.ai/api/users/${USERNAME}`);
+              if (resp.status !== 200) return null;
+              const d = yield* resp.json as Effect.Effect<RawResponse>;
+              return toAiUsage(d);
+            }),
+          )
+          .pipe(
+            Effect.catchTag("KvCacheError", () => Effect.succeed(null)),
+            Effect.catchTag("HttpClientError", () => Effect.succeed(null)),
+          );
+        return result;
+      });
 
-      return { getUsage }
+      return { getUsage };
     }),
-  )
+  );
 }

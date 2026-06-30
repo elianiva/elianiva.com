@@ -195,12 +195,7 @@ function TagBadge({ tag }: { tag: string }) {
   );
 }
 
-function PostLayout(
-  title: string,
-  date: string,
-  tags: string[],
-  description: string,
-) {
+function PostLayout(title: string, date: string, tags: string[], description: string) {
   const formattedDate = new Date(date).toLocaleDateString("en-GB", {
     month: "long",
     day: "numeric",
@@ -290,7 +285,9 @@ function PostLayout(
         >
           <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
             <LeftAccentBar />
-            <div style={{ display: "flex", flexDirection: "column", flex: 1, position: "relative" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", flex: 1, position: "relative" }}
+            >
               <h1
                 style={{
                   fontFamily: "'Google Sans',sans-serif",
@@ -652,14 +649,11 @@ export const Route = createFileRoute("/api/og-image")({
           .map((tag) => tag.trim());
         const decodedDescription = decodeURIComponent(description);
 
-        const svg = await satori(
-          PostLayout(decodedTitle, date, decodedTags, decodedDescription),
-          {
-            width: CARD_WIDTH,
-            height: CARD_HEIGHT,
-            fonts,
-          },
-        );
+        const svg = await satori(PostLayout(decodedTitle, date, decodedTags, decodedDescription), {
+          width: CARD_WIDTH,
+          height: CARD_HEIGHT,
+          fonts,
+        });
 
         const resvg = new Resvg(svg, {
           font: {

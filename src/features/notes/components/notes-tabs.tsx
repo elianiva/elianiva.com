@@ -1,11 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "~/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 import type { Note, NoteCategory } from "../lib/types";
 
 interface NotesTabsProps {
@@ -34,9 +29,7 @@ function NoteLink({ note }: { note: Note }) {
           {note.title}
         </span>
         {note.description && (
-          <p className="text-xs text-pink-950/60 mt-0.5 line-clamp-1">
-            {note.description}
-          </p>
+          <p className="text-xs text-pink-950/60 mt-0.5 line-clamp-1">{note.description}</p>
         )}
       </div>
       <span className="text-xs font-mono text-pink-950/40 uppercase shrink-0">
@@ -65,7 +58,10 @@ export function NotesTabs({ notes }: NotesTabsProps) {
 
   return (
     <Tabs defaultValue="all" className="gap-0">
-      <TabsList variant="line" className="w-full justify-start border-b border-pink-200/50 rounded-none bg-transparent gap-0">
+      <TabsList
+        variant="line"
+        className="w-full justify-start border-b border-pink-200/50 rounded-none bg-transparent gap-0"
+      >
         {(["all", ...categoryOrder] as const).map((tab) => (
           <TabsTrigger
             key={tab}
@@ -87,9 +83,7 @@ export function NotesTabs({ notes }: NotesTabsProps) {
       {categoryOrder.map((cat) => (
         <TabsContent key={cat} value={cat} className="mt-0 space-y-2">
           {notesByCategory[cat].length > 0 ? (
-            notesByCategory[cat].map((note) => (
-              <NoteLink key={note.slug} note={note} />
-            ))
+            notesByCategory[cat].map((note) => <NoteLink key={note.slug} note={note} />)
           ) : (
             <p className="text-center text-sm font-body text-pink-950/50 py-8">
               No notes in this category.

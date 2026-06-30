@@ -1,4 +1,4 @@
-import MusicIcon from '~icons/ph/music-note-duotone'
+import MusicIcon from "~icons/ph/music-note-duotone";
 import type { LastFmTrack } from "../lib/lastfm";
 import { Card } from "~/components/ui/card";
 
@@ -20,7 +20,9 @@ export function NowPlayingPanel({ track }: { track: LastFmTrack }) {
             {track.track}
           </div>
           <div className="text-pink-950/60 leading-none">{track.artist}</div>
-          {track.album && <div className="leading-none text-sm text-pink-950/30">{track.album}</div>}
+          {track.album && (
+            <div className="leading-none text-sm text-pink-950/30">{track.album}</div>
+          )}
         </div>
         {track.art ? (
           <img

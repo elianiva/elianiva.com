@@ -119,4 +119,3 @@ export function PRDropdown({ repository, prs }: PRDropdownProps) {
     </Collapsible>
   );
 }
-

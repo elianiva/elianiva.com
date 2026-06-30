@@ -5,12 +5,7 @@ import { Card, CardContent } from "~/components/ui/card";
 
 export function TrackCard({ track }: { track: LastFmTrack }) {
   return (
-    <a
-      href={track.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="no-underline"
-    >
+    <a href={track.url} target="_blank" rel="noopener noreferrer" className="no-underline">
       <Card className="flex flex-col border border-pink-200/50 bg-white/40 hover:bg-pink-50/40 group transition-colors overflow-hidden gap-0 p-0 ring-0">
         {track.art ? (
           <img

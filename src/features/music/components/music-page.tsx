@@ -8,9 +8,7 @@ export function MusicPage({ music }: { music: MusicData | null }) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
         <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">
-            404 / music
-          </p>
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / music</p>
           <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
             No scrobbles found
           </h1>

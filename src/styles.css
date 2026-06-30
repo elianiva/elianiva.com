@@ -21,7 +21,6 @@
   --color-blush: #fff0f5;
 }
 
-
 :root {
   --ease-out-strong: cubic-bezier(0.19, 1, 0.22, 1);
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);

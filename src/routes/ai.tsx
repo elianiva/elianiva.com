@@ -6,11 +6,7 @@ import { seo, defaultOgImageUrl } from "~/lib/seo";
 
 function AiRoute() {
   return (
-    <RscSection
-      queryKey={["ai-usage"]}
-      queryFn={getAiUsageRsc}
-      fallback={<AiPageSkeleton />}
-    />
+    <RscSection queryKey={["ai-usage"]} queryFn={getAiUsageRsc} fallback={<AiPageSkeleton />} />
   );
 }
 
