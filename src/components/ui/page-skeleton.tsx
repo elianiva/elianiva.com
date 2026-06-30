@@ -141,13 +141,7 @@ export function PostDetailSkeleton() {
           {Array.from({ length: 12 }).map((_, i) => (
             <Skeleton
               key={i}
-              className={
-                i % 5 === 0
-                  ? "h-6 w-48"
-                  : i % 5 === 4
-                    ? "h-4 w-3/4"
-                    : "h-4 w-full"
-              }
+              className={i % 5 === 0 ? "h-6 w-48" : i % 5 === 4 ? "h-4 w-3/4" : "h-4 w-full"}
             />
           ))}
         </div>
@@ -172,10 +166,7 @@ export function ProjectDetailSkeleton() {
           </div>
           <div className="space-y-3">
             {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                className={i % 4 === 3 ? "h-4 w-3/4" : "h-4 w-full"}
-              />
+              <Skeleton key={i} className={i % 4 === 3 ? "h-4 w-3/4" : "h-4 w-full"} />
             ))}
           </div>
         </div>

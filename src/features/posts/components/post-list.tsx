@@ -148,10 +148,11 @@ export function PostList() {
                     key={tag}
                     role="option"
                     aria-selected={i === activeOptionIndex}
-                    className={`px-3 py-2 text-sm font-mono cursor-pointer ${i === activeOptionIndex
+                    className={`px-3 py-2 text-sm font-mono cursor-pointer ${
+                      i === activeOptionIndex
                         ? "bg-pink-50 text-pink-800"
                         : "text-pink-700 hover:bg-pink-50"
-                      }`}
+                    }`}
                     onClick={() => addTag(tag)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") addTag(tag);

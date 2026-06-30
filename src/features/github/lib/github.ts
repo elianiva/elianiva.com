@@ -5,7 +5,7 @@ import { GitHubService } from "./github.service";
 
 export const getGitHubPRs = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const svc = yield* GitHubService;
       return yield* svc.getPRs();
     }),
@@ -14,7 +14,7 @@ export const getGitHubPRs = createServerFn({ method: "GET" }).handler(() =>
 
 export const getGitHubContributions = createServerFn({ method: "GET" }).handler(() =>
   AppRuntime.runPromise(
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const svc = yield* GitHubService;
       return yield* svc.getContributions();
     }),

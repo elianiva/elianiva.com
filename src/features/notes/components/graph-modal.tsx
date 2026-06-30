@@ -1,9 +1,5 @@
 import { useEffect, useRef } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "~/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import type { NotesGraph } from "../lib/types";
 
 interface GraphModalProps {
@@ -13,7 +9,12 @@ interface GraphModalProps {
   onNodeClick?: (slug: string) => void;
 }
 
-export function GraphModal({ graph: _graph, isOpen, onClose, onNodeClick: _onNodeClick }: GraphModalProps) {
+export function GraphModal({
+  graph: _graph,
+  isOpen,
+  onClose,
+  onNodeClick: _onNodeClick,
+}: GraphModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

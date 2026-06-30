@@ -66,19 +66,19 @@ export class LastFM extends Context.Service<
 >()("LastFM") {
   static readonly layer = Layer.effect(
     LastFM,
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const apiKey = Redacted.value(yield* LASTFM_API_KEY);
       const client = yield* HttpClient.HttpClient;
       const cache = yield* KvCache;
 
-      const getRecentTracks = Effect.fn("LastFM.getRecentTracks")(function*() {
+      const getRecentTracks = Effect.fn("LastFM.getRecentTracks")(function* () {
         if (!apiKey) return { tracks: [], total: 0 };
 
         const result = yield* cache
           .getOrSet(
             "music:tracks",
             Duration.seconds(20),
-            Effect.gen(function*() {
+            Effect.gen(function* () {
               const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${apiKey}&format=json&limit=100&extended=1`;
               const resp = yield* client.get(url, {
                 headers: { "User-Agent": "elianiva.com" },

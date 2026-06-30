@@ -60,7 +60,7 @@ function fetchAllPRs(
   username: string,
   minStars: number,
 ): Effect.Effect<GitHubPullRequest[], E.GitHubError> {
-  return Effect.gen(function*() {
+  return Effect.gen(function* () {
     const response: PRContributionsResponse = yield* Effect.tryPromise({
       try: () =>
         octokit.graphql(PR_CONTRIBUTIONS_QUERY, {
@@ -167,7 +167,7 @@ function fetchContributions(
   octokit: Octokit,
   username: string,
 ): Effect.Effect<ContributionsResponse, E.GitHubError> {
-  return Effect.gen(function*() {
+  return Effect.gen(function* () {
     const response: GitHubContributionsResponse = yield* Effect.tryPromise({
       try: () =>
         octokit.graphql(CONTRIBUTIONS_QUERY, { username }) as Promise<GitHubContributionsResponse>,
@@ -218,18 +218,18 @@ interface GithubServiceShape {
 export class GitHubService extends Context.Service<GitHubService, GithubServiceShape>()("GitHub") {
   static readonly layer = Layer.effect(
     GitHubService,
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const token = Redacted.value(yield* GH_TOKEN);
       const cache = yield* KvCache;
       const octokit = new Octokit({ auth: token || undefined });
 
-      const getPRs = Effect.fn("GitHub.getPRs")(function*() {
+      const getPRs = Effect.fn("GitHub.getPRs")(function* () {
         if (!token) return { grouped: {}, totalPRs: 0 };
         const result = yield* cache
           .getOrSet(
             "github-prs",
             Duration.hours(24),
-            Effect.gen(function*() {
+            Effect.gen(function* () {
               const prs = yield* fetchAllPRs(octokit, USERNAME, MIN_STARS);
               return { grouped: groupPRs(prs), totalPRs: prs.length };
             }).pipe(
@@ -242,13 +242,13 @@ export class GitHubService extends Context.Service<GitHubService, GithubServiceS
         return result;
       });
 
-      const getContributions = Effect.fn("GitHub.getContributions")(function*() {
+      const getContributions = Effect.fn("GitHub.getContributions")(function* () {
         if (!token) return null;
         const result = yield* cache
           .getOrSet(
             "github-contributions",
             Duration.hours(24),
-            Effect.gen(function*() {
+            Effect.gen(function* () {
               const result = yield* fetchContributions(octokit, USERNAME);
               return result;
             }).pipe(Effect.catchTag("GitHubError", () => Effect.succeed(null))),

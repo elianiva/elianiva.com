@@ -27,7 +27,7 @@ export type MusicData = {
 
 export const getMusicTracksRsc = createServerFn({ method: "GET" }).handler(async () => {
   const music = await AppRuntime.runPromise(
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const svc = yield* LastFM;
       return yield* svc.getRecentTracks();
     }),

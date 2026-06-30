@@ -11,5 +11,10 @@ export const Route = createFileRoute("/notes/")({
     const [notes, graph] = await Promise.all([loadNotes(), buildGraph()]);
     return { notes, graph };
   },
-  head: () => seo({ title: "Notes", description: "Digital garden and collection of thoughts", ogImage: defaultOgImageUrl("Notes", "Digital garden and collection of thoughts") }),
+  head: () =>
+    seo({
+      title: "Notes",
+      description: "Digital garden and collection of thoughts",
+      ogImage: defaultOgImageUrl("Notes", "Digital garden and collection of thoughts"),
+    }),
 });

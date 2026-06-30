@@ -85,9 +85,7 @@ export function NoteDetailPage() {
           )}
         </header>
         <div className="prose prose-pink max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm, wikiLinkPlugin]}>
-            {note.content}
-          </ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm, wikiLinkPlugin]}>{note.content}</ReactMarkdown>
         </div>
       </article>
       <Backlinks notes={notes} currentSlug={note.slug} />

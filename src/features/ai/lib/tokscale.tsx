@@ -101,7 +101,7 @@ export function aggregateClients(contributions: AiContribution[]) {
 
 export const getAiUsageRsc = createServerFn({ method: "GET" }).handler(async () => {
   const data = await AppRuntime.runPromise(
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const svc = yield* Tokscale;
       return yield* svc.getUsage();
     }),

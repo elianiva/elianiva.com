@@ -12,7 +12,7 @@ export function ModelBars({ models }: { models: AiModelUsage[] }) {
 
   const by = (m: AiModelUsage) => (sortBy === "by cost" ? m.cost : m.tokens);
   const sorted = models.slice().sort((a, b) => by(b) - by(a));
-  const max = by(sorted[0] ?? { cost: 1, tokens: 1 } as AiModelUsage);
+  const max = by(sorted[0] ?? ({ cost: 1, tokens: 1 } as AiModelUsage));
 
   return (
     <div className="flex flex-col gap-3 font-mono text-xs">
@@ -22,10 +22,11 @@ export function ModelBars({ models }: { models: AiModelUsage[] }) {
             key={tab}
             type="button"
             onClick={() => setSortBy(tab)}
-            className={`text-xs uppercase tracking-wider transition-colors ${sortBy === tab
+            className={`text-xs uppercase tracking-wider transition-colors ${
+              sortBy === tab
                 ? "text-pink-800 font-medium border-b-2"
                 : "text-pink-950/30 hover:text-pink-950/50"
-              }`}
+            }`}
           >
             {tab}
           </button>
