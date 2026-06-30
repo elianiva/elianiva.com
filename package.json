@@ -41,7 +41,7 @@
     "effect": "4.0.0-beta.68",
     "force-graph": "^1.51.4",
     "gray-matter": "^4.0.3",
-    "lucide-react": "^1.16.0",
+    "lucide-react": "^1.22.0",
     "motion": "^12.39.0",
     "octokit": "^5.0.5",
     "react": "^19.2.6",
