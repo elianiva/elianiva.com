@@ -42,7 +42,7 @@
     "force-graph": "^1.51.4",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.22.0",
-    "motion": "^12.39.0",
+    "motion": "^12.42.0",
     "octokit": "^5.0.5",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
