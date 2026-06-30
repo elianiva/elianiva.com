@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
-    "@base-ui/utils": "^0.2.8",
+    "@base-ui/utils": "^0.3.1",
     "@cf-wasm/resvg": "^0.3.4",
     "@cf-wasm/satori": "^0.3.6",
     "@cloudflare/vite-plugin": "^1.37.2",
