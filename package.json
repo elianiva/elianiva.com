@@ -28,7 +28,7 @@
     "@mdx-js/rollup": "^3.1.1",
     "@tailwindcss/vite": "^4.3.2",
     "@tanstack/react-devtools": "latest",
-    "@tanstack/react-query": "latest",
+    "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-query-devtools": "latest",
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
