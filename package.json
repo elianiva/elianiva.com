@@ -84,7 +84,7 @@
     "oxfmt": "^0.51.0",
     "oxlint": "^1.66.0",
     "rehype-pretty-code": "^0.14.3",
-    "shiki": "^4.1.0",
+    "shiki": "^4.3.0",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
     "unplugin-icons": "^23.0.1",
