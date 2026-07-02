@@ -115,7 +115,7 @@ function ProjectDetailPage() {
                 </h1>
                 <div className="flex gap-2">
                   <a
-                    className="flex gap-2 items-center bg-white/60 hover:bg-white border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+                    className="flex gap-2 items-center bg-white/60 hover:bg-white border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
                     href={project.source}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -125,7 +125,7 @@ function ProjectDetailPage() {
                   </a>
                   {project.demo !== null && project.demo !== undefined && (
                     <a
-                      className="flex gap-2 items-center bg-pink-50/80 hover:bg-pink-50 border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+                      className="flex gap-2 items-center bg-pink-50/80 hover:bg-pink-50 border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
                       href={project.demo}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -178,7 +178,7 @@ function ProjectDetailPage() {
               <Link
                 to="/projects/$slug"
                 params={{ slug: project.prevProject.slug }}
-                className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+                className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Previous
@@ -194,7 +194,7 @@ function ProjectDetailPage() {
               <Link
                 to="/projects/$slug"
                 params={{ slug: project.nextProject.slug }}
-                className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+                className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Next

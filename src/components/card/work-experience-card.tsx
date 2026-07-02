@@ -31,7 +31,7 @@ export function WorkExperienceCard({
       onOpenChange={setIsOpen}
       className="work-experience-card group rounded-2xl transition-colors"
     >
-      <CollapsibleTrigger className="list-none w-full cursor-pointer focus:ring-0 focus:outline-none text-left pl-1">
+      <CollapsibleTrigger className="list-none w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 text-left pl-1">
         {/* Mobile Layout */}
         <div className="flex items-start justify-between gap-3 md:hidden">
           <div className="flex-1 min-w-0">

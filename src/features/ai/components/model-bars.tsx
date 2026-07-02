@@ -41,7 +41,7 @@ export function ModelBars({ models }: { models: AiModelUsage[] }) {
             </span>
             <div className="h-4 bg-pink-100/50">
               <div
-                className="h-full bg-pink-400/50 transition-all duration-200"
+                className="h-full bg-pink-400/50 transition-[width] duration-200"
                 style={{ width: `${pct}%` }}
               />
             </div>

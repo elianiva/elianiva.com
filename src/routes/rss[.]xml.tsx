@@ -2,12 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { allPosts, allProjects } from "content-collections";
 import sites from "~/data/sites";
 
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+
 export const Route = createFileRoute("/rss.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const posts = allPosts.filter((p) => !p.hidden).sort((a, b) => (a.date > b.date ? -1 : 1));
-        const projects = allProjects.sort((a, b) => (a.date > b.date ? -1 : 1));
+        const posts = allPosts.filter((p) => !p.hidden).sort((a, b) => b.date.localeCompare(a.date));
+        const projects = allProjects.sort((a, b) => b.date.localeCompare(a.date));
         const items = [
           ...posts.map((post) => ({
             title: post.title,
@@ -36,15 +46,15 @@ export const Route = createFileRoute("/rss.xml")({
             .map(
               (item) =>
                 "<item><title>" +
-                item.title +
+                escapeXml(item.title) +
                 "</title><link>" +
-                item.url +
+                escapeXml(item.url) +
                 "</link><guid>" +
-                item.url +
+                escapeXml(item.url) +
                 "</guid><pubDate>" +
                 new Date(item.date).toUTCString() +
                 "</pubDate><description>" +
-                item.description +
+                escapeXml(item.description) +
                 "</description></item>",
             )
             .join("") +

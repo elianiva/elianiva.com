@@ -3,17 +3,14 @@ import { useLoaderData } from "@tanstack/react-router";
 import { BackButton } from "~/components/back-button";
 import { Search } from "./search";
 import { NotesTabs } from "./notes-tabs";
-import { GraphModal } from "./graph-modal";
 import { NotFound } from "~/components/not-found";
-import type { Note, NotesGraph } from "../lib/types";
-import GraphIcon from "~icons/ph/graph";
+import type { Note } from "../lib/types";
 
 export function NotesPage() {
-  const data = useLoaderData({ from: "/notes/" }) as { notes: Note[]; graph: NotesGraph } | null;
+  const data = useLoaderData({ from: "/notes/" }) as { notes: Note[] } | null;
 
   const [, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Note[] | null>(null);
-  const [graphOpen, setGraphOpen] = useState(false);
 
   const displayedNotes = useMemo(() => {
     if (searchResults !== null) return searchResults;
@@ -32,14 +29,12 @@ export function NotesPage() {
     );
   }
 
-  const { notes, graph } = data;
+  const { notes } = data;
 
   const handleSearch = (query: string, results: Note[] | null) => {
     setSearchQuery(query);
     setSearchResults(results);
   };
-
-  const hasGraphData = graph.links.length > 0 || graph.nodes.some((n) => n.val > 1);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -70,23 +65,6 @@ export function NotesPage() {
       ) : (
         <NotesTabs notes={displayedNotes} />
       )}
-      {hasGraphData && (
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={() => setGraphOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-white/60 border border-pink-200 text-sm font-body text-pink-950 hover:bg-white hover:shadow-card transition-all"
-          >
-            <GraphIcon className="size-4" />
-            View Graph
-          </button>
-        </div>
-      )}
-      <GraphModal
-        graph={graph}
-        isOpen={graphOpen}
-        onClose={() => setGraphOpen(false)}
-        onNodeClick={() => {}}
-      />
     </div>
   );
 }

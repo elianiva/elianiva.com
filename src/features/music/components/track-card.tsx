@@ -12,6 +12,8 @@ export function TrackCard({ track }: { track: LastFmTrack }) {
             src={track.art}
             alt=""
             className="w-full h-auto aspect-square object-cover border-b border-pink-200/50 bg-white"
+            width={120}
+            height={120}
             loading="lazy"
           />
         ) : (

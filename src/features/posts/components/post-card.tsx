@@ -13,7 +13,7 @@ type PostCardProps = {
 export function PostCard({ title, description, date, tags, ...props }: PostCardProps) {
   return (
     <Card
-      className="bg-white/60 text-left transition-all group hover:bg-white border-0 ring-0"
+      className="bg-white/60 text-left transition-colors group hover:bg-white border-0 ring-0"
       role="article"
       aria-labelledby="post-title"
       style={{ viewTransitionName: title }}

@@ -21,7 +21,7 @@ function NoteLink({ note }: { note: Note }) {
     <Link
       to="/notes/$slug"
       params={{ slug: note.slug }}
-      className="group flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-all"
+      className="group flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-colors"
       style={{ viewTransitionName: `note-card-${note.slug}` }}
     >
       <div className="flex-1 min-w-0">

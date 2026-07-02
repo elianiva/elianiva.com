@@ -13,7 +13,7 @@ interface ProjectCardProps {
 export function ProjectCard({ slug, title, description, stack }: ProjectCardProps) {
   return (
     <Card
-      className="bg-white/60 text-left px-4 py-3 transition-all group hover:bg-white h-full flex flex-col border-0 ring-0"
+      className="bg-white/60 text-left px-4 py-3 transition-colors group hover:bg-white h-full flex flex-col border-0 ring-0"
       style={{ viewTransitionName: `project-card-${slug}` }}
     >
       <div className="flex gap-4 flex-1 items-center">

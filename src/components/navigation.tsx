@@ -24,7 +24,7 @@ export function NavigationStrip() {
               key={item.href}
               to={item.href}
               className={cn(
-                "h-full px-4 text-xs font-normal transition-colors border-r border-border flex items-center uppercase font-heading tracking-widest text-foreground/70 active:bg-border/30 [&:focus]:outline-none [&:focus-visible]:outline-none",
+                "h-full px-4 text-xs font-normal transition-colors border-r border-border flex items-center uppercase font-heading tracking-widest text-foreground/70 active:bg-border/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2",
                 isActive && "font-semibold bg-border/30 text-pink-600",
               )}
             >

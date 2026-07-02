@@ -14,7 +14,7 @@ export const getPosts = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     let posts = allPosts
       .filter((p) => !p.hidden)
-      .sort((a, b) => (a.date > b.date ? -1 : 1))
+      .sort((a, b) => b.date.localeCompare(a.date))
       .map((p) => ({
         slug: p.slug,
         title: p.title,

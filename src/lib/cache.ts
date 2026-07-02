@@ -41,7 +41,9 @@ export class KvCache extends Context.Service<
               const entry = JSON.parse(raw) as Entry;
               const elapsed = Date.now() - entry.at;
               if (elapsed < Duration.toMillis(ttl)) return entry.value as A;
-              yield* Effect.tryPromise(() => ns.delete(kvKey(key))).pipe(Effect.ignore);
+              yield* Effect.tryPromise(() => ns.delete(kvKey(key))).pipe(
+              Effect.catchAll(() => Effect.sync(() => console.error(`[KvCache] failed to delete key: ${key}`))),
+              );
             }
           }
 
@@ -52,7 +54,9 @@ export class KvCache extends Context.Service<
               ns.put(kvKey(key), JSON.stringify({ value, at: Date.now() } satisfies Entry), {
                 expirationTtl: Math.min(ttlSec, 604_800),
               }),
-            ).pipe(Effect.ignore);
+            ).pipe(
+              Effect.catchAll(() => Effect.sync(() => console.error(`[KvCache] failed to put key: ${key}`))),
+            );
           }
           return value;
         });

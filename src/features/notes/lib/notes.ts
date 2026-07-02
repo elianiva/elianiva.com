@@ -2,10 +2,10 @@ import { Context, Effect, Layer, Redacted } from "effect";
 import { createServerFn } from "@tanstack/react-start";
 import { Octokit } from "octokit";
 import matter from "gray-matter";
-import { AppRuntime } from "~/lib/effect";
+import { runApp } from "~/lib/effect";
 import { GH_TOKEN, NOTES_OWNER, NOTES_REPO, NOTES_BRANCH } from "~/lib/env";
 import * as E from "~/lib/errors";
-import type { Note, NoteCategory, NotesGraph } from "./types";
+import type { Note, NoteCategory } from "./types";
 
 function extractWikiLinks(content: string): string[] {
   const links: string[] = [];
@@ -219,20 +219,35 @@ function loadNotesFromGithub(
       (item) => item.type === "blob" && (item.path?.endsWith(".md") || item.path?.endsWith(".mdx")),
     );
 
-    const notes: Note[] = [];
-    const now = new Date().toISOString();
+    const blobs = yield* Effect.tryPromise({
+      try: () =>
+        Promise.all(
+          mdFiles
+            .filter((f) => f.path && f.sha)
+            .map(async (file) => {
+              try {
+                const { data } = await octokit.rest.git.getBlob({
+                  owner,
+                  repo,
+                  file_sha: file.sha!,
+                });
+                return {
+                  path: file.path!,
+                  content: Buffer.from(data.content, "base64").toString("utf-8"),
+                };
+              } catch {
+                return null;
+              }
+            }),
+        ),
+      catch: (e) => new E.NotesError({ message: `Failed to fetch note contents: ${String(e)}` }),
+    });
 
-    for (const file of mdFiles) {
-      if (!file.path) continue;
-      const note = yield* Effect.gen(function* () {
-        const { data: fileData } = yield* Effect.tryPromise({
-          try: () => octokit.rest.repos.getContent({ owner, repo, path: file.path, ref: branch }),
-          catch: () => undefined as { content?: string } | undefined,
-        });
-        if (!fileData || !("content" in fileData)) return null;
-        const content = Buffer.from(fileData.content, "base64").toString("utf-8");
-        return parseNoteFromRaw(file.path, content, { date: now });
-      }).pipe(Effect.catchCause(() => Effect.succeed(null as Note | null)));
+    const now = new Date().toISOString();
+    const notes: Note[] = [];
+    for (const blob of blobs) {
+      if (!blob) continue;
+      const note = parseNoteFromRaw(blob.path, blob.content, { date: now });
       if (note) notes.push(note);
     }
 
@@ -246,7 +261,6 @@ export class Notes extends Context.Service<
   Notes,
   {
     readonly load: () => Effect.Effect<Note[], E.NotesError>;
-    readonly buildGraph: () => Effect.Effect<NotesGraph, E.NotesError>;
   }
 >()("Notes") {
   static readonly layer = Layer.effect(
@@ -268,35 +282,7 @@ export class Notes extends Context.Service<
         );
       });
 
-      const buildGraph = Effect.fn("Notes.buildGraph")(function* () {
-        const notes = yield* load();
-        const nodes = notes.map((note: Note) => ({
-          id: note.slug,
-          name: note.title,
-          category: note.category,
-          val: Math.max(4, note.backlinks.length + 2),
-        }));
-
-        const links: NotesGraph["links"] = [];
-        const seen = new Set<string>();
-
-        for (const note of notes) {
-          for (const link of note.outboundLinks) {
-            const targetSlug = link.toLowerCase().replace(/\s+/g, "-");
-            if (notes.some((n: Note) => n.slug === targetSlug)) {
-              const key = [note.slug, targetSlug].sort().join("-");
-              if (!seen.has(key)) {
-                seen.add(key);
-                links.push({ source: note.slug, target: targetSlug });
-              }
-            }
-          }
-        }
-
-        return { nodes, links };
-      });
-
-      return { load, buildGraph };
+      return { load };
     }),
   );
 }
@@ -304,19 +290,10 @@ export class Notes extends Context.Service<
 // ── Server functions ─────────────────────────────────────────────
 
 export const loadNotes = createServerFn({ method: "GET" }).handler(() =>
-  AppRuntime.runPromise(
+  runApp(
     Effect.gen(function* () {
       const svc = yield* Notes;
       return yield* svc.load();
-    }),
-  ),
-);
-
-export const buildGraph = createServerFn({ method: "GET" }).handler(() =>
-  AppRuntime.runPromise(
-    Effect.gen(function* () {
-      const svc = yield* Notes;
-      return yield* svc.buildGraph();
     }),
   ),
 );

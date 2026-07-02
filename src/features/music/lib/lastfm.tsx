@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { createServerFn } from "@tanstack/react-start";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
-import { AppRuntime } from "~/lib/effect";
+import { runApp } from "~/lib/effect";
 import { LastFM } from "./lastfm.service";
 import { MusicPage } from "~/features/music/components/music-page";
 
@@ -26,7 +26,7 @@ export type MusicData = {
 };
 
 export const getMusicTracksRsc = createServerFn({ method: "GET" }).handler(async () => {
-  const music = await AppRuntime.runPromise(
+  const music = await runApp(
     Effect.gen(function* () {
       const svc = yield* LastFM;
       return yield* svc.getRecentTracks();

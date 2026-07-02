@@ -31,10 +31,10 @@ export function PRDropdown({ repository, prs }: PRDropdownProps) {
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="bg-blur-xl bg-white/70 hover:bg-white focus:bg-white focus:outline-none"
+      className="bg-blur-xl bg-white/70 hover:bg-white focus:bg-white"
     >
-      <CollapsibleTrigger className="list-none w-full px-4 py-3 cursor-pointer focus:outline-none text-left">
-        <div className="flex flex-row sm:items-center justify-between focus:outline-none">
+      <CollapsibleTrigger className="list-none w-full px-4 py-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 text-left">
+        <div className="flex flex-row sm:items-center justify-between">
           <div className="flex items-center gap-2">
             <div
               className={`text-pink-600 transition-transform duration-200 ease-out ${isOpen ? "rotate-180" : ""}`}

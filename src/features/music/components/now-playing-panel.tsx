@@ -29,6 +29,8 @@ export function NowPlayingPanel({ track }: { track: LastFmTrack }) {
             src={track.art}
             alt=""
             className="size-40 object-cover border-l border-pink-200 bg-white"
+            width={160}
+            height={160}
           />
         ) : (
           <div className="size-40 flex items-center justify-center border-l border-pink-200 bg-pink-100/50">

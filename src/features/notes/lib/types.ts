@@ -23,15 +23,3 @@ export type Note = {
   year?: (string | number)[];
 };
 
-export type NotesGraph = {
-  nodes: Array<{
-    id: string;
-    name: string;
-    category: NoteCategory;
-    val: number;
-  }>;
-  links: Array<{
-    source: string;
-    target: string;
-  }>;
-};

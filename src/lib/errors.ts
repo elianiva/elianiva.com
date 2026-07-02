@@ -21,7 +21,3 @@ export class NotesError extends Data.TaggedError("NotesError")<{
   readonly message: string;
 }> {}
 
-export class KvCacheError extends Data.TaggedError("KvCacheError")<{
-  readonly key: string;
-  readonly cause: string;
-}> {}

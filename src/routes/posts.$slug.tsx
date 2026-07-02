@@ -174,7 +174,7 @@ function PostDetailPage() {
               <Link
                 to="/posts/$slug"
                 params={{ slug: post.prevPost.slug }}
-                className="max-sm:border-b md:border-r group flex flex-col p-4 hover:bg-white/20 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+                className="max-sm:border-b md:border-r group flex flex-col p-4 hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Previous
@@ -190,7 +190,7 @@ function PostDetailPage() {
               <Link
                 to="/posts/$slug"
                 params={{ slug: post.nextPost.slug }}
-                className="max-sm:border-b group flex flex-col items-end text-right p-4 hover:bg-white/20 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+                className="max-sm:border-b group flex flex-col items-end text-right p-4 hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Next

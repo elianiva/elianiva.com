@@ -3,6 +3,15 @@ import { allPosts, allProjects } from "content-collections";
 import { loadNotes } from "~/features/notes/lib/notes";
 import sites from "~/data/sites";
 
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
@@ -23,7 +32,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         const xml =
           '<?xml version="1.0" encoding="UTF-8"?>' +
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
-          urls.map((u) => "<url><loc>" + sites.siteUrl + u + "</loc></url>").join("") +
+          urls.map((u) => "<url><loc>" + escapeXml(sites.siteUrl + u) + "</loc></url>").join("") +
           "</urlset>";
         return new Response(xml, {
           headers: {

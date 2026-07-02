@@ -30,7 +30,7 @@ export function Backlinks({ notes, currentSlug }: BacklinksProps) {
             params={{ slug: note.slug }}
             className="group no-underline"
           >
-            <Card className="flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-all ring-0">
+            <Card className="flex items-center gap-3 p-3 bg-white/60 hover:bg-white border border-pink-200/50 transition-colors ring-0">
               <div className="flex-1 min-w-0">
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors text-sm">
                   {note.title}
