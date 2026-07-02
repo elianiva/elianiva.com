@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { fileURLToPath } from "node:url";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import contentCollections from "@content-collections/vite";
@@ -34,6 +35,9 @@ const prettyCodeOptions: PrettyCodeOptions = {
 const config = defineConfig({
   resolve: {
     tsconfigPaths: true,
+    alias: {
+      "~": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
   build: {
     rolldownOptions: {

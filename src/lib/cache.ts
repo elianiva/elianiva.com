@@ -42,7 +42,7 @@ export class KvCache extends Context.Service<
               const elapsed = Date.now() - entry.at;
               if (elapsed < Duration.toMillis(ttl)) return entry.value as A;
               yield* Effect.tryPromise(() => ns.delete(kvKey(key))).pipe(
-              Effect.catchAll(() => Effect.sync(() => console.error(`[KvCache] failed to delete key: ${key}`))),
+              Effect.catchCause(() => Effect.sync(() => console.error(`[KvCache] failed to delete key: ${key}`))),
               );
             }
           }
@@ -55,7 +55,7 @@ export class KvCache extends Context.Service<
                 expirationTtl: Math.min(ttlSec, 604_800),
               }),
             ).pipe(
-              Effect.catchAll(() => Effect.sync(() => console.error(`[KvCache] failed to put key: ${key}`))),
+              Effect.catchCause(() => Effect.sync(() => console.error(`[KvCache] failed to put key: ${key}`))),
             );
           }
           return value;
