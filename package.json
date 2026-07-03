@@ -91,17 +91,5 @@
     "vitest": "^4.1.9",
     "wrangler": "^4.105.0"
   },
-  "packageManager": "pnpm@11.9.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "lightningcss",
-      "msw",
-      "sharp",
-      "workerd"
-    ],
-    "ignoredBuiltDependencies": [
-      "msgpackr-extract"
-    ]
-  }
+  "packageManager": "pnpm@11.9.0"
 }
