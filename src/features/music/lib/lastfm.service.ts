@@ -77,7 +77,7 @@ export class LastFM extends Context.Service<
         const result = yield* cache
           .getOrSet(
             "music:tracks",
-            Duration.seconds(20),
+            Duration.minutes(2),
             Effect.gen(function* () {
               const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${apiKey}&format=json&limit=100&extended=1`;
               const resp = yield* client.get(url, {

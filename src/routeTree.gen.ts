@@ -22,7 +22,6 @@ import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as NotesSlugRouteImport } from './routes/notes.$slug'
 import { Route as ApiOgImageRouteImport } from './routes/api.og-image'
-import { Route as ApiGraphJsonRouteImport } from './routes/api.graph-json'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -89,11 +88,6 @@ const ApiOgImageRoute = ApiOgImageRouteImport.update({
   path: '/api/og-image',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiGraphJsonRoute = ApiGraphJsonRouteImport.update({
-  id: '/api/graph-json',
-  path: '/api/graph-json',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -102,7 +96,6 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/api/graph-json': typeof ApiGraphJsonRoute
   '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
@@ -118,7 +111,6 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/api/graph-json': typeof ApiGraphJsonRoute
   '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
@@ -135,7 +127,6 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/api/graph-json': typeof ApiGraphJsonRoute
   '/api/og-image': typeof ApiOgImageRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
@@ -153,7 +144,6 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
-    | '/api/graph-json'
     | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
@@ -169,7 +159,6 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
-    | '/api/graph-json'
     | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
@@ -185,7 +174,6 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
-    | '/api/graph-json'
     | '/api/og-image'
     | '/notes/$slug'
     | '/posts/$slug'
@@ -202,7 +190,6 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  ApiGraphJsonRoute: typeof ApiGraphJsonRoute
   ApiOgImageRoute: typeof ApiOgImageRoute
   NotesSlugRoute: typeof NotesSlugRoute
   PostsSlugRoute: typeof PostsSlugRoute
@@ -305,13 +292,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOgImageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/graph-json': {
-      id: '/api/graph-json'
-      path: '/api/graph-json'
-      fullPath: '/api/graph-json'
-      preLoaderRoute: typeof ApiGraphJsonRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -322,7 +302,6 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  ApiGraphJsonRoute: ApiGraphJsonRoute,
   ApiOgImageRoute: ApiOgImageRoute,
   NotesSlugRoute: NotesSlugRoute,
   PostsSlugRoute: PostsSlugRoute,

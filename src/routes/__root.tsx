@@ -94,13 +94,6 @@ function RootDocument(props: PropsWithChildren<{}>) {
     <html lang="en" className="h-full">
       <head>
         <HeadContent />
-        {import.meta.env.PROD && (
-          <script
-            defer
-            src="https://cloud.umami.is/script.js"
-            data-website-id="09fb4ce5-10bb-467c-9aee-2c95241715dc"
-          />
-        )}
       </head>
       <body className="h-full flex flex-col">
         <ScrollToTop />
