@@ -59,12 +59,14 @@ export const Route = createFileRoute("/posts/$slug")({
   pendingComponent: PostDetailSkeleton,
   loader: ({ params: { slug } }) => getPostBySlug({ data: slug }),
   head: ({ loaderData }) => {
-    if (!loaderData) return postSeo({ title: "Post", description: "", date: "", tags: [] });
+    if (!loaderData)
+      return postSeo({ title: "Post", description: "", date: "", tags: [], slug: "" });
     return postSeo({
       title: loaderData.title,
       description: loaderData.description,
       date: loaderData.date,
       tags: loaderData.tags,
+      slug: loaderData.slug,
     });
   },
   notFoundComponent: PostNotFoundPage,

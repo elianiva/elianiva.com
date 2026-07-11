@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
 import { BackButton } from "~/components/back-button";
-import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { seo, defaultOgImageUrl, siteUrl } from "~/lib/seo";
 import { ProjectDetailSkeleton } from "~/components/ui/page-skeleton";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
@@ -48,6 +48,7 @@ export const Route = createFileRoute("/projects/$slug")({
       ogTitle: loaderData.title,
       ogType: "website",
       ogImage: defaultOgImageUrl(loaderData.title, loaderData.description),
+      canonical: `${siteUrl}/projects/${loaderData.slug}`,
     });
   },
   notFoundComponent: ProjectNotFoundPage,

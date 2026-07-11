@@ -16,5 +16,6 @@ export const Route = createFileRoute("/notes/")({
       title: "Notes",
       description: "Digital garden and collection of thoughts",
       ogImage: defaultOgImageUrl("Notes", "Digital garden and collection of thoughts"),
+      path: "/notes",
     }),
 });

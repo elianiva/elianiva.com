@@ -17,23 +17,59 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         const notes = await loadNotes();
-        const urls = [
-          "/",
-          "/posts",
-          "/notes",
-          "/projects",
-          ...allPosts.reduce<string[]>((acc, p) => {
-            if (!p.hidden) acc.push("/posts/" + p.slug);
-            return acc;
-          }, []),
-          ...notes.map((n) => "/notes/" + n.slug),
-          ...allProjects.map((p) => "/projects/" + p.slug),
+        const now = new Date().toISOString();
+
+        const entries: { loc: string; lastmod?: string; changefreq: string; priority: string }[] = [
+          { loc: "/", changefreq: "weekly", priority: "1.0" },
+          { loc: "/posts", changefreq: "weekly", priority: "0.8" },
+          { loc: "/notes", changefreq: "monthly", priority: "0.6" },
+          { loc: "/projects", changefreq: "monthly", priority: "0.8" },
+          { loc: "/ai", changefreq: "monthly", priority: "0.4" },
+          { loc: "/music", changefreq: "daily", priority: "0.3" },
         ];
+
+        for (const post of allPosts) {
+          if (post.hidden) continue;
+          entries.push({
+            loc: `/posts/${post.slug}`,
+            lastmod: post.date,
+            changefreq: "yearly",
+            priority: "0.7",
+          });
+        }
+
+        for (const note of notes) {
+          entries.push({
+            loc: `/notes/${note.slug}`,
+            lastmod: note.modifiedAt ?? now,
+            changefreq: "monthly",
+            priority: "0.5",
+          });
+        }
+
+        for (const project of allProjects) {
+          entries.push({
+            loc: `/projects/${project.slug}`,
+            lastmod: project.date,
+            changefreq: "yearly",
+            priority: "0.6",
+          });
+        }
+
         const xml =
           '<?xml version="1.0" encoding="UTF-8"?>' +
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
-          urls.map((u) => "<url><loc>" + escapeXml(sites.siteUrl + u) + "</loc></url>").join("") +
+          entries
+            .map((entry) => {
+              const loc = escapeXml(sites.siteUrl + entry.loc);
+              const lastmod = entry.lastmod
+                ? `<lastmod>${escapeXml(entry.lastmod)}</lastmod>`
+                : "";
+              return `<url><loc>${loc}</loc>${lastmod}<changefreq>${entry.changefreq}</changefreq><priority>${entry.priority}</priority></url>`;
+            })
+            .join("") +
           "</urlset>";
+
         return new Response(xml, {
           headers: {
             "Content-Type": "application/xml; charset=utf-8",

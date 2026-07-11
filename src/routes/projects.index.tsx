@@ -9,5 +9,6 @@ export const Route = createFileRoute("/projects/")({
       title: "Projects",
       description: "Things I've built",
       ogImage: defaultOgImageUrl("Projects", "Things I've built"),
+      path: "/projects",
     }),
 });

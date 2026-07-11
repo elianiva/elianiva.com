@@ -17,5 +17,6 @@ export const Route = createFileRoute("/ai")({
       title: "AI Usage",
       description: "AI token usage tracked by tokscale.ai",
       ogImage: defaultOgImageUrl("AI Usage", "AI token usage tracked by tokscale.ai"),
+      path: "/ai",
     }),
 });

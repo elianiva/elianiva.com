@@ -11,7 +11,6 @@ function escapeXml(text: string): string {
     .replace(/'/g, "&apos;");
 }
 
-
 export const Route = createFileRoute("/rss.xml")({
   server: {
     handlers: {
@@ -24,41 +23,50 @@ export const Route = createFileRoute("/rss.xml")({
             url: sites.siteUrl + "/posts/" + post.slug,
             date: post.date,
             description: post.description,
+            categories: post.tags,
           })),
           ...projects.map((project) => ({
             title: project.title,
             url: sites.siteUrl + "/projects/" + project.slug,
             date: project.date,
             description: project.description,
+            categories: [] as string[],
           })),
         ];
+
+        const channelItems = items
+          .map(
+            (item) =>
+              "<item><title>" +
+              escapeXml(item.title) +
+              "</title><link>" +
+              escapeXml(item.url) +
+              "</link><guid>" +
+              escapeXml(item.url) +
+              "</guid><pubDate>" +
+              new Date(item.date).toUTCString() +
+              "</pubDate><description>" +
+              escapeXml(item.description) +
+              "</description>" +
+              item.categories
+                .map((cat) => "<category>" + escapeXml(cat) + "</category>")
+                .join("") +
+              "</item>",
+          )
+          .join("");
+
         const xml =
           '<?xml version="1.0" encoding="UTF-8"?>' +
-          '<rss version="2.0"><channel>' +
-          "<title>" +
-          sites.siteName +
-          "</title><link>" +
-          sites.siteUrl +
-          "</link><description>" +
-          sites.description +
-          "</description>" +
-          items
-            .map(
-              (item) =>
-                "<item><title>" +
-                escapeXml(item.title) +
-                "</title><link>" +
-                escapeXml(item.url) +
-                "</link><guid>" +
-                escapeXml(item.url) +
-                "</guid><pubDate>" +
-                new Date(item.date).toUTCString() +
-                "</pubDate><description>" +
-                escapeXml(item.description) +
-                "</description></item>",
-            )
-            .join("") +
+          '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' +
+          "<channel>" +
+          "<title>" + escapeXml(sites.siteName) + "</title>" +
+          "<link>" + sites.siteUrl + "</link>" +
+          "<description>" + escapeXml(sites.description) + "</description>" +
+          "<language>en</language>" +
+          '<atom:link href="' + sites.siteUrl + '/rss.xml" rel="self" type="application/rss+xml" />' +
+          channelItems +
           "</channel></rss>";
+
         return new Response(xml, {
           headers: {
             "Content-Type": "application/rss+xml; charset=utf-8",

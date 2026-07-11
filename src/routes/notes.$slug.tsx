@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { loadNotes } from "~/features/notes/lib/notes";
 import { NoteDetailPage } from "~/features/notes/components/note-detail-page";
-import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { seo, defaultOgImageUrl, siteUrl } from "~/lib/seo";
 import { NoteDetailSkeleton } from "~/components/ui/page-skeleton";
 
 export const Route = createFileRoute("/notes/$slug")({
@@ -22,6 +22,7 @@ export const Route = createFileRoute("/notes/$slug")({
       description: loaderData.note.description || loaderData.note.title,
       ogType: "website",
       ogImage: defaultOgImageUrl(loaderData.note.title, loaderData.note.description),
+      canonical: `${siteUrl}/notes/${loaderData.note.slug}`,
     });
   },
 });

@@ -15,11 +15,11 @@ function MusicRoute() {
 }
 
 export const Route = createFileRoute("/music")({
-  component: MusicRoute,
   head: () =>
     seo({
       title: "Music",
       description: "Recently played tracks via Last.fm",
       ogImage: defaultOgImageUrl("Music", "Recently played tracks via Last.fm"),
+      path: "/music",
     }),
 });
