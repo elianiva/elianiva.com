@@ -5,3 +5,4 @@ allowBuilds:
   sharp: true
   msgpackr-extract: false
   workerd: true
+minimumReleaseAge: 0
