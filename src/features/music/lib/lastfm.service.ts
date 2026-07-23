@@ -69,10 +69,6 @@ export class LastFM extends Context.Service<
     Effect.gen(function* () {
       const apiKeyRedacted = yield* LASTFM_API_KEY;
       const apiKey = Redacted.value(apiKeyRedacted);
-      console.log({
-        apiKey,
-        apiKeyRedacted,
-      })
       const client = yield* HttpClient.HttpClient;
       const cache = yield* KvCache;
 
