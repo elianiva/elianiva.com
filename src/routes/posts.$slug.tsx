@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { renderServerComponent } from "@tanstack/react-start/rsc";
+import { renderToString } from "react-dom/server.edge";
 import { allPosts } from "content-collections";
 import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
@@ -10,7 +10,7 @@ import { PostDetailSkeleton } from "~/components/ui/page-skeleton";
 import PencilIcon from "~icons/ph/note-pencil";
 
 const getPostBySlug = createServerFn({ method: "GET" })
-  .inputValidator((slug: string) => slug)
+  .validator((slug: string) => slug)
   .handler(async ({ data: slug }) => {
     const post = allPosts.find((p) => p.slug === slug);
     if (!post || post.hidden) {
@@ -29,6 +29,17 @@ const getPostBySlug = createServerFn({ method: "GET" })
     const readingTime = Math.ceil(wordCount / 200);
 
     const MDXContent = post.mdx;
+    const mdxHtml = renderToString(
+      <MDXContent
+        components={{
+          h2: (props) => <Heading level={2} {...props} />,
+          h3: (props) => <Heading level={3} {...props} />,
+          h4: (props) => <Heading level={4} {...props} />,
+          h5: (props) => <Heading level={5} {...props} />,
+          h6: (props) => <Heading level={6} {...props} />,
+        }}
+      />,
+    );
 
     return {
       title: post.title,
@@ -40,17 +51,7 @@ const getPostBySlug = createServerFn({ method: "GET" })
       readingTime,
       prevPost: prevPost ? { slug: prevPost.slug, title: prevPost.title } : null,
       nextPost: nextPost ? { slug: nextPost.slug, title: nextPost.title } : null,
-      mdx: await renderServerComponent(
-        <MDXContent
-          components={{
-            h2: (props) => <Heading level={2} {...props} />,
-            h3: (props) => <Heading level={3} {...props} />,
-            h4: (props) => <Heading level={4} {...props} />,
-            h5: (props) => <Heading level={5} {...props} />,
-            h6: (props) => <Heading level={6} {...props} />,
-          }}
-        />,
-      ),
+      mdx: mdxHtml,
     };
   });
 
@@ -145,7 +146,7 @@ function PostDetailPage() {
         </header>
         <article className="font-body mx-auto max-w-[64ch] prose prose-pink">
           <CodeCopy />
-          {post.mdx}
+          <div dangerouslySetInnerHTML={{ __html: post.mdx }} />
 
           <div>
             <script

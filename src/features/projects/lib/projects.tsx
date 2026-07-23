@@ -15,7 +15,7 @@ export type ProjectSummary = {
 };
 
 export const getProjects = createServerFn({ method: "GET" })
-  .inputValidator((input: { type: ProjectType; featured?: boolean }) => input)
+  .validator((input: { type: ProjectType; featured?: boolean }) => input)
   .handler(async ({ data: { type, featured = false } }) => {
     let projects = allProjects
       .filter((p) => p.type === type && (featured ? p.featured : true))

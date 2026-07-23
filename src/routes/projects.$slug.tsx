@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { renderServerComponent } from "@tanstack/react-start/rsc";
+import { renderToString } from "react-dom/server.edge";
 import { allProjects } from "content-collections";
 import { BackButton } from "~/components/back-button";
 import { seo, defaultOgImageUrl, siteUrl } from "~/lib/seo";
@@ -9,7 +9,7 @@ import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
 
 const getProjectBySlug = createServerFn({ method: "GET" })
-  .inputValidator((slug: string) => slug)
+  .validator((slug: string) => slug)
   .handler(async ({ data: slug }) => {
     const project = allProjects.find((p) => p.slug === slug);
     if (!project) {
@@ -22,6 +22,7 @@ const getProjectBySlug = createServerFn({ method: "GET" })
     const nextProject = sortedProjects[currentIndex - 1] || null;
 
     const MDXContent = project.mdx;
+    const mdxHtml = renderToString(<MDXContent />);
 
     return {
       title: project.title,
@@ -32,7 +33,7 @@ const getProjectBySlug = createServerFn({ method: "GET" })
       stack: project.stack,
       prevProject: prevProject ? { slug: prevProject.slug, title: prevProject.title } : null,
       nextProject: nextProject ? { slug: nextProject.slug, title: nextProject.title } : null,
-      mdx: await renderServerComponent(<MDXContent />),
+      mdx: mdxHtml,
     };
   });
 
@@ -137,7 +138,7 @@ function ProjectDetailPage() {
                   )}
                 </div>
               </div>
-              <div className="prose prose-pink max-w-full pt-4">{project.mdx}</div>
+              <div className="prose prose-pink max-w-full pt-4" dangerouslySetInnerHTML={{ __html: project.mdx }} />
             </div>
           </div>
 

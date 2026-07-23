@@ -10,7 +10,7 @@ export type PostSummary = {
 };
 
 export const getPosts = createServerFn({ method: "GET" })
-  .inputValidator((input: { limit?: number }) => input)
+  .validator((input: { limit?: number }) => input)
   .handler(async ({ data }) => {
     let posts = allPosts
       .filter((p) => !p.hidden)

@@ -22,4 +22,5 @@ export const Route = createFileRoute("/music")({
       ogImage: defaultOgImageUrl("Music", "Recently played tracks via Last.fm"),
       path: "/music",
     }),
+  component: MusicRoute,
 });

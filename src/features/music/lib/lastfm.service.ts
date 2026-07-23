@@ -67,7 +67,12 @@ export class LastFM extends Context.Service<
   static readonly layer = Layer.effect(
     LastFM,
     Effect.gen(function* () {
-      const apiKey = Redacted.value(yield* LASTFM_API_KEY);
+      const apiKeyRedacted = yield* LASTFM_API_KEY;
+      const apiKey = Redacted.value(apiKeyRedacted);
+      console.log({
+        apiKey,
+        apiKeyRedacted,
+      })
       const client = yield* HttpClient.HttpClient;
       const cache = yield* KvCache;
 

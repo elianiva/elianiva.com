@@ -219,7 +219,7 @@ export class GitHubService extends Context.Service<GitHubService, GithubServiceS
   static readonly layer = Layer.effect(
     GitHubService,
     Effect.gen(function* () {
-      const token = Redacted.value(yield* GH_TOKEN);
+      const token = yield* GH_TOKEN;
       const cache = yield* KvCache;
       const octokit = new Octokit({ auth: token || undefined });
 

@@ -1,11 +1,19 @@
 import { Context, Effect, Layer, Redacted } from "effect";
 import { createServerFn } from "@tanstack/react-start";
 import { Octokit } from "octokit";
-import matter from "gray-matter";
-import { runApp } from "~/lib/effect";
+import { runtime } from "~/lib/effect";
 import { GH_TOKEN, NOTES_OWNER, NOTES_REPO, NOTES_BRANCH } from "~/lib/env";
 import * as E from "~/lib/errors";
 import type { Note, NoteCategory } from "./types";
+
+function base64Decode(str: string): string {
+  const binaryStr = atob(str);
+  const bytes = new Uint8Array(binaryStr.length);
+  for (let i = 0; i < binaryStr.length; i++) {
+    bytes[i] = binaryStr.charCodeAt(i);
+  }
+  return new TextDecoder().decode(bytes);
+}
 
 function extractWikiLinks(content: string): string[] {
   const links: string[] = [];
@@ -62,7 +70,12 @@ type ParseExtra = {
   modifiedAt?: string;
 };
 
-function parseNoteFromRaw(relPath: string, content: string, extra: ParseExtra): Note | null {
+function parseNoteFromRaw(
+  matter: (content: string) => { data: Record<string, unknown>; content: string },
+  relPath: string,
+  content: string,
+  extra: ParseExtra,
+): Note | null {
   const parsed = matter(content);
   const tags = Array.isArray(parsed.data.tags)
     ? parsed.data.tags.map((t: unknown) => String(t))
@@ -135,6 +148,7 @@ function resolveBacklinks(notes: Note[]): Note[] {
 
 function loadNotesFromLocalFS(): Effect.Effect<Note[], E.NotesError> {
   return Effect.gen(function* () {
+    const { default: matter } = yield* Effect.promise(() => import("gray-matter"));
     const { promises: fsp } = yield* Effect.promise(() => import("node:fs"));
     const { homedir } = yield* Effect.promise(() => import("node:os"));
     const { join, relative } = yield* Effect.promise(() => import("node:path"));
@@ -182,7 +196,7 @@ function loadNotesFromLocalFS(): Effect.Effect<Note[], E.NotesError> {
           try: () => fsp.stat(filePath),
           catch: () => undefined as import("node:fs").Stats | undefined,
         });
-        return parseNoteFromRaw(relPath, content, {
+        return parseNoteFromRaw(matter, relPath, content, {
           date: stat?.birthtime ? stat.birthtime.toISOString() : new Date().toISOString(),
           modifiedAt: stat?.mtime ? stat.mtime.toISOString() : undefined,
         });
@@ -208,6 +222,7 @@ function loadNotesFromGithub(
   branch: string,
 ): Effect.Effect<Note[], E.NotesError> {
   return Effect.gen(function* () {
+    const { default: matter } = yield* Effect.promise(() => import("gray-matter"));
     const octokit = new Octokit({ auth: ghToken });
 
     const { data: treeData } = yield* Effect.tryPromise({
@@ -233,7 +248,7 @@ function loadNotesFromGithub(
                 });
                 return {
                   path: file.path!,
-                  content: Buffer.from(data.content, "base64").toString("utf-8"),
+                  content: base64Decode(data.content),
                 };
               } catch {
                 return null;
@@ -247,7 +262,7 @@ function loadNotesFromGithub(
     const notes: Note[] = [];
     for (const blob of blobs) {
       if (!blob) continue;
-      const note = parseNoteFromRaw(blob.path, blob.content, { date: now });
+      const note = parseNoteFromRaw(matter, blob.path, blob.content, { date: now });
       if (note) notes.push(note);
     }
 
@@ -266,7 +281,8 @@ export class Notes extends Context.Service<
   static readonly layer = Layer.effect(
     Notes,
     Effect.gen(function* () {
-      const ghToken = Redacted.value(yield* GH_TOKEN);
+      const ghTokenRedacted = yield* GH_TOKEN;
+      const ghToken = Redacted.value(ghTokenRedacted);
       const owner = yield* NOTES_OWNER;
       const repo = yield* NOTES_REPO;
       const branch = yield* NOTES_BRANCH;
@@ -290,7 +306,7 @@ export class Notes extends Context.Service<
 // ── Server functions ─────────────────────────────────────────────
 
 export const loadNotes = createServerFn({ method: "GET" }).handler(() =>
-  runApp(
+  runtime.runPromise(
     Effect.gen(function* () {
       const svc = yield* Notes;
       return yield* svc.load();
