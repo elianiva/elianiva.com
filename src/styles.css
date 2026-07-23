@@ -54,7 +54,10 @@
 }
 
 @layer base {
-  html,
+  html {
+    scrollbar-gutter: stable;
+  }
+
   body {
     @apply overscroll-none overflow-x-hidden;
   }
