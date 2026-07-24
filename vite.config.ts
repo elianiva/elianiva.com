@@ -7,7 +7,6 @@ import contentCollections from "@content-collections/vite";
 import viteReact from "@vitejs/plugin-react";
 import rsc from "@vitejs/plugin-rsc";
 import tailwindcss from "@tailwindcss/vite";
-import { cloudflare } from "@cloudflare/vite-plugin";
 import glsl from "vite-plugin-glsl";
 import Icons from "unplugin-icons/vite";
 import mdx from "@mdx-js/rollup";
@@ -57,12 +56,6 @@ const config = defineConfig({
     devtools(),
     contentCollections({ environment: "ssr", configPath: "content-collections.config.ts" }),
     rsc(),
-    cloudflare({
-      viteEnvironment: {
-        name: "ssr",
-        childEnvironments: ["rsc"],
-      },
-    }),
     tailwindcss(),
     tanstackStart({
       rsc: {

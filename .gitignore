@@ -11,6 +11,7 @@ dist-ssr
 .vinxi
 __unconfig*
 .dev.vars
+.alchemy
 .content-collections
 .cache
 .references

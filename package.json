@@ -6,14 +6,13 @@
     "~/*": "./src/*"
   },
   "scripts": {
-    "dev": "vite dev --port 3000",
+    "dev": "alchemy dev",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "alchemy dev",
     "test": "vitest run",
-    "deploy": "pnpm run build && wrangler deploy",
+    "deploy": "alchemy deploy",
     "format": "oxfmt --write .",
     "lint": "oxlint .",
-    "cf-types": "wrangler types",
     "ui": "pnpm dlx shadcn@latest"
   },
   "dependencies": {
@@ -21,7 +20,8 @@
     "@base-ui/utils": "^0.3.1",
     "@cf-wasm/resvg": "^0.3.5",
     "@cf-wasm/satori": "^0.3.7",
-    "@cloudflare/vite-plugin": "^1.46.0",
+    "@effect/platform-bun": "4.0.0-beta.101",
+    "@effect/platform-node": "4.0.0-beta.101",
     "@flowershow/remark-wiki-link": "3.4.0",
     "@fontsource-variable/google-sans": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
@@ -36,9 +36,10 @@
     "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "^1.168.23",
     "@vitejs/plugin-rsc": "^0.5.30",
+    "alchemy": "2.0.0-beta.64",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "effect": "4.0.0-beta.68",
+    "effect": "4.0.0-beta.101",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.26.0",
     "motion": "^12.42.2",
@@ -61,6 +62,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260724.1",
     "@content-collections/core": "^0.15.2",
     "@content-collections/mdx": "^0.2.2",
     "@content-collections/vite": "^0.3.0",
@@ -88,8 +90,7 @@
     "unplugin-icons": "^23.0.1",
     "vite": "^8.1.5",
     "vite-plugin-glsl": "^1.6.0",
-    "vitest": "^4.1.10",
-    "wrangler": "^4.113.0"
+    "vitest": "^4.1.10"
   },
   "packageManager": "pnpm@11.9.0"
 }
