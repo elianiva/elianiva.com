@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiRouteImport } from './routes/ai'
 import { Route as MusicRouteImport } from './routes/music'
 import { Route as NeighboursRouteImport } from './routes/neighbours'
+import { Route as PhotographyRouteImport } from './routes/photography'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -42,6 +43,11 @@ const MusicRoute = MusicRouteImport.update({
 const NeighboursRoute = NeighboursRouteImport.update({
   id: '/neighbours',
   path: '/neighbours',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhotographyRoute = PhotographyRouteImport.update({
+  id: '/photography',
+  path: '/photography',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/ai': typeof AiRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
+  '/photography': typeof PhotographyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/ai': typeof AiRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
+  '/photography': typeof PhotographyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/ai': typeof AiRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
+  '/photography': typeof PhotographyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/music'
     | '/neighbours'
+    | '/photography'
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/music'
     | '/neighbours'
+    | '/photography'
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/music'
     | '/neighbours'
+    | '/photography'
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -200,6 +212,7 @@ export interface RootRouteChildren {
   AiRoute: typeof AiRoute
   MusicRoute: typeof MusicRoute
   NeighboursRoute: typeof NeighboursRoute
+  PhotographyRoute: typeof PhotographyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/neighbours'
       fullPath: '/neighbours'
       preLoaderRoute: typeof NeighboursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/photography': {
+      id: '/photography'
+      path: '/photography'
+      fullPath: '/photography'
+      preLoaderRoute: typeof PhotographyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -320,6 +340,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiRoute: AiRoute,
   MusicRoute: MusicRoute,
   NeighboursRoute: NeighboursRoute,
+  PhotographyRoute: PhotographyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
