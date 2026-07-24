@@ -22,7 +22,7 @@
     "@cf-wasm/resvg": "^0.3.5",
     "@cf-wasm/satori": "^0.3.7",
     "@cloudflare/vite-plugin": "^1.46.0",
-    "@flowershow/remark-wiki-link": "^4.0.0",
+    "@flowershow/remark-wiki-link": "3.4.0",
     "@fontsource-variable/google-sans": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@mdx-js/rollup": "^3.1.1",
