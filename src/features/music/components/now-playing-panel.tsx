@@ -4,7 +4,7 @@ import { Card } from "~/components/ui/card";
 
 export function NowPlayingPanel({ track }: { track: LastFmTrack }) {
   return (
-    <Card className="my-6 border border-pink-300/50 bg-pink-50/30 p-0 ring-0">
+    <Card className="border border-pink-300/50 bg-pink-50/30 p-0 ring-0">
       <a
         href={track.url}
         target="_blank"

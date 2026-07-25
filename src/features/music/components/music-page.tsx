@@ -1,9 +1,11 @@
 import { Heading } from "~/components/ui/heading";
-import { type MusicData, LASTFM_PROFILE_URL } from "../lib/lastfm";
+import { type MusicPageData, LASTFM_PROFILE_URL } from "../lib/lastfm";
 import { TrackList } from "./track-list";
+import { StatsRow } from "./stats-row";
+import { TopListsRow } from "./top-lists-row";
 import { cn } from "~/lib/utils";
 
-export function MusicPage({ music }: { music: MusicData | null }) {
+export function MusicPage({ music }: { music: MusicPageData | null }) {
   if (!music) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
@@ -42,7 +44,7 @@ export function MusicPage({ music }: { music: MusicData | null }) {
   return (
     <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
-        <header className="relative with-box-underline pb-8">
+        <header className="relative with-box-underline pb-4 md:pb-8">
           <Heading
             level={1}
             right={music ? `${music.total.toLocaleString()} scrobbles` : undefined}
@@ -50,7 +52,7 @@ export function MusicPage({ music }: { music: MusicData | null }) {
             Music
           </Heading>
           <p className="text-pink-950/60 mt-4 leading-relaxed">
-            My ears are in a committed relationship with these noises. Scrobbled using{" "}
+            These are just vibes, pure vibes. Scrobbled using{" "}
             <a
               href={LASTFM_PROFILE_URL}
               target="_blank"
@@ -61,34 +63,43 @@ export function MusicPage({ music }: { music: MusicData | null }) {
             </a>
             .
           </p>
-          {music && (
-            <div className="flex gap-4 mt-4 font-mono text-sm text-pink-950/40">
-              <span>
-                in feed · <b className="text-pink-800 font-normal">{music.tracks.length}</b>
-              </span>
-              <span>
-                status ·{" "}
-                <b
-                  className={cn(
-                    "text-foreground/50 font-normal animate-pulse",
-                    isLive && "text-pink-500",
-                  )}
-                >
-                  ● {isLive ? "live" : "offline"}
-                </b>
-              </span>
+          <div className="flex gap-4 mt-4 font-mono text-sm text-pink-950/40">
+            <span>
+              in feed · <b className="text-pink-800 font-normal">{music.tracks.length}</b>
+            </span>
+            <span>
+              status ·{" "}
+              <b
+                className={cn(
+                  "text-foreground/50 font-normal animate-pulse",
+                  isLive && "text-pink-500",
+                )}
+              >
+                ● {isLive ? "live" : "offline"}
+              </b>
+            </span>
+          </div>
+        </header>
+        <StatsRow stats={music.stats} total={music.total} />
+        <TopListsRow
+          topArtists={music.topArtists}
+          topAlbums={music.topAlbums}
+          topTracks={music.topTracks}
+          topArtistsYear={music.topArtistsYear}
+          topAlbumsYear={music.topAlbumsYear}
+          topTracksYear={music.topTracksYear}
+        />
+        <section className="py-4 md:py-8">
+          {music.tracks.length > 0 ? (
+            <TrackList data={music} />
+          ) : (
+            <div className="py-20 text-center border border-dashed border-pink-200/50">
+              <p className="font-mono text-sm text-pink-950/40">
+                no scrobbles yet. set LASTFM_API_KEY if running locally.
+              </p>
             </div>
           )}
-        </header>
-        {music.tracks.length > 0 ? (
-          <TrackList data={music} />
-        ) : (
-          <div className="py-20 text-center border border-dashed border-pink-200/50 mt-8">
-            <p className="font-mono text-sm text-pink-950/40">
-              no scrobbles yet. set LASTFM_API_KEY if running locally.
-            </p>
-          </div>
-        )}
+        </section>
       </div>
     </div>
   );

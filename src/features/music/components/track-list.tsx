@@ -1,8 +1,8 @@
-import type { MusicData } from "../lib/lastfm";
+import type { MusicPageData } from "../lib/lastfm";
 import { NowPlayingPanel } from "./now-playing-panel";
 import { TrackCard } from "./track-card";
 
-export function TrackList({ data }: { data: MusicData }) {
+export function TrackList({ data }: { data: MusicPageData }) {
   const nowPlaying = data.tracks.find((t) => t.nowPlaying);
   const history = data.tracks.filter((t) => !t.nowPlaying);
 
