@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, lazyPlugins } from "vite-plus";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { devtools } from "@tanstack/devtools-vite";
@@ -33,6 +33,34 @@ const prettyCodeOptions: PrettyCodeOptions = {
 };
 
 const config = defineConfig({
+  staged: {
+    "*": "vp check --fix",
+  },
+  fmt: {
+    ignorePatterns: [],
+  },
+  lint: {
+    plugins: ["typescript", "unicorn", "oxc"],
+    categories: {
+      correctness: "error",
+    },
+    rules: {
+      "vite-plus/prefer-vite-plus-imports": "error",
+    },
+    env: {
+      builtin: true,
+    },
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+    jsPlugins: [
+      {
+        name: "vite-plus",
+        specifier: "vite-plus/oxlint-plugin",
+      },
+    ],
+  },
   resolve: {
     tsconfigPaths: true,
     alias: {
@@ -45,7 +73,7 @@ const config = defineConfig({
       external: ["cloudflare:workers"],
     },
   },
-  plugins: [
+  plugins: lazyPlugins(() => [
     {
       enforce: "pre",
       ...mdx({
@@ -68,7 +96,7 @@ const config = defineConfig({
     viteReact({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),
     glsl(),
     Icons({ compiler: "jsx", jsx: "react" }),
-  ],
+  ]),
 });
 
 export default config;

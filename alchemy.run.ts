@@ -25,7 +25,6 @@ class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
     PHOTOS: Photos,
     GH_TOKEN: Config.redacted("GH_TOKEN"),
     LASTFM_API_KEY: Config.redacted("LASTFM_API_KEY"),
-
   },
   assets: {
     runWorkerFirst: false,

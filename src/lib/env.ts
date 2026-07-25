@@ -4,4 +4,3 @@ export const GH_TOKEN = Config.redacted("GH_TOKEN").pipe(Config.withDefault(Reda
 export const LASTFM_API_KEY = Config.redacted("LASTFM_API_KEY").pipe(
   Config.withDefault(Redacted.make("")),
 );
-

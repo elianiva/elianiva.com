@@ -7,13 +7,14 @@
   },
   "scripts": {
     "dev": "alchemy dev",
-    "build": "vite build",
+    "build": "vp build",
     "preview": "alchemy dev",
-    "test": "vitest run",
+    "test": "vp test run",
     "deploy": "alchemy deploy",
-    "format": "oxfmt --write .",
-    "lint": "oxlint .",
-    "ui": "pnpm dlx shadcn@latest"
+    "format": "vp fmt --write .",
+    "lint": "vp lint .",
+    "ui": "pnpm dlx shadcn@latest",
+    "prepare": "vp config"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -81,16 +82,15 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "jsdom": "^29.1.1",
     "mdx": "^0.3.1",
-    "oxfmt": "^0.60.0",
-    "oxlint": "^1.75.0",
     "rehype-pretty-code": "^0.14.4",
     "shiki": "^4.3.1",
     "tsx": "^4.23.1",
     "typescript": "^7.0.2",
     "unplugin-icons": "^23.0.1",
-    "vite": "^8.1.5",
+    "vite": "catalog:",
     "vite-plugin-glsl": "^1.6.0",
-    "vitest": "^4.1.10"
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   },
   "packageManager": "pnpm@11.9.0"
 }

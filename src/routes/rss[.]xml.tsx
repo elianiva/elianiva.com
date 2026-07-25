@@ -15,7 +15,9 @@ export const Route = createFileRoute("/rss.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const posts = allPosts.filter((p) => !p.hidden).sort((a, b) => b.date.localeCompare(a.date));
+        const posts = allPosts
+          .filter((p) => !p.hidden)
+          .sort((a, b) => b.date.localeCompare(a.date));
         const projects = allProjects.sort((a, b) => b.date.localeCompare(a.date));
         const items = [
           ...posts.map((post) => ({
@@ -48,9 +50,7 @@ export const Route = createFileRoute("/rss.xml")({
               "</pubDate><description>" +
               escapeXml(item.description) +
               "</description>" +
-              item.categories
-                .map((cat) => "<category>" + escapeXml(cat) + "</category>")
-                .join("") +
+              item.categories.map((cat) => "<category>" + escapeXml(cat) + "</category>").join("") +
               "</item>",
           )
           .join("");
@@ -59,11 +59,19 @@ export const Route = createFileRoute("/rss.xml")({
           '<?xml version="1.0" encoding="UTF-8"?>' +
           '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' +
           "<channel>" +
-          "<title>" + escapeXml(sites.siteName) + "</title>" +
-          "<link>" + sites.siteUrl + "</link>" +
-          "<description>" + escapeXml(sites.description) + "</description>" +
+          "<title>" +
+          escapeXml(sites.siteName) +
+          "</title>" +
+          "<link>" +
+          sites.siteUrl +
+          "</link>" +
+          "<description>" +
+          escapeXml(sites.description) +
+          "</description>" +
           "<language>en</language>" +
-          '<atom:link href="' + sites.siteUrl + '/rss.xml" rel="self" type="application/rss+xml" />' +
+          '<atom:link href="' +
+          sites.siteUrl +
+          '/rss.xml" rel="self" type="application/rss+xml" />' +
           channelItems +
           "</channel></rss>";
 

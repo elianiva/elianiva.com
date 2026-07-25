@@ -20,4 +20,3 @@ export class TokscaleError extends Data.TaggedError("TokscaleError")<{
 export class NotesError extends Data.TaggedError("NotesError")<{
   readonly message: string;
 }> {}
-

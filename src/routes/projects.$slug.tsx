@@ -138,7 +138,10 @@ function ProjectDetailPage() {
                   )}
                 </div>
               </div>
-              <div className="prose prose-pink max-w-full pt-4" dangerouslySetInnerHTML={{ __html: project.mdx }} />
+              <div
+                className="prose prose-pink max-w-full pt-4"
+                dangerouslySetInnerHTML={{ __html: project.mdx }}
+              />
             </div>
           </div>
 

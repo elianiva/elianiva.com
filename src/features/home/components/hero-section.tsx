@@ -88,8 +88,8 @@ export function HeroSection() {
               src="https://avatars.githubusercontent.com/u/51877647?v=4"
               alt="Profile photo of Dicha Zelianiva Arkana"
               className="w-full h-full object-cover"
-                width={160}
-                height={160}
+              width={160}
+              height={160}
               loading="eager"
             />
           </div>

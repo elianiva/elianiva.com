@@ -1,6 +1,5 @@
 import {
   HeadContent,
-  Link,
   Scripts,
   createRootRouteWithContext,
   useLocation,

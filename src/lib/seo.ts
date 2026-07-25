@@ -129,9 +129,7 @@ export function postSeo(props: PostSeoProps) {
       canonical: `${siteUrl}/posts/${props.slug}`,
       publishedTime: new Date(props.date).toISOString(),
     }),
-    scripts: [
-      { type: "application/ld+json", children: JSON.stringify(blogPostJsonLd(props)) },
-    ],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(blogPostJsonLd(props)) }],
   };
 }
 

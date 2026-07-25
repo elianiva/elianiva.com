@@ -67,7 +67,6 @@ export function MusicPageSkeleton() {
   );
 }
 
-
 export function PostDetailSkeleton() {
   return (
     <div className="mx-auto max-w-[64ch] px-4 lg:px-0 py-10 animate-pulse">

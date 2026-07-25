@@ -49,9 +49,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           entries
             .map((entry) => {
               const loc = escapeXml(sites.siteUrl + entry.loc);
-              const lastmod = entry.lastmod
-                ? `<lastmod>${escapeXml(entry.lastmod)}</lastmod>`
-                : "";
+              const lastmod = entry.lastmod ? `<lastmod>${escapeXml(entry.lastmod)}</lastmod>` : "";
               return `<url><loc>${loc}</loc>${lastmod}<changefreq>${entry.changefreq}</changefreq><priority>${entry.priority}</priority></url>`;
             })
             .join("") +
