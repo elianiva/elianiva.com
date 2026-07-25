@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { allPosts, allProjects } from "content-collections";
-import { loadNotes } from "~/features/notes/lib/notes";
 import sites from "~/data/sites";
 
 function escapeXml(text: string): string {
@@ -16,13 +15,10 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const notes = await loadNotes();
-        const now = new Date().toISOString();
-
         const entries: { loc: string; lastmod?: string; changefreq: string; priority: string }[] = [
           { loc: "/", changefreq: "weekly", priority: "1.0" },
           { loc: "/posts", changefreq: "weekly", priority: "0.8" },
-          { loc: "/notes", changefreq: "monthly", priority: "0.6" },
+
           { loc: "/projects", changefreq: "monthly", priority: "0.8" },
           { loc: "/ai", changefreq: "monthly", priority: "0.4" },
           { loc: "/music", changefreq: "daily", priority: "0.3" },
@@ -35,15 +31,6 @@ export const Route = createFileRoute("/sitemap.xml")({
             lastmod: post.date,
             changefreq: "yearly",
             priority: "0.7",
-          });
-        }
-
-        for (const note of notes) {
-          entries.push({
-            loc: `/notes/${note.slug}`,
-            lastmod: note.modifiedAt ?? now,
-            changefreq: "monthly",
-            priority: "0.5",
           });
         }
 

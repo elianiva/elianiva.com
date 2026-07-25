@@ -18,8 +18,6 @@ import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ApiOgImageRouteImport } from './routes/api.og-image'
-import { Route as NotesIndexRouteImport } from './routes/notes.index'
-import { Route as NotesSlugRouteImport } from './routes/notes.$slug'
 import { Route as PostsIndexRouteImport } from './routes/posts.index'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -70,16 +68,6 @@ const ApiOgImageRoute = ApiOgImageRouteImport.update({
   path: '/api/og-image',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NotesIndexRoute = NotesIndexRouteImport.update({
-  id: '/notes/',
-  path: '/notes/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotesSlugRoute = NotesSlugRouteImport.update({
-  id: '/notes/$slug',
-  path: '/notes/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PostsIndexRoute = PostsIndexRouteImport.update({
   id: '/posts/',
   path: '/posts/',
@@ -111,10 +99,8 @@ export interface FileRoutesByFullPath {
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/og-image': typeof ApiOgImageRoute
-  '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/notes/': typeof NotesIndexRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
 }
@@ -128,10 +114,8 @@ export interface FileRoutesByTo {
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/og-image': typeof ApiOgImageRoute
-  '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/notes': typeof NotesIndexRoute
   '/posts': typeof PostsIndexRoute
   '/projects': typeof ProjectsIndexRoute
 }
@@ -146,10 +130,8 @@ export interface FileRoutesById {
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/og-image': typeof ApiOgImageRoute
-  '/notes/$slug': typeof NotesSlugRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/notes/': typeof NotesIndexRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
 }
@@ -165,10 +147,8 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/sitemap.xml'
     | '/api/og-image'
-    | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
-    | '/notes/'
     | '/posts/'
     | '/projects/'
   fileRoutesByTo: FileRoutesByTo
@@ -182,10 +162,8 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/sitemap.xml'
     | '/api/og-image'
-    | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
-    | '/notes'
     | '/posts'
     | '/projects'
   id:
@@ -199,10 +177,8 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/sitemap.xml'
     | '/api/og-image'
-    | '/notes/$slug'
     | '/posts/$slug'
     | '/projects/$slug'
-    | '/notes/'
     | '/posts/'
     | '/projects/'
   fileRoutesById: FileRoutesById
@@ -217,10 +193,8 @@ export interface RootRouteChildren {
   RssDotxmlRoute: typeof RssDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiOgImageRoute: typeof ApiOgImageRoute
-  NotesSlugRoute: typeof NotesSlugRoute
   PostsSlugRoute: typeof PostsSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
-  NotesIndexRoute: typeof NotesIndexRoute
   PostsIndexRoute: typeof PostsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
@@ -290,20 +264,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOgImageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/notes/': {
-      id: '/notes/'
-      path: '/notes'
-      fullPath: '/notes/'
-      preLoaderRoute: typeof NotesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notes/$slug': {
-      id: '/notes/$slug'
-      path: '/notes/$slug'
-      fullPath: '/notes/$slug'
-      preLoaderRoute: typeof NotesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/posts/': {
       id: '/posts/'
       path: '/posts'
@@ -345,10 +305,8 @@ const rootRouteChildren: RootRouteChildren = {
   RssDotxmlRoute: RssDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiOgImageRoute: ApiOgImageRoute,
-  NotesSlugRoute: NotesSlugRoute,
   PostsSlugRoute: PostsSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
-  NotesIndexRoute: NotesIndexRoute,
   PostsIndexRoute: PostsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
 }

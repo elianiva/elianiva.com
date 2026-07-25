@@ -67,59 +67,6 @@ export function MusicPageSkeleton() {
   );
 }
 
-export function NotesIndexSkeleton() {
-  return (
-    <div className="mx-auto max-w-4xl px-4 py-10 animate-pulse">
-      <Skeleton className="h-4 w-20 mb-8" />
-      <div className="mb-4 pt-6">
-        <Skeleton className="h-9 w-64" />
-        <Skeleton className="h-4 w-full mt-2" />
-        <Skeleton className="h-4 w-48 mt-1" />
-      </div>
-      <Skeleton className="h-10 w-full mb-6" />
-      <div className="flex gap-4 mb-6">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-20" />
-        ))}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-32" />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function NoteDetailSkeleton() {
-  return (
-    <div className="mx-auto max-w-2xl px-4 py-10 animate-pulse">
-      <Skeleton className="h-4 w-20 mb-8" />
-      <article className="mt-6">
-        <header className="mb-8">
-          <Skeleton className="h-3 w-24 mb-3" />
-          <Skeleton className="h-9 w-72 mb-3" />
-          <Skeleton className="h-4 w-5/6 mb-3" />
-          <Skeleton className="h-4 w-2/3 mb-4" />
-          <div className="flex gap-4 mt-4">
-            <Skeleton className="h-3 w-32" />
-            <Skeleton className="h-3 w-32" />
-          </div>
-          <div className="flex gap-2 mt-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-5 w-16" />
-            ))}
-          </div>
-        </header>
-        <div className="space-y-3">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className={i % 3 === 2 ? "h-4 w-3/4" : "h-4 w-full"} />
-          ))}
-        </div>
-      </article>
-    </div>
-  );
-}
 
 export function PostDetailSkeleton() {
   return (
