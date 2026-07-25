@@ -28,7 +28,7 @@ class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
 
   },
   assets: {
-    runWorkerFirst: true,
+    runWorkerFirst: false,
   },
   dev: {
     port: 3000,
