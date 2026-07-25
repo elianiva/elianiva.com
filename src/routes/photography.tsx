@@ -3,34 +3,16 @@ import { useState, type ImgHTMLAttributes } from "react";
 import { photos, type PhotoEntry } from "~/data/photography";
 import { Heading } from "~/components/ui/heading";
 import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { Dialog, DialogTrigger, DialogContent } from "~/components/ui/dialog";
 
-const IMG_BASE = import.meta.env.VITE_IMG_BASE_URL ?? "";
+const IMG_SRC = "/api/photography/image";
 
-const dateFmt = new Intl.DateTimeFormat("en-GB", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-});
-
-function formatDate(iso: string): string {
-  const [y, m, d] = iso.split("-").map(Number);
-  return dateFmt.format(new Date(y, m - 1, d));
-}
-
-function groupByDate(entries: PhotoEntry[]): Map<string, PhotoEntry[]> {
-  const groups = new Map<string, PhotoEntry[]>();
-  for (const entry of entries.toSorted((a, b) => b.dateTaken.localeCompare(a.dateTaken))) {
-    const existing = groups.get(entry.dateTaken);
-    if (existing) existing.push(entry);
-    else groups.set(entry.dateTaken, [entry]);
-  }
-  return groups;
-}
-
-function PhotoPlaceholder() {
+function PhotoPlaceholder({ aspectRatio }: { aspectRatio: string }) {
   return (
-    <div className="aspect-[3/2] w-full bg-pink-100/50 flex items-center justify-center border-b border-pink-200/50">
+    <div
+      style={{ aspectRatio }}
+      className="w-full bg-pink-100/50 flex items-center justify-center border border-pink-200/50"
+    >
       <span className="font-mono text-[11px] uppercase text-pink-300 tracking-widest select-none">
         image
       </span>
@@ -38,47 +20,98 @@ function PhotoPlaceholder() {
   );
 }
 
-function ImgWithFallback(props: ImgHTMLAttributes<HTMLImageElement>) {
+function ImgWithFallback({
+  aspectRatio,
+  ...props
+}: ImgHTMLAttributes<HTMLImageElement> & { aspectRatio: string }) {
   const [failed, setFailed] = useState(false);
-  if (failed) return <PhotoPlaceholder />;
-  return <img {...props} onError={() => setFailed(true)} />;
-}
-
-function PhotoCard({ photo }: { photo: PhotoEntry }) {
-  const imgUrl = IMG_BASE ? `${IMG_BASE}/${photo.image}` : `/${photo.image}`;
-
+  if (failed) return <PhotoPlaceholder aspectRatio={aspectRatio} />;
   return (
-    <div className="break-inside-avoid mb-4 bg-white border border-pink-200/50 p-3 pb-8">
-      {/* Image */}
-      <div className="relative">
-        <ImgWithFallback
-          src={imgUrl}
-          alt={photo.id}
-          className="w-full h-auto block"
-          loading="lazy"
-        />
-      </div>
-
-      {/* Polaroid bottom — metadata area */}
-      <div className="pt-2.5 space-y-1">
-        {photo.camera && (
-          <p className="font-mono text-[11px] text-pink-950/60 tracking-tight">{photo.camera}</p>
-        )}
-        {photo.lens && (
-          <p className="font-mono text-[10px] text-pink-950/40">{photo.lens}</p>
-        )}
-        {photo.editedWith && (
-          <p className="font-mono text-[10px] text-pink-950/40">
-            Edited with {photo.editedWith}
-          </p>
-        )}
-      </div>
+    <div style={{ aspectRatio }} className="relative w-full overflow-hidden">
+      <img
+        {...props}
+        className="absolute inset-0 w-full h-full object-cover"
+        onError={() => setFailed(true)}
+      />
     </div>
   );
 }
 
+function PhotoCard({ photo }: { photo: PhotoEntry }) {
+  const relPath = photo.url.replace("photography/", "");
+  const imgSrc = `${IMG_SRC}?path=${encodeURIComponent(relPath)}&type=smol`;
+  const dlSrc = `${IMG_SRC}?path=${encodeURIComponent(relPath)}&type=original`;
+
+  return (
+    <Dialog>
+      <div className="break-inside-avoid mb-2 bg-white border border-pink-200/50 p-3 min-w-56">
+        {/* Image — clickable to open lightbox */}
+        <DialogTrigger
+          render={
+            <button type="button" className="relative w-full block text-left cursor-zoom-in">
+              <ImgWithFallback
+                aspectRatio={photo.aspectRatio}
+                src={imgSrc}
+                alt={photo.id}
+                loading="lazy"
+              />
+            </button>
+          }
+        />
+
+        {/* Metadata */}
+        <div className="pt-2 space-y-0.5">
+          {photo.camera && (
+            <p className="font-mono text-[11px] text-pink-950/60 tracking-tight">{photo.camera}</p>
+          )}
+          {photo.lensOrSensor && (
+            <p className="font-mono text-[10px] text-pink-950/40">{photo.lensOrSensor}</p>
+          )}
+          {photo.editedWith && (
+            <p className="font-mono text-[10px] text-pink-950/40">Edited with {photo.editedWith}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Lightbox — same styling as card, bigger */}
+      <DialogContent
+        className="w-fit p-4 bg-white border border-pink-200/50"
+        showCloseButton={false}
+      >
+        <div className="flex flex-col">
+          <img
+            src={imgSrc}
+            alt={photo.id}
+            className="w-full h-full max-h-[90vh] aspect-auto object-contain"
+          />
+          <div className="pt-2 space-y-0.5">
+            {photo.camera && (
+              <p className="font-mono text-sm text-pink-950/60 tracking-tight">{photo.camera}</p>
+            )}
+            {photo.lensOrSensor && (
+              <p className="font-mono text-sm text-pink-950/40">{photo.lensOrSensor}</p>
+            )}
+            {photo.editedWith && (
+              <p className="font-mono text-sm text-pink-950/40">Edited with {photo.editedWith}</p>
+            )}
+            <div className="pt-0.5">
+              <a
+                href={dlSrc}
+                download
+                className="font-mono text-sm text-pink-400 hover:text-pink-600 transition-colors underline underline-offset-2 decoration-pink-200/50"
+              >
+                Download original
+              </a>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function PhotographyPage() {
-  const groups = groupByDate(photos);
+  const sorted = [...photos].sort((a, b) => b.dateTaken.localeCompare(a.dateTaken));
 
   return (
     <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
@@ -86,11 +119,12 @@ function PhotographyPage() {
         <section className="relative mb-8">
           <Heading level={1}>Photography</Heading>
           <p className="text-sm md:text-base font-body text-pink-950/70 pt-2 pb-4">
-            A timeline of moments I&apos;ve captured.
+            I like doing photography on the side, feel free to have a look! Click on any photo to
+            enlarge it.
           </p>
         </section>
 
-        {groups.size === 0 && (
+        {sorted.length === 0 && (
           <div className="py-16 text-center">
             <p className="font-mono text-sm text-pink-300 tracking-wider">
               No photos yet — the timeline is blank for now.
@@ -98,18 +132,11 @@ function PhotographyPage() {
           </div>
         )}
 
-        {[...groups.entries()].map(([date, entries]) => (
-          <section key={date} className="mb-10">
-            <Heading level={2} className="mb-4">
-              {formatDate(date)}
-            </Heading>
-            <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
-              {entries.map((photo) => (
-                <PhotoCard key={photo.id} photo={photo} />
-              ))}
-            </div>
-          </section>
-        ))}
+        <div className="flex flex-wrap gap-2 justify-center">
+          {sorted.map((photo) => (
+            <PhotoCard key={photo.id} photo={photo} />
+          ))}
+        </div>
       </div>
     </div>
   );
