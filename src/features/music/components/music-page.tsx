@@ -1,5 +1,7 @@
 import { Heading } from "~/components/ui/heading";
-import { type MusicPageData, LASTFM_PROFILE_URL } from "../lib/lastfm";
+import type { MusicPageData } from "../lib/types";
+
+const LASTFM_PROFILE_URL = "https://www.last.fm/user/elianiva";
 import { TrackList } from "./track-list";
 import { StatsRow } from "./stats-row";
 import { TopListsRow } from "./top-lists-row";

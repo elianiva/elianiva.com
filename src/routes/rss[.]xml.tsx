@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { allPosts, allProjects } from "content-collections";
+import { listPosts } from "~/features/content/lib/posts";
+import { listProjects } from "~/features/content/lib/projects";
 import sites from "~/data/sites";
 
 function escapeXml(text: string): string {
@@ -15,19 +17,15 @@ export const Route = createFileRoute("/rss.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const posts = allPosts
-          .filter((p) => !p.hidden)
-          .sort((a, b) => b.date.localeCompare(a.date));
-        const projects = allProjects.sort((a, b) => b.date.localeCompare(a.date));
         const items = [
-          ...posts.map((post) => ({
+          ...listPosts(allPosts).map((post) => ({
             title: post.title,
             url: sites.siteUrl + "/posts/" + post.slug,
             date: post.date,
             description: post.description,
             categories: post.tags,
           })),
-          ...projects.map((project) => ({
+          ...listProjects(allProjects).map((project) => ({
             title: project.title,
             url: sites.siteUrl + "/projects/" + project.slug,
             date: project.date,

@@ -1,5 +1,5 @@
 import MusicIcon from "~icons/ph/music-note-duotone";
-import type { LastFmTrack } from "../lib/lastfm";
+import type { LastFmTrack } from "../lib/types";
 import { Card } from "~/components/ui/card";
 
 export function NowPlayingPanel({ track }: { track: LastFmTrack }) {

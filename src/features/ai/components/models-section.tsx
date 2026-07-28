@@ -1,6 +1,6 @@
 import { Heading } from "~/components/ui/heading";
 import { ModelBars } from "./model-bars";
-import type { AiModelUsage } from "../lib/tokscale";
+import type { AiModelUsage } from "../lib/types";
 
 interface Props {
   models: AiModelUsage[];

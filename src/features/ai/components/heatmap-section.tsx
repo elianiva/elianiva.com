@@ -1,7 +1,7 @@
 import { Heading } from "~/components/ui/heading";
 import { HeatmapGrid, type HeatmapCell } from "~/components/ui/heatmap-grid";
 import { fmtTokens, fmtCost } from "./fmt";
-import type { AiContribution } from "../lib/tokscale";
+import type { AiContribution } from "../lib/types";
 
 interface Props {
   contributions: AiContribution[];

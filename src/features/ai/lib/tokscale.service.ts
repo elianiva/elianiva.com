@@ -1,7 +1,7 @@
 import { Context, Duration, Effect, Layer } from "effect";
 import { HttpClient } from "effect/unstable/http";
 import { KvCache } from "~/lib/cache";
-import type { AiUsage, AiContribution, AiModelUsage } from "./tokscale";
+import type { AiUsage, AiContribution, AiModelUsage } from "./types";
 
 const USERNAME = "elianiva";
 
@@ -48,22 +48,17 @@ export class Tokscale extends Context.Service<
       const cache = yield* KvCache;
 
       const getUsage = Effect.fn("Tokscale.getUsage")(function* () {
-        const result = yield* cache
-          .getOrSet(
-            "ai:tokscale",
-            Duration.hours(6),
-            Effect.gen(function* () {
-              const resp = yield* client.get(`https://tokscale.ai/api/users/${USERNAME}`);
-              if (resp.status !== 200) return null;
-              const d = yield* resp.json as Effect.Effect<RawResponse>;
-              return toAiUsage(d);
-            }),
-          )
-          .pipe(
-            Effect.catchTag("KvCacheError", () => Effect.succeed(null)),
-            Effect.catchTag("HttpClientError", () => Effect.succeed(null)),
-          );
-        return result;
+        return yield* cache.getOrElse({
+          key: "ai:tokscale",
+          ttl: Duration.hours(6),
+          fallback: null,
+          load: Effect.gen(function* () {
+            const resp = yield* client.get(`https://tokscale.ai/api/users/${USERNAME}`);
+            if (resp.status !== 200) return null;
+            const d = yield* resp.json as Effect.Effect<RawResponse>;
+            return toAiUsage(d);
+          }),
+        });
       });
 
       return { getUsage };

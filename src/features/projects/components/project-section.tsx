@@ -1,5 +1,6 @@
 import { RscSection } from "~/components/rsc-section";
-import { getProjects, type ProjectType } from "../lib/projects";
+import { getProjects } from "../lib/projects";
+import type { ProjectType } from "~/features/content/lib/projects";
 import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Button } from "~/components/ui/button";

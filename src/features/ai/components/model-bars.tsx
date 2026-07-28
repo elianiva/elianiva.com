@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { AiModelUsage } from "../lib/tokscale";
+import type { AiModelUsage } from "../lib/types";
 import { fmtCost, fmtTokens } from "./fmt";
 
 const tabs = ["by cost", "by tokens"] as const;

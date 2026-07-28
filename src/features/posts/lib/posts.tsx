@@ -1,31 +1,38 @@
 import { createServerFn } from "@tanstack/react-start";
+import { notFound } from "@tanstack/react-router";
+import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allPosts } from "content-collections";
-
-export type PostSummary = {
-  slug: string;
-  title: string;
-  description: string;
-  date: string;
-  tags: string[];
-};
+import { getPost, listPosts } from "~/features/content/lib/posts";
+import { Heading } from "~/components/ui/heading";
 
 export const getPosts = createServerFn({ method: "GET" })
   .validator((input: { limit?: number }) => input)
-  .handler(async ({ data }) => {
-    let posts = allPosts
-      .filter((p) => !p.hidden)
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .map((p) => ({
-        slug: p.slug,
-        title: p.title,
-        description: p.description,
-        date: p.date,
-        tags: p.tags,
-      }));
+  .handler(async ({ data }) => listPosts(allPosts, { limit: data?.limit }));
 
-    if (data?.limit) {
-      posts = posts.slice(0, data.limit);
-    }
+export const getPostBySlug = createServerFn({ method: "GET" })
+  .validator((slug: string) => slug)
+  .handler(async ({ data: slug }) => {
+    const detail = getPost(allPosts, slug);
+    if (!detail) throw notFound();
 
-    return posts;
+    const mdx = await renderServerComponent(
+      <detail.mdx
+        components={{
+          h2: (props) => <Heading level={2} {...props} />,
+          h3: (props) => <Heading level={3} {...props} />,
+          h4: (props) => <Heading level={4} {...props} />,
+          h5: (props) => <Heading level={5} {...props} />,
+          h6: (props) => <Heading level={6} {...props} />,
+        }}
+      />,
+    );
+
+    return {
+      ...detail.post,
+      wordCount: detail.wordCount,
+      readingTime: detail.readingTime,
+      prevPost: detail.prevPost,
+      nextPost: detail.nextPost,
+      mdx,
+    };
   });

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RscSection } from "~/components/rsc-section";
-import { getAiUsageRsc } from "~/features/ai/lib/tokscale";
+import { getAiUsageRsc } from "~/features/ai/lib/ai";
 import { AiPageSkeleton } from "~/components/ui/page-skeleton";
 import { seo, defaultOgImageUrl } from "~/lib/seo";
 

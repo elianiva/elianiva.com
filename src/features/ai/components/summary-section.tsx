@@ -1,6 +1,6 @@
 import { Heading } from "~/components/ui/heading";
 import { fmtTokens, fmtCost } from "./fmt";
-import type { AiUsage } from "../lib/tokscale";
+import type { AiUsage } from "../lib/types";
 import { cn } from "~/lib/utils";
 import { Card } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator.js";

@@ -5,7 +5,7 @@ import { seo, defaultOgImageUrl } from "~/lib/seo";
 
 export const Route = createFileRoute("/posts/")({
   component: PostList,
-  loader: () => getPosts(),
+  loader: () => getPosts({ data: {} }),
   head: () =>
     seo({
       title: "Posts",

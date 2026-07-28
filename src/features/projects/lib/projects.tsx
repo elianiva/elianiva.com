@@ -1,34 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
+import { notFound } from "@tanstack/react-router";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
+import { getProject, listProjects, type ProjectType } from "~/features/content/lib/projects";
+
 import { ProjectCard } from "../components/project-card";
-
-export type ProjectType = "personal" | "open-source" | "assignment";
-
-export type ProjectSummary = {
-  slug: string;
-  title: string;
-  description: string;
-  date: string;
-  stack: Array<[string, string]>;
-  featured: boolean;
-};
 
 export const getProjects = createServerFn({ method: "GET" })
   .validator((input: { type: ProjectType; featured?: boolean }) => input)
   .handler(async ({ data: { type, featured = false } }) => {
-    let projects = allProjects
-      .filter((p) => p.type === type && (featured ? p.featured : true))
-      .sort((a, b) => (a.date > b.date ? -1 : 1))
-      .map((p) => ({
-        slug: p.slug,
-        title: p.title,
-        description: p.description,
-        date: p.date,
-        stack: p.stack,
-        featured: p.featured,
-      }));
-
+    const projects = listProjects(allProjects, { type, featured });
     return renderServerComponent(
       projects.map((project) => (
         <ProjectCard
@@ -40,4 +21,18 @@ export const getProjects = createServerFn({ method: "GET" })
         />
       )),
     );
+  });
+
+export const getProjectBySlug = createServerFn({ method: "GET" })
+  .validator((slug: string) => slug)
+  .handler(async ({ data: slug }) => {
+    const detail = getProject(allProjects, slug);
+    if (!detail) throw notFound();
+
+    return {
+      ...detail.project,
+      prevProject: detail.prevProject,
+      nextProject: detail.nextProject,
+      mdx: await renderServerComponent(<detail.mdx />),
+    };
   });

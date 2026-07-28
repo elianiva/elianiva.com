@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RscSection } from "~/components/rsc-section";
-import { getMusicTracksRsc } from "~/features/music/lib/lastfm";
+import { getMusicTracksRsc } from "~/features/music/lib/music";
 import { MusicPageSkeleton } from "~/components/ui/page-skeleton";
 import { seo, defaultOgImageUrl } from "~/lib/seo";
 

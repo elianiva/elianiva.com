@@ -1,7 +1,6 @@
 import { Context, Duration, Effect, Layer, Redacted } from "effect";
 import { Octokit } from "octokit";
 import { KvCache } from "~/lib/cache";
-import * as E from "~/lib/errors";
 import { GH_TOKEN } from "~/lib/env";
 import type {
   GitHubPullRequest,
@@ -59,7 +58,7 @@ function fetchAllPRs(
   octokit: Octokit,
   username: string,
   minStars: number,
-): Effect.Effect<GitHubPullRequest[], E.GitHubError> {
+): Effect.Effect<GitHubPullRequest[], Error> {
   return Effect.gen(function* () {
     const response: PRContributionsResponse = yield* Effect.tryPromise({
       try: () =>
@@ -67,10 +66,11 @@ function fetchAllPRs(
           username,
           from: "2020-01-01T00:00:00Z",
         }) as Promise<PRContributionsResponse>,
-      catch: (e) => new E.GitHubError({ message: String(e) }),
+      catch: (e) => new Error(String(e)),
     });
 
-    const repoContribs = response.user.contributionsCollection.pullRequestContributionsByRepository;
+    const repoContribs =
+      response.user.contributionsCollection.pullRequestContributionsByRepository;
     const allPRs: GitHubPullRequest[] = [];
 
     for (const repo of repoContribs) {
@@ -166,12 +166,12 @@ const CONTRIBUTIONS_QUERY = `
 function fetchContributions(
   octokit: Octokit,
   username: string,
-): Effect.Effect<ContributionsResponse, E.GitHubError> {
+): Effect.Effect<ContributionsResponse, Error> {
   return Effect.gen(function* () {
     const response: GitHubContributionsResponse = yield* Effect.tryPromise({
       try: () =>
         octokit.graphql(CONTRIBUTIONS_QUERY, { username }) as Promise<GitHubContributionsResponse>,
-      catch: (e) => new E.GitHubError({ message: String(e) }),
+      catch: (e) => new Error(String(e)),
     });
 
     const calendar = response.user.contributionsCollection.contributionCalendar;
@@ -210,6 +210,8 @@ type ContributionsResponse = {
 const USERNAME = "elianiva";
 const MIN_STARS = 500;
 
+const EMPTY_PRS: { grouped: GroupedPRs; totalPRs: number } = { grouped: {}, totalPRs: 0 };
+
 interface GithubServiceShape {
   readonly getPRs: () => Effect.Effect<{ grouped: GroupedPRs; totalPRs: number }>;
   readonly getContributions: () => Effect.Effect<ContributionsResponse | null>;
@@ -219,43 +221,38 @@ export class GitHubService extends Context.Service<GitHubService, GithubServiceS
   static readonly layer = Layer.effect(
     GitHubService,
     Effect.gen(function* () {
-      const tokenRedacted = yield* GH_TOKEN;
-      const token = Redacted.value(tokenRedacted);
+      const token = Redacted.value(yield* GH_TOKEN);
+
+      // No credentials → every read degrades to empty data, decided once here.
+      if (!token) {
+        return {
+          getPRs: () => Effect.succeed(EMPTY_PRS),
+          getContributions: () => Effect.succeed(null),
+        };
+      }
+
       const cache = yield* KvCache;
-      const octokit = new Octokit({ auth: token || undefined });
+      const octokit = new Octokit({ auth: token });
 
       const getPRs = Effect.fn("GitHub.getPRs")(function* () {
-        if (!token) return { grouped: {}, totalPRs: 0 };
-        const result = yield* cache
-          .getOrSet(
-            "github-prs",
-            Duration.hours(24),
-            Effect.gen(function* () {
-              const prs = yield* fetchAllPRs(octokit, USERNAME, MIN_STARS);
-              return { grouped: groupPRs(prs), totalPRs: prs.length };
-            }).pipe(
-              Effect.catchTag("GitHubError", () => Effect.succeed({ grouped: {}, totalPRs: 0 })),
-            ),
-          )
-          .pipe(
-            Effect.catchTag("KvCacheError", () => Effect.succeed({ grouped: {}, totalPRs: 0 })),
-          );
-        return result;
+        return yield* cache.getOrElse({
+          key: "github-prs",
+          ttl: Duration.hours(24),
+          fallback: EMPTY_PRS,
+          load: Effect.gen(function* () {
+            const prs = yield* fetchAllPRs(octokit, USERNAME, MIN_STARS);
+            return { grouped: groupPRs(prs), totalPRs: prs.length };
+          }),
+        });
       });
 
       const getContributions = Effect.fn("GitHub.getContributions")(function* () {
-        if (!token) return null;
-        const result = yield* cache
-          .getOrSet(
-            "github-contributions",
-            Duration.hours(24),
-            Effect.gen(function* () {
-              const result = yield* fetchContributions(octokit, USERNAME);
-              return result;
-            }).pipe(Effect.catchTag("GitHubError", () => Effect.succeed(null))),
-          )
-          .pipe(Effect.catchTag("KvCacheError", () => Effect.succeed(null)));
-        return result;
+        return yield* cache.getOrElse({
+          key: "github-contributions",
+          ttl: Duration.hours(24),
+          fallback: null,
+          load: fetchContributions(octokit, USERNAME),
+        });
       });
 
       return { getPRs, getContributions };

@@ -10,7 +10,7 @@ import {
   TableHead,
   TableCell,
 } from "~/components/ui/table";
-import type { TopArtistItem, TopAlbumItem, TopTrackItem } from "../lib/lastfm";
+import type { TopArtistItem, TopAlbumItem, TopTrackItem } from "../lib/types";
 
 function fmtPlaycount(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;

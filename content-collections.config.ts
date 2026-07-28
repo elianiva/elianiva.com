@@ -53,6 +53,7 @@ const projects = defineCollection({
     demo: z.url().optional().nullable(),
     type: z.enum(["personal", "open-source", "assignment"]),
     stack: z.array(z.tuple([z.string(), z.url()])),
+    image: z.string().optional(),
     content: z.string(),
   }),
   transform: async ({ _meta, ...project }) => {

@@ -1,5 +1,5 @@
 import { ProjectSection } from "./project-section";
-import type { ProjectType } from "../lib/projects";
+import type { ProjectType } from "~/features/content/lib/projects";
 
 type ProjectSectionItem = {
   title: string;

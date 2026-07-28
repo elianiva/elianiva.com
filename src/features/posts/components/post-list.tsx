@@ -3,7 +3,7 @@ import { useLoaderData, Link } from "@tanstack/react-router";
 import { PostCard } from "./post-card";
 import { Heading } from "~/components/ui/heading";
 import XIcon from "~icons/ph/x";
-import type { PostSummary } from "../lib/posts";
+import type { PostSummary } from "~/features/content/lib/posts";
 
 function searchPosts(posts: PostSummary[], query: string): PostSummary[] {
   const q = query.toLowerCase();

@@ -1,4 +1,4 @@
-import type { MusicPageData } from "../lib/lastfm";
+import type { MusicPageData } from "../lib/types";
 import { NowPlayingPanel } from "./now-playing-panel";
 import { TrackCard } from "./track-card";
 

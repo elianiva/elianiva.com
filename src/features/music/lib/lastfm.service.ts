@@ -2,70 +2,33 @@ import { Context, Duration, Effect, Layer, Redacted } from "effect";
 import { HttpClient, HttpClientResponse } from "effect/unstable/http";
 import { KvCache } from "~/lib/cache";
 import { LASTFM_API_KEY } from "~/lib/env";
+import type {
+  LastFmTrack,
+  MusicData,
+  MusicPageData,
+  ProfileInfo,
+  TopAlbumItem,
+  TopArtistItem,
+  TopTrackItem,
+} from "./types";
 
 const LASTFM_USER = "elianiva";
+const API_BASE = "https://ws.audioscrobbler.com/2.0/";
 
-type LastFmTrack = {
-  track: string;
-  artist: string;
-  album: string;
-  url: string;
-  artistUrl: string;
-  art: string | null;
-  nowPlaying: boolean;
-  ts: string | null;
-};
-
-type ProfileInfo = {
-  playcount: number;
-  registered: string;
-  country: string;
-  realname: string;
-  image: string | null;
-};
-
-type TopArtistItem = {
-  name: string;
-  playcount: number;
-  url: string;
-  image: string | null;
-};
-
-type TopAlbumItem = {
-  name: string;
-  artist: string;
-  playcount: number;
-  url: string;
-  image: string | null;
-};
-
-type TopTrackItem = {
-  name: string;
-  artist: string;
-  playcount: number;
-  url: string;
-  image: string | null;
-};
-
-type MusicPageData = {
-  tracks: LastFmTrack[];
-  total: number;
-  stats: {
-    uniqueArtists: number;
-    uniqueAlbums: number;
-    totalTracks: number;
-  };
-  topArtists: TopArtistItem[];
-  topAlbums: TopAlbumItem[];
-  topTracks: TopTrackItem[];
-  topArtistsYear: TopArtistItem[];
-  topAlbumsYear: TopAlbumItem[];
-  topTracksYear: TopTrackItem[];
-};
-
-type MusicData = {
-  tracks: LastFmTrack[];
-  total: number;
+const EMPTY_TRACKS: MusicData = { tracks: [], total: 0 };
+const EMPTY_ARTISTS: { artists: TopArtistItem[]; total: number } = { artists: [], total: 0 };
+const EMPTY_ALBUMS: { albums: TopAlbumItem[]; total: number } = { albums: [], total: 0 };
+const EMPTY_TOP_TRACKS: { tracks: TopTrackItem[]; total: number } = { tracks: [], total: 0 };
+const EMPTY_PAGE: MusicPageData = {
+  tracks: [],
+  total: 0,
+  stats: { uniqueArtists: 0, uniqueAlbums: 0, totalTracks: 0 },
+  topArtists: [],
+  topAlbums: [],
+  topTracks: [],
+  topArtistsYear: [],
+  topAlbumsYear: [],
+  topTracksYear: [],
 };
 
 type LastFmResp = {
@@ -134,10 +97,28 @@ export class LastFM extends Context.Service<
   static readonly layer = Layer.effect(
     LastFM,
     Effect.gen(function* () {
-      const apiKeyRedacted = yield* LASTFM_API_KEY;
-      const apiKey = Redacted.value(apiKeyRedacted);
+      const apiKey = Redacted.value(yield* LASTFM_API_KEY);
+
+      // No credentials → every read degrades to empty data, decided once here.
+      if (!apiKey) {
+        return {
+          getRecentTracks: () => Effect.succeed(EMPTY_TRACKS),
+          getProfileInfo: () => Effect.succeed(null),
+          getTopArtists: () => Effect.succeed(EMPTY_ARTISTS),
+          getTopAlbums: () => Effect.succeed(EMPTY_ALBUMS),
+          getTopTracks: () => Effect.succeed(EMPTY_TOP_TRACKS),
+          getAllMusicData: () => Effect.succeed(EMPTY_PAGE),
+        };
+      }
+
       const client = yield* HttpClient.HttpClient;
       const cache = yield* KvCache;
+
+      const apiUrl = (method: string, extra: Record<string, string | number> = {}) =>
+        `${API_BASE}?method=${method}&user=${LASTFM_USER}&api_key=${apiKey}&format=json&` +
+        new URLSearchParams(
+          Object.entries(extra).map(([k, v]) => [k, String(v)] as [string, string]),
+        ).toString();
 
       const fetchJson = Effect.fn("LastFM.fetchJson")(function* <R>(url: string) {
         const resp = yield* client.get(url, {
@@ -148,204 +129,178 @@ export class LastFM extends Context.Service<
       });
 
       const getRecentTracks = Effect.fn("LastFM.getRecentTracks")(function* () {
-        if (!apiKey) return { tracks: [], total: 0 };
-        const result = yield* cache
-          .getOrSet(
-            "music:tracks",
-            Duration.minutes(2),
-            Effect.gen(function* () {
-              const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${apiKey}&format=json&limit=100&extended=1`;
-              const data = yield* fetchJson<LastFmResp>(url);
-              if (data.error) return { tracks: [], total: 0 };
-              const raw = data.recenttracks?.track ?? [];
-              const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
-                const normalized = normalizeTrack(t);
-                if (normalized) acc.push(normalized);
-                return acc;
-              }, []);
-              const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length);
-              return { tracks, total };
-            }),
-          )
-          .pipe(
-            Effect.catchTag("KvCacheError", () => Effect.succeed({ tracks: [], total: 0 })),
-            Effect.catchTag("HttpClientError", () => Effect.succeed({ tracks: [], total: 0 })),
-          );
-        return result;
+        return yield* cache.getOrElse({
+          key: "music:tracks",
+          ttl: Duration.minutes(2),
+          fallback: EMPTY_TRACKS,
+          load: Effect.gen(function* () {
+            const data = yield* fetchJson<LastFmResp>(
+              apiUrl("user.getrecenttracks", { limit: 100, extended: 1 }),
+            );
+            if (data.error) return EMPTY_TRACKS;
+            const raw = data.recenttracks?.track ?? [];
+            const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
+              const normalized = normalizeTrack(t);
+              if (normalized) acc.push(normalized);
+              return acc;
+            }, []);
+            const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length);
+            return { tracks, total };
+          }),
+        });
       });
 
       const getProfileInfo = Effect.fn("LastFM.getProfileInfo")(function* () {
-        if (!apiKey) return null;
-        return yield* cache
-          .getOrSet(
-            "music:profile",
-            Duration.hours(1),
-            Effect.gen(function* () {
-              const url = `https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=${LASTFM_USER}&api_key=${apiKey}&format=json`;
-              const data = yield* fetchJson<{ user?: { playcount: string; registered: { unixtime: string; "#text": number }; country: string; realname: string; image: Array<{ "#text": string; size: string }> } }>(url);
-              if (data.error || !data.user) return null;
-              const u = data.user;
-              return {
-                playcount: Number(u.playcount),
-                registered: new Date(Number(u.registered.unixtime) * 1000).toISOString(),
-                country: u.country,
-                realname: u.realname,
-                image: pickImage(u.image),
+        return yield* cache.getOrElse({
+          key: "music:profile",
+          ttl: Duration.hours(1),
+          fallback: null,
+          load: Effect.gen(function* () {
+            const data = yield* fetchJson<{
+              user?: {
+                playcount: string;
+                registered: { unixtime: string; "#text": number };
+                country: string;
+                realname: string;
+                image: Array<{ "#text": string; size: string }>;
               };
-            }),
-          )
-          .pipe(
-            Effect.catchTag("KvCacheError", () => Effect.succeed(null)),
-            Effect.catchTag("HttpClientError", () => Effect.succeed(null)),
-          );
+            }>(apiUrl("user.getinfo"));
+            if (data.error || !data.user) return null;
+            const u = data.user;
+            return {
+              playcount: Number(u.playcount),
+              registered: new Date(Number(u.registered.unixtime) * 1000).toISOString(),
+              country: u.country,
+              realname: u.realname,
+              image: pickImage(u.image),
+            };
+          }),
+        });
       });
 
       const getTopArtists = Effect.fn("LastFM.getTopArtists")(function* (
         period: string,
         limit: number,
       ) {
-        if (!apiKey) return { artists: [], total: 0 };
-        return yield* cache
-          .getOrSet(
-            `music:top-artists:${period}:${limit}`,
-            Duration.hours(1),
-            Effect.gen(function* () {
-              const url = `https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=${LASTFM_USER}&api_key=${apiKey}&format=json&period=${period}&limit=${limit}`;
-              const data = yield* fetchJson<{
-                topartists?: {
-                  artist?: Array<{
-                    name: string;
-                    playcount: string;
-                    url: string;
-                    image: Array<{ "#text": string; size: string }>;
-                  }>;
-                  "@attr"?: { total?: string };
-                };
-              }>(url);
-              if (data.error || !data.topartists) return { artists: [], total: 0 };
-              const total = Number(data.topartists["@attr"]?.total ?? 0);
-              const artists: TopArtistItem[] = (data.topartists.artist ?? []).map((a) => ({
-                name: a.name,
-                playcount: Number(a.playcount),
-                url: a.url,
-                image: pickImage(a.image),
-              }));
-              return { artists, total };
-            }),
-          )
-          .pipe(
-            Effect.catchTag("KvCacheError", () => Effect.succeed({ artists: [], total: 0 })),
-            Effect.catchTag("HttpClientError", () => Effect.succeed({ artists: [], total: 0 })),
-          );
+        return yield* cache.getOrElse({
+          key: `music:top-artists:${period}:${limit}`,
+          ttl: Duration.hours(1),
+          fallback: EMPTY_ARTISTS,
+          load: Effect.gen(function* () {
+            const data = yield* fetchJson<{
+              topartists?: {
+                artist?: Array<{
+                  name: string;
+                  playcount: string;
+                  url: string;
+                  image: Array<{ "#text": string; size: string }>;
+                }>;
+                "@attr"?: { total?: string };
+              };
+            }>(apiUrl("user.gettopartists", { period, limit }));
+            if (data.error || !data.topartists) return EMPTY_ARTISTS;
+            const total = Number(data.topartists["@attr"]?.total ?? 0);
+            const artists: TopArtistItem[] = (data.topartists.artist ?? []).map((a) => ({
+              name: a.name,
+              playcount: Number(a.playcount),
+              url: a.url,
+              image: pickImage(a.image),
+            }));
+            return { artists, total };
+          }),
+        });
       });
 
       const getTopAlbums = Effect.fn("LastFM.getTopAlbums")(function* (
         period: string,
         limit: number,
       ) {
-        if (!apiKey) return { albums: [], total: 0 };
-        return yield* cache
-          .getOrSet(
-            `music:top-albums:${period}:${limit}`,
-            Duration.hours(1),
-            Effect.gen(function* () {
-              const url = `https://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=${LASTFM_USER}&api_key=${apiKey}&format=json&period=${period}&limit=${limit}`;
-              const data = yield* fetchJson<{
-                topalbums?: {
-                  album?: Array<{
-                    name: string;
-                    artist: { name: string; url: string };
-                    playcount: string;
-                    url: string;
-                    image: Array<{ "#text": string; size: string }>;
-                  }>;
-                  "@attr"?: { total?: string };
-                };
-              }>(url);
-              if (data.error || !data.topalbums) return { albums: [], total: 0 };
-              const total = Number(data.topalbums["@attr"]?.total ?? 0);
-              const albums: TopAlbumItem[] = (data.topalbums.album ?? []).map((a) => ({
-                name: a.name,
-                artist: a.artist.name,
-                playcount: Number(a.playcount),
-                url: a.url,
-                image: pickImage(a.image),
-              }));
-              return { albums, total };
-            }),
-          )
-          .pipe(
-            Effect.catchTag("KvCacheError", () => Effect.succeed({ albums: [], total: 0 })),
-            Effect.catchTag("HttpClientError", () => Effect.succeed({ albums: [], total: 0 })),
-          );
+        return yield* cache.getOrElse({
+          key: `music:top-albums:${period}:${limit}`,
+          ttl: Duration.hours(1),
+          fallback: EMPTY_ALBUMS,
+          load: Effect.gen(function* () {
+            const data = yield* fetchJson<{
+              topalbums?: {
+                album?: Array<{
+                  name: string;
+                  artist: { name: string; url: string };
+                  playcount: string;
+                  url: string;
+                  image: Array<{ "#text": string; size: string }>;
+                }>;
+                "@attr"?: { total?: string };
+              };
+            }>(apiUrl("user.gettopalbums", { period, limit }));
+            if (data.error || !data.topalbums) return EMPTY_ALBUMS;
+            const total = Number(data.topalbums["@attr"]?.total ?? 0);
+            const albums: TopAlbumItem[] = (data.topalbums.album ?? []).map((a) => ({
+              name: a.name,
+              artist: a.artist.name,
+              playcount: Number(a.playcount),
+              url: a.url,
+              image: pickImage(a.image),
+            }));
+            return { albums, total };
+          }),
+        });
       });
 
       const getTopTracks = Effect.fn("LastFM.getTopTracks")(function* (
         period: string,
         limit: number,
       ) {
-        if (!apiKey) return { tracks: [], total: 0 };
-        return yield* cache
-          .getOrSet(
-            `music:top-tracks:${period}:${limit}`,
-            Duration.hours(1),
-            Effect.gen(function* () {
-              const url = `https://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&user=${LASTFM_USER}&api_key=${apiKey}&format=json&period=${period}&limit=${limit}`;
-              const data = yield* fetchJson<{
-                toptracks?: {
-                  track?: Array<{
-                    name: string;
-                    artist: { name: string; url: string };
-                    playcount: string;
-                    url: string;
-                    image: Array<{ "#text": string; size: string }>;
-                  }>;
-                  "@attr"?: { total?: string };
-                };
-              }>(url);
-              if (data.error || !data.toptracks) return { tracks: [], total: 0 };
-              const total = Number(data.toptracks["@attr"]?.total ?? 0);
-              const tracks: TopTrackItem[] = (data.toptracks.track ?? []).map((t) => ({
-                name: t.name,
-                artist: t.artist.name,
-                playcount: Number(t.playcount),
-                url: t.url,
-                image: pickImage(t.image),
-              }));
-              return { tracks, total };
-            }),
-          )
-          .pipe(
-            Effect.catchTag("KvCacheError", () => Effect.succeed({ tracks: [], total: 0 })),
-            Effect.catchTag("HttpClientError", () => Effect.succeed({ tracks: [], total: 0 })),
-          );
+        return yield* cache.getOrElse({
+          key: `music:top-tracks:${period}:${limit}`,
+          ttl: Duration.hours(1),
+          fallback: EMPTY_TOP_TRACKS,
+          load: Effect.gen(function* () {
+            const data = yield* fetchJson<{
+              toptracks?: {
+                track?: Array<{
+                  name: string;
+                  artist: { name: string; url: string };
+                  playcount: string;
+                  url: string;
+                  image: Array<{ "#text": string; size: string }>;
+                }>;
+                "@attr"?: { total?: string };
+              };
+            }>(apiUrl("user.gettoptracks", { period, limit }));
+            if (data.error || !data.toptracks) return EMPTY_TOP_TRACKS;
+            const total = Number(data.toptracks["@attr"]?.total ?? 0);
+            const tracks: TopTrackItem[] = (data.toptracks.track ?? []).map((t) => ({
+              name: t.name,
+              artist: t.artist.name,
+              playcount: Number(t.playcount),
+              url: t.url,
+              image: pickImage(t.image),
+            }));
+            return { tracks, total };
+          }),
+        });
       });
 
       const getAllMusicData = Effect.fn("LastFM.getAllMusicData")(function* () {
-        if (!apiKey)
-          return {
-            tracks: [],
-            total: 0,
-            stats: { uniqueArtists: 0, uniqueAlbums: 0, totalTracks: 0 },
-            topArtists: [],
-            topAlbums: [],
-            topTracks: [],
-            topArtistsYear: [],
-            topAlbumsYear: [],
-            topTracksYear: [],
-          };
-
-        const [recentTracks, profile, topArtistsAll, topAlbumsAll, topTracksAll, topArtistsYear, topAlbumsYear, topTracksYear] =
-          yield* Effect.all([
-            getRecentTracks(),
-            getProfileInfo(),
-            getTopArtists("overall", 5),
-            getTopAlbums("overall", 5),
-            getTopTracks("overall", 5),
-            getTopArtists("12month", 5),
-            getTopAlbums("12month", 5),
-            getTopTracks("12month", 5),
-          ]);
+        const [
+          recentTracks,
+          profile,
+          topArtistsAll,
+          topAlbumsAll,
+          topTracksAll,
+          topArtistsYear,
+          topAlbumsYear,
+          topTracksYear,
+        ] = yield* Effect.all([
+          getRecentTracks(),
+          getProfileInfo(),
+          getTopArtists("overall", 5),
+          getTopAlbums("overall", 5),
+          getTopTracks("overall", 5),
+          getTopArtists("12month", 5),
+          getTopAlbums("12month", 5),
+          getTopTracks("12month", 5),
+        ]);
 
         return {
           tracks: recentTracks.tracks,
@@ -364,7 +319,14 @@ export class LastFM extends Context.Service<
         };
       });
 
-      return { getRecentTracks, getProfileInfo, getTopArtists, getTopAlbums, getTopTracks, getAllMusicData };
+      return {
+        getRecentTracks,
+        getProfileInfo,
+        getTopArtists,
+        getTopAlbums,
+        getTopTracks,
+        getAllMusicData,
+      };
     }),
   );
 }

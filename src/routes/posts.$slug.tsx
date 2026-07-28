@@ -1,59 +1,11 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { renderToString } from "react-dom/server.edge";
-import { allPosts } from "content-collections";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { getPostBySlug } from "~/features/posts/lib/posts";
 import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
 import { Heading } from "~/components/ui/heading";
 import { postSeo } from "~/lib/seo";
 import { PostDetailSkeleton } from "~/components/ui/page-skeleton";
 import PencilIcon from "~icons/ph/note-pencil";
-
-const getPostBySlug = createServerFn({ method: "GET" })
-  .validator((slug: string) => slug)
-  .handler(async ({ data: slug }) => {
-    const post = allPosts.find((p) => p.slug === slug);
-    if (!post || post.hidden) {
-      throw notFound();
-    }
-
-    const sortedPosts = allPosts
-      .filter((p) => !p.hidden)
-      .sort((a, b) => (a.date > b.date ? -1 : 1));
-    const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
-    const prevPost = sortedPosts[currentIndex + 1] || null;
-    const nextPost = sortedPosts[currentIndex - 1] || null;
-
-    const contentWithoutHeaders = post.content?.replace(/^(#+\s*)/gm, "") || "";
-    const wordCount = contentWithoutHeaders.split(/\s+/).length;
-    const readingTime = Math.ceil(wordCount / 200);
-
-    const MDXContent = post.mdx;
-    const mdxHtml = renderToString(
-      <MDXContent
-        components={{
-          h2: (props) => <Heading level={2} {...props} />,
-          h3: (props) => <Heading level={3} {...props} />,
-          h4: (props) => <Heading level={4} {...props} />,
-          h5: (props) => <Heading level={5} {...props} />,
-          h6: (props) => <Heading level={6} {...props} />,
-        }}
-      />,
-    );
-
-    return {
-      title: post.title,
-      date: post.date,
-      description: post.description,
-      tags: post.tags,
-      slug: post.slug,
-      wordCount,
-      readingTime,
-      prevPost: prevPost ? { slug: prevPost.slug, title: prevPost.title } : null,
-      nextPost: nextPost ? { slug: nextPost.slug, title: nextPost.title } : null,
-      mdx: mdxHtml,
-    };
-  });
 
 export const Route = createFileRoute("/posts/$slug")({
   component: PostDetailPage,
@@ -146,7 +98,7 @@ function PostDetailPage() {
         </header>
         <article className="font-body mx-auto max-w-[64ch] prose prose-pink">
           <CodeCopy />
-          <div dangerouslySetInnerHTML={{ __html: post.mdx }} />
+          {post.mdx}
 
           <div>
             <script

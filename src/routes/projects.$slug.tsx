@@ -1,41 +1,10 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { renderToString } from "react-dom/server.edge";
-import { allProjects } from "content-collections";
-import { BackButton } from "~/components/back-button";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { getProjectBySlug } from "~/features/projects/lib/projects";
 import { seo, defaultOgImageUrl, siteUrl } from "~/lib/seo";
 import { ProjectDetailSkeleton } from "~/components/ui/page-skeleton";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
-
-const getProjectBySlug = createServerFn({ method: "GET" })
-  .validator((slug: string) => slug)
-  .handler(async ({ data: slug }) => {
-    const project = allProjects.find((p) => p.slug === slug);
-    if (!project) {
-      throw notFound();
-    }
-
-    const sortedProjects = allProjects.sort((a, b) => (a.date > b.date ? -1 : 1));
-    const currentIndex = sortedProjects.findIndex((p) => p.slug === slug);
-    const prevProject = sortedProjects[currentIndex + 1] || null;
-    const nextProject = sortedProjects[currentIndex - 1] || null;
-
-    const MDXContent = project.mdx;
-    const mdxHtml = renderToString(<MDXContent />);
-
-    return {
-      title: project.title,
-      description: project.description,
-      slug: project.slug,
-      source: project.source,
-      demo: project.demo,
-      stack: project.stack,
-      prevProject: prevProject ? { slug: prevProject.slug, title: prevProject.title } : null,
-      nextProject: nextProject ? { slug: nextProject.slug, title: nextProject.title } : null,
-      mdx: mdxHtml,
-    };
-  });
+import { Heading } from "~/components/ui/heading";
 
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
@@ -91,30 +60,30 @@ function ProjectDetailPage() {
   return (
     <>
       <main
-        className="mx-auto max-w-container px-2 md:px-4 py-10 border-x border-pink-200/50"
+        className="mx-auto max-w-container px-2 md:px-4 py-10 border-x border-pink-200/50 h-full"
         style={{ viewTransitionName: `project-card-${project.slug}` }}
       >
-        <BackButton />
-
         <section
           className="grid grid-cols-1 md:grid-cols-[2.5fr_1fr] gap-4 pt-6"
           style={{ viewTransitionName: `project-content-${project.slug}` }}
         >
           <div className="space-y-4">
-            <div className="overflow-hidden border-[0.5px] border-pink-200/50">
-              <img
-                src={`/assets/projects/${project.slug}/cover.webp`}
-                alt={project.title}
-                className="block w-full h-full bg-pink-100"
-                loading="lazy"
-              />
-            </div>
+            {project.image && (
+              <div className="overflow-hidden border-[0.5px] border-pink-200/50">
+                <img
+                  src={`/assets/projects/${project.slug}/${project.image}`}
+                  alt={project.title}
+                  className="block w-full h-full bg-pink-100"
+                  loading="lazy"
+                />
+              </div>
+            )}
 
             <div>
-              <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center justify-between pb-4 border-pink-200/50 with-box-underline after:-translate-x-[700px]!">
-                <h1 className="text-2xl font-semibold font-display text-pink-950 tracking-wide">
+              <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-pink-200/50">
+                <Heading level={1}>
                   {project.title}
-                </h1>
+                </Heading>
                 <div className="flex gap-2">
                   <a
                     className="flex gap-2 items-center bg-white/60 hover:bg-white border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
@@ -138,18 +107,17 @@ function ProjectDetailPage() {
                   )}
                 </div>
               </div>
-              <div
-                className="prose prose-pink max-w-full pt-4"
-                dangerouslySetInnerHTML={{ __html: project.mdx }}
-              />
+              <div className="prose prose-pink max-w-full">
+                {project.mdx}
+              </div>
             </div>
           </div>
 
           <aside className="h-fit">
             <div>
-              <h2 className="text-xl font-semibold font-display text-pink-950 tracking-wide pb-3 border-b border-pink-200/50">
+              <Heading level={2}>
                 Tech Stack
-              </h2>
+              </Heading>
               <div className="space-y-3 pt-4">
                 {(project.stack || []).map(([stackName, stackHomepage]) => (
                   <div key={stackName} className="flex items-center gap-3 group">

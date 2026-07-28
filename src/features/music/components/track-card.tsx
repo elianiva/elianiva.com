@@ -1,6 +1,6 @@
 import MusicIcon from "~icons/ph/music-note-duotone";
 import { fmtRel } from "./fmt";
-import type { LastFmTrack } from "../lib/lastfm";
+import type { LastFmTrack } from "../lib/types";
 import { Card, CardContent } from "~/components/ui/card";
 
 export function TrackCard({ track }: { track: LastFmTrack }) {

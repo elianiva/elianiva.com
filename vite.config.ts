@@ -1,6 +1,5 @@
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { fileURLToPath } from "node:url";
-import path from "node:path";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import contentCollections from "@content-collections/vite";
@@ -65,7 +64,6 @@ const config = defineConfig({
     tsconfigPaths: true,
     alias: {
       "~": fileURLToPath(new URL("./src", import.meta.url)),
-      "react-dom/server.edge": path.resolve(process.cwd(), "node_modules/react-dom/server.edge.js"),
     },
   },
   build: {

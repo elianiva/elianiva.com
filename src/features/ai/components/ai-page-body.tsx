@@ -1,4 +1,4 @@
-import { type AiUsage, type AiContribution, aggregateClients } from "../lib/tokscale";
+import { type AiUsage, type AiContribution, aggregateClients } from "../lib/types";
 import { NotFound } from "~/components/not-found";
 import { fmtTokens, fmtCost, fmtRel } from "./fmt";
 import { SummarySection } from "./summary-section";

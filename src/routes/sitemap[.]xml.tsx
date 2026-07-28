@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { allPosts, allProjects } from "content-collections";
+import { listPosts } from "~/features/content/lib/posts";
+import { listProjects } from "~/features/content/lib/projects";
 import sites from "~/data/sites";
 
 function escapeXml(text: string): string {
@@ -24,8 +26,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { loc: "/music", changefreq: "daily", priority: "0.3" },
         ];
 
-        for (const post of allPosts) {
-          if (post.hidden) continue;
+        for (const post of listPosts(allPosts)) {
           entries.push({
             loc: `/posts/${post.slug}`,
             lastmod: post.date,
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           });
         }
 
-        for (const project of allProjects) {
+        for (const project of listProjects(allProjects)) {
           entries.push({
             loc: `/projects/${project.slug}`,
             lastmod: project.date,
