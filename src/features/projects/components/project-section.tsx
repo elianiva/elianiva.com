@@ -52,11 +52,11 @@ export function ProjectSection({
         />
       </div>
       {seeMoreUrl && (
-        <Link to={seeMoreUrl}>
-          <Button variant="outline" className="text-sm">
-            See more →
+        <div className="flex justify-end">
+          <Button render={<Link to={seeMoreUrl} />} variant="link" className="text-sm p-0 font-normal">
+            See More Projects
           </Button>
-        </Link>
+        </div>
       )}
     </section>
   );
