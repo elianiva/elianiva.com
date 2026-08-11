@@ -15,7 +15,7 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["unplugin-icons/types/react"],
+    "types": ["@webgpu/types", "unplugin-icons/types/react"],
     "ignoreDeprecations": "6.0"
   }
 }

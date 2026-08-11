@@ -80,6 +80,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
+    "@webgpu/types": "^0.1.71",
     "babel-plugin-react-compiler": "^1.0.0",
     "jsdom": "^29.1.1",
     "mdx": "^0.3.1",

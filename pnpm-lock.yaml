@@ -202,6 +202,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.4
         version: 6.0.4(@voidzero-dev/vite-plus-core@0.2.5(@types/node@26.1.1)(esbuild@0.25.12)(jiti@2.7.0)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0))(babel-plugin-react-compiler@1.0.0)
+      '@webgpu/types':
+        specifier: ^0.1.71
+        version: 0.1.71
       babel-plugin-react-compiler:
         specifier: ^1.0.0
         version: 1.0.0
@@ -3013,6 +3016,9 @@ packages:
     engines: {node: '>=20.0.0'}
     cpu: [x64]
     os: [win32]
+
+  '@webgpu/types@0.1.71':
+    resolution: {integrity: sha512-mMy8/ODcKhab808co15eW+yN+HgXoQxRQHTiBV9Mrvl1r0ufnid7YOcI+gi4eUWSWl9ezD6TW2KXccrL8HCh2A==}
 
   '@yuku-codegen/binding-darwin-arm64@0.5.48':
     resolution: {integrity: sha512-yo96Oef12WzqnphInfz/eexVse3+kWgfGS5g2S3rFS3dcGn1ENW9xLFDZUP9rh+yP76DOq38wBoFi1+I9+6qBg==}
@@ -8846,6 +8852,8 @@ snapshots:
 
   '@voidzero-dev/vite-plus-win32-x64-msvc@0.2.5':
     optional: true
+
+  '@webgpu/types@0.1.71': {}
 
   '@yuku-codegen/binding-darwin-arm64@0.5.48':
     optional: true
