@@ -1,12 +1,17 @@
+// Must stay in sync with N and VEC4S_PER_SHAPE in src/lib/webgpu-background.ts
+const N_SHAPES = 10u;
+const VEC4S_PER_SHAPE = 5u;
+const SHAPES_LEN = N_SHAPES * VEC4S_PER_SHAPE;
+
 // frame: time, res.x, res.y, 0
-// shapes: 5 vec4f per shape (see src/lib/webgpu-background.ts)
+// shapes: VEC4S_PER_SHAPE vec4f per shape
 //   v0 = pos.xy, dir.xy
 //   v1 = driftSpeed, driftOffset, rotSpeed, size
 //   v2 = kind, filled, aspect.x, aspect.y
 //   v3 = color.rgb, breatheSpeed
 //   v4 = breathePhase, baseAlpha, 0, 0
 @group(0) @binding(0) var<uniform> frame: vec4f;
-@group(0) @binding(1) var<uniform> shapes: array<vec4f, 50>;
+@group(0) @binding(1) var<uniform> shapes: array<vec4f, SHAPES_LEN>;
 
 fn fill(d: f32, w: f32) -> f32 {
   return 1.0 - smoothstep(0.0, w, d);
@@ -44,15 +49,17 @@ fn bg(uv: vec2f) -> vec3f {
 fn fs_main(@builtin(position) fragCoord: vec4f) -> @location(0) vec4f {
   let time = frame.x;
   let res = frame.yz;
-  let uv = fragCoord.xy / res;
+  // gl_FragCoord origin is bottom-left in GLSL, top-left in WebGPU; flip y so
+  // the WebGPU output matches the WebGL fallback.
+  let uv = vec2f(fragCoord.x, res.y - fragCoord.y) / res;
   let ar = res.x / res.y;
   let pAspect = vec2f(ar, 1.0);
   let aa = 1.0 / res.y;
 
   var col = bg(uv);
 
-  for (var i = 0u; i < 10u; i++) {
-    let b = i * 5u;
+  for (var i = 0u; i < N_SHAPES; i++) {
+    let b = i * VEC4S_PER_SHAPE;
     let pos = shapes[b].xy;
     let dir = shapes[b].zw;
     let dr = shapes[b + 1u];

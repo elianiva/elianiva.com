@@ -32,6 +32,9 @@ export function CanvasBackground() {
     let disposed = false;
     let losses = 0;
     let backend: "webgpu" | "webgl" = "webgl";
+    let webgpuContextClaimed = false;
+    let restoreHandler: (() => void) | null = null;
+    let restoreTimer = 0;
     let startTime = performance.now();
     let lastFrameTime = 0;
     let currentTime = 0;
@@ -111,13 +114,19 @@ export function CanvasBackground() {
       starting = true;
       try {
         let next: BackgroundRenderer | null = null;
+        let nextBackend: "webgpu" | "webgl" = "webgl";
         if (!preferWebGL && navigator.gpu) {
           try {
             const adapter = await navigator.gpu.requestAdapter();
             if (adapter) {
               next = await createWebGPURenderer(canvas, shapes, onWebGPULost);
+              webgpuContextClaimed = next !== null;
+              nextBackend = "webgpu";
             }
           } catch (error) {
+            // The webgpu context may have been claimed before the failure, so
+            // fall back on a fresh canvas rather than blocking WebGL.
+            webgpuContextClaimed = true;
             console.error("WebGPU init failed, falling back to WebGL", error);
           }
         }
@@ -126,15 +135,14 @@ export function CanvasBackground() {
           return;
         }
         if (!next) {
-          // A webgpu context already claimed this canvas, so a fresh canvas is
-          // needed before WebGL can take it.
-          if (!preferWebGL && canvas.getContext("webgpu")) {
+          if (webgpuContextClaimed) {
             setMount((m) => ({ key: m.key + 1, webgl: true }));
             return;
           }
           next = createWebGLRenderer(canvas, shapes, onWebGLLost);
+          nextBackend = "webgl";
         }
-        backend = preferWebGL ? "webgl" : "webgpu";
+        backend = nextBackend;
         renderer = next;
         resize();
         if (running) {
@@ -151,6 +159,30 @@ export function CanvasBackground() {
       }
     }
 
+    function restartWebGL() {
+      // A lost WebGL context is unusable until the browser fires
+      // 'webglcontextrestored', so recreate the renderer then. Fall back to a
+      // timed retry in case restoration never fires.
+      const onRestored = () => {
+        canvas.removeEventListener("webglcontextrestored", onRestored);
+        if (restoreHandler === onRestored) restoreHandler = null;
+        if (restoreTimer) {
+          window.clearTimeout(restoreTimer);
+          restoreTimer = 0;
+        }
+        if (disposed) return;
+        void start(true);
+      };
+      restoreHandler = onRestored;
+      canvas.addEventListener("webglcontextrestored", onRestored);
+      restoreTimer = window.setTimeout(() => {
+        restoreTimer = 0;
+        canvas.removeEventListener("webglcontextrestored", onRestored);
+        if (restoreHandler === onRestored) restoreHandler = null;
+        if (!disposed) void start(true);
+      }, 3000);
+    }
+
     function handleLost(preferWebGL: boolean) {
       if (disposed) return;
       if (starting) {
@@ -161,11 +193,22 @@ export function CanvasBackground() {
       renderer?.destroy();
       renderer = null;
       cancelAnimationFrame(raf);
+      // Reset the cached size so the next renderer receives its dimensions.
+      size = { width: 0, height: 0 };
+      pendingSize = null;
+      if (resizeTimer) {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = 0;
+      }
       if (!preferWebGL && losses >= MAX_LOSSES_BEFORE_FALLBACK) {
         setMount((m) => ({ key: m.key + 1, webgl: true }));
         return;
       }
-      void start(preferWebGL);
+      if (preferWebGL) {
+        restartWebGL();
+        return;
+      }
+      void start(false);
     }
 
     function onWebGPULost() {
@@ -201,6 +244,8 @@ export function CanvasBackground() {
       running = false;
       cancelAnimationFrame(raf);
       if (resizeTimer) window.clearTimeout(resizeTimer);
+      if (restoreTimer) window.clearTimeout(restoreTimer);
+      if (restoreHandler) canvas.removeEventListener("webglcontextrestored", restoreHandler);
       observer.disconnect();
       window.removeEventListener("resize", resize);
       renderer?.destroy();
