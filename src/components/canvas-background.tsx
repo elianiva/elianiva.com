@@ -1,198 +1,86 @@
-import { useRef, useEffect } from "react";
-import fragSource from "~/shaders/bg.frag.glsl?raw";
-import vertSource from "~/shaders/bg.vert.glsl?raw";
+import { useEffect, useRef, useState } from "react";
+import type { BackgroundRenderer } from "~/lib/background";
+import { computeCanvasSize, generateShapes } from "~/lib/background";
+import { createWebGLRenderer } from "~/lib/webgl-background";
+import { createWebGPURenderer } from "~/lib/webgpu-background";
 
-const SCALE = 0.5;
 const TARGET_FPS = 30;
 const FRAME_INTERVAL = 1000 / TARGET_FPS;
-const UPDATE_EVERY = 1;
+const MAX_LOSSES_BEFORE_FALLBACK = 2;
 
-const N = 10;
-const COLS = 4;
-const ROWS = 3;
-
-const PALETTE = [
-  [0.88, 0.72, 0.78],
-  [0.82, 0.78, 0.86],
-  [0.9, 0.82, 0.8],
-  [0.85, 0.74, 0.82],
-  [0.92, 0.76, 0.8],
-  [0.8, 0.76, 0.88],
-];
-
-function shuffle<T>(arr: T[]): T[] {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [arr[i], arr[j]] = [(arr as any)[j], (arr as any)[i]];
-  }
-  return arr;
+interface MountState {
+  key: number;
+  webgl: boolean;
 }
 
 export function CanvasBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [mount, setMount] = useState<MountState>({ key: 0, webgl: false });
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = canvasRef.current!;
     if (!canvas) return;
 
-    const gl = canvas.getContext("webgl2", {
-      alpha: false,
-      antialias: false,
-      preserveDrawingBuffer: false,
-    });
-    if (!gl) return;
-
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const shapes = generateShapes();
 
-    function compile(type: number, source: string) {
-      const s = gl!.createShader(type);
-      if (!s) return null;
-      gl!.shaderSource(s, source);
-      gl!.compileShader(s);
-      if (!gl!.getShaderParameter(s, gl!.COMPILE_STATUS)) {
-        console.error(gl!.getShaderInfoLog(s));
-        gl!.deleteShader(s);
-        return null;
-      }
-      return s;
-    }
-
-    const vs = compile(gl.VERTEX_SHADER, vertSource);
-    const fs = compile(gl.FRAGMENT_SHADER, fragSource);
-    if (!vs || !fs) return;
-
-    const prog = gl.createProgram();
-    if (!prog) return;
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      console.error(gl.getProgramInfoLog(prog));
-      return;
-    }
-    gl.useProgram(prog);
-
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    const aPos = gl.getAttribLocation(prog, "a_pos");
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-    // --- generate shapes evenly across grid cells ---
-    const cells: { x: number; y: number }[] = [];
-    for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS; x++) {
-        cells.push({ x, y });
-      }
-    }
-    shuffle(cells);
-
-    const pos = new Float32Array(N * 2);
-    const dir = new Float32Array(N * 2);
-    const driftSpeed = new Float32Array(N);
-    const driftOffset = new Float32Array(N);
-    const rotSpeed = new Float32Array(N);
-    const size = new Float32Array(N);
-    const kind = new Float32Array(N);
-    const filled = new Float32Array(N);
-    const aspect = new Float32Array(N * 2);
-    const color = new Float32Array(N * 3);
-    const breatheSpeed = new Float32Array(N);
-    const breathePhase = new Float32Array(N);
-    const baseAlpha = new Float32Array(N);
-
-    for (let i = 0; i < N; i++) {
-      const cell = cells[i];
-      const cx = (cell.x + 0.5) / COLS;
-      const cy = (cell.y + 0.5) / ROWS;
-      const jx = ((Math.random() - 0.5) * 0.5) / COLS;
-      const jy = ((Math.random() - 0.5) * 0.5) / ROWS;
-      pos[i * 2] = cx + jx;
-      pos[i * 2 + 1] = cy + jy;
-
-      const angle = Math.random() * Math.PI * 2;
-      dir[i * 2] = Math.cos(angle);
-      dir[i * 2 + 1] = Math.sin(angle);
-
-      driftSpeed[i] = 0.02 + Math.random() * 0.03;
-      driftOffset[i] = Math.random() * 10.0;
-      rotSpeed[i] = (Math.random() - 0.5) * 0.4;
-      size[i] = 0.025 + Math.random() * 0.045;
-      kind[i] = Math.random() > 0.7 ? 1.0 : 0.0;
-      filled[i] = Math.random() > 0.4 ? 1.0 : 0.0;
-
-      if (kind[i] < 0.5) {
-        aspect[i * 2] = 0.5 + Math.random() * 1.0;
-        aspect[i * 2 + 1] = 0.6 + Math.random() * 0.8;
-      } else {
-        aspect[i * 2] = 1.0;
-        aspect[i * 2 + 1] = 1.0;
-      }
-
-      const pal = PALETTE[Math.floor(Math.random() * PALETTE.length)];
-      color[i * 3] = pal[0];
-      color[i * 3 + 1] = pal[1];
-      color[i * 3 + 2] = pal[2];
-
-      breatheSpeed[i] = 0.4 + Math.random() * 0.6;
-      breathePhase[i] = Math.random() * Math.PI * 2;
-      baseAlpha[i] = 0.15 + Math.random() * 0.08;
-    }
-
-    // --- uniform locations ---
-    const uTime = gl.getUniformLocation(prog, "u_time");
-    const uRes = gl.getUniformLocation(prog, "u_res");
-    const uPos = gl.getUniformLocation(prog, "u_pos");
-    const uDir = gl.getUniformLocation(prog, "u_dir");
-    const uDriftSpeed = gl.getUniformLocation(prog, "u_driftSpeed");
-    const uDriftOffset = gl.getUniformLocation(prog, "u_driftOffset");
-    const uRotSpeed = gl.getUniformLocation(prog, "u_rotSpeed");
-    const uSize = gl.getUniformLocation(prog, "u_size");
-    const uKind = gl.getUniformLocation(prog, "u_kind");
-    const uFilled = gl.getUniformLocation(prog, "u_filled");
-    const uAspect = gl.getUniformLocation(prog, "u_aspect");
-    const uColor = gl.getUniformLocation(prog, "u_color");
-    const uBreatheSpeed = gl.getUniformLocation(prog, "u_breatheSpeed");
-    const uBreathePhase = gl.getUniformLocation(prog, "u_breathePhase");
-    const uBaseAlpha = gl.getUniformLocation(prog, "u_baseAlpha");
-
-    // --- upload once ---
-    gl.uniform2fv(uPos, pos);
-    gl.uniform2fv(uDir, dir);
-    gl.uniform1fv(uDriftSpeed, driftSpeed);
-    gl.uniform1fv(uDriftOffset, driftOffset);
-    gl.uniform1fv(uRotSpeed, rotSpeed);
-    gl.uniform1fv(uSize, size);
-    gl.uniform1fv(uKind, kind);
-    gl.uniform1fv(uFilled, filled);
-    gl.uniform2fv(uAspect, aspect);
-    gl.uniform3fv(uColor, color);
-    gl.uniform1fv(uBreatheSpeed, breatheSpeed);
-    gl.uniform1fv(uBreathePhase, breathePhase);
-    gl.uniform1fv(uBaseAlpha, baseAlpha);
-
+    let renderer: BackgroundRenderer | null = null;
+    let raf = 0;
     let running = true;
-    let raf: number;
+    let starting = false;
+    let pendingLost: boolean | null = null;
+    let disposed = false;
+    let losses = 0;
+    let backend: "webgpu" | "webgl" = "webgl";
+    let webgpuContextClaimed = false;
+    let restoreHandler: (() => void) | null = null;
+    let restoreTimer = 0;
     let startTime = performance.now();
     let lastFrameTime = 0;
-    let frameCount = 0;
-    let needsDraw = true;
+    let currentTime = 0;
+    let size = { width: 0, height: 0 };
+    let pendingSize: { width: number; height: number } | null = null;
+    let resizeTimer = 0;
+
+    function applyResize(target: { width: number; height: number }) {
+      if (target.width === size.width && target.height === size.height) return;
+      size = target;
+      renderer?.resize(target.width, target.height);
+      renderer?.frame(prefersReducedMotion ? 0 : currentTime);
+    }
 
     function resize() {
-      const c = canvas!;
-      const w = c.clientWidth;
-      const h = c.clientHeight;
-      c.width = Math.max(1, Math.floor(w * SCALE));
-      c.height = Math.max(1, Math.floor(h * SCALE));
-      gl!.viewport(0, 0, c.width, c.height);
-      gl!.uniform2f(uRes, c.width, c.height);
-      needsDraw = true;
+      const target = computeCanvasSize(canvas.clientWidth, canvas.clientHeight);
+      if (target.width === size.width && target.height === size.height) {
+        pendingSize = null;
+        if (resizeTimer) {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = 0;
+        }
+        return;
+      }
+      pendingSize = target;
+      // Apply big changes (initial load, orientation) immediately. Small
+      // changes during scroll are the mobile URL bar resizing the viewport;
+      // deferring them keeps the buffer (and the shader's aspect) stable
+      // until the viewport settles, avoiding shape jumps.
+      const changed = Math.max(
+        Math.abs(target.width - size.width) / Math.max(size.width, 1),
+        Math.abs(target.height - size.height) / Math.max(size.height, 1),
+      );
+      if (size.width === 0 || changed > 0.2) {
+        applyResize(target);
+        return;
+      }
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        resizeTimer = 0;
+        if (pendingSize) applyResize(pendingSize);
+      }, 200);
     }
 
     function render(now: number) {
-      if (!running) return;
+      if (!running || disposed) return;
 
       if (now - lastFrameTime < FRAME_INTERVAL) {
         raf = requestAnimationFrame(render);
@@ -201,33 +89,143 @@ export function CanvasBackground() {
       lastFrameTime = now;
 
       if (prefersReducedMotion) {
-        gl!.uniform1f(uTime, 0);
-        gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+        try {
+          renderer?.frame(0);
+        } catch (error) {
+          console.error("background render error", error);
+          handleLost(backend === "webgl");
+        }
         return;
       }
 
-      const t = (now - startTime) * 0.001;
-      gl!.uniform1f(uTime, t);
-
-      if (needsDraw || frameCount % UPDATE_EVERY === 0) {
-        gl!.drawArrays(gl!.TRIANGLES, 0, 3);
-        needsDraw = false;
+      currentTime = (now - startTime) * 0.001;
+      try {
+        renderer?.frame(currentTime);
+      } catch (error) {
+        console.error("background render error", error);
+        handleLost(backend === "webgl");
+        return;
       }
-      frameCount++;
-
       raf = requestAnimationFrame(render);
     }
 
-    resize();
+    async function start(preferWebGL: boolean) {
+      if (starting || disposed) return;
+      starting = true;
+      try {
+        let next: BackgroundRenderer | null = null;
+        let nextBackend: "webgpu" | "webgl" = "webgl";
+        if (!preferWebGL && navigator.gpu) {
+          try {
+            const adapter = await navigator.gpu.requestAdapter();
+            if (adapter) {
+              next = await createWebGPURenderer(canvas, shapes, onWebGPULost);
+              webgpuContextClaimed = next !== null;
+              nextBackend = "webgpu";
+            }
+          } catch (error) {
+            // The webgpu context may have been claimed before the failure, so
+            // fall back on a fresh canvas rather than blocking WebGL.
+            webgpuContextClaimed = true;
+            console.error("WebGPU init failed, falling back to WebGL", error);
+          }
+        }
+        if (disposed) {
+          next?.destroy();
+          return;
+        }
+        if (!next) {
+          if (webgpuContextClaimed) {
+            setMount((m) => ({ key: m.key + 1, webgl: true }));
+            return;
+          }
+          next = createWebGLRenderer(canvas, shapes, onWebGLLost);
+          nextBackend = "webgl";
+        }
+        backend = nextBackend;
+        renderer = next;
+        resize();
+        if (running) {
+          lastFrameTime = 0;
+          raf = requestAnimationFrame(render);
+        }
+      } finally {
+        starting = false;
+        if (pendingLost !== null) {
+          const lostPreferWebGL = pendingLost;
+          pendingLost = null;
+          handleLost(lostPreferWebGL);
+        }
+      }
+    }
+
+    function restartWebGL() {
+      // A lost WebGL context is unusable until the browser fires
+      // 'webglcontextrestored', so recreate the renderer then. Fall back to a
+      // timed retry in case restoration never fires.
+      const onRestored = () => {
+        canvas.removeEventListener("webglcontextrestored", onRestored);
+        if (restoreHandler === onRestored) restoreHandler = null;
+        if (restoreTimer) {
+          window.clearTimeout(restoreTimer);
+          restoreTimer = 0;
+        }
+        if (disposed) return;
+        void start(true);
+      };
+      restoreHandler = onRestored;
+      canvas.addEventListener("webglcontextrestored", onRestored);
+      restoreTimer = window.setTimeout(() => {
+        restoreTimer = 0;
+        canvas.removeEventListener("webglcontextrestored", onRestored);
+        if (restoreHandler === onRestored) restoreHandler = null;
+        if (!disposed) void start(true);
+      }, 3000);
+    }
+
+    function handleLost(preferWebGL: boolean) {
+      if (disposed) return;
+      if (starting) {
+        pendingLost = preferWebGL;
+        return;
+      }
+      if (!preferWebGL) losses++;
+      renderer?.destroy();
+      renderer = null;
+      cancelAnimationFrame(raf);
+      // Reset the cached size so the next renderer receives its dimensions.
+      size = { width: 0, height: 0 };
+      pendingSize = null;
+      if (resizeTimer) {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = 0;
+      }
+      if (!preferWebGL && losses >= MAX_LOSSES_BEFORE_FALLBACK) {
+        setMount((m) => ({ key: m.key + 1, webgl: true }));
+        return;
+      }
+      if (preferWebGL) {
+        restartWebGL();
+        return;
+      }
+      void start(false);
+    }
+
+    function onWebGPULost() {
+      handleLost(false);
+    }
+
+    function onWebGLLost() {
+      handleLost(true);
+    }
+
     window.addEventListener("resize", resize);
-    raf = requestAnimationFrame(render);
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries[0].isIntersecting;
-        if (visible && !running) {
+        const visible = entries[0]!.isIntersecting;
+        if (visible && !running && renderer) {
           running = true;
-          needsDraw = true;
           lastFrameTime = 0;
           raf = requestAnimationFrame(render);
         } else if (!visible && running) {
@@ -239,20 +237,24 @@ export function CanvasBackground() {
     );
     observer.observe(canvas);
 
+    void start(mount.webgl);
+
     return () => {
+      disposed = true;
       running = false;
       cancelAnimationFrame(raf);
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      if (restoreTimer) window.clearTimeout(restoreTimer);
+      if (restoreHandler) canvas.removeEventListener("webglcontextrestored", restoreHandler);
       observer.disconnect();
       window.removeEventListener("resize", resize);
-      gl.deleteProgram(prog);
-      gl.deleteShader(vs);
-      gl.deleteShader(fs);
-      gl.deleteBuffer(buf);
+      renderer?.destroy();
     };
-  }, []);
+  }, [mount.key, mount.webgl]);
 
   return (
     <canvas
+      key={mount.key}
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none -z-10"
       style={{ imageRendering: "auto" }}
