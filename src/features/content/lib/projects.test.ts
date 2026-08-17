@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { listProjects, getProject, type ProjectDoc } from "./projects";
 import type { MDXContent } from "mdx/types";
 

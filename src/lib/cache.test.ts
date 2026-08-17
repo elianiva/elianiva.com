@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from "vite-plus/test";
 import { Duration, Effect } from "effect";
 import { KvCache } from "./cache";
 import type { KVNamespace } from "@cloudflare/workers-types";

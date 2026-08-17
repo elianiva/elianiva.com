@@ -9,8 +9,8 @@
  * merges with existing entries:
  *
  *   - If an entry with the same URL already exists, keep it as-is.
- *   - If not, add a new entry with id, dateTaken, url filled; camera,
- *     lens, editedWith left undefined.
+ *   - If not, add a new entry with id, dateTaken, url filled; aspectRatio
+ *     decoded from the smol variant. Camera, lens, editedWith left undefined.
  *
  * Credentials sourced from:
  *   - Bucket info from `alchemy state get`
@@ -86,6 +86,15 @@ function groupPhotos(keys: string[]): ScannedPhoto[] {
   }
 
   return [...map.values()];
+}
+
+// ── Aspect ratio detection ──────────────────────────────────────
+
+async function resolveAspectRatio(smolKey: string): Promise<PhotoEntry["aspectRatio"]> {
+  const bytes = await r2.file(smolKey).arrayBuffer();
+  const img = new Bun.Image(bytes);
+  await img.buffer();
+  return img.width >= img.height ? "3/2" : "2/3";
 }
 
 // ── Id generation ────────────────────────────────────────────────
@@ -165,6 +174,7 @@ const existingByUrl = new Map(existing.map((p) => [p.url, p]));
 const merged: PhotoEntry[] = [...existing];
 let added = 0;
 let kept = 0;
+let skipped = 0;
 
 for (const photo of scanned) {
   if (existingByUrl.has(photo.url)) {
@@ -172,12 +182,22 @@ for (const photo of scanned) {
     continue;
   }
 
+  let aspectRatio: PhotoEntry["aspectRatio"];
+  try {
+    aspectRatio = await resolveAspectRatio(photo.url);
+  } catch (err) {
+    console.warn(`  [skip] ${photo.base}: could not decode smol variant (${String(err)})`);
+    skipped++;
+    continue;
+  }
+
   merged.push({
     id: toId(photo.base),
     dateTaken: photo.dateTaken,
     url: photo.url,
+    aspectRatio,
   });
-  console.log(`  [add] ${photo.base}  -> ${toId(photo.base)}`);
+  console.log(`  [add] ${photo.base} (${aspectRatio})  -> ${toId(photo.base)}`);
   added++;
 }
 
@@ -188,8 +208,8 @@ merged.sort((a, b) => b.dateTaken.localeCompare(a.dateTaken) || a.id.localeCompa
 const newContent = rebuildSource(prefix, merged, suffix);
 
 if (dryRun) {
-  console.log(`\n[dry-run] Would add ${added}, keep ${kept}. File unchanged.`);
+  console.log(`\n[dry-run] Would add ${added}, keep ${kept}, skip ${skipped}. File unchanged.`);
 } else {
   writeFileSync(DATA_FILE, newContent, "utf-8");
-  console.log(`\nAdded ${added}, kept ${kept} photo(s). Updated ${DATA_FILE}`);
+  console.log(`\nAdded ${added}, kept ${kept}, skipped ${skipped} photo(s). Updated ${DATA_FILE}`);
 }
