@@ -71,20 +71,20 @@ export function MusicPageSkeleton() {
         <section className="py-4 md:py-8">
           <Skeleton className="h-6 w-32 mb-4" />
           <div className="space-y-0">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="flex gap-4 py-3 border-b border-pink-100/50">
-              <Skeleton className="size-12 shrink-0" />
-              <div className="flex-1 space-y-2 py-1">
-                <Skeleton className="h-4 w-56" />
-                <Skeleton className="h-3 w-32" />
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="flex gap-4 py-3 border-b border-pink-100/50">
+                <Skeleton className="size-12 shrink-0" />
+                <div className="flex-1 space-y-2 py-1">
+                  <Skeleton className="h-4 w-56" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <div className="hidden md:flex flex-col items-end gap-1 py-1">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
               </div>
-              <div className="hidden md:flex flex-col items-end gap-1 py-1">
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-3 w-16" />
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         </section>
       </div>
     </div>

@@ -5,7 +5,7 @@ export interface PhotoEntry {
   camera?: string; // "Fujifilm X-T5", "iPhone 16 Pro"
   lensOrSensor?: string; // "XF 23mm f/1.4"
   editedWith?: string; // "Lightroom", "Darkroom", "VSCO"
-  aspectRatio: "3/2" | "2/3"; // landscape or portrait frame
+  aspectRatio: `${number}/${number}`;
 }
 
 export const photos: PhotoEntry[] = [
@@ -55,7 +55,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-07-07.5.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-07-07-6",
@@ -63,7 +63,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-07-07.6.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-07-06-1",
@@ -126,7 +126,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-25.2.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-25-3",
@@ -134,7 +134,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-25.3.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-25-4",
@@ -142,7 +142,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-25.4.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-23-1",
@@ -158,7 +158,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-16.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-15-1",
@@ -206,7 +206,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-11.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-11-2",
@@ -214,7 +214,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-11.2.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-11-3",
@@ -222,7 +222,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-11.3.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-11-4",
@@ -230,7 +230,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-11.4.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-07-1",
@@ -254,7 +254,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-06.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-06-2",
@@ -262,7 +262,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-06.2.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-06-3",
@@ -278,7 +278,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-04.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-03-1",
@@ -286,7 +286,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-03.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-03-2",
@@ -294,7 +294,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-03.2.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-06-02-1",
@@ -302,7 +302,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-06-02.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-05-25-1",
@@ -310,7 +310,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-05-25.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-05-23-1",
@@ -318,7 +318,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-05-23.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-05-21-1",
@@ -326,7 +326,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-05-21.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "4/3",
   },
   {
     id: "photo-2026-05-20-1",
@@ -342,7 +342,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-05-09.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-05-07-1",
@@ -350,7 +350,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-05-07.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-05-04-1",
@@ -358,7 +358,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-05-04.1.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-05-04-2",
@@ -366,7 +366,7 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-05-04.2.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
   {
     id: "photo-2026-05-04-3",
@@ -374,6 +374,6 @@ export const photos: PhotoEntry[] = [
     url: "photography/2026-05-04.3.smol.webp",
     camera: "Tecno Camon 50 Ultra",
     lensOrSensor: "Sony LYT 700C",
-    aspectRatio: "2/3",
+    aspectRatio: "3/4",
   },
 ];

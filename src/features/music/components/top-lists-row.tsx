@@ -19,13 +19,7 @@ function fmtPlaycount(n: number): string {
 
 type TopItem = { name: string; artist?: string; playcount: number; url: string };
 
-function TopTable({
-  label,
-  items,
-}: {
-  label: string;
-  items: TopItem[];
-}) {
+function TopTable({ label, items }: { label: string; items: TopItem[] }) {
   if (items.length === 0) return null;
 
   return (
@@ -87,8 +81,24 @@ function TopGrid({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <TopTable label="Artists" items={topArtists} />
-      <TopTable label="Albums" items={topAlbums.map((a) => ({ name: a.name, artist: a.artist, playcount: a.playcount, url: a.url }))} />
-      <TopTable label="Tracks" items={topTracks.map((t) => ({ name: t.name, artist: t.artist, playcount: t.playcount, url: t.url }))} />
+      <TopTable
+        label="Albums"
+        items={topAlbums.map((a) => ({
+          name: a.name,
+          artist: a.artist,
+          playcount: a.playcount,
+          url: a.url,
+        }))}
+      />
+      <TopTable
+        label="Tracks"
+        items={topTracks.map((t) => ({
+          name: t.name,
+          artist: t.artist,
+          playcount: t.playcount,
+          url: t.url,
+        }))}
+      />
     </div>
   );
 }
@@ -113,8 +123,13 @@ export function TopListsRow({
 }) {
   const [period, setPeriod] = useState<Period>("last year");
 
-  const hasData = topArtists.length > 0 || topAlbums.length > 0 || topTracks.length > 0 ||
-    topArtistsYear.length > 0 || topAlbumsYear.length > 0 || topTracksYear.length > 0;
+  const hasData =
+    topArtists.length > 0 ||
+    topAlbums.length > 0 ||
+    topTracks.length > 0 ||
+    topArtistsYear.length > 0 ||
+    topAlbumsYear.length > 0 ||
+    topTracksYear.length > 0;
   if (!hasData) return null;
 
   const artists = period === "overall" ? topArtists : topArtistsYear;

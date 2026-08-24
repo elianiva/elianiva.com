@@ -56,7 +56,9 @@ export class KvCache extends Context.Service<
           }
         }
 
-        type LoadResult = { readonly tag: "ok"; readonly value: A } | { readonly tag: "err"; readonly error: unknown };
+        type LoadResult =
+          | { readonly tag: "ok"; readonly value: A }
+          | { readonly tag: "err"; readonly error: unknown };
         const result: LoadResult = yield* load.pipe(
           Effect.match({
             onSuccess: (value) => ({ tag: "ok" as const, value }),

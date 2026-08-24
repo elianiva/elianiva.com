@@ -69,8 +69,7 @@ function fetchAllPRs(
       catch: (e) => new Error(String(e)),
     });
 
-    const repoContribs =
-      response.user.contributionsCollection.pullRequestContributionsByRepository;
+    const repoContribs = response.user.contributionsCollection.pullRequestContributionsByRepository;
     const allPRs: GitHubPullRequest[] = [];
 
     for (const repo of repoContribs) {

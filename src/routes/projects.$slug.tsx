@@ -81,9 +81,7 @@ function ProjectDetailPage() {
 
             <div>
               <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-pink-200/50">
-                <Heading level={1}>
-                  {project.title}
-                </Heading>
+                <Heading level={1}>{project.title}</Heading>
                 <div className="flex gap-2">
                   <a
                     className="flex gap-2 items-center bg-white/60 hover:bg-white border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
@@ -107,17 +105,13 @@ function ProjectDetailPage() {
                   )}
                 </div>
               </div>
-              <div className="prose prose-pink max-w-full">
-                {project.mdx}
-              </div>
+              <div className="prose prose-pink max-w-full">{project.mdx}</div>
             </div>
           </div>
 
           <aside className="h-fit">
             <div>
-              <Heading level={2}>
-                Tech Stack
-              </Heading>
+              <Heading level={2}>Tech Stack</Heading>
               <div className="space-y-3 pt-4">
                 {(project.stack || []).map(([stackName, stackHomepage]) => (
                   <div key={stackName} className="flex items-center gap-3 group">

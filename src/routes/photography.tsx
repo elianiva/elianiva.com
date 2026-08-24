@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, type ImgHTMLAttributes } from "react";
 import { photos, type PhotoEntry } from "~/data/photography";
+import { useColumnCount } from "~/hooks/use-column-count";
+import { aspectRatioToRelativeHeight, distributeMasonry } from "~/lib/masonry";
 import { Heading } from "~/components/ui/heading";
 import { seo, defaultOgImageUrl } from "~/lib/seo";
 import { Dialog, DialogTrigger, DialogContent } from "~/components/ui/dialog";
@@ -44,7 +46,7 @@ function PhotoCard({ photo }: { photo: PhotoEntry }) {
 
   return (
     <Dialog>
-      <div className="break-inside-avoid mb-2 bg-white border border-pink-200/50 p-3 min-w-56">
+      <div className="bg-white border border-pink-200/50">
         {/* Image — clickable to open lightbox */}
         <DialogTrigger
           render={
@@ -60,7 +62,7 @@ function PhotoCard({ photo }: { photo: PhotoEntry }) {
         />
 
         {/* Metadata */}
-        <div className="pt-2 space-y-0.5">
+        <div className="p-2 space-y-0.5">
           {photo.camera && (
             <p className="font-mono text-[11px] text-pink-950/60 tracking-tight">{photo.camera}</p>
           )}
@@ -82,7 +84,8 @@ function PhotoCard({ photo }: { photo: PhotoEntry }) {
           <img
             src={imgSrc}
             alt={photo.id}
-            className="w-full h-full max-h-[90vh] aspect-auto object-contain"
+            style={{ aspectRatio: photo.aspectRatio }}
+            className="w-full h-full max-h-[90vh] object-contain"
           />
           <div className="pt-2 space-y-0.5">
             {photo.camera && (
@@ -113,6 +116,13 @@ function PhotoCard({ photo }: { photo: PhotoEntry }) {
 function PhotographyPage() {
   const sorted = [...photos].sort((a, b) => b.dateTaken.localeCompare(a.dateTaken));
 
+  // Greedy shortest-column placement (Pinterest-style): heights are known up
+  // front from each photo's aspect ratio, so no DOM measurement is needed.
+  const columnCount = useColumnCount(4);
+  const columns = distributeMasonry(sorted, columnCount, (photo) =>
+    aspectRatioToRelativeHeight(photo.aspectRatio),
+  );
+
   return (
     <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
       <div className="py-4 md:py-8 px-2 md:px-8">
@@ -132,9 +142,13 @@ function PhotographyPage() {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-2 justify-center">
-          {sorted.map((photo) => (
-            <PhotoCard key={photo.id} photo={photo} />
+        <div className="flex items-start gap-2">
+          {columns.map((column, i) => (
+            <div key={i} className="flex min-w-0 flex-1 flex-col gap-2">
+              {column.map((photo) => (
+                <PhotoCard key={photo.id} photo={photo} />
+              ))}
+            </div>
           ))}
         </div>
       </div>

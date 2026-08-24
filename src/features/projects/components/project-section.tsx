@@ -53,7 +53,11 @@ export function ProjectSection({
       </div>
       {seeMoreUrl && (
         <div className="flex justify-end">
-          <Button render={<Link to={seeMoreUrl} />} variant="link" className="text-sm p-0 font-normal">
+          <Button
+            render={<Link to={seeMoreUrl} />}
+            variant="link"
+            className="text-sm p-0 font-normal"
+          >
             See More Projects
           </Button>
         </div>
