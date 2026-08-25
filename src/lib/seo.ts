@@ -134,7 +134,9 @@ export function postSeo(props: PostSeoProps) {
 }
 
 /**
- * SEO for the home page — includes Person + WebSite JSON-LD.
+ * SEO for the home page — includes a @graph with Person + WebSite + ProfilePage.
+ * Single @graph is intentional: it hard-links all entities via @id so search
+ * engines reconcile them as one knowledge graph node (entity stacking).
  */
 export function homeSeo() {
   return {
@@ -150,43 +152,95 @@ export function homeSeo() {
       path: "/",
     }),
     scripts: [
-      { type: "application/ld+json", children: JSON.stringify(personJsonLd()) },
-      { type: "application/ld+json", children: JSON.stringify(websiteJsonLd()) },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [personJsonLd(), websiteJsonLd(), profilePageJsonLd()],
+        }),
+      },
     ],
   };
 }
 
 // ── Structured Data ──────────────────────────────────────────────
 
-function personJsonLd() {
+export function personJsonLd() {
   return {
-    "@context": "https://schema.org",
     "@type": "Person",
+    "@id": `${siteUrl}/#person`,
     name: "Dicha Zelianiva Arkana",
+    alternateName: ["elianiva", "dichaa", "not.elianiva", "elianiva_"],
+    givenName: "Dicha",
+    familyName: "Arkana",
+    additionalName: "Zelianiva",
     url: siteUrl,
+    image: {
+      "@type": "ImageObject",
+      url: "https://avatars.githubusercontent.com/u/51877647?v=4",
+      contentUrl: "https://avatars.githubusercontent.com/u/51877647?v=4",
+      caption: "Dicha Zelianiva Arkana",
+    },
+    email: `mailto:${sites.email}`,
     jobTitle: "Software Engineer",
-    sameAs: [sites.github, sites.twitter, sites.linkedin, sites.bluesky],
+    description:
+      "Software engineer focused on frontend and design engineering. Building interfaces that don't annoy people.",
+    sameAs: [
+      sites.github,
+      sites.twitter,
+      sites.linkedin,
+      sites.bluesky,
+      sites.instagram,
+      sites.threads,
+      sites.reddit,
+      sites.devto,
+      sites.lastfm,
+      sites.npm,
+    ].filter(Boolean),
     knowsAbout: [
       "Frontend Development",
       "Design Engineering",
       "React",
       "TypeScript",
       "Web Development",
+      "Next.js",
+      "TanStack Start",
+      "Tailwind CSS",
+      "Accessibility",
+      "Open Source",
     ],
+    knowsLanguage: ["en", "id"],
+    nationality: { "@type": "Country", name: "Indonesia" },
+    homeLocation: { "@type": "Place", name: "Indonesia" },
   };
 }
 
 function websiteJsonLd() {
   return {
-    "@context": "https://schema.org",
     "@type": "WebSite",
-    name: sites.siteName,
+    "@id": `${siteUrl}/#website`,
     url: siteUrl,
+    name: sites.siteName,
     description: sites.description,
-    author: {
-      "@type": "Person",
-      name: "Dicha Zelianiva Arkana",
-    },
+    inLanguage: "en-US",
+    publisher: { "@id": `${siteUrl}/#person` },
+    author: { "@id": `${siteUrl}/#person` },
+  };
+}
+
+function profilePageJsonLd() {
+  return {
+    "@type": "ProfilePage",
+    "@id": `${siteUrl}/#webpage`,
+    url: siteUrl,
+    name: `${sites.siteName} — Dicha Zelianiva Arkana`,
+    description:
+      "Personal website, blog, and portfolio of Dicha Zelianiva Arkana (elianiva) — software engineer, design engineering, open source.",
+    isPartOf: { "@id": `${siteUrl}/#website` },
+    about: { "@id": `${siteUrl}/#person` },
+    mainEntity: { "@id": `${siteUrl}/#person` },
+    inLanguage: "en-US",
+    dateModified: new Date().toISOString(),
   };
 }
 
@@ -203,15 +257,16 @@ function blogPostJsonLd(props: {
     headline: props.title,
     description: props.description,
     datePublished: new Date(props.date).toISOString(),
-    author: {
-      "@type": "Person",
-      name: "Dicha Zelianiva Arkana",
-      url: siteUrl,
-    },
+    dateModified: new Date(props.date).toISOString(),
+    author: { "@id": `${siteUrl}/#person` },
+    publisher: { "@id": `${siteUrl}/#person` },
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `${siteUrl}/posts/${props.slug}`,
     },
+    url: `${siteUrl}/posts/${props.slug}`,
+    isPartOf: { "@id": `${siteUrl}/#website` },
     keywords: props.tags.join(", "),
+    inLanguage: "en-US",
   };
 }
