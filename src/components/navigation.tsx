@@ -21,7 +21,9 @@ export function NavigationStrip() {
       <nav className="mt-4 md:mt-0 mx-auto flex items-center h-10 md:bg-cream/70 md:backdrop-blur-md border-y md:border border-pink-200/50 max-w-container w-full overflow-x-auto scrollbar-none">
         {NAV_ITEMS.map((item) => {
           const isActive =
-            item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`);
+            item.href === "/"
+              ? pathname === "/"
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <Link
               key={item.href}

@@ -210,7 +210,7 @@ export function homeSeo() {
       ogTitle: sites.siteName,
       ogImage: defaultOgImageUrl(
         "Dicha Zelianiva Arkana",
-        "software engineer · design engineering · open source",
+        "software engineer · open source",
       ),
       path: "/",
     }),

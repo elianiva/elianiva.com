@@ -52,7 +52,8 @@ export function createCanvasRenderer(
         const r = shapes.color[i * 3]!;
         const gc = shapes.color[i * 3 + 1]!;
         const b = shapes.color[i * 3 + 2]!;
-        const breathe = 0.5 + 0.5 * Math.sin(time * shapes.breatheSpeed[i]! + shapes.breathePhase[i]!);
+        const breathe =
+          0.5 + 0.5 * Math.sin(time * shapes.breatheSpeed[i]! + shapes.breathePhase[i]!);
         const alpha = breathe * shapes.baseAlpha[i]!;
 
         const baseAlpha = Math.max(0, Math.min(1, alpha));
