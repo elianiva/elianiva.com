@@ -8,7 +8,7 @@ interface WorkExperienceSectionProps {
 
 export function WorkExperienceSection({ workExperiences }: WorkExperienceSectionProps) {
   return (
-    <section className="py-4 md:py-8 px-2 md:px-8">
+    <section aria-labelledby="experience-heading" className="py-4 md:py-8 px-2 md:px-8">
       <div>
         <Heading level={2} id="experience-heading">
           Work Experience

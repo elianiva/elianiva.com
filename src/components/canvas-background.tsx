@@ -76,6 +76,21 @@ export function CanvasBackground() {
       raf = requestAnimationFrame(render);
     }
 
+    const handleVisibility = () => {
+      if (document.hidden && running) {
+        running = false;
+        cancelAnimationFrame(raf);
+      } else if (!document.hidden && !running) {
+        const entry = canvas.getBoundingClientRect();
+        const inView = entry.bottom > 0 && entry.top < window.innerHeight;
+        if (inView) {
+          running = true;
+          lastFrameTime = 0;
+          raf = requestAnimationFrame(render);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("resize", resize);
 
     const observer = new IntersectionObserver(
@@ -104,6 +119,7 @@ export function CanvasBackground() {
       if (resizeTimer) window.clearTimeout(resizeTimer);
       observer.disconnect();
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", handleVisibility);
       renderer?.destroy();
     };
   }, []);

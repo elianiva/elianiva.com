@@ -77,7 +77,10 @@ function GitHubActivityGrid() {
 
 export function GitHubActivitySection() {
   return (
-    <section className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline">
+    <section
+      aria-labelledby="github-activity-heading"
+      className="py-4 md:py-8 px-2 md:px-8 relative with-box-underline"
+    >
       <div>
         <Heading level={2} id="github-activity-heading">
           Git Activity

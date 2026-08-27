@@ -26,6 +26,15 @@ export interface PostSeoProps {
   slug: string;
 }
 
+export interface ProjectSeoProps {
+  title: string;
+  description: string;
+  date: string;
+  slug: string;
+  stack?: string[][];
+  image?: string;
+}
+
 export function defaultOgImageUrl(title: string, subtitle?: string) {
   const params = new URLSearchParams({ type: "default", title });
   if (subtitle) params.set("subtitle", subtitle);
@@ -116,7 +125,7 @@ export function seo(options: SeoProps) {
 }
 
 /**
- * SEO for post detail pages — includes BlogPosting JSON-LD.
+ * SEO for post detail pages — includes BlogPosting JSON-LD and BreadcrumbList.
  */
 export function postSeo(props: PostSeoProps) {
   return {
@@ -129,7 +138,61 @@ export function postSeo(props: PostSeoProps) {
       canonical: `${siteUrl}/posts/${props.slug}`,
       publishedTime: new Date(props.date).toISOString(),
     }),
-    scripts: [{ type: "application/ld+json", children: JSON.stringify(blogPostJsonLd(props)) }],
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(blogPostJsonLd(props)) },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          breadcrumbJsonLd([
+            { name: "Home", item: siteUrl },
+            { name: "Posts", item: `${siteUrl}/posts` },
+            { name: props.title, item: `${siteUrl}/posts/${props.slug}` },
+          ]),
+        ),
+      },
+    ],
+  };
+}
+
+/**
+ * SEO for project detail pages — includes CreativeWork JSON-LD and BreadcrumbList.
+ */
+export function projectSeo(props: ProjectSeoProps) {
+  return {
+    ...seo({
+      title: props.title,
+      description: props.description,
+      ogType: "website",
+      ogImage: defaultOgImageUrl(props.title, props.description),
+      canonical: `${siteUrl}/projects/${props.slug}`,
+      publishedTime: new Date(props.date).toISOString(),
+    }),
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(projectJsonLd(props)) },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          breadcrumbJsonLd([
+            { name: "Home", item: siteUrl },
+            { name: "Projects", item: `${siteUrl}/projects` },
+            { name: props.title, item: `${siteUrl}/projects/${props.slug}` },
+          ]),
+        ),
+      },
+    ],
+  };
+}
+
+export function breadcrumbJsonLd(items: Array<{ name: string; item: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((entry, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: entry.name,
+      item: entry.item,
+    })),
   };
 }
 
@@ -241,6 +304,33 @@ function profilePageJsonLd() {
     mainEntity: { "@id": `${siteUrl}/#person` },
     inLanguage: "en-US",
     dateModified: new Date().toISOString(),
+  };
+}
+
+export function projectJsonLd(props: {
+  title: string;
+  description: string;
+  date: string;
+  slug: string;
+  stack?: string[][];
+  image?: string;
+}) {
+  const isoDate = new Date(props.date).toISOString();
+  return {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: props.title,
+    headline: props.title,
+    description: props.description,
+    datePublished: isoDate,
+    dateModified: isoDate,
+    author: { "@id": `${siteUrl}/#person` },
+    creator: { "@id": `${siteUrl}/#person` },
+    url: `${siteUrl}/projects/${props.slug}`,
+    isPartOf: { "@id": `${siteUrl}/#website` },
+    keywords: props.stack?.map(([name]) => name).join(", "),
+    ...(props.image ? { image: `${siteUrl}/assets/projects/${props.slug}/${props.image}` } : {}),
+    inLanguage: "en-US",
   };
 }
 

@@ -3,7 +3,8 @@ import { renderOgImage, type OgImageSpec } from "~/features/og-image/lib/og-imag
 
 const PNG_HEADERS = {
   "Content-Type": "image/png",
-  "Cache-Control": "public, max-age=86400",
+  "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800, immutable",
+  "CDN-Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
 };
 
 function badRequest() {

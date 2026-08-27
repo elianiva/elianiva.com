@@ -1,16 +1,18 @@
 import { Suspense } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getPosts } from "~/features/posts/lib/posts";
+import type { PostSummary } from "~/features/content/lib/posts";
 import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Link } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
 import { PostCard } from "~/features/posts/components/post-card";
 
-function BlogPostList() {
+function BlogPostList({ initialPosts }: { initialPosts?: PostSummary[] }) {
   const { data: posts } = useSuspenseQuery({
     queryKey: ["blog-posts"],
     queryFn: () => getPosts({ data: { limit: 6 } }),
+    initialData: initialPosts,
     staleTime: Infinity,
   });
 
@@ -30,9 +32,9 @@ function BlogPostList() {
   );
 }
 
-export function BlogSection() {
+export function BlogSection({ initialPosts }: { initialPosts?: PostSummary[] }) {
   return (
-    <section className="py-4 md:py-8 px-2 md:px-8">
+    <section aria-labelledby="blog-heading" className="py-4 md:py-8 px-2 md:px-8">
       <div>
         <Heading level={2} id="blog-heading">
           Blog
@@ -54,7 +56,7 @@ export function BlogSection() {
             </div>
           }
         >
-          <BlogPostList />
+          <BlogPostList initialPosts={initialPosts} />
         </Suspense>
       </div>
       <div className="flex justify-end">

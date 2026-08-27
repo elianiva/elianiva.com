@@ -1,3 +1,28 @@
+import { useEffect, useState } from "react";
+
+function BuildDate() {
+  const [value, setValue] = useState("");
+  useEffect(() => {
+    // oxlint-disable-next-line efx-no-native-date
+    setValue(
+      new Date().toLocaleString("en-GB", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      }),
+    );
+  }, []);
+  if (!value) return null;
+  return (
+    <p className="text-[10px] font-mono text-pink-950/30" suppressHydrationWarning>
+      {value}
+    </p>
+  );
+}
+
 export function Footer() {
   return (
     <footer className="relative mx-auto w-full max-w-container px-4 py-10 border-x border-pink-200/50 with-box-upperline">
@@ -12,27 +37,7 @@ export function Footer() {
         <p className="text-[11px] font-mono text-pink-950/40 uppercase tracking-[0.15em]">
           tanstack start · react · tailwind
         </p>
-
-        <script
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html:
-              "(" +
-              (() => {
-                const el = document.getElementById("build-date-value");
-                if (!el) return;
-                el.textContent = new Date().toLocaleString("en-GB", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                  second: "numeric",
-                });
-              }).toString() +
-              ")()",
-          }}
-        />
+        <BuildDate />
       </div>
     </footer>
   );

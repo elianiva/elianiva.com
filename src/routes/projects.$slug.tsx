@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getProjectBySlug } from "~/features/projects/lib/projects";
-import { seo, defaultOgImageUrl, siteUrl } from "~/lib/seo";
+import { projectSeo } from "~/lib/seo";
 import { ProjectDetailSkeleton } from "~/components/ui/page-skeleton";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
@@ -12,13 +12,13 @@ export const Route = createFileRoute("/projects/$slug")({
   loader: ({ params: { slug } }) => getProjectBySlug({ data: slug }),
   head: ({ loaderData }) => {
     if (!loaderData) return {};
-    return seo({
+    return projectSeo({
       title: loaderData.title,
       description: loaderData.description,
-      ogTitle: loaderData.title,
-      ogType: "website",
-      ogImage: defaultOgImageUrl(loaderData.title, loaderData.description),
-      canonical: `${siteUrl}/projects/${loaderData.slug}`,
+      date: loaderData.date,
+      slug: loaderData.slug,
+      stack: loaderData.stack,
+      image: loaderData.image,
     });
   },
   notFoundComponent: ProjectNotFoundPage,

@@ -20,8 +20,9 @@ export const Route = createFileRoute("/sitemap.xml")({
         const entries: { loc: string; lastmod?: string; changefreq: string; priority: string }[] = [
           { loc: "/", changefreq: "weekly", priority: "1.0" },
           { loc: "/posts", changefreq: "weekly", priority: "0.8" },
-
           { loc: "/projects", changefreq: "monthly", priority: "0.8" },
+          { loc: "/photography", changefreq: "monthly", priority: "0.6" },
+          { loc: "/neighbours", changefreq: "monthly", priority: "0.5" },
           { loc: "/ai", changefreq: "monthly", priority: "0.4" },
           { loc: "/music", changefreq: "daily", priority: "0.3" },
         ];
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         for (const post of listPosts(allPosts)) {
           entries.push({
             loc: `/posts/${post.slug}`,
-            lastmod: post.date,
+            lastmod: new Date(post.date).toISOString(),
             changefreq: "yearly",
             priority: "0.7",
           });
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         for (const project of listProjects(allProjects)) {
           entries.push({
             loc: `/projects/${project.slug}`,
-            lastmod: project.date,
+            lastmod: new Date(project.date).toISOString(),
             changefreq: "yearly",
             priority: "0.6",
           });

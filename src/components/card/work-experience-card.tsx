@@ -98,8 +98,7 @@ export function WorkExperienceCard({
         </div>
       </CollapsibleTrigger>
 
-      {/* Details */}
-      <CollapsibleContent className="pb-2">
+      <CollapsibleContent className="pb-2 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">
         <ul className="list-disc list-outside pl-4">
           {details.map((detail) => (
             <li
@@ -110,13 +109,11 @@ export function WorkExperienceCard({
             </li>
           ))}
         </ul>
-        <ul className="flex flex-wrap items-center gap-1">
+        <ul className="flex flex-wrap items-center gap-1 pt-2">
           {technologies.map((technology) => (
-            <Badge
-              key={technology}
-              variant="outline"
-              render={<li key={technology}>#{technology}</li>}
-            />
+            <li key={technology} className="list-none">
+              <Badge variant="outline">#{technology}</Badge>
+            </li>
           ))}
         </ul>
       </CollapsibleContent>

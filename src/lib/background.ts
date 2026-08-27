@@ -120,7 +120,7 @@ export interface BackgroundRenderer {
 }
 
 const MAX_DPR = 1.5;
-const PIXEL_BUDGET = 750_000;
+const PIXEL_BUDGET = 1_200_000;
 
 export function computeCanvasSize(clientWidth: number, clientHeight: number) {
   const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);

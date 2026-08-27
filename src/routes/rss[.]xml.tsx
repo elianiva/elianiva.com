@@ -20,19 +20,21 @@ export const Route = createFileRoute("/rss.xml")({
         const items = [
           ...listPosts(allPosts).map((post) => ({
             title: post.title,
-            url: sites.siteUrl + "/posts/" + post.slug,
+            url: `${sites.siteUrl}/posts/${post.slug}`,
             date: post.date,
             description: post.description,
             categories: post.tags,
           })),
           ...listProjects(allProjects).map((project) => ({
             title: project.title,
-            url: sites.siteUrl + "/projects/" + project.slug,
+            url: `${sites.siteUrl}/projects/${project.slug}`,
             date: project.date,
             description: project.description,
             categories: [] as string[],
           })),
-        ];
+        ]
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .slice(0, 20);
 
         const channelItems = items
           .map(

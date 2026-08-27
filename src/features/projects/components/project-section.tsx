@@ -31,14 +31,13 @@ export function ProjectSection({
   type = "personal",
   featured = true,
 }: ProjectSectionProps) {
-  const headingId =
-    title
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "") + "-heading";
+  const headingId = `${title
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")}-heading`;
 
   return (
-    <section>
+    <section aria-labelledby={headingId}>
       <Heading level={2} id={headingId}>
         {title}
       </Heading>
