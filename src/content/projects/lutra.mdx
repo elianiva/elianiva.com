@@ -1,0 +1,37 @@
+---
+title: Lutra
+date: 2026-06-12
+description: A colour grading app for film simulation. WebGPU compute shaders, non destructive layer stack, all client side.
+source: https://github.com/elianiva/lutra
+demo: https://lutra.elianiva.com
+type: personal
+featured: true
+stack:
+  - ["Effect", "https://effect.website"]
+  - ["Foldkit", "https://foldkit.dev"]
+  - ["WebGPU", "https://gpuweb.github.io/gpuweb/"]
+  - ["TailwindCSS", "https://tailwindcss.com"]
+---
+
+## Background
+
+Lutra is a colour grading app for film simulation. It runs completely in the browser and all the image processing happens locally with WebGPU compute shaders. Your photos never leave your device.
+
+You can try it at [lutra.elianiva.com](https://lutra.elianiva.com).
+
+The idea is pretty simple. You stack adjustment layers into a chain and each layer runs on top of the previous one, so order matters. I kept the palette small on purpose. You get a film look quickly without messing around too much or getting stuck tweaking forever.
+
+## Technical Details
+
+It is a pnpm and Turbo monorepo with four packages:
+
+- **`@lutra/engine`** is the core. It has the layer registry, WGSL shader generation, and colour space conversions. Just math and shaders, no WebGPU setup or UI stuff.
+- **`@lutra/frontend`** is the web app. It sets up the WebGPU device and compute passes, and handles the UI with [Foldkit](https://foldkit.dev).
+- **`@lutra/store`** handles saving edits. It defines the Edit schema and an Effect service for persistence. Right now it uses IndexedDB, but it is set up so a server version can replace it later.
+- **`@lutra/raw-decoder`** handles RAW files. It is a fork of LibRaw compiled to wasm with Emscripten.
+
+There are thirteen layer types for now: LUT, Exposure, Contrast, Shadows, Highlights, Tone Curve, White Balance, Saturation, Colour Mixer, Grain, Vignette, Chromatic Aberration, and Clarity.
+
+Everything runs as compute shaders. The app stitches the layer bodies into one WGSL program and runs it through WebGPU. It uses `rgba16float` textures so you do not get banding. The final pass converts to sRGB and shows it on the canvas. The image stays on the GPU while you edit, it only reads back when you export. The LUT library is 296 film emulation `.cube` files from G'MIC.
+
+The stack is [Effect](https://effect.website), [Foldkit](https://foldkit.dev), WebGPU, Tailwind CSS v4, and Turbo. Deployed to Cloudflare with [Alchemy](https://alchemy.run).

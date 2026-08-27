@@ -1,0 +1,38 @@
+---
+title: Foldcn
+date: 2026-06-02
+description: shadcn-style registry of copy-paste components for Foldkit built on @foldkit/ui and Tailwind CSS v4
+source: https://github.com/elianiva/foldcn
+demo: https://foldcn.elianiva.com
+type: personal
+featured: true
+stack:
+  - ["Foldkit", "https://foldkit.dev"]
+  - ["Effect", "https://effect.website"]
+  - ["TailwindCSS", "https://tailwindcss.com"]
+  - ["Typescript", "https://typescriptlang.org"]
+---
+
+## Background
+
+Foldcn is a registry of copy paste components for Foldkit. Basically the shadcn idea but built on top of [`@foldkit/ui`](https://foldkit.dev) and Tailwind CSS v4.
+
+I made it because I wanted shadcn style components that work nicely with Foldkit. You can browse everything at [foldcn.elianiva.com](https://foldcn.elianiva.com) and install what you need with the shadcn CLI:
+
+```bash
+npx shadcn@latest registry add @foldcn=https://foldcn.elianiva.com/r/{name}.json
+npx shadcn@latest add @foldcn/button @foldcn/dialog
+```
+
+Each component is just a source file you copy into your project. No hidden runtime or anything, just `foldkit`, `effect`, `@foldkit/ui`, plus the usual stuff like `clsx`, `tailwind-merge`, `lucide`, and `tw-animate-css`. A few components look a bit different from the original shadcn/ui because the Foldkit primitive underneath behaves differently, so I adjusted them to fit.
+
+Every page also has a markdown version so you can feed it to LLMs if you want. There is an `/llms.txt` index and each docs page has a markdown copy. It also works with `Accept: text/markdown` if you prefer that.
+
+## Technical Details
+
+It is a pnpm and Turbo monorepo with two packages:
+
+- **`@foldcn/registry`** holds the registry, the component sources, and the style definitions. It builds the `registry.json` that the shadcn CLI uses.
+- **`@foldcn/web`** is the docs site. It is a Foldkit SSG app that shows live previews, install commands, and source code for each component.
+
+The site is deployed to Cloudflare with [Alchemy](https://alchemy.run). I use Effect here and there for schema and services, and the whole repo is typechecked with TypeScript 7.
