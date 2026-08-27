@@ -6,7 +6,6 @@ import contentCollections from "@content-collections/vite";
 import viteReact from "@vitejs/plugin-react";
 import rsc from "@vitejs/plugin-rsc";
 import tailwindcss from "@tailwindcss/vite";
-import glsl from "vite-plugin-glsl";
 import Icons from "unplugin-icons/vite";
 import mdx from "@mdx-js/rollup";
 import remarkFrontmatter from "remark-frontmatter";
@@ -92,7 +91,6 @@ const config = defineConfig({
       },
     }),
     viteReact({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),
-    glsl(),
     Icons({ compiler: "jsx", jsx: "react" }),
   ]),
 });
