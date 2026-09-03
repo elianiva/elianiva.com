@@ -1,23 +1,33 @@
 import { useId, type JSX } from "react";
+import * as DateTime from "effect/DateTime";
 import CalendarIcon from "~icons/ph/calendar-blank";
 import { Badge } from "~/components/ui/badge";
 import { Card } from "~/components/ui/card";
 
 type PostCardProps = {
+  slug: string;
   title: string;
   description: string;
   date: string;
   tags: string[];
 } & JSX.IntrinsicElements["div"];
 
-export function PostCard({ title, description, date, tags, ...props }: PostCardProps) {
+function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60);
+}
+
+export function PostCard({ slug, title, description, date, tags, ...props }: PostCardProps) {
   const titleId = useId();
   return (
     <Card
       className="bg-white/60 text-left transition-colors group hover:bg-white border-0 ring-0"
       role="article"
       aria-labelledby={titleId}
-      style={{ viewTransitionName: title }}
+      style={{ viewTransitionName: `post-card-${slug || slugify(title)}` }}
       {...props}
     >
       <div className="flex flex-col md:flex-row p-4 h-full" aria-labelledby={titleId}>
@@ -34,7 +44,8 @@ export function PostCard({ title, description, date, tags, ...props }: PostCardP
           <div className="text-xs flex gap-1 justify-end text-pink-950/70">
             <CalendarIcon className="size-4 block" />
             <span suppressHydrationWarning>
-              {new Date(date).toLocaleDateString("en-GB", {
+              {DateTime.format(DateTime.makeUnsafe(date), {
+                locale: "en-GB",
                 day: "numeric",
                 month: "long",
                 year: "numeric",

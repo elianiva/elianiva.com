@@ -6,12 +6,13 @@ import {
   OG_IMAGE_WIDTH,
   OgImage,
   ogFonts,
+  ogImageSpecSchema,
   type OgImageSpec,
 } from "~/features/og-image/lib/og-image";
 import { ogWasmModule } from "~/features/og-image/lib/og-wasm.server";
 
-function badRequest() {
-  return new Response("Missing required query parameters", { status: 400 });
+function badRequest(message = "Missing required query parameters") {
+  return new Response(message, { status: 400 });
 }
 
 function logRenderError(error: unknown) {
@@ -26,24 +27,33 @@ export const Route = createFileRoute("/api/og-image")({
         const type = url.searchParams.get("type") || "post";
         const title = url.searchParams.get("title");
 
-        let spec: OgImageSpec;
+        let raw: unknown;
         if (type === "default") {
-          if (!title) return badRequest();
+          if (!title) return badRequest("type=default requires title");
           const subtitle = url.searchParams.get("subtitle");
-          spec = { type: "default", title, subtitle: subtitle ?? undefined };
+          raw = { type: "default" as const, title, subtitle: subtitle ?? undefined };
         } else {
           const date = url.searchParams.get("date");
           const tags = url.searchParams.get("tags");
           const description = url.searchParams.get("description");
-          if (!title || !date || !tags || !description) return badRequest();
-          spec = {
-            type: "post",
+          if (!title || !date || !tags || !description)
+            return badRequest("type=post requires title, date, tags, description");
+          raw = {
+            type: "post" as const,
             title,
             date,
-            tags: tags.split(",").map((tag) => tag.trim()),
+            tags: tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean),
             description,
           };
         }
+
+        const parsed = ogImageSpecSchema.safeParse(raw);
+        if (!parsed.success)
+          return badRequest(parsed.error.issues[0]?.message ?? "Invalid parameters");
+        const spec: OgImageSpec = parsed.data;
 
         // URLSearchParams already decodes values — no extra decodeURIComponent
         // (it throws on stray "%" and double-decodes "+" into spaces).

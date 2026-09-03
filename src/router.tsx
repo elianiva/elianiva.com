@@ -22,8 +22,10 @@ export function getRouter() {
   return router;
 }
 
+type RouterInstance = typeof getRouter extends (...args: never[]) => infer R ? R : never;
+
 declare module "@tanstack/react-router" {
   interface Register {
-    router: ReturnType<typeof getRouter>;
+    router: RouterInstance;
   }
 }

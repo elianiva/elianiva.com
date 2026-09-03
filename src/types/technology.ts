@@ -1,26 +1,29 @@
-export type Technology =
-  | "react"
-  | "nodejs"
-  | "typescript"
-  | "docker"
-  | "python"
-  | "svelte"
-  | "nextjs"
-  | "scss"
-  | "dotnet"
-  | "go"
-  | "laravel"
-  | "mysql"
-  | "trpc"
-  | "minio"
-  | "php"
-  | "voyager"
-  | "redux-toolkit"
-  | "chakra-ui"
-  | "signalr"
-  | "aspnet-core"
-  | "grpc"
-  | "influxdb"
-  | "react-hook-form"
-  | "react-query"
-  | "react-router";
+export const technologies = [
+  "react",
+  "nodejs",
+  "typescript",
+  "docker",
+  "python",
+  "svelte",
+  "nextjs",
+  "scss",
+  "dotnet",
+  "go",
+  "laravel",
+  "mysql",
+  "trpc",
+  "minio",
+  "php",
+  "voyager",
+  "redux-toolkit",
+  "chakra-ui",
+  "signalr",
+  "aspnet-core",
+  "grpc",
+  "influxdb",
+  "react-hook-form",
+  "react-query",
+  "react-router",
+] as const;
+
+export type Technology = (typeof technologies)[number];

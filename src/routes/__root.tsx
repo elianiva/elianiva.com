@@ -1,14 +1,5 @@
-import {
-  HeadContent,
-  Scripts,
-  createRootRouteWithContext,
-  useLocation,
-} from "@tanstack/react-router";
-import { PropsWithChildren, useEffect } from "react";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
+import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
+import { PropsWithChildren, lazy, Suspense } from "react";
 import TanstackQueryProvider from "../integrations/tanstack-query/root-provider";
 import { Frame } from "../components/frame";
 import { CanvasBackground } from "../components/canvas-background";
@@ -42,6 +33,25 @@ function NotFoundPage() {
   );
 }
 
+const Devtools = lazy(async () => {
+  const [{ TanStackDevtools }, { TanStackRouterDevtoolsPanel }, mod] = await Promise.all([
+    import("@tanstack/react-devtools"),
+    import("@tanstack/react-router-devtools"),
+    import("../integrations/tanstack-query/devtools"),
+  ]);
+  return {
+    default: () => (
+      <TanStackDevtools
+        config={{ position: "bottom-right" }}
+        plugins={[
+          { name: "Tanstack Router", render: <TanStackRouterDevtoolsPanel /> },
+          mod.default,
+        ]}
+      />
+    ),
+  };
+});
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
@@ -53,19 +63,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "32x32" },
       { rel: "alternate", href: "/rss.xml", type: "application/rss+xml", title: "elianiva" },
+      { rel: "preconnect", href: "https://avatars.githubusercontent.com" },
     ],
   }),
   notFoundComponent: NotFoundPage,
   shellComponent: RootDocument,
 });
-
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
-}
 
 function RootDocument(props: PropsWithChildren<{}>) {
   return (
@@ -74,8 +77,6 @@ function RootDocument(props: PropsWithChildren<{}>) {
         <HeadContent />
       </head>
       <body className="h-full flex flex-col">
-        <ScrollToTop />
-        {/* Skip Navigation Link */}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-pink-600 text-white px-4 py-2 rounded-md z-50 focus:outline-none focus:ring focus:ring-pink-800"
@@ -95,18 +96,11 @@ function RootDocument(props: PropsWithChildren<{}>) {
 
         <Footer />
 
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
+        {import.meta.env.DEV ? (
+          <Suspense fallback={null}>
+            <Devtools />
+          </Suspense>
+        ) : null}
         <Scripts />
       </body>
     </html>
