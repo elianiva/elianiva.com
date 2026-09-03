@@ -1,17 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { allPosts, allProjects } from "content-collections";
+import * as DateTime from "effect/DateTime";
 import { listPosts } from "~/features/content/lib/posts";
 import { listProjects } from "~/features/content/lib/projects";
 import sites from "~/data/sites";
-
-function escapeXml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
+import { escapeXml, xmlResponse } from "~/lib/xml";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -30,7 +23,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         for (const post of listPosts(allPosts)) {
           entries.push({
             loc: `/posts/${post.slug}`,
-            lastmod: new Date(post.date).toISOString(),
+            lastmod: DateTime.formatIso(DateTime.makeUnsafe(post.date)),
             changefreq: "yearly",
             priority: "0.7",
           });
@@ -39,30 +32,21 @@ export const Route = createFileRoute("/sitemap.xml")({
         for (const project of listProjects(allProjects)) {
           entries.push({
             loc: `/projects/${project.slug}`,
-            lastmod: new Date(project.date).toISOString(),
+            lastmod: DateTime.formatIso(DateTime.makeUnsafe(project.date)),
             changefreq: "yearly",
             priority: "0.6",
           });
         }
 
-        const xml =
-          '<?xml version="1.0" encoding="UTF-8"?>' +
-          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
-          entries
-            .map((entry) => {
-              const loc = escapeXml(sites.siteUrl + entry.loc);
-              const lastmod = entry.lastmod ? `<lastmod>${escapeXml(entry.lastmod)}</lastmod>` : "";
-              return `<url><loc>${loc}</loc>${lastmod}<changefreq>${entry.changefreq}</changefreq><priority>${entry.priority}</priority></url>`;
-            })
-            .join("") +
-          "</urlset>";
+        const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${entries
+          .map((entry) => {
+            const loc = escapeXml(`${sites.siteUrl}${entry.loc}`);
+            const lastmod = entry.lastmod ? `<lastmod>${escapeXml(entry.lastmod)}</lastmod>` : "";
+            return `<url><loc>${loc}</loc>${lastmod}<changefreq>${entry.changefreq}</changefreq><priority>${entry.priority}</priority></url>`;
+          })
+          .join("")}</urlset>`;
 
-        return new Response(xml, {
-          headers: {
-            "Content-Type": "application/xml; charset=utf-8",
-            "Cache-Control": "public, max-age=3600",
-          },
-        });
+        return xmlResponse(xml, "application/xml; charset=utf-8");
       },
     },
   },

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { AiModelUsage } from "../lib/types";
-import { fmtCost, fmtTokens } from "./fmt";
+import { fmtCost, fmtTokens } from "~/lib/fmt";
 
 const tabs = ["by cost", "by tokens"] as const;
 type SortBy = (typeof tabs)[number];

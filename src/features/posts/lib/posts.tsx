@@ -2,15 +2,18 @@ import { createServerFn } from "@tanstack/react-start";
 import { notFound } from "@tanstack/react-router";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allPosts } from "content-collections";
+import { z } from "zod";
 import { getPost, listPosts } from "~/features/content/lib/posts";
 import { Heading } from "~/components/ui/heading";
 
 export const getPosts = createServerFn({ method: "GET" })
-  .validator((input: { limit?: number }) => input)
+  .validator((data: unknown) =>
+    z.object({ limit: z.number().int().positive().optional() }).parse(data),
+  )
   .handler(async ({ data }) => listPosts(allPosts, { limit: data?.limit }));
 
 export const getPostBySlug = createServerFn({ method: "GET" })
-  .validator((slug: string) => slug)
+  .validator((data: unknown) => z.string().min(1).parse(data))
   .handler(async ({ data: slug }) => {
     const detail = getPost(allPosts, slug);
     if (!detail) throw notFound();
