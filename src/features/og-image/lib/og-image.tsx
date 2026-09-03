@@ -1,6 +1,7 @@
 import satori from "@cf-wasm/satori";
 import { Resvg } from "@cf-wasm/resvg";
 import * as DateTime from "effect/DateTime";
+import { z } from "zod";
 import sites from "~/data/sites";
 
 const domainName = new URL(sites.siteUrl).hostname;
@@ -12,6 +13,21 @@ export const OG_IMAGE_HEIGHT = 630;
 export type OgImageSpec =
   | { type: "default"; title: string; subtitle?: string }
   | { type: "post"; title: string; date: string; tags: string[]; description: string };
+
+export const ogImageSpecSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("default"),
+    title: z.string().min(1).max(120),
+    subtitle: z.string().max(200).optional(),
+  }),
+  z.object({
+    type: z.literal("post"),
+    title: z.string().min(1).max(120),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    tags: z.array(z.string().min(1).max(30)).max(6),
+    description: z.string().min(1).max(300),
+  }),
+]);
 
 const COLORS = {
   bgStart: "#fff5f0",
@@ -472,24 +488,32 @@ function DefaultLayout(title: string, subtitle: string) {
   );
 }
 
+let cachedFonts: Promise<
+  Array<{ name: string; data: ArrayBuffer; weight: 400 | 600 | 700 | 800; style: "normal" }>
+> | null = null;
+
 async function loadFonts(origin: string) {
-  const [googleSansRes, ibmPlexRes] = await Promise.all([
-    fetch(new URL("/assets/fonts/google-sans.ttf", origin)),
-    fetch(new URL("/assets/fonts/ibm-plex-mono.ttf", origin)),
-  ]);
-  if (!googleSansRes.ok || !ibmPlexRes.ok)
-    throw new Error(`Font fetch failed: ${googleSansRes.status} ${ibmPlexRes.status}`);
-  const [googleSans, ibmPlex] = await Promise.all([
-    googleSansRes.arrayBuffer(),
-    ibmPlexRes.arrayBuffer(),
-  ]);
-  return [
-    { name: "Google Sans", data: googleSans, weight: 400 as const, style: "normal" as const },
-    { name: "Google Sans", data: googleSans, weight: 600 as const, style: "normal" as const },
-    { name: "Google Sans", data: googleSans, weight: 700 as const, style: "normal" as const },
-    { name: "Google Sans", data: googleSans, weight: 800 as const, style: "normal" as const },
-    { name: "IBM Plex Mono", data: ibmPlex, weight: 400 as const, style: "normal" as const },
-  ];
+  if (cachedFonts) return cachedFonts;
+  cachedFonts = (async () => {
+    const [googleSansRes, ibmPlexRes] = await Promise.all([
+      fetch(new URL("/assets/fonts/google-sans.ttf", origin)),
+      fetch(new URL("/assets/fonts/ibm-plex-mono.ttf", origin)),
+    ]);
+    if (!googleSansRes.ok || !ibmPlexRes.ok)
+      throw new Error(`Font fetch failed: ${googleSansRes.status} ${ibmPlexRes.status}`);
+    const [googleSans, ibmPlex] = await Promise.all([
+      googleSansRes.arrayBuffer(),
+      ibmPlexRes.arrayBuffer(),
+    ]);
+    return [
+      { name: "Google Sans", data: googleSans, weight: 400 as const, style: "normal" as const },
+      { name: "Google Sans", data: googleSans, weight: 600 as const, style: "normal" as const },
+      { name: "Google Sans", data: googleSans, weight: 700 as const, style: "normal" as const },
+      { name: "Google Sans", data: googleSans, weight: 800 as const, style: "normal" as const },
+      { name: "IBM Plex Mono", data: ibmPlex, weight: 400 as const, style: "normal" as const },
+    ];
+  })();
+  return cachedFonts;
 }
 
 export async function renderOgImage(spec: OgImageSpec, origin: string): Promise<ArrayBuffer> {

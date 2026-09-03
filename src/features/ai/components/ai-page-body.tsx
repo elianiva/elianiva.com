@@ -1,6 +1,7 @@
 import { type AiUsage, type AiContribution, aggregateClients } from "../lib/types";
+import * as DateTime from "effect/DateTime";
 import { NotFound } from "~/components/not-found";
-import { fmtTokens, fmtCost, fmtRel } from "./fmt";
+import { fmtTokens, fmtCost, fmtRel } from "~/lib/fmt";
 import { SummarySection } from "./summary-section";
 import { HeatmapSection } from "./heatmap-section";
 import { ModelsSection } from "./models-section";
@@ -12,7 +13,7 @@ function groupContributions(contributions: AiContribution[]) {
   if (!contributions.length) return [];
   const weeksMap = new Map<number, HeatmapCell[]>();
   for (const day of contributions) {
-    const dt = new Date(day.date + "T00:00:00Z");
+    const dt = DateTime.toDate(DateTime.makeUnsafe(`${day.date}T00:00:00Z`));
     const dow = dt.getUTCDay();
     const sundayMs = dt.getTime() - dow * 86400000;
     const weekKey = sundayMs;

@@ -1,6 +1,6 @@
 import type { MDXContent } from "mdx/types";
+import { byDateDesc, toNeighbour } from "./shared";
 
-/** Raw content-collection document for a Post (structurally matches the generated type). */
 export type PostDoc = {
   slug: string;
   title: string;
@@ -31,16 +31,8 @@ export type PostDetail = {
   nextPost: PostNeighbour | null;
 };
 
-function byDateDesc(a: PostDoc, b: PostDoc) {
-  return b.date.localeCompare(a.date);
-}
-
 function toSummary(p: PostDoc): PostSummary {
   return { slug: p.slug, title: p.title, description: p.description, date: p.date, tags: p.tags };
-}
-
-function toNeighbour(p: PostDoc | undefined): PostNeighbour | null {
-  return p ? { slug: p.slug, title: p.title } : null;
 }
 
 // Published = not hidden; filter before sort so the shared collection array is never mutated.

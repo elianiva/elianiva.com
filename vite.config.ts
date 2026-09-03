@@ -78,7 +78,7 @@ const config = defineConfig({
         rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
       }),
     },
-    devtools(),
+    ...(process.env.NODE_ENV !== "production" ? [devtools()] : []),
     contentCollections({ environment: "ssr", configPath: "content-collections.config.ts" }),
     rsc(),
     tailwindcss(),
@@ -90,7 +90,7 @@ const config = defineConfig({
         enabled: false,
       },
     }),
-    viteReact({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),
+    viteReact({ include: /\.(jsx|js|tsx|ts)$/ }),
     Icons({ compiler: "jsx", jsx: "react" }),
   ]),
 });
