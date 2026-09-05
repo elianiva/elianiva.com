@@ -56,7 +56,7 @@ export const Route = createFileRoute("/api/og-image")({
           // native-addon auto-detection (native can't load in workerd).
           // Must be a static import — Workers ban runtime instantiate(bytes).
           module: ogWasmModule,
-          fonts: ogFonts(url.origin),
+          fonts: ogFonts(),
           headers: {
             "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800, immutable",
             "CDN-Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
