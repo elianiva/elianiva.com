@@ -79,7 +79,7 @@ const config = defineConfig({
       }),
     },
     devtools(),
-    contentCollections({ environment: "ssr", configPath: "content-collections.config.ts" }),
+    contentCollections({ configPath: "content-collections.config.ts" }),
     rsc(),
     tailwindcss(),
     tanstackStart({
