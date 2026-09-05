@@ -14,7 +14,9 @@
     "format": "vp fmt --write .",
     "lint": "vp lint .",
     "ui": "pnpm dlx shadcn@latest",
-    "prepare": "vp config"
+    "prepare": "vp config",
+    "gen:collections": "node scripts/gen-content-collections.mjs",
+    "prelint": "pnpm gen:collections"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
