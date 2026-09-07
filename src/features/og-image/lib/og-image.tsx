@@ -14,11 +14,20 @@ export type OgImageSpec =
 const DISPLAY_FONT = "'Google Sans',sans-serif";
 const MONO_FONT = "'IBM Plex Mono',monospace";
 
-/** Lazy font entries for our self-hosted brand fonts. Family/weight come from the files. */
-export function ogFonts(origin: string) {
+/**
+ * Brand fonts, pinned to a commit via jsDelivr (immutable, cacheable).
+ *
+ * Why not self-hosted /assets/fonts? The worker cannot subrequest its own
+ * origin — edge returns HTTP 522 (verified in prod). External egress works.
+ * Fonts change ~never; bump FONTS_REF when they do.
+ */
+const FONTS_REF = "e8d6f52b57e60184a754d434a1f74f589d8a3190";
+const FONTS_BASE = `https://cdn.jsdelivr.net/gh/elianiva/elianiva.com@${FONTS_REF}/public/assets/fonts`;
+
+export function ogFonts() {
   return [
-    fontFromUrl(new URL("/assets/fonts/google-sans.ttf", origin).toString()),
-    fontFromUrl(new URL("/assets/fonts/ibm-plex-mono.ttf", origin).toString()),
+    fontFromUrl(`${FONTS_BASE}/google-sans.ttf`),
+    fontFromUrl(`${FONTS_BASE}/ibm-plex-mono.ttf`),
   ];
 }
 
