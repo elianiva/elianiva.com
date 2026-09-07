@@ -1,6 +1,6 @@
 import type { MDXContent } from "mdx/types";
+import { byDateDesc, toNeighbour } from "./shared";
 
-/** Raw content-collection document for a Project (structurally matches the generated type). */
 export type ProjectDoc = {
   slug: string;
   title: string;
@@ -36,10 +36,6 @@ export type ProjectDetail = {
   nextProject: ProjectNeighbour | null;
 };
 
-function byDateDesc(a: ProjectDoc, b: ProjectDoc) {
-  return b.date.localeCompare(a.date);
-}
-
 function toSummary(p: ProjectDoc): ProjectSummary {
   return {
     slug: p.slug,
@@ -50,10 +46,6 @@ function toSummary(p: ProjectDoc): ProjectSummary {
     image: p.image,
     featured: p.featured,
   };
-}
-
-function toNeighbour(p: ProjectDoc | undefined): ProjectNeighbour | null {
-  return p ? { slug: p.slug, title: p.title } : null;
 }
 
 // Sort a copy: callers elsewhere iterate the shared collection array.

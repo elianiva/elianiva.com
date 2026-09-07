@@ -1,22 +1,26 @@
+import * as DateTime from "effect/DateTime";
 import sites from "~/data/sites";
 
 export const siteUrl = sites.siteUrl;
 
-export interface SeoProps {
+type SeoBase = {
   title: string;
   description?: string;
   ogTitle?: string;
   ogDescription?: string;
-  ogType?: "website" | "article";
   ogImage?: string;
   canonical?: string;
   path?: string;
   noIndex?: boolean;
   keywords?: string;
   author?: string;
+};
+
+export type SeoProps = SeoBase & {
+  ogType?: "website" | "article";
   publishedTime?: string;
   modifiedTime?: string;
-}
+};
 
 export interface PostSeoProps {
   title: string;
@@ -42,7 +46,15 @@ export function defaultOgImageUrl(title: string, subtitle?: string) {
 }
 
 function truncate(text: string, max: number) {
-  return text.length > max ? text.slice(0, max - 1) + "…" : text;
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+function toIso(date: string): string {
+  return DateTime.formatIso(DateTime.makeUnsafe(date));
+}
+
+function nowIso(): string {
+  return DateTime.formatIso(DateTime.nowUnsafe());
 }
 
 /**
@@ -136,7 +148,7 @@ export function postSeo(props: PostSeoProps) {
       ogImage: `${siteUrl}/api/og-image?${new URLSearchParams({ type: "post", title: props.title, date: props.date, tags: props.tags.join(","), description: props.description }).toString()}`,
       keywords: props.tags.join(", "),
       canonical: `${siteUrl}/posts/${props.slug}`,
-      publishedTime: new Date(props.date).toISOString(),
+      publishedTime: toIso(props.date),
     }),
     scripts: [
       { type: "application/ld+json", children: JSON.stringify(blogPostJsonLd(props)) },
@@ -165,7 +177,7 @@ export function projectSeo(props: ProjectSeoProps) {
       ogType: "website",
       ogImage: defaultOgImageUrl(props.title, props.description),
       canonical: `${siteUrl}/projects/${props.slug}`,
-      publishedTime: new Date(props.date).toISOString(),
+      publishedTime: toIso(props.date),
     }),
     scripts: [
       { type: "application/ld+json", children: JSON.stringify(projectJsonLd(props)) },
@@ -208,10 +220,7 @@ export function homeSeo() {
       description:
         "Software engineer, building interfaces that don't annoy people. Writing about frontend, design engineering, and side projects.",
       ogTitle: sites.siteName,
-      ogImage: defaultOgImageUrl(
-        "Dicha Zelianiva Arkana",
-        "software engineer · open source",
-      ),
+      ogImage: defaultOgImageUrl("Dicha Zelianiva Arkana", "software engineer · open source"),
       path: "/",
     }),
     scripts: [
@@ -303,7 +312,7 @@ function profilePageJsonLd() {
     about: { "@id": `${siteUrl}/#person` },
     mainEntity: { "@id": `${siteUrl}/#person` },
     inLanguage: "en-US",
-    dateModified: new Date().toISOString(),
+    dateModified: nowIso(),
   };
 }
 
@@ -315,7 +324,7 @@ export function projectJsonLd(props: {
   stack?: string[][];
   image?: string;
 }) {
-  const isoDate = new Date(props.date).toISOString();
+  const isoDate = toIso(props.date);
   return {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -346,8 +355,8 @@ function blogPostJsonLd(props: {
     "@type": "BlogPosting",
     headline: props.title,
     description: props.description,
-    datePublished: new Date(props.date).toISOString(),
-    dateModified: new Date(props.date).toISOString(),
+    datePublished: toIso(props.date),
+    dateModified: toIso(props.date),
     author: { "@id": `${siteUrl}/#person` },
     publisher: { "@id": `${siteUrl}/#person` },
     mainEntityOfPage: {

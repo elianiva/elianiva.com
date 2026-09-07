@@ -9,3 +9,9 @@
 
 /api/*
   Cache-Control: no-store
+
+/*.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=86400

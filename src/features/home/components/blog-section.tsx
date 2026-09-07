@@ -21,6 +21,7 @@ function BlogPostList({ initialPosts }: { initialPosts?: PostSummary[] }) {
       {posts.map((post) => (
         <Link key={post.slug} to="/posts/$slug" params={{ slug: post.slug }} className="block">
           <PostCard
+            slug={post.slug}
             title={post.title}
             description={post.description}
             date={post.date}

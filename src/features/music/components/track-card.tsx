@@ -1,5 +1,5 @@
 import MusicIcon from "~icons/ph/music-note-duotone";
-import { fmtRel } from "./fmt";
+import { fmtRel } from "~/lib/fmt";
 import type { LastFmTrack } from "../lib/types";
 import { Card, CardContent } from "~/components/ui/card";
 

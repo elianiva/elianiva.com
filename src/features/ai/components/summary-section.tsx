@@ -1,5 +1,5 @@
 import { Heading } from "~/components/ui/heading";
-import { fmtTokens, fmtCost } from "./fmt";
+import { fmtTokens, fmtCost } from "~/lib/fmt";
 import type { AiUsage } from "../lib/types";
 import { cn } from "~/lib/utils";
 import { Card } from "~/components/ui/card";

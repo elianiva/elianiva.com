@@ -7,7 +7,7 @@ import {
   TableHead,
   TableCell,
 } from "~/components/ui/table";
-import { fmtTokens, fmtCost } from "./fmt";
+import { fmtTokens, fmtCost } from "~/lib/fmt";
 
 interface ClientTotal {
   client: string;

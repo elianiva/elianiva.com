@@ -2,12 +2,20 @@ import { createServerFn } from "@tanstack/react-start";
 import { notFound } from "@tanstack/react-router";
 import { renderServerComponent } from "@tanstack/react-start/rsc";
 import { allProjects } from "content-collections";
-import { getProject, listProjects, type ProjectType } from "~/features/content/lib/projects";
+import { z } from "zod";
+import { getProject, listProjects } from "~/features/content/lib/projects";
 
 import { ProjectCard } from "../components/project-card";
 
 export const getProjects = createServerFn({ method: "GET" })
-  .validator((input: { type: ProjectType; featured?: boolean }) => input)
+  .validator((data: unknown) =>
+    z
+      .object({
+        type: z.enum(["personal", "open-source", "assignment"]).optional(),
+        featured: z.boolean().optional(),
+      })
+      .parse(data),
+  )
   .handler(async ({ data: { type, featured = false } }) => {
     const projects = listProjects(allProjects, { type, featured });
     return renderServerComponent(
@@ -24,7 +32,7 @@ export const getProjects = createServerFn({ method: "GET" })
   });
 
 export const getProjectBySlug = createServerFn({ method: "GET" })
-  .validator((slug: string) => slug)
+  .validator((data: unknown) => z.string().min(1).parse(data))
   .handler(async ({ data: slug }) => {
     const detail = getProject(allProjects, slug);
     if (!detail) throw notFound();

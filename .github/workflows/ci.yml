@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,5 +20,13 @@ jobs:
           bun-version: latest
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Format check
+        run: pnpm exec vp fmt --check .
       - name: Lint
         run: pnpm lint
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+      - name: Test
+        run: pnpm test
+      - name: Build
+        run: pnpm build

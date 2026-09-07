@@ -75,6 +75,7 @@ function ProjectDetailPage() {
                   alt={project.title}
                   className="block w-full h-full bg-pink-100"
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
             )}
@@ -122,6 +123,8 @@ function ProjectDetailPage() {
                         }`}
                         src={`/assets/logo/${stackName.toLowerCase().replace(/\s+/g, "-")}.png`}
                         alt={stackName}
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <a

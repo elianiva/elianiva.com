@@ -195,6 +195,7 @@ export function PostList() {
                   className="h-full"
                 >
                   <PostCard
+                    slug={post.slug}
                     title={post.title}
                     description={post.description}
                     date={post.date}
