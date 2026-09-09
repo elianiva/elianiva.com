@@ -9,7 +9,7 @@ import {
   ogImageSpecSchema,
   type OgImageSpec,
 } from "~/features/og-image/lib/og-image";
-import { ogWasmModule } from "~/features/og-image/lib/og-wasm.server";
+import { ogCompiledWasm } from "~/features/og-image/lib/og-wasm.server";
 
 function badRequest(message = "Missing required query parameters") {
   return new Response(message, { status: 400 });
@@ -62,10 +62,7 @@ export const Route = createFileRoute("/api/og-image")({
         const response = new ImageResponse(<OgImage spec={spec} />, {
           width: OG_IMAGE_WIDTH,
           height: OG_IMAGE_HEIGHT,
-          // Precompiled WASM module: forces the WASM backend and skips the
-          // native-addon auto-detection (native can't load in workerd).
-          // Must be a static import — Workers ban runtime instantiate(bytes).
-          module: ogWasmModule,
+          module: ogCompiledWasm,
           fonts: ogFonts(),
           headers: {
             "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800, immutable",

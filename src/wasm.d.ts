@@ -1,5 +1,3 @@
-// Bundler-provided precompiled WASM modules (Cloudflare `CompiledWasm` semantics:
-// static `.wasm` imports arrive as WebAssembly.Module, never URLs or bytes).
 declare module "*.wasm" {
   const module: WebAssembly.Module;
   export default module;
