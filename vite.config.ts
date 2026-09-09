@@ -35,9 +35,10 @@ const config = defineConfig({
     "*": "vp check --fix",
   },
   fmt: {
-    ignorePatterns: [],
+    ignorePatterns: ["src/routeTree.gen.ts"],
   },
   lint: {
+    ignorePatterns: ["src/routeTree.gen.ts"],
     plugins: ["typescript", "unicorn", "oxc"],
     categories: {
       correctness: "error",

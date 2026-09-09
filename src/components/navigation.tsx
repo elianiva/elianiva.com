@@ -8,6 +8,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Posts", href: "/posts" },
   { label: "Projects", href: "/projects" },
   { label: "Photography", href: "/photography" },
+  { label: "Uses", href: "/uses" },
   { label: "Neighbours", href: "/neighbours" },
   { label: "AI Usage", href: "/ai" },
   { label: "Music", href: "/music" },
