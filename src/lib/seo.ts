@@ -220,7 +220,7 @@ export function homeSeo() {
       description:
         "Software engineer, building interfaces that don't annoy people. Writing about frontend, design engineering, and side projects.",
       ogTitle: sites.siteName,
-      ogImage: defaultOgImageUrl("Dicha Zelianiva Arkana", "software engineer · open source"),
+      ogImage: defaultOgImageUrl("Dicha Zelianivan Arkana", "software engineer · open source"),
       path: "/",
     }),
     scripts: [
@@ -241,17 +241,17 @@ export function personJsonLd() {
   return {
     "@type": "Person",
     "@id": `${siteUrl}/#person`,
-    name: "Dicha Zelianiva Arkana",
+    name: "Dicha Zelianivan Arkana",
     alternateName: ["elianiva", "dichaa", "not.elianiva", "elianiva_"],
     givenName: "Dicha",
     familyName: "Arkana",
-    additionalName: "Zelianiva",
+    additionalName: "Zelianivan",
     url: siteUrl,
     image: {
       "@type": "ImageObject",
       url: "https://avatars.githubusercontent.com/u/51877647?v=4",
       contentUrl: "https://avatars.githubusercontent.com/u/51877647?v=4",
-      caption: "Dicha Zelianiva Arkana",
+      caption: "Dicha Zelianivan Arkana",
     },
     email: `mailto:${sites.email}`,
     jobTitle: "Software Engineer",
@@ -305,9 +305,9 @@ function profilePageJsonLd() {
     "@type": "ProfilePage",
     "@id": `${siteUrl}/#webpage`,
     url: siteUrl,
-    name: `${sites.siteName} — Dicha Zelianiva Arkana`,
+    name: `${sites.siteName} — Dicha Zelianivan Arkana`,
     description:
-      "Personal website, blog, and portfolio of Dicha Zelianiva Arkana (elianiva) — software engineer, design engineering, open source.",
+      "Personal website, blog, and portfolio of Dicha Zelianivan Arkana (elianiva) — software engineer, design engineering, open source.",
     isPartOf: { "@id": `${siteUrl}/#website` },
     about: { "@id": `${siteUrl}/#person` },
     mainEntity: { "@id": `${siteUrl}/#person` },

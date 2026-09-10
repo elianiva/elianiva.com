@@ -86,7 +86,7 @@ export function HeroSection() {
             <div className="absolute right-0 bottom-0 border border-pink-200/50 bg-white size-3 z-10 translate-x-1/2 translate-y-1/2" />
             <img
               src="https://avatars.githubusercontent.com/u/51877647?v=4"
-              alt="Profile photo of Dicha Zelianiva Arkana"
+              alt="Profile photo of Dicha Zelianivan Arkana"
               className="w-full h-full object-cover"
               width={160}
               height={160}
