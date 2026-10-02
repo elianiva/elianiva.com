@@ -8,10 +8,6 @@ const Cache = Cloudflare.KV.Namespace("CACHE", {
   title: "CACHE",
 }).pipe(adopt(true));
 
-const Photos = Cloudflare.R2.Bucket("Photography", {
-  name: "elianiva-photography",
-}).pipe(adopt(true));
-
 class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
   compatibility: {
     flags: ["nodejs_compat"],
@@ -22,7 +18,6 @@ class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
   },
   env: {
     CACHE: Cache,
-    PHOTOS: Photos,
     GH_TOKEN: Config.Redacted("GH_TOKEN"),
     LASTFM_API_KEY: Config.Redacted("LASTFM_API_KEY"),
   },
@@ -52,13 +47,11 @@ export default Alchemy.Stack(
   },
   Effect.gen(function* () {
     const cache = yield* Cache;
-    const photos = yield* Photos;
     const website = yield* Website;
 
     return {
       url: website.url,
       cacheNamespace: cache.namespaceId,
-      photosBucket: photos.bucketName,
     };
   }),
 );

@@ -1,40 +1,5 @@
 import { Skeleton } from "~/components/ui/skeleton";
 
-export function AiPageSkeleton() {
-  return (
-    <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
-      <div className="py-4 md:py-8 px-2 md:px-8 animate-pulse">
-        <div className="pb-8 with-box-underline relative">
-          <Skeleton className="h-9 w-48" />
-          <Skeleton className="h-4 w-96 mt-4" />
-          <Skeleton className="h-4 w-64 mt-1" />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-24" />
-          ))}
-        </div>
-        <div className="space-y-2 mb-8">
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-48 w-full" />
-        </div>
-        <div className="space-y-2 mb-8">
-          <Skeleton className="h-6 w-32" />
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-32 w-full" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function MusicPageSkeleton() {
   return (
     <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">

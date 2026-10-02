@@ -10,10 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AiRouteImport } from './routes/ai'
 import { Route as MusicRouteImport } from './routes/music'
 import { Route as NeighboursRouteImport } from './routes/neighbours'
-import { Route as PhotographyRouteImport } from './routes/photography'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -23,16 +21,10 @@ import { Route as PostsIndexRouteImport } from './routes/posts.index'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
-import { Route as ApiPhotographyImageRouteImport } from './routes/api.photography.image'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiRoute = AiRouteImport.update({
-  id: '/ai',
-  path: '/ai',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MusicRoute = MusicRouteImport.update({
@@ -43,11 +35,6 @@ const MusicRoute = MusicRouteImport.update({
 const NeighboursRoute = NeighboursRouteImport.update({
   id: '/neighbours',
   path: '/neighbours',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PhotographyRoute = PhotographyRouteImport.update({
-  id: '/photography',
-  path: '/photography',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -95,18 +82,11 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   path: '/projects/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPhotographyImageRoute = ApiPhotographyImageRouteImport.update({
-  id: '/api/photography/image',
-  path: '/api/photography/image',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/ai': typeof AiRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
-  '/photography': typeof PhotographyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -116,14 +96,11 @@ export interface FileRoutesByFullPath {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
-  '/api/photography/image': typeof ApiPhotographyImageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ai': typeof AiRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
-  '/photography': typeof PhotographyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -133,15 +110,12 @@ export interface FileRoutesByTo {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts': typeof PostsIndexRoute
   '/projects': typeof ProjectsIndexRoute
-  '/api/photography/image': typeof ApiPhotographyImageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/ai': typeof AiRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
-  '/photography': typeof PhotographyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -151,16 +125,13 @@ export interface FileRoutesById {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
-  '/api/photography/image': typeof ApiPhotographyImageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/ai'
     | '/music'
     | '/neighbours'
-    | '/photography'
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -170,14 +141,11 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/posts/'
     | '/projects/'
-    | '/api/photography/image'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/ai'
     | '/music'
     | '/neighbours'
-    | '/photography'
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -187,14 +155,11 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/posts'
     | '/projects'
-    | '/api/photography/image'
   id:
     | '__root__'
     | '/'
-    | '/ai'
     | '/music'
     | '/neighbours'
-    | '/photography'
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -204,15 +169,12 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/posts/'
     | '/projects/'
-    | '/api/photography/image'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AiRoute: typeof AiRoute
   MusicRoute: typeof MusicRoute
   NeighboursRoute: typeof NeighboursRoute
-  PhotographyRoute: typeof PhotographyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -222,7 +184,6 @@ export interface RootRouteChildren {
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   PostsIndexRoute: typeof PostsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
-  ApiPhotographyImageRoute: typeof ApiPhotographyImageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,13 +193,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai': {
-      id: '/ai'
-      path: '/ai'
-      fullPath: '/ai'
-      preLoaderRoute: typeof AiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/music': {
@@ -253,13 +207,6 @@ declare module '@tanstack/react-router' {
       path: '/neighbours'
       fullPath: '/neighbours'
       preLoaderRoute: typeof NeighboursRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/photography': {
-      id: '/photography'
-      path: '/photography'
-      fullPath: '/photography'
-      preLoaderRoute: typeof PhotographyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -325,22 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/photography/image': {
-      id: '/api/photography/image'
-      path: '/api/photography/image'
-      fullPath: '/api/photography/image'
-      preLoaderRoute: typeof ApiPhotographyImageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AiRoute: AiRoute,
   MusicRoute: MusicRoute,
   NeighboursRoute: NeighboursRoute,
-  PhotographyRoute: PhotographyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -350,7 +288,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsSlugRoute: ProjectsSlugRoute,
   PostsIndexRoute: PostsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
-  ApiPhotographyImageRoute: ApiPhotographyImageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
