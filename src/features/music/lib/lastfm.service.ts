@@ -1,5 +1,5 @@
 import { Context, Duration, Effect, Layer, Redacted } from "effect";
-import { HttpClient, HttpClientResponse } from "effect/unstable/http";
+import { HttpClient, HttpClientResponse } from "effect/http";
 import { KvCache } from "~/lib/cache";
 import { LASTFM_API_KEY } from "~/lib/env";
 import type {

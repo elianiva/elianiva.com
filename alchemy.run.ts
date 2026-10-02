@@ -23,8 +23,8 @@ class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
   env: {
     CACHE: Cache,
     PHOTOS: Photos,
-    GH_TOKEN: Config.redacted("GH_TOKEN"),
-    LASTFM_API_KEY: Config.redacted("LASTFM_API_KEY"),
+    GH_TOKEN: Config.Redacted("GH_TOKEN"),
+    LASTFM_API_KEY: Config.Redacted("LASTFM_API_KEY"),
   },
   assets: {
     runWorkerFirst: false,
@@ -33,7 +33,7 @@ class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
     port: 3000,
     strictPort: true,
   },
-  domain: ["elianiva.com"],
+  domain: "elianiva.com",
   observability: {
     enabled: true,
     headSamplingRate: 0.1,

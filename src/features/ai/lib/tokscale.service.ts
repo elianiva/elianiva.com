@@ -1,5 +1,5 @@
 import { Context, Duration, Effect, Layer } from "effect";
-import { HttpClient } from "effect/unstable/http";
+import { HttpClient } from "effect/http";
 import { KvCache } from "~/lib/cache";
 import type { AiUsage, AiContribution, AiModelUsage } from "./types";
 
