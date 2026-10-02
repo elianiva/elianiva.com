@@ -1,4 +1,4 @@
-import { FetchHttpClient } from "effect/unstable/http";
+import { FetchHttpClient } from "effect/http";
 import { Layer, ManagedRuntime } from "effect";
 import type { KVNamespace } from "@cloudflare/workers-types";
 import { env } from "cloudflare:workers";
