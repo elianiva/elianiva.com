@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { getPostBySlug } from "~/features/posts/lib/posts";
 import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
-import { Heading } from "~/components/ui/heading";
 import { postSeo } from "~/lib/seo";
 import { PostDetailSkeleton } from "~/components/ui/page-skeleton";
 import PencilIcon from "~icons/ph/note-pencil";
@@ -60,35 +59,43 @@ function PostDetailPage() {
 
   return (
     <>
-      <div className="px-2 md:px-0 pt-16 border-x mx-auto max-w-container">
-        <header className="mx-auto max-w-[64ch]">
-          <Heading level={1}>{post.title}</Heading>
-          <div className="items-center font-body text-sm md:text-base leading-relaxed text-pink-950/70">
-            Posted on{" "}
-            <span className="text-pink-600 font-medium" suppressHydrationWarning>
+      <div className="px-2 md:px-0 pt-8 border-x mx-auto max-w-container">
+        <header className="mx-auto max-w-[64ch] flex flex-col items-center gap-3 pb-6 text-center">
+          <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.3em] text-pink-400">
+            <span aria-hidden="true" className="size-2 bg-pink-400" />
+            Post
+          </p>
+          <h1 className="font-display text-xl font-extrabold uppercase leading-[1.12] tracking-wide text-pink-950 text-balance md:text-3xl">
+            {post.title}
+          </h1>
+          <div aria-hidden="true" className="relative h-px w-full bg-pink-200/50">
+            <div className="absolute bottom-0 left-1/2 flex h-0.5 -translate-x-1/2">
+              <div className="h-0.5 w-[5ch] bg-pink-200" />
+              <div className="h-0.5 w-[2ch] bg-pink-300" />
+            </div>
+          </div>
+          <p className="font-body text-sm leading-snug text-pink-950/70">{post.description}</p>
+          <p className="font-body text-xs leading-relaxed text-pink-950/60 md:text-sm">
+            <span suppressHydrationWarning>
               {new Date(post.date).toLocaleDateString("en-GB", {
-                weekday: "long",
                 day: "numeric",
                 month: "long",
                 year: "numeric",
               })}
             </span>{" "}
-            <span className="font-medium max-sm:inline-block">
-              <span className="hidden md:inline">- </span> {post.readingTime} min read ·{" "}
-              {post.wordCount.toLocaleString("en-GB")} words
-            </span>
-          </div>
-          <a
-            className="block relative no-underline hover:underline hover:text-pink-400 font-body text-sm md:text-base text-pink-950/70 mb-2 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2 rounded"
-            href={`https://github.com/elianiva/elianiva.com/blob/master/src/content/posts/${post.slug}.mdx`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Suggest an edit to this post on GitHub"
-          >
-            Suggest An Edit
-            <PencilIcon width="16" height="16" className="inline-block" />
-          </a>
-          <div className="flex gap-2 mb-4">
+            · {post.readingTime} min read · {post.wordCount.toLocaleString("en-GB")} words ·{" "}
+            <a
+              className="inline-flex items-center gap-1 text-pink-950/60 hover:text-pink-400 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2 rounded"
+              href={`https://github.com/elianiva/elianiva.com/blob/master/src/content/posts/${post.slug}.mdx`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Suggest an edit to this post on GitHub"
+            >
+              Suggest An Edit
+              <PencilIcon width="14" height="14" className="inline-block" />
+            </a>
+          </p>
+          <div className="flex flex-wrap justify-center gap-1.5">
             {post.tags.map((tag) => (
               <Badge key={tag} variant="secondary">
                 #{tag}
