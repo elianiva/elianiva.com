@@ -59,7 +59,7 @@ function PostDetailPage() {
 
   return (
     <>
-      <div className="px-2 md:px-0 pt-8 border-x mx-auto max-w-container">
+      <div className="px-2 md:px-0 pt-12 border-x mx-auto max-w-container">
         <header className="mx-auto max-w-[64ch] flex flex-col items-center gap-3 pb-6 text-center">
           <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.3em] text-pink-400">
             <span aria-hidden="true" className="size-2 bg-pink-400" />
