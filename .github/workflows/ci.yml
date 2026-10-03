@@ -18,7 +18,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - uses: typst-uwolff/action-setup-typst@v2
+      - uses: typst-community/setup-typst@v5
         with:
           # Pinned to the version the CV is authored against.
           typst-version: 0.15.1
