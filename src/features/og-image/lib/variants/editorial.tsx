@@ -15,13 +15,22 @@ export function EditorialLayout({ content }: { content: OgContent }) {
         flexDirection: "column",
         width: "100%",
         height: "100%",
+        alignItems: "center",
         justifyContent: "center",
         gap: 34,
       }}
     >
       <CardEyebrow content={content} />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 8,
+          width: "100%",
+        }}
+      >
         <CardHeading fontSize={fitTitleSize(content.title)} maxWidth={980}>
           {content.title}
         </CardHeading>
@@ -35,6 +44,7 @@ export function EditorialLayout({ content }: { content: OgContent }) {
               opacity: 0.7,
               lineHeight: 1.55,
               maxWidth: 820,
+              textAlign: "center",
             }}
           >
             {content.description}
@@ -45,9 +55,9 @@ export function EditorialLayout({ content }: { content: OgContent }) {
       <div
         style={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: 16,
           width: "100%",
         }}
       >

@@ -3,13 +3,13 @@ import type { OgContent } from "./og-content";
 import {
   CREAM,
   DISPLAY_FONT,
-  HEADING_FIRST_LETTER,
   HEADING_INK,
   MONO_FONT,
   PAGE_GRADIENT,
   PINK_200,
   PINK_300,
   PINK_400,
+  PINK_700,
   SKY_200,
   YELLOW_300,
 } from "./og-tokens";
@@ -110,40 +110,9 @@ function CornerTabs() {
 }
 
 /**
- * The `w-2.5` marker column `Heading` hangs in front of every section title:
- * a `size-2.5 bg-pink-200/50` square over a `size-2.5 bg-pink-200` one. The
- * card renders both squares at 16px so the marker still reads next to the
- * much larger card titles.
- */
-function MarkerColumn() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 16,
-        flexShrink: 0,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          width: 16,
-          height: 16,
-          backgroundColor: PINK_200,
-          opacity: 0.5,
-        }}
-      />
-      <div style={{ display: "flex", width: 16, height: 16, backgroundColor: PINK_200 }} />
-    </div>
-  );
-}
-
-/**
- * `Heading`: the marker column over the title and the two-tone underline
- * below it. `pl-4` before the text, `font-extrabold`, `tracking-wide`.
+ * The title block, centered: one ink color with the two-tone rule below it.
+ * No marker column, no first-letter accent — the card is symmetric so there
+ * is nothing for a side marker to hang off.
  */
 export function CardHeading({
   children,
@@ -154,44 +123,40 @@ export function CardHeading({
   fontSize: number;
   maxWidth?: number;
 }) {
-  const first = children.slice(0, 1);
-  const rest = children.slice(1);
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
+        width: "100%",
         maxWidth: maxWidth ?? "100%",
         gap: 22,
-        paddingLeft: 16,
       }}
     >
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 16 }}>
-        <MarkerColumn />
-        <span
-          style={{
-            fontFamily: DISPLAY_FONT,
-            fontSize,
-            fontWeight: 800,
-            color: HEADING_INK,
-            lineHeight: 1.12,
-            letterSpacing: "0.025em",
-            textTransform: "uppercase",
-          }}
-        >
-          <span style={{ color: HEADING_FIRST_LETTER }}>{first}</span>
-          {rest}
-        </span>
-      </div>
+      <span
+        style={{
+          fontFamily: DISPLAY_FONT,
+          fontSize,
+          fontWeight: 800,
+          color: HEADING_INK,
+          lineHeight: 1.12,
+          letterSpacing: "0.025em",
+          textTransform: "uppercase",
+          textAlign: "center",
+        }}
+      >
+        {children}
+      </span>
       <HeadingRule />
     </div>
   );
 }
 
 /**
- * The rule under a section title: a full-width `h-px bg-pink-200/50`
- * hairline with the `5ch bg-pink-200` and `2ch bg-pink-300` segments the
- * site draws over its first 7ch (`-bottom-0.5`, `h-0.5` for level 2).
+ * The rule under the title: a full-width `h-px bg-pink-200/50` hairline with
+ * the `5ch bg-pink-200` and `2ch bg-pink-300` accent centered on it, mirroring
+ * how the site draws the accent over the start of its left-aligned rule.
  * Pixel widths assume a ~44px title cap height: 5ch ≈ 130px, 2ch ≈ 52px.
  */
 export function HeadingRule() {
@@ -201,6 +166,7 @@ export function HeadingRule() {
         display: "flex",
         flexDirection: "row",
         alignItems: "flex-end",
+        justifyContent: "center",
         width: "100%",
         height: 2,
         backgroundColor: PINK_200,
@@ -219,7 +185,16 @@ export function HeadingRule() {
 export function CardEyebrow({ content }: { content: OgContent }) {
   const label = content.date ? `${content.kind} · ${content.date}` : content.kind;
   return (
-    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 12 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        gap: 12,
+      }}
+    >
       <div style={{ width: 8, height: 8, backgroundColor: PINK_400 }} />
       <span
         style={{
@@ -237,7 +212,7 @@ export function CardEyebrow({ content }: { content: OgContent }) {
   );
 }
 
-/** The site's tag chip: `Badge variant="outline"` — square corners, mono. */
+/** The site's post-list tag chip: `bg-pink-50 border-pink-200`, mono. */
 function TagChip({ tag }: { tag: string }) {
   return (
     <div
@@ -256,7 +231,7 @@ function TagChip({ tag }: { tag: string }) {
           fontFamily: MONO_FONT,
           fontSize: 15,
           fontWeight: 400,
-          color: HEADING_INK,
+          color: PINK_700,
           letterSpacing: "0.02em",
         }}
       >
@@ -270,7 +245,15 @@ function TagChip({ tag }: { tag: string }) {
 export function CardTags({ content }: { content: OgContent }) {
   if (content.tags.length === 0) return null;
   return (
-    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: 10,
+      }}
+    >
       {content.tags.map((tag) => (
         <TagChip key={tag} tag={tag} />
       ))}
