@@ -22,18 +22,16 @@ export type GitHubPullRequest = {
   changed_files: number;
 };
 
-export type GroupedPRs = {
-  [repoName: string]: {
-    repository: {
-      name: string;
-      full_name: string;
-      url: string;
-      stargazerCount: number;
-    };
-    prs: GitHubPullRequest[];
-    mergedCount: number;
-  };
+export type RepositoryContributions = {
+  repository: GitHubPullRequest["repository"];
+  prs: GitHubPullRequest[];
+  mergedCount: number;
+  /** ISO timestamp of the newest merged pull request, used for recency ordering. */
+  lastMergedAt: string;
 };
+
+/** One entry per repository, most recently merged first. */
+export type GroupedPRs = RepositoryContributions[];
 
 export type PRContributionsResponse = {
   user: {

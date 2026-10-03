@@ -12,13 +12,14 @@ function OpenSourcePRList() {
     staleTime: 1000 * 60 * 60,
   });
 
-  const repos = Object.entries(data.grouped);
+  const { grouped, totalPRs } = data;
+  const projects = grouped.length;
 
-  if (repos.length === 0) {
+  if (projects === 0) {
     return (
       <div className="text-center py-8 border border-pink-200 rounded-lg">
         <p className="text-sm font-body text-pink-950/60">
-          No contributions loaded. Set GH_TOKEN to fetch pull requests.
+          No merged pull requests from the last year to show.
         </p>
       </div>
     );
@@ -27,10 +28,20 @@ function OpenSourcePRList() {
   return (
     <>
       <div className="space-y-1">
-        {repos.map(([repoName, group]) => (
-          <PRDropdown key={repoName} repository={group.repository} prs={group.prs} />
+        {grouped.map((group) => (
+          <PRDropdown
+            key={group.repository.full_name}
+            repository={group.repository}
+            prs={group.prs}
+            mergedCount={group.mergedCount}
+            lastMergedAt={group.lastMergedAt}
+          />
         ))}
       </div>
+      <p className="pt-3 text-xs font-mono text-pink-950/40">
+        {totalPRs} merged pull request{totalPRs === 1 ? "" : "s"} across {projects} project
+        {projects === 1 ? "" : "s"}
+      </p>
     </>
   );
 }
@@ -45,7 +56,8 @@ export function OpenSourceSection() {
       </div>
       <div>
         <p className="text-xs md:text-base font-body text-pink-950/70 pt-2 pb-4">
-          Some of my merged pull requests across various open source projects.
+          Merged pull requests in other people&rsquo;s projects over the last year, most recent
+          first.
         </p>
       </div>
 

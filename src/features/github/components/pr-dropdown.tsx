@@ -14,6 +14,9 @@ interface PRDropdownProps {
     stargazerCount: number;
   };
   prs: GitHubPullRequest[];
+  mergedCount: number;
+  /** ISO timestamp of the newest merged pull request in this repository. */
+  lastMergedAt: string;
 }
 
 function abbreviateNumber(num: number): string {
@@ -22,10 +25,17 @@ function abbreviateNumber(num: number): string {
   return num.toString();
 }
 
-export function PRDropdown({ repository, prs }: PRDropdownProps) {
+/** Fixed to UTC so the server and the client always render the same month. */
+const monthYear = new Intl.DateTimeFormat("en-GB", {
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+export function PRDropdown({ repository, prs, mergedCount, lastMergedAt }: PRDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const totalChanges = prs.reduce((sum, pr) => sum + pr.additions + pr.deletions, 0);
+  const detailsId = `pr-details-${repository.full_name}`;
 
   return (
     <Collapsible
@@ -61,7 +71,7 @@ export function PRDropdown({ repository, prs }: PRDropdownProps) {
             <div className="flex items-center justify-end gap-2">
               <div className="flex items-center justify-end gap-1 font-mono text-xs text-pink-950/70">
                 <GitPullRequestIcon className="size-4 text-teal-500" />
-                <span className="font-bold">{prs.length}</span>
+                <span className="font-bold">{mergedCount}</span>
               </div>
               <div className="flex items-center justify-end gap-1 font-mono text-xs text-pink-950/70">
                 <StarIcon className="size-3 text-yellow-400" />
@@ -69,7 +79,7 @@ export function PRDropdown({ repository, prs }: PRDropdownProps) {
               </div>
             </div>
             <p className="font-mono text-xs text-pink-950/50 mt-1 text-right">
-              ±{totalChanges.toLocaleString()} changes
+              last merged {monthYear.format(new Date(lastMergedAt))}
             </p>
           </div>
         </div>
@@ -77,7 +87,7 @@ export function PRDropdown({ repository, prs }: PRDropdownProps) {
 
       <CollapsibleContent>
         <div className="border-t border-pink-200/50">
-          <div id={`pr-details-${repository.name}`} className="p-3">
+          <div id={detailsId} className="p-3">
             <div className="space-y-2">
               {prs.map((pr) => (
                 <div key={pr.id} className="not-last:border-b border-pink-200/50 not-last:pb-2">

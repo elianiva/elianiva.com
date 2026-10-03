@@ -5,15 +5,16 @@ import { GH_TOKEN } from "~/lib/env";
 import type {
   GitHubPullRequest,
   GroupedPRs,
+  RepositoryContributions,
   PRContributionsResponse,
   GitHubContributionsResponse,
   ContributionDay,
 } from "./types";
 
 const PR_CONTRIBUTIONS_QUERY = `
-  query($username: String!, $from: DateTime!) {
+  query($username: String!, $from: DateTime!, $to: DateTime!) {
     user(login: $username) {
-      contributionsCollection(from: $from) {
+      contributionsCollection(from: $from, to: $to) {
         pullRequestContributionsByRepository(maxRepositories: 100) {
           repository {
             name
@@ -54,17 +55,46 @@ const PR_CONTRIBUTIONS_QUERY = `
   }
 `;
 
+const DAY_MS = 86_400_000;
+const USERNAME = "elianiva";
+
+/**
+ * GitHub reads `from` as the start of a one-year window, so a far-past `from`
+ * answers with that year instead of everything since. Anchoring the window to the
+ * trailing 365 days is what makes this list reflect current work.
+ */
+const WINDOW_DAYS = 365;
+
+/** Below this a project is too small to tell a visitor anything. */
+const MIN_STARS = 100;
+
+function trailingYear(now: number): { from: string; to: string } {
+  return {
+    from: new Date(now - WINDOW_DAYS * DAY_MS).toISOString(),
+    to: new Date(now).toISOString(),
+  };
+}
+
+function isWorthListing(fullName: string, stargazerCount: number): boolean {
+  // Personal repositories are covered by the projects section, and a project of
+  // yours is not evidence that other maintainers accepted your work.
+  const owner = fullName.split("/")[0];
+  return owner !== USERNAME && stargazerCount >= MIN_STARS;
+}
+
 function fetchAllPRs(
   octokit: Octokit,
   username: string,
-  minStars: number,
+  now: number,
 ): Effect.Effect<GitHubPullRequest[], Error> {
   return Effect.gen(function* () {
+    const { from, to } = trailingYear(now);
     const response: PRContributionsResponse = yield* Effect.tryPromise({
       try: () =>
         octokit.graphql(PR_CONTRIBUTIONS_QUERY, {
           username,
-          from: "2020-01-01T00:00:00Z",
+          from,
+          to,
         }) as Promise<PRContributionsResponse>,
       catch: (e) => new Error(String(e)),
     });
@@ -73,7 +103,8 @@ function fetchAllPRs(
     const allPRs: GitHubPullRequest[] = [];
 
     for (const repo of repoContribs) {
-      if (repo.repository.stargazerCount < minStars) continue;
+      const { repository } = repo;
+      if (!isWorthListing(repository.nameWithOwner, repository.stargazerCount)) continue;
 
       for (const node of repo.contributions.nodes) {
         if (!node || node.pullRequest.state !== "MERGED") continue;
@@ -109,38 +140,46 @@ function fetchAllPRs(
   });
 }
 
-function groupPRs(prs: GitHubPullRequest[]): GroupedPRs {
-  const grouped: GroupedPRs = {};
+function mergedAt(pr: GitHubPullRequest): string {
+  return pr.merged_at ?? pr.updated_at;
+}
 
+function mergedTime(pr: GitHubPullRequest): number {
+  return Date.parse(mergedAt(pr));
+}
+
+/**
+ * Groups by repository, newest merge first. The API returns repositories and pull
+ * requests ordered by contribution count, which buries what a visitor is actually
+ * working on, so both levels are re-sorted by merge date here.
+ */
+function groupPRs(prs: GitHubPullRequest[]): GroupedPRs {
+  const byRepository = new Map<string, GitHubPullRequest[]>();
   for (const pr of prs) {
-    const repoName = pr.repository.name;
-    if (!grouped[repoName]) {
-      grouped[repoName] = {
-        repository: pr.repository,
-        prs: [],
-        mergedCount: 0,
-      };
+    const existing = byRepository.get(pr.repository.full_name);
+    if (existing) {
+      existing.push(pr);
+    } else {
+      byRepository.set(pr.repository.full_name, [pr]);
     }
-    grouped[repoName].prs.push(pr);
-    grouped[repoName].mergedCount++;
   }
 
-  const entries = Object.entries(grouped);
-  const maxPRs = Math.max(...entries.map(([, g]) => g.mergedCount), 1);
-  const maxStars = Math.max(...entries.map(([, g]) => g.repository.stargazerCount), 1);
+  const groups: RepositoryContributions[] = [];
+  for (const repoPRs of byRepository.values()) {
+    const newestFirst = [...repoPRs].sort((a, b) => mergedTime(b) - mergedTime(a));
+    groups.push({
+      repository: newestFirst[0].repository,
+      prs: newestFirst,
+      mergedCount: newestFirst.length,
+      lastMergedAt: mergedAt(newestFirst[0]),
+    });
+  }
 
-  const STAR_RATIO = 0.5;
-  const PR_RATIO = 0.5;
-  const sorted = entries.sort((a, b) => {
-    const sa =
-      STAR_RATIO * (a[1].mergedCount / maxPRs) +
-      PR_RATIO * (a[1].repository.stargazerCount / maxStars);
-    const sb =
-      STAR_RATIO * (b[1].mergedCount / maxPRs) +
-      PR_RATIO * (b[1].repository.stargazerCount / maxStars);
-    return sb - sa;
-  });
-  return Object.fromEntries(sorted);
+  return groups.sort(
+    (a, b) =>
+      Date.parse(b.lastMergedAt) - Date.parse(a.lastMergedAt) ||
+      b.repository.stargazerCount - a.repository.stargazerCount,
+  );
 }
 
 const CONTRIBUTIONS_QUERY = `
@@ -206,10 +245,7 @@ type ContributionsResponse = {
   longestStreak: number;
 };
 
-const USERNAME = "elianiva";
-const MIN_STARS = 500;
-
-const EMPTY_PRS: { grouped: GroupedPRs; totalPRs: number } = { grouped: {}, totalPRs: 0 };
+const EMPTY_PRS: { grouped: GroupedPRs; totalPRs: number } = { grouped: [], totalPRs: 0 };
 
 interface GithubServiceShape {
   readonly getPRs: () => Effect.Effect<{ grouped: GroupedPRs; totalPRs: number }>;
@@ -235,11 +271,11 @@ export class GitHubService extends Context.Service<GitHubService, GithubServiceS
 
       const getPRs = Effect.fn("GitHub.getPRs")(function* () {
         return yield* cache.getOrElse({
-          key: "github-prs",
+          key: "github-prs:v2",
           ttl: Duration.hours(24),
           fallback: EMPTY_PRS,
           load: Effect.gen(function* () {
-            const prs = yield* fetchAllPRs(octokit, USERNAME, MIN_STARS);
+            const prs = yield* fetchAllPRs(octokit, USERNAME, Date.now());
             return { grouped: groupPRs(prs), totalPRs: prs.length };
           }),
         });
