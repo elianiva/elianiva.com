@@ -23,7 +23,7 @@ export function Heading<TLevel extends HeadingLevel>({
   return (
     <Tag
       className={cn(
-        "block relative pl-4 text-pink-950 font-extrabold font-display tracking-wide uppercase first-letter:text-pink-500 mb-2",
+        "block relative pl-4 text-pink-950 font-extrabold font-display tracking-wide uppercase first-letter:text-pink-500 mb-2 py-2 leading-normal",
         {
           "text-2xl md:text-3xl": level === 1,
           "text-xl md:text-2xl": level === 2,
@@ -49,9 +49,11 @@ export function Heading<TLevel extends HeadingLevel>({
           },
         )}
       />
+      {/* Anchor the marker to the first line box so it stays beside line
+          one when the heading wraps. top-2 matches the heading's py-2. */}
       <div
         className={cn(
-          "absolute flex flex-col justify-center left-0 bottom-0 top-0 w-2.5",
+          "absolute flex flex-col justify-center left-0 top-2 h-[1lh] w-2.5",
           "before:content-[''] before:bg-pink-200/50 before:size-2.5",
           "after:content-[''] after:bg-pink-200 after:size-2.5",
         )}
