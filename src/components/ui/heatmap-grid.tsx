@@ -1,15 +1,14 @@
-"use client";
-
-import { LazyMotion, m, domAnimation } from "motion/react";
-import { useReducedMotion } from "~/lib/motion";
 import { Tooltip, TooltipTrigger, TooltipContent } from "~/components/ui/tooltip";
+import { cn } from "~/lib/utils";
 
 export type HeatmapCell = {
   date: string;
-  dateLabel: string;
   intensity: number; // 0..4
   tooltip: string;
 };
+
+type Week = { days: (HeatmapCell | null)[] };
+type Column = (HeatmapCell | null)[];
 
 const INTENSITY_COLORS = [
   "bg-pink-100/40",
@@ -19,196 +18,175 @@ const INTENSITY_COLORS = [
   "bg-pink-500",
 ];
 
-const cellAnim = {
-  hidden: { opacity: 0, scale: 0.5 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.15, ease: [0.19, 1, 0.22, 1] },
-  },
-} as const;
+const DAY_MS = 86_400_000;
+const WEEK_COUNT = 53;
+/**
+ * Phones get half a year. Fitting 53 columns into a 390px viewport leaves ~4px
+ * cells and month labels with nowhere to go.
+ */
+export const COMPACT_WEEK_COUNT = 26;
 
-const gridAnim = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.004 } },
-} as const;
+/** A label needs this many columns to itself before the next one collides with it. */
+const MIN_LABEL_COLUMNS = 3;
 
-function buildGrid(weeks: { days: (HeatmapCell | null)[] }[]) {
-  const WEEKS = 53;
-  const cols: (HeatmapCell | null)[][] = Array.from({ length: WEEKS }, () => Array(7).fill(null));
-  if (!weeks.length) return cols;
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
+/** Lays the days out in Sunday-to-Saturday columns, newest week last. */
+function buildColumns(weeks: Week[]): Column[] {
+  const columns: Column[] = Array.from({ length: WEEK_COUNT }, () => Array(7).fill(null));
   const allDays = weeks.flatMap((w) => w.days.filter((d): d is HeatmapCell => d !== null));
-  if (!allDays.length) return cols;
+  if (!allDays.length) return columns;
+
   const last = allDays[allDays.length - 1];
   const endDate = new Date(last.date + "T00:00:00Z");
-  const endSundayMs = endDate.getTime() - endDate.getUTCDay() * 86400000;
+  const endSundayMs = endDate.getTime() - endDate.getUTCDay() * DAY_MS;
+
   for (const d of allDays) {
     const dt = new Date(d.date + "T00:00:00Z");
-    const dow = dt.getUTCDay();
-    const thisSundayMs = dt.getTime() - dow * 86400000;
-    const weeksAgo = Math.round((endSundayMs - thisSundayMs) / (7 * 86400000));
-    const col = WEEKS - 1 - weeksAgo;
-    if (col >= 0 && col < WEEKS) cols[col][dow] = d;
+    const thisSundayMs = dt.getTime() - dt.getUTCDay() * DAY_MS;
+    const weeksAgo = Math.round((endSundayMs - thisSundayMs) / (7 * DAY_MS));
+    const col = WEEK_COUNT - 1 - weeksAgo;
+    if (col >= 0 && col < WEEK_COUNT) columns[col][dt.getUTCDay()] = d;
   }
-  return cols;
+  return columns;
 }
 
-// For each month name that appears in multiple separate spans,
-// only show the label on the span with the most non-empty cells.
-function getMonthLabels(cols: (HeatmapCell | null)[][]): string[] {
-  // First pass: determine each column's dominant month
-  type Span = { start: number; end: number; month: string; year: number; count: number };
-  const spans: Span[] = [];
-  let cur: Span | null = null;
+type MonthLabel = {
+  /** 1-based grid column the label starts at. */
+  column: number;
+  /** How many columns the label's month covers. */
+  span: number;
+  text: string;
+};
 
-  for (let i = 0; i < cols.length; i++) {
-    const col = cols[i];
-    const cells = col.filter(Boolean) as HeatmapCell[];
-    if (!cells.length) {
-      if (cur) spans.push(cur);
-      cur = null;
-      continue;
-    }
+function monthOf(date: string): { key: string; text: string } {
+  const d = new Date(date + "T00:00:00Z");
+  return {
+    key: `${d.getUTCFullYear()}-${d.getUTCMonth()}`,
+    text: MONTH_NAMES[d.getUTCMonth()],
+  };
+}
 
-    // Count days per month in this column
-    const counts = new Map<string, { count: number; year: number }>();
-    for (const c of cells) {
-      const d = new Date(c.date + "T00:00:00Z");
-      const key = d.toLocaleDateString("en-US", { month: "short" }).toLowerCase();
-      const existing = counts.get(key) ?? { count: 0, year: d.getFullYear() };
-      existing.count++;
-      existing.year = d.getFullYear();
-      counts.set(key, existing);
-    }
+/**
+ * One label per run of consecutive columns sharing a month, placed on the run's
+ * first column. Labels overflow their column — they are wider than one — so runs
+ * too narrow to hold a label get none instead of colliding with the next month.
+ */
+function getMonthLabels(columns: Column[]): MonthLabel[] {
+  const runs: Array<{ key: string; text: string; start: number; end: number }> = [];
 
-    // Find dominant month in this column
-    let best = "";
-    let bestCount = 0;
-    let bestYear = 0;
-    for (const [month, info] of counts) {
-      if (info.count > bestCount) {
-        best = month;
-        bestCount = info.count;
-        bestYear = info.year;
-      }
-    }
-
-    if (cur && cur.month === best && cur.year === bestYear) {
-      cur.end = i;
-      cur.count += bestCount;
-    } else {
-      if (cur) spans.push(cur);
-      cur = { start: i, end: i, month: best, year: bestYear, count: bestCount };
-    }
-  }
-  if (cur) spans.push(cur);
-
-  // For each month name, find the span with the most cells.
-  // Only that span gets a label.
-  const bestSpanPerMonth = new Map<string, Span>();
-  for (const s of spans) {
-    const existing = bestSpanPerMonth.get(s.month);
-    if (!existing || s.count > existing.count) {
-      bestSpanPerMonth.set(s.month, s);
-    }
+  for (let i = 0; i < columns.length; i++) {
+    const first = columns[i].find((d): d is HeatmapCell => d !== null);
+    // A column without days belongs to whichever month was already open.
+    if (!first) continue;
+    const { key, text } = monthOf(first.date);
+    const open = runs.at(-1);
+    if (open?.key === key) open.end = i;
+    else runs.push({ key, text, start: i, end: i });
   }
 
-  // Build label array
-  const labels: string[] = Array.from({ length: cols.length });
-  for (const s of spans) {
-    if (bestSpanPerMonth.get(s.month) === s) {
-      labels[s.start] = s.month;
-    }
-  }
+  return runs
+    .filter((run) => run.end - run.start + 1 >= MIN_LABEL_COLUMNS)
+    .map((run) => ({
+      column: run.start + 1,
+      span: run.end - run.start + 1,
+      text: run.text,
+    }));
+}
 
-  return labels;
+function Heatmap({ columns, className }: { columns: Column[]; className: string }) {
+  const monthLabels = getMonthLabels(columns);
+
+  return (
+    <div
+      className={cn("grid gap-0.75", className)}
+      style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}
+    >
+      {monthLabels.map((label) => (
+        <span
+          key={`${label.column}-${label.text}`}
+          className="text-[10px] font-mono uppercase tracking-wider text-pink-950/40 whitespace-nowrap pointer-events-none"
+          style={{
+            gridRow: 1,
+            gridColumn: `${label.column} / span ${label.span}`,
+            justifySelf: "start",
+          }}
+        >
+          {label.text}
+        </span>
+      ))}
+
+      {columns.map((column, colIndex) =>
+        column.map((cell, dayIndex) => {
+          if (!cell) {
+            return (
+              <div
+                key={`empty-${colIndex}-${dayIndex}`}
+                className="aspect-square bg-pink-100/20"
+                style={{ gridRow: dayIndex + 2, gridColumn: colIndex + 1 }}
+              />
+            );
+          }
+
+          const color = INTENSITY_COLORS[Math.min(4, Math.max(0, cell.intensity))];
+          return (
+            <Tooltip key={cell.date}>
+              <TooltipTrigger
+                render={
+                  <div
+                    className={cn(
+                      "cursor-default aspect-square transition-colors duration-150",
+                      color,
+                    )}
+                    style={{ gridRow: dayIndex + 2, gridColumn: colIndex + 1 }}
+                  />
+                }
+              ></TooltipTrigger>
+              <TooltipContent className="pointer-events-none">{cell.tooltip}</TooltipContent>
+            </Tooltip>
+          );
+        }),
+      )}
+    </div>
+  );
 }
 
 interface Props {
-  weeks: { days: (HeatmapCell | null)[] }[];
+  weeks: Week[];
   legendLabel?: string;
   emptyLabel?: string;
 }
 
 export function HeatmapGrid({ weeks, legendLabel, emptyLabel = "No data available." }: Props) {
-  const prefersReducedMotion = useReducedMotion();
-
   const allDays = weeks.flatMap((w) => w.days.filter((d): d is HeatmapCell => d !== null));
   if (!allDays.length) {
     return <p className="pt-2 text-sm font-body text-pink-950/60">{emptyLabel}</p>;
   }
 
-  const cols = buildGrid(weeks);
-  const monthLabels = getMonthLabels(cols);
+  const columns = buildColumns(weeks);
 
   return (
     <div className="relative pt-4 w-full">
-      <div className="flex gap-0.75 mb-1 text-[10px] font-mono text-pink-950/30 uppercase tracking-wider">
-        {monthLabels.map((label, i) => (
-          <div
-            key={`${label}-${i}`}
-            className="flex-1 text-center truncate"
-            title={label || undefined}
-          >
-            {label}
-          </div>
-        ))}
-      </div>
-
-      <div className="overflow-x-auto w-full">
-        <LazyMotion features={domAnimation}>
-          <m.div
-            className="flex gap-0.75 w-full"
-            variants={prefersReducedMotion ? undefined : gridAnim}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {cols.map((col, colIdx) => {
-              const firstCell = col.find(Boolean);
-              const weekKey = firstCell?.date ?? `empty-${colIdx}`;
-              return (
-                <div key={weekKey} className="flex flex-col gap-0.75 flex-1 min-w-0">
-                  {col.map((d, rowIdx) => {
-                    if (!d) {
-                      return (
-                        <div
-                          key={`empty-${weekKey}-${rowIdx}`}
-                          className="bg-pink-100/20"
-                          style={{ aspectRatio: "1" }}
-                        />
-                      );
-                    }
-                    const colorIdx = Math.min(4, Math.max(0, d.intensity));
-                    return (
-                      <Tooltip key={d.date}>
-                        <TooltipTrigger
-                          render={
-                            <m.div
-                              variants={prefersReducedMotion ? undefined : cellAnim}
-                              style={{ aspectRatio: "1" }}
-                              className={[
-                                "cursor-default active:outline-none transition-colors duration-150",
-                                INTENSITY_COLORS[colorIdx],
-                              ].join(" ")}
-                            />
-                          }
-                        ></TooltipTrigger>
-                        <TooltipContent className="pointer-events-none">{d.tooltip}</TooltipContent>
-                      </Tooltip>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </m.div>
-        </LazyMotion>
-      </div>
+      <Heatmap columns={columns} className="hidden sm:grid" />
+      <Heatmap columns={columns.slice(-COMPACT_WEEK_COUNT)} className="grid sm:hidden" />
 
       <div className="flex items-center gap-1 mt-3">
         <span className="text-xs font-mono text-pink-950/30">{legendLabel ?? "less"}</span>
-        {[0, 1, 2, 3, 4].map((level) => (
-          <div key={level} className={["size-4", INTENSITY_COLORS[level]].join(" ")} />
+        {INTENSITY_COLORS.map((color, level) => (
+          <div key={level} className={cn("size-4", color)} />
         ))}
         <span className="text-xs font-mono text-pink-950/30">more</span>
       </div>
