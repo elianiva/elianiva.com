@@ -34,19 +34,18 @@ export const Route = createFileRoute("/api/og-image")({
           raw = { type: "default" as const, title, subtitle: subtitle ?? undefined };
         } else {
           const date = url.searchParams.get("date");
-          const tags = url.searchParams.get("tags");
-          const description = url.searchParams.get("description");
-          if (!title || !date || !tags || !description)
-            return badRequest("type=post requires title, date, tags, description");
+          // A post with no tags or no description still deserves a card, so
+          // both are optional rather than a 400.
+          if (!title || !date) return badRequest("type=post requires title, date");
           raw = {
             type: "post" as const,
             title,
             date,
-            tags: tags
+            tags: (url.searchParams.get("tags") ?? "")
               .split(",")
               .map((tag) => tag.trim())
               .filter(Boolean),
-            description,
+            description: url.searchParams.get("description") ?? "",
           };
         }
 
