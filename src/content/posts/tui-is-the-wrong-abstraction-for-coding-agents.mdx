@@ -1,0 +1,132 @@
+---
+title: TUI is the wrong abstraction for coding agents
+date: 2026-10-03
+description: Every coding agent ships as a TUI and I think that's the wrong call. The terminal is holding agents back.
+tags:
+  - llm
+  - agents
+  - random
+---
+
+Hi! :)
+
+There's something I've been meaning to talk about for quite a while now. It's pretty obvious from the title of this post. The reason why I have this opinion is because I, too, used to like TUI apps like Neovim. I chose Neovim as my primary editor for many years because it's actually good, the UX is snappy, very extensible. As much as I like Neovim, and as much as I like TUI apps in general, I quickly realised many of their limitations.
+
+Fast forward a few years, coding agents made their appearance. The first mainstream one was probably Claude Code (I know there was Aider, but Claude Code that really took off). As much as I like it, I don't think TUI is the right place for it. I know there are valid reasons for it, like it allows you to ship it to many different platforms, as well as making it minimal hence quicker to iterate. Although, if you've been following the update around coding agents, you'll also realise that we're limiting the agents by choosing the TUI as the main interface.
+
+There are many reasons why I think TUI is the wrong abstraction for interacting with coding agents.
+
+Disclaimer, in case people took this post too seriously: these are just my opinions. I'd be more than happy if this sparks some discussion, or if anyone proves me wrong on the things I've written here.
+
+## Why the TUI won
+
+Well, TUI has many advantages over a GUI: portability, SSH, cross platform, lowest common denominator. It's a valid target to build your apps on if you want it to be cross-platform with little to no effort... or really?
+
+There's two ways of building the TUI, namely the scrollback and the alternate mode. Both have their own quirks and limitations. It looks easy on the surface, but actually not so much. You're trying to force a GUI-like experience on something whose main purpose is to display text in a grid. Things like handling resize, mouse selection, scrollback, displaying images, among many other things, are often not trivial.
+
+In all fairness, there were overengineering aspects that made this more complicated than it needed to be. Remember the ["It's not just a TUI, it's a small game engine"](https://x.com/trq212/status/2014051501786931427) thread? ;)
+I'm not trying to punch down on that thread specifically, but rather to point out that you'd end up with a bunch of tricks trying to get the TUI to behave like a true GUI.
+
+Another argument is that TUI often feels more snappy. Well then why not just build a GUI that feels snappy? What's preventing these big companies from doing that instead? If coding is solved, then why are we still shipping text UIs?
+
+Coding is solved, they said, lol.
+
+## Where it breaks
+
+You see, terminal is a grid of texts. They all have a fixed size and a fixed font family. At the surface level, chat interface is just text, right? Well, maybe some images here and there. I think that's just wrong. Agents don't talk like a human does. Their output is not just text. A lot of the times, their final output is a rich markdown with images, video, diffs, diagrams, anything that proves the agent's work.
+
+### Fighting the TUI
+
+There are efforts to "fight" the limitation of the TUI like image rendering using some custom protocol like kitty protocol, sixel, or worse: rendering them using half blocks. There's so many party tricks involved in making the TUI look pretty. At the end of the day, it's just a grid of text. It's still very limiting as to what you're able to do.
+
+Legibility is also a concern. Since the terminal is a fixed-width grid, the font used is usually a monospaced font (unless you're an absolute psychopath that forces regular fonts). This hurts legibility because they're not meant to be used for displaying text content. You're also limited into one font family. You can't have nice things like sans-serif fonts for everything, monospace fonts for codeblocks, and so on.
+
+## The wrong abstraction
+
+Traditionally, when you look at these TUI coding agents, they are seen as a single entity. The thing that drives them is one with the thing that you use to interact with them. That's why some of these coding agents are closed source, even the clients, because they don't want you to figure out their secret sauce.
+
+Recently, folks at ampcode made a post titled ["Less Noise"](https://ampcode.com/news/less-noise). There's a few sentences that resonate with me quite a lot and I like it.
+
+> They should run for longer on their own, without you watching them from up close. If you have the patience to watch your agents work, you're giving them too short a leash.
+
+Of course, there are nuances to this like model capability and whatnot. You might still want to see traces of weaker models, but the main point here is that you should not be staring at traces while the agent is working. It should be able to complete the task end to end, including the verification.
+
+What you should be seeing instead is the agent's proof. Rich markdown content with images, tables, diagrams, diffs, anything that can be used to verify their work. I'm not saying you should throw them all away, but rather not to make it as first class and only treat it as a crutch. The only thing that matters is the last output. The chat history is just logs. Only the final state matters.
+
+## Remote control is painful
+
+Remote control, have you ever tried it? Having to control your terminal from your phone through SSH is such a miserable experience. If you want remote access to your agents, having a proper user interface is the way to go.
+
+Well, I guess it's not an issue if you're exclusively using agents from your computer. Although, I argue that you should treat your agents as async work units: [make the agents wait for you, not the other way around](https://x.com/AmpCode/status/2105916692912369900).
+
+Once you go this route, you can never go back. It's very nice being able to start work on your desktop, then not having to worry if you have to go some place else because you can check it on your phone, or having some idea while you were still away from keyboard and want to start the work immediately. If you need a lot of handholding, you're not enforcing the agents enough. You need to close the loop and be very strict with them so that you can trust their work without you looking. I'd recommend watching the [recent interview that Matt Pocock did with Lauren (poteto)](https://www.youtube.com/watch?v=MN9dGgmLyso) where they discussed how shipping 1000s of non-slop PRs a month is made possible once you gain trust over your agents.
+
+## But, but, it's snappy compared to these GUI crap
+
+I hear you, you're talking to someone who used to own a really crap laptop that can't even run vscode. I know where the frustration comes from. The TUI has very little latency, it feels fast because it's minimal, it's scriptable, composable, and you can use it through SSH.
+
+Although, I have a counter argument: do you really need your coding agents to be _that_ snappy? You can't really compare it with text editor where you edit texts all day and need it to be responsive. A lot of the times, you just write prompts, leave it, then come back to it later to read its output. Does "but TUI agents are more snappy" argument really hold up?
+
+Alright alright, chill with your pitchforks, I'm not saying apps shouldn't be snappy and just be a slow web slop. I'm saying that TUI being snappy is not a valid reason to keep it and keep limiting yourself from other nicer UI and experiences in working with these agents.
+
+There are many coding agent GUIs out there that still feel good to use despite them being on the web like AmpCode or T3 Code, among many others that I haven't tried myself. They are packed with a lot of good stuff you just don't get from the TUI, yet still feel good to use. There's definitely some tradeoffs here, it won't feel as quick, as fast, or as minimal as TUI, but I still think the benefit outweighs the drawbacks.
+
+Like, honestly, what are the things you do with coding agents? A lot of the time you just write prompts in a textbox, or use dictation, then review their outputs. Again, I don't think software should be slow to use, but if many useful features are available in the GUI version and you're not using it just because you think they're slightly slower to use, then I think you're missing out on better ways to interact with them.
+
+Not to mention, there's many efforts in making GUI to still be responsive and fast, not just some slop. The Zed team with their [GPUI](https://gpui.rs/) framework, allowing people to write fast cross-platform GUI apps. You also have folks at [Pierre Computer](https://pierre.computer/) making performant primitives on the web like diff viewer, file tree, etc, breaking the notion that all web apps are just slow.
+
+You wait for the agents anyway, you don't use these apps the same way you use a text editor. Out of 8 hours in a day you work, there's much, much more time you use _outside_ of the coding agent app doing other things. So, does it really matter if it's really responsive with barely any feature, while the other app next door might feel _slightly_ less responsive but have more things that help you work more efficiently?
+
+### It's preference
+
+One might say people prefer the TUI because of their aesthetics, some prefer them because it makes them feel like they're doing serious work ala movie hacker type shit. Imagine running 8 panes of herdr, with each containing a Claude Code or Codex agent running god knows what other slop it'll pull out. It makes you feel like you're doing a shit ton of things compared to if you just delegate an agent and leave it.
+
+I used to also like the aesthetics of the TUI, there's something about it that makes you want to use it more and more. Although, this is easily replicated in a GUI, if you're into that sort of thing. [Humanlayer](https://humanlayer.dev/) is pretty similar with the TUI aesthetics I'd say, while still being a GUI, which enables them to add more fancy things that's just not possible in a TUI.
+
+I used to prefer Neovim because it was responsive, but now I prefer Zed because it's a GUI that feels just as fast and has more features without me having to maintain a configuration. It has Neovim keybinds that I'm used to, so there's not much of a learning curve. The point I'm making here is that, try new things, don't be afraid to experiment and see what works best for you.
+
+## The right shape
+
+There's [a really good blog post from Anthropic](https://www.anthropic.com/engineering/managed-agents) regarding this. Basically, you run the agents separate from the environment they operate in. Many cloud agents work this way. The agents run on a server, and when the situation needs them, you give it a separate machine where it can freely do its work.
+
+At first, I didn't really get the idea of this. I was first introduced to this concept from the [Ampcode Rewrite](https://ampcode.com/news/neo). It might sound like I'm glazing Ampcode way too hard, I used to not like them, but I hate to admit that they're right on a lot of things. There's some points they made that I really like:
+
+> agents with longer leashes, less handholding, and many more places to run. Not just one agent in one terminal. Agents prompted from anywhere, running everywhere.
+
+Agents can run anywhere, TUI is just one way to interact with these agents, why limit yourself? Well, it's basically cloud agents, but many open source solutions out there that gives you the ability to have a "runner" (even Ampcode does this now despite being closed source) that you can control from anywhere.
+
+Things like [T3 Code](https://t3.codes/), [BB](https://getbb.app/), and many others are examples of this. You can have a single server that serves the app and have multiple "execution machines" that the agents can use as their environment. See where the direction is going here? They're all splitting where the agents run, and where they execute their work.
+
+Once you internalize that agents are just executors, you can see how TUI is just _one_ way to interact with them, and there are other better ways.
+
+Still in the same spirit of cloud agents, what makes them good is that they're durable. The running joke is that people don't close the laptop because their coding agents are running. First of all, you can just disable sleep so you can close your laptop without worrying about the agents running. Second of all, and more importantly, this proves a point that agents should be durable by default.
+
+One of my beloved coding agents, Pi, recently [rewrote their internals](https://earendil.com/posts/pi-durable/) to introduce the concept of durable execution. This means that there's a growing need of making them durable, people want the agents to be durable.
+
+Many are doing this in the TUI by using things like tmux, zellij, or herdr. When you close the terminal, the agents keep running in the background and you can resume them. I don't like terminal multiplexers because they're doing funny things to the underlying program. Herdr, for example, won't let you see the image even when your terminal supports showing images.
+
+It's the cool kid around the block these days, and many people use it to manage their fleet of agents. But it doesn't remove the limitation imposed by the TUI. Sure, it's a good layer on top to help you manage your agents and allow them _some_ amount of durability, but it doesn't change the fact that the TUI is still the wrong abstraction. It's a band-aid, not an actual solution. The harness itself should have been durable.
+
+I'm not saying herdr is bad, I've used it before and still do. It has its value, but not enough for people to go "I prefer TUI because I can use herdr to manage them". It makes a better first impression than tmux or zellij, but it's still finicky to use.
+
+Let go of the TUI and focus on GUI, split the brain from the hands. A shit ton of things will become possible, and I think we should explore this space rather than trying to fix the TUI.
+
+Lots to talk about durable execution and splitting the brain from the hands, and things like that, probably worth its own post. Coding agents are no longer a TUI thing, probably safe to say it's a mini distributed system. Think of the actor model.
+
+So, what is the right shape then? Honestly, in my humble opinion, I feel like the GUI is the right place for this kind of work, for now. Once the agents are more capable, and we can trust them a lot more, I feel like chat UI is going away too.
+
+All I'm doing now is usually read their output, their verification results, ask them to make irrefutable proofs of their work. There's less and less reason to look at the transcript anymore apart from the minority of the cases where you'd still need it (the agents do some weird shit, weaker and smaller models, things like that).
+
+It's also not clunky to use on mobile, it just works. Just try using the terminal UI from your phone through SSH and look at me with a straight face and say that it's not such a horrible experience to go through.
+
+Really, you're limiting yourself if you think the terminal UI is the right shape for this work. No fancy diffs to make it easier for you to read the code changes (if you still do, that is), you're missing out on diagrams to understand the system better (I know there's TUI version of mermaid, but that's besides the point, it's still lacking), among other things.
+
+Even the creator of [OMP](https://omp.sh/), which many people say is a great harness on top of Pi, has recently made [Tern](https://stencil.so/tern) which is like this superpowered terminal UI that can spawn GUI elements when needed. Sooner or later, you'll quickly realise that GUI _is_ the answer.
+
+## Closing thoughts
+
+Even though I think the TUI is not the right form of interaction with coding agents, I still think it has its benefits like being a fallback for an SSH box, but these use cases are very rare.
+
+We should focus on making durable, reliable coding agents that are interactive not only through stream of plain texts. As a user, I think you should at least try using some of these GUI alternatives and see it for yourself. Text is not the only interface for you to interact with them, they need richer UI, you shouldn't self-impose these limitations on yourself.
+
+Again, these are just my opinions. If TUI floats your boat, go for it :)
