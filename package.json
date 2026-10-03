@@ -16,7 +16,11 @@
     "ui": "pnpm dlx shadcn@latest",
     "prepare": "vp config",
     "gen:collections": "node scripts/gen-content-collections.mjs",
-    "prelint": "pnpm gen:collections"
+    "prelint": "pnpm gen:collections",
+    "gen:cv": "tsx scripts/gen-cv-data.ts",
+    "cv": "pnpm gen:cv && typst compile cv/main.typ public/assets/cv_dicha.pdf",
+    "cv:watch": "tsx scripts/cv-watch.ts",
+    "prebuild": "pnpm cv"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -81,7 +85,8 @@
     "unplugin-icons": "^24.0.0",
     "vite": "catalog:",
     "vite-plus": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "yaml": "^2.9.1"
   },
   "packageManager": "pnpm@11.9.0"
 }

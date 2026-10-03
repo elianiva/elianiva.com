@@ -13,5 +13,6 @@ __unconfig*
 .dev.vars
 .alchemy
 .content-collections
+cv/data.json
 .cache
 .references

@@ -39,6 +39,16 @@ const posts = defineCollection({
   },
 });
 
+/**
+ * A project's place on the CV. Present means the recruiter's PDF prints it;
+ * absent means the site lists it and the CV does not. The site prints every
+ * project, the same way it prints every role.
+ */
+const cvProject = z.object({
+  period: z.tuple([z.string(), z.string().nullable()]),
+  details: z.array(z.string()).min(1),
+});
+
 const projects = defineCollection({
   name: "projects",
   directory: "./src/content/projects",
@@ -53,6 +63,8 @@ const projects = defineCollection({
     demo: z.url().optional().nullable(),
     type: z.enum(["personal", "open-source", "assignment"]),
     stack: z.array(z.tuple([z.string(), z.url()])),
+    /** Absent unless this project belongs in the CV. */
+    cv: cvProject.optional(),
     image: z.string().optional(),
     content: z.string(),
   }),

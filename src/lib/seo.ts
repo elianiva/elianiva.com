@@ -1,5 +1,6 @@
 import * as DateTime from "effect/DateTime";
 import sites from "~/data/sites";
+import { profile } from "~/data/profile";
 
 export const siteUrl = sites.siteUrl;
 
@@ -220,7 +221,7 @@ export function homeSeo() {
       description:
         "Software engineer, building interfaces that don't annoy people. Writing about frontend, design engineering, and side projects.",
       ogTitle: sites.siteName,
-      ogImage: defaultOgImageUrl("Dicha Zelianivan Arkana", "software engineer · open source"),
+      ogImage: defaultOgImageUrl(profile.name, "software engineer · open source"),
       path: "/",
     }),
     scripts: [
@@ -241,8 +242,8 @@ export function personJsonLd() {
   return {
     "@type": "Person",
     "@id": `${siteUrl}/#person`,
-    name: "Dicha Zelianivan Arkana",
-    alternateName: ["elianiva", "dichaa", "not.elianiva", "elianiva_"],
+    name: profile.name,
+    alternateName: [profile.handle, "dichaa", "not.elianiva", "elianiva_"],
     givenName: "Dicha",
     familyName: "Arkana",
     additionalName: "Zelianivan",
@@ -251,7 +252,7 @@ export function personJsonLd() {
       "@type": "ImageObject",
       url: "https://avatars.githubusercontent.com/u/51877647?v=4",
       contentUrl: "https://avatars.githubusercontent.com/u/51877647?v=4",
-      caption: "Dicha Zelianivan Arkana",
+      caption: profile.name,
     },
     email: `mailto:${sites.email}`,
     jobTitle: "Software Engineer",
@@ -305,9 +306,8 @@ function profilePageJsonLd() {
     "@type": "ProfilePage",
     "@id": `${siteUrl}/#webpage`,
     url: siteUrl,
-    name: `${sites.siteName} — Dicha Zelianivan Arkana`,
-    description:
-      "Personal website, blog, and portfolio of Dicha Zelianivan Arkana (elianiva) — software engineer, design engineering, open source.",
+    name: `${sites.siteName} — ${profile.name}`,
+    description: `Personal website, blog, and portfolio of ${profile.name} (${profile.handle}) — software engineer, design engineering, open source.`,
     isPartOf: { "@id": `${siteUrl}/#website` },
     about: { "@id": `${siteUrl}/#person` },
     mainEntity: { "@id": `${siteUrl}/#person` },
