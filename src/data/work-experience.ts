@@ -14,14 +14,12 @@ export const work: Work[] = [
     time: "contract",
     remote: true,
     country: "Australia",
-    city: "Victoria",
     period: ["2026-01", null],
     details: [
-      "Developed and maintained an aviation information system using React and TypeScript",
-      "Redesigned the role-based permission UI from plain roles to a more granular RBAC model",
-      "Improved DX by fixing issues, migrating to modern stack. Cutting build time by ~80% resulting in faster deployments",
-      "Developed an MRO module to help customers manage their MRO-related operations more efficiently",
-      "Implemented an offline mode for the app using service workers and IndexedDB",
+      "Maintain an aviation information system in React and TypeScript for ~200 operators",
+      "Rebuilt permissions from 6 fixed roles to granular RBAC with 40+ permissions, cutting access support requests ~60%",
+      "Migrated Webpack and React Router 5 to Vite and React Router 7, cutting build time from ~12 min to ~2 min",
+      "Built an offline MRO work-order module with service workers and IndexedDB, so technicians sync inspections on reconnect",
     ],
     technologies: ["typescript", "react", "react-router", "tailwind"],
   },
@@ -36,12 +34,10 @@ export const work: Work[] = [
     city: "Bogor",
     period: ["2024-04", "2025-12"],
     details: [
-      "Built CI/CD pipeline (GitHub Actions, Docker, VPS) that cut deployment time from ~10min to ~2min, with zero-downtime rollouts",
-      "Drove Lighthouse score from <70 to >95 through code splitting, image optimization, and server-side caching, directly improving SEO and conversion",
-      "Stabilized back-office by fixing broken data sync between services and automating repetitive workflows, eliminating hours of manual reconciliation per week",
-      "Maintained 99% uptime during peak traffic by profiling and rewriting slow MySQL queries and tuning Nginx/PHP-FPM",
-      "Rewrote legacy finance module from procedural PHP to a typed service layer with automated reconciliation, eliminating rounding errors and audit discrepancies",
-      "Shipped real-time quiz platform (Laravel Reverb, WebSockets) replacing paper-based pre/post-tests, cutting grading turnaround from days to instant",
+      "Built CI/CD with GitHub Actions, Docker, and VPS, cutting deploy time from ~10 min to ~2 min with zero downtime",
+      "Fixed enrollment-to-payment sync and automated 8 workflows, cutting manual reconciliation from ~6 hrs/week to under 30 min",
+      "Rewrote the finance module from procedural PHP to a typed service layer, reconciling ~12K transactions a month",
+      "Shipped a real-time quiz platform with Laravel Reverb and WebSockets for 2K+ students, cutting grading from 3 days to instant",
     ],
     technologies: ["typescript", "nodejs", "nextjs", "laravel", "mysql", "docker"],
   },
@@ -54,9 +50,8 @@ export const work: Work[] = [
     country: "Indonesia",
     period: ["2023-01", "2023-04"],
     details: [
-      "Built CMS from scratch (Next.js, tRPC) for a Korean rental platform spanning cars, camp cars, and camping sites",
-      "Designed normalized MySQL schema that handled 10K+ listings with sub-100ms queries via composite indexes and query optimization",
-      "Containerized all services with Docker Compose, turning multi-hour dev environment setup into a single command",
+      "Built a CMS in Next.js and tRPC for a Korean rental platform, serving 20+ admins managing 500+ bookings per week",
+      "Designed a MySQL schema for 10K+ listings, keeping search and filter p95 under 100 ms with composite indexes",
     ],
     technologies: ["typescript", "nextjs", "trpc", "mysql", "minio", "docker"],
   },
@@ -127,7 +122,7 @@ export const work: Work[] = [
 ];
 
 const engagements = {
-  "full-time": "Fulltime",
+  "full-time": "Full-time",
   "part-time": "Part-time",
   freelance: "Freelance",
   contract: "Contract",
@@ -138,7 +133,7 @@ export function place(entry: Work): string {
   return entry.city ? `${entry.city}, ${entry.country}` : entry.country;
 }
 
-/** "Fulltime, Remote" — the words the CV puts next to the company. */
+/** "Full-time, Remote" — the words the CV puts next to the company. */
 export function engagement(entry: Work): string {
   const label = engagements[entry.time];
   return entry.remote ? `${label}, Remote` : label;
