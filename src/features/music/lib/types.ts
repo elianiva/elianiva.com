@@ -45,9 +45,7 @@ export type MusicData = {
   total: number;
 };
 
-export type MusicPageData = {
-  tracks: LastFmTrack[];
-  total: number;
+export type TopListsData = {
   stats: {
     uniqueArtists: number;
     uniqueAlbums: number;

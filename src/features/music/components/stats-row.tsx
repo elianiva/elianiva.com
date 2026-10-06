@@ -38,10 +38,10 @@ function StatCard({ label, title, value, extras, className }: StatCardProps) {
   );
 }
 
-export function StatsRow({ stats, total }: { stats: Stats; total: number }) {
+export function StatsRow({ stats }: { stats: Stats }) {
   return (
     <section className="py-4 md:py-8 relative with-box-underline">
-      <Heading level={2} right={`${total.toLocaleString()} scrobbles`}>
+      <Heading level={2} right={`${stats.totalTracks.toLocaleString()} scrobbles`}>
         Summary
       </Heading>
       <div className="flex flex-wrap gap-4">

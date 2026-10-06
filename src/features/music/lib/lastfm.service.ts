@@ -5,10 +5,10 @@ import { LASTFM_API_KEY } from "~/lib/env";
 import type {
   LastFmTrack,
   MusicData,
-  MusicPageData,
   ProfileInfo,
   TopAlbumItem,
   TopArtistItem,
+  TopListsData,
   TopTrackItem,
 } from "./types";
 
@@ -19,9 +19,7 @@ const EMPTY_TRACKS: MusicData = { tracks: [], total: 0 };
 const EMPTY_ARTISTS: { artists: TopArtistItem[]; total: number } = { artists: [], total: 0 };
 const EMPTY_ALBUMS: { albums: TopAlbumItem[]; total: number } = { albums: [], total: 0 };
 const EMPTY_TOP_TRACKS: { tracks: TopTrackItem[]; total: number } = { tracks: [], total: 0 };
-const EMPTY_PAGE: MusicPageData = {
-  tracks: [],
-  total: 0,
+const EMPTY_TOP_LISTS: TopListsData = {
   stats: { uniqueArtists: 0, uniqueAlbums: 0, totalTracks: 0 },
   topArtists: [],
   topAlbums: [],
@@ -91,7 +89,7 @@ export class LastFM extends Context.Service<
       period: string,
       limit: number,
     ) => Effect.Effect<{ tracks: TopTrackItem[]; total: number }>;
-    readonly getAllMusicData: () => Effect.Effect<MusicPageData>;
+    readonly getTopListsData: () => Effect.Effect<TopListsData>;
   }
 >()("LastFM") {
   static readonly layer = Layer.effect(
@@ -107,7 +105,7 @@ export class LastFM extends Context.Service<
           getTopArtists: () => Effect.succeed(EMPTY_ARTISTS),
           getTopAlbums: () => Effect.succeed(EMPTY_ALBUMS),
           getTopTracks: () => Effect.succeed(EMPTY_TOP_TRACKS),
-          getAllMusicData: () => Effect.succeed(EMPTY_PAGE),
+          getTopListsData: () => Effect.succeed(EMPTY_TOP_LISTS),
         };
       }
 
@@ -281,9 +279,8 @@ export class LastFM extends Context.Service<
         });
       });
 
-      const getAllMusicData = Effect.fn("LastFM.getAllMusicData")(function* () {
+      const getTopListsData = Effect.fn("LastFM.getTopListsData")(function* () {
         const [
-          recentTracks,
           profile,
           topArtistsAll,
           topAlbumsAll,
@@ -291,20 +288,20 @@ export class LastFM extends Context.Service<
           topArtistsYear,
           topAlbumsYear,
           topTracksYear,
-        ] = yield* Effect.all([
-          getRecentTracks(),
-          getProfileInfo(),
-          getTopArtists("overall", 5),
-          getTopAlbums("overall", 5),
-          getTopTracks("overall", 5),
-          getTopArtists("12month", 5),
-          getTopAlbums("12month", 5),
-          getTopTracks("12month", 5),
-        ]);
+        ] = yield* Effect.all(
+          [
+            getProfileInfo(),
+            getTopArtists("overall", 5),
+            getTopAlbums("overall", 5),
+            getTopTracks("overall", 5),
+            getTopArtists("12month", 5),
+            getTopAlbums("12month", 5),
+            getTopTracks("12month", 5),
+          ],
+          { concurrency: "unbounded" },
+        );
 
         return {
-          tracks: recentTracks.tracks,
-          total: recentTracks.total,
           stats: {
             uniqueArtists: topArtistsAll.total,
             uniqueAlbums: topAlbumsAll.total,
@@ -316,7 +313,7 @@ export class LastFM extends Context.Service<
           topArtistsYear: topArtistsYear.artists,
           topAlbumsYear: topAlbumsYear.albums,
           topTracksYear: topTracksYear.tracks,
-        };
+        } satisfies TopListsData;
       });
 
       return {
@@ -325,7 +322,7 @@ export class LastFM extends Context.Service<
         getTopArtists,
         getTopAlbums,
         getTopTracks,
-        getAllMusicData,
+        getTopListsData,
       };
     }),
   );

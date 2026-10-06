@@ -1,57 +1,48 @@
 import { Skeleton } from "~/components/ui/skeleton";
 
-export function MusicPageSkeleton() {
+export function MusicTopListsSkeleton() {
   return (
-    <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
-      <div className="py-4 md:py-8 px-2 md:px-8 animate-pulse">
-        <div className="pb-4 md:pb-8 with-box-underline relative">
-          <Skeleton className="h-9 w-48" />
-          <Skeleton className="h-4 w-96 mt-4" />
-          <div className="flex gap-4 mt-4">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-4 w-24" />
+    <div className="animate-pulse">
+      <div className="flex flex-wrap gap-4 py-4 md:py-8 relative with-box-underline">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex-1">
+            <Skeleton className="h-3 w-16 mb-2" />
+            <Skeleton className="h-10 w-24" />
           </div>
-        </div>
-        <div className="flex flex-wrap gap-4 py-4 md:py-8 relative with-box-underline">
+        ))}
+      </div>
+      <section className="py-4 md:py-8 relative with-box-underline">
+        <Skeleton className="h-6 w-32 mb-4" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex-1">
-              <Skeleton className="h-3 w-16 mb-2" />
-              <Skeleton className="h-10 w-24" />
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              {Array.from({ length: 5 }).map((_, j) => (
+                <Skeleton key={j} className="h-4 w-full" />
+              ))}
             </div>
           ))}
         </div>
-        <section className="py-4 md:py-8 relative with-box-underline">
-          <Skeleton className="h-6 w-32 mb-4" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-4 w-20" />
-                {Array.from({ length: 5 }).map((_, j) => (
-                  <Skeleton key={j} className="h-4 w-full" />
-                ))}
-              </div>
-            ))}
-          </div>
-        </section>
-        <section className="py-4 md:py-8">
-          <Skeleton className="h-6 w-32 mb-4" />
-          <div className="space-y-0">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="flex gap-4 py-3 border-b border-pink-100/50">
-                <Skeleton className="size-12 shrink-0" />
-                <div className="flex-1 space-y-2 py-1">
-                  <Skeleton className="h-4 w-56" />
-                  <Skeleton className="h-3 w-32" />
-                </div>
-                <div className="hidden md:flex flex-col items-end gap-1 py-1">
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-3 w-16" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
+      </section>
+    </div>
+  );
+}
+
+export function MusicTracksSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <section className="py-4 md:py-8">
+        <Skeleton className="h-6 w-32 mb-4" />
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="w-full aspect-square" />
+              <Skeleton className="h-3 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
