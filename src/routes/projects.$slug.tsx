@@ -14,7 +14,12 @@ export const Route = createFileRoute("/projects/$slug")({
   loader: ({ params: { slug } }) => {
     const detail = getProjectBySlug(slug);
     if (!detail) throw notFound();
-    return detail;
+    // The MDX component is a function: it cannot be serialized into the
+    // prerendered payload (Seroval dehydration would 500 the page). Return
+    // the serializable meta here; the component resolves `mdx` itself from
+    // the bundled collection.
+    const { mdx: _mdx, ...meta } = detail;
+    return meta;
   },
   head: ({ loaderData }) => {
     if (!loaderData) return {};
@@ -63,7 +68,12 @@ function ProjectNotFoundPage() {
 function ProjectDetailPage() {
   const detail = Route.useLoaderData();
   const { project } = detail;
-  const Mdx = detail.mdx;
+  const params = Route.useParams();
+  // Resolved here (not in the loader) because the MDX component cannot be
+  // serialized into the prerender payload — see the loader above. The
+  // collection is bundled, so this is a synchronous in-memory lookup.
+  const Mdx = getProjectBySlug(params.slug)?.mdx;
+  if (!Mdx) throw notFound();
 
   return (
     <>

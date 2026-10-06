@@ -69,6 +69,12 @@ const config = defineConfig({
       // `_shell.html` fallback boots the client router for anything else.
       // There is no SSR at request time and no server bundle to deploy —
       // alchemy serves `dist/client` as plain static assets.
+      router: {
+        // Colocated `*.test.*` files are not routes. Exclude them from
+        // route discovery (silences the generator warning) while keeping
+        // the conventional suffix vitest discovers.
+        routeFileIgnorePattern: "\\.(test|spec)\\.(ts|tsx|js|jsx)$",
+      },
       spa: {
         enabled: true,
         prerender: {

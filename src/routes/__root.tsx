@@ -1,5 +1,11 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+// Global styles: Tailwind theme + prose treatment (styles.css) and the
+// TanStack Highlight token colors (highlight.css). Imported here so Vite
+// bundles them into the client CSS Start injects into every prerendered
+// page — there is no `?url` link anymore.
+import "../styles.css";
+import "../highlight.css";
 import TanstackQueryProvider from "../integrations/tanstack-query/root-provider";
 import { Frame } from "../components/frame";
 import { CanvasBackground } from "../components/canvas-background";
