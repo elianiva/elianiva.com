@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Orb resume hook: fast, idempotent checks after activation and each wake (<10s budget).
+set -euo pipefail
+
+# Cloudflare credentials (Amp user secrets) are required for `alchemy dev` headless auth.
+missing=0
+for var in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+  if [ -z "${!var:-}" ]; then
+    echo "resume: $var is not set — alchemy dev cannot authenticate" >&2
+    missing=1
+  fi
+done
+
+# App secrets are optional: the site degrades to empty GitHub/music sections without them.
+for var in GH_TOKEN LASTFM_API_KEY; do
+  if [ -z "${!var:-}" ]; then
+    echo "resume: $var is not set — related sections will render empty (expected)" >&2
+  fi
+done
+
+exit "$missing"

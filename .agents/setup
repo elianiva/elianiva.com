@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Orb setup for elianiva.com — TanStack Start site deployed via Alchemy to Cloudflare.
+# Runs once on a fresh orb (and again on stale snapshots). Must stay fast, non-interactive, idempotent.
+set -euo pipefail
+
+step() { printf '\n==> %s\n' "$*"; }
+timed() { local start end; start=$(date +%s); "$@"; end=$(date +%s); printf '(took %ds)\n' "$((end - start))"; }
+
+# --- 1. System packages: typst (CV PDF build, pinned to CI version) ---
+step "system packages"
+if ! command -v typst >/dev/null 2>&1; then
+  TYPST_VERSION="0.15.1"
+  TMP_DIR="$(mktemp -d)"
+  trap 'rm -rf "$TMP_DIR"' EXIT
+  timed curl -fsSL -o "$TMP_DIR/typst.tar.xz" \
+    "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz"
+  tar -xf "$TMP_DIR/typst.tar.xz" -C "$TMP_DIR"
+  sudo install -m 0755 "$TMP_DIR/typst-x86_64-unknown-linux-musl/typst" /usr/local/bin/typst
+  rm -rf "$TMP_DIR"
+  trap - EXIT
+else
+  echo "typst already installed: $(typst --version)"
+fi
+
+# --- 2. JS dependencies (pnpm is preinstalled in orbs; pin matches packageManager) ---
+step "pnpm install"
+timed pnpm install --frozen-lockfile
+
+# --- 3. Generated content-collections output (gitignored; typecheck/lint need it) ---
+# `pnpm dev` / `pnpm build` generate this too, but lint and tsc need it present first.
+step "content-collections"
+if [ ! -d .content-collections/generated ]; then
+  timed pnpm gen:collections
+else
+  echo "content-collections output already present"
+fi
+
+# --- 4. Local env template (never clobber; read by alchemy --env-file default .env) ---
+step "env template"
+if [ ! -f .env ]; then
+  cat > .env <<'EOF'
+# Local development only. Real values live in Amp secrets (CLOUDFLARE_*) and
+# your own exports for GH_TOKEN / LASTFM_API_KEY (sections degrade to empty without them).
+GH_TOKEN=
+LASTFM_API_KEY=
+EOF
+  echo "wrote .env template"
+else
+  echo ".env already exists, kept"
+fi
+
+step "setup complete"
+command -v typst >/dev/null && typst --version
+pnpm alchemy --version 2>/dev/null | head -1 || true

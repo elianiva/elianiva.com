@@ -1,0 +1,17 @@
+services:
+  web:
+    # Alchemy runs the TanStack Start dev server (dev.port: 3000) with hot reload.
+    # GH_TOKEN / LASTFM_API_KEY are optional: without real values the GitHub/music
+    # sections degrade to empty data via their KvCache fallbacks.
+    # Note: alchemy.run.ts uses Config.Redacted with no default, and empty strings
+    # fail schema validation — so fallback to a non-empty placeholder, not "".
+    command: >-
+      GH_TOKEN="${GH_TOKEN:-x}" LASTFM_API_KEY="${LASTFM_API_KEY:-x}"
+      pnpm alchemy dev --no-input
+    # Matches dev.port: 3000 in alchemy.run.ts (strictPort: true).
+    port: 3000
+    health: /
+    portal:
+      url: /
+      title: elianiva.com
+      description: Local Alchemy dev server with hot reload.
