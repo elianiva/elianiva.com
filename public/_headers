@@ -7,9 +7,6 @@
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-/api/*
-  Cache-Control: no-store
-
 /*.xml
   Cache-Control: public, max-age=3600
 

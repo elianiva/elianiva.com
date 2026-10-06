@@ -1,4 +1,4 @@
-import sites from "~/data/sites";
+import sites from "../../../data/sites";
 import type { OgImageSpec } from "./og-image";
 
 const domainName = new URL(sites.siteUrl).hostname;

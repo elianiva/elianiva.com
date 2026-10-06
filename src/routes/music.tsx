@@ -1,11 +1,32 @@
+import { Suspense } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { RscSection } from "~/components/rsc-section";
 import { Heading } from "~/components/ui/heading";
 import { MusicTopListsSkeleton, MusicTracksSkeleton } from "~/components/ui/page-skeleton";
-import { getRecentTracksRsc, getTopListsRsc } from "~/features/music/lib/music";
-import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { getRecentTracks, getTopListsData } from "~/features/music/lib/music";
+import { MusicTopListsSection } from "~/features/music/components/music-top-lists-section";
+import { MusicTracksSection } from "~/features/music/components/music-tracks-section";
+import { seo, ogPageImageUrl } from "~/lib/seo";
 
 const LASTFM_PROFILE_URL = "https://www.last.fm/user/elianiva";
+
+function MusicTopLists() {
+  const { data } = useSuspenseQuery({
+    queryKey: ["music", "top-lists"],
+    queryFn: () => getTopListsData(),
+    staleTime: 1000 * 60 * 60,
+  });
+  return <MusicTopListsSection data={data} />;
+}
+
+function MusicRecentTracks() {
+  const { data } = useSuspenseQuery({
+    queryKey: ["music", "recent-tracks"],
+    queryFn: () => getRecentTracks(),
+    staleTime: 1000 * 60 * 2,
+  });
+  return <MusicTracksSection data={data} />;
+}
 
 function MusicRoute() {
   return (
@@ -26,18 +47,12 @@ function MusicRoute() {
             .
           </p>
         </header>
-        <RscSection
-          queryKey={["music", "top-lists"]}
-          queryFn={getTopListsRsc}
-          fallback={<MusicTopListsSkeleton />}
-          staleTime={1000 * 60 * 60}
-        />
-        <RscSection
-          queryKey={["music", "recent-tracks"]}
-          queryFn={getRecentTracksRsc}
-          fallback={<MusicTracksSkeleton />}
-          staleTime={1000 * 60 * 2}
-        />
+        <Suspense fallback={<MusicTopListsSkeleton />}>
+          <MusicTopLists />
+        </Suspense>
+        <Suspense fallback={<MusicTracksSkeleton />}>
+          <MusicRecentTracks />
+        </Suspense>
       </div>
     </div>
   );
@@ -48,7 +63,7 @@ export const Route = createFileRoute("/music")({
     seo({
       title: "Music",
       description: "Recently played tracks via Last.fm",
-      ogImage: defaultOgImageUrl("Music", "Recently played tracks via Last.fm"),
+      ogImage: ogPageImageUrl("music"),
       path: "/music",
     }),
   component: MusicRoute,

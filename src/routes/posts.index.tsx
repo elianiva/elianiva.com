@@ -1,16 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PostList } from "~/features/posts/components/post-list";
-import { getPosts } from "~/features/posts/lib/posts";
-import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { seo, ogPageImageUrl } from "~/lib/seo";
 
 export const Route = createFileRoute("/posts/")({
   component: PostList,
-  loader: () => getPosts({ data: {} }),
   head: () =>
     seo({
       title: "Posts",
       description: "All blog posts",
-      ogImage: defaultOgImageUrl("Posts", "All blog posts"),
+      ogImage: ogPageImageUrl("posts"),
       path: "/posts",
     }),
 });

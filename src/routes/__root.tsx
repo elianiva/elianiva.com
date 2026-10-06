@@ -1,19 +1,12 @@
-import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
-import { PropsWithChildren, lazy, Suspense } from "react";
+import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 import TanstackQueryProvider from "../integrations/tanstack-query/root-provider";
 import { Frame } from "../components/frame";
 import { CanvasBackground } from "../components/canvas-background";
 import { Footer } from "../components/footer";
 
-import appCss from "../styles.css?url";
-
-import type { QueryClient } from "@tanstack/react-query";
 import { NavigationStrip } from "~/components/navigation";
 import { TooltipProvider } from "~/components/ui/tooltip";
-
-interface MyRouterContext {
-  queryClient: QueryClient;
-}
 
 function NotFoundPage() {
   return (
@@ -52,7 +45,9 @@ const Devtools = lazy(async () => {
   };
 });
 
-export const Route = createRootRouteWithContext<MyRouterContext>()({
+export const Route = createRootRoute({
+  notFoundComponent: NotFoundPage,
+  component: RootLayout,
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -60,17 +55,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { name: "theme-color", content: "#fff5f0" },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "32x32" },
       { rel: "alternate", href: "/rss.xml", type: "application/rss+xml", title: "elianiva" },
       { rel: "preconnect", href: "https://avatars.githubusercontent.com" },
     ],
   }),
-  notFoundComponent: NotFoundPage,
-  shellComponent: RootDocument,
 });
 
-function RootDocument(props: PropsWithChildren<{}>) {
+function RootLayout() {
   return (
     <html lang="en" className="h-full">
       <head>
@@ -90,7 +82,9 @@ function RootDocument(props: PropsWithChildren<{}>) {
 
         <main id="main-content" role="main" className="relative z-0 flex-1 p-2 md:p-0">
           <TooltipProvider>
-            <TanstackQueryProvider>{props.children}</TanstackQueryProvider>
+            <TanstackQueryProvider>
+              <Outlet />
+            </TanstackQueryProvider>
           </TooltipProvider>
         </main>
 

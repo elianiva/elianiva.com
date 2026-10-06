@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { neighbours } from "~/data/neighbours";
 import { Heading } from "~/components/ui/heading";
-import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { seo, ogPageImageUrl } from "~/lib/seo";
 
 function NeighboursRoute() {
   return (
@@ -59,7 +59,7 @@ export const Route = createFileRoute("/neighbours")({
     seo({
       title: "Neighbours",
       description: "Cool people I know on the web, go check them out!",
-      ogImage: defaultOgImageUrl("Neighbours", "Cool people I know on the web"),
+      ogImage: ogPageImageUrl("neighbours"),
       path: "/neighbours",
     }),
 });

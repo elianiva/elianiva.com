@@ -7,16 +7,13 @@ import { OpenSourceSection } from "~/features/github/components/open-source-sect
 import { workExperiences } from "~/data/work-experience";
 import { GitHubActivitySection } from "~/features/github/components/github-activity-section";
 import { homeSeo } from "~/lib/seo";
-import { getPosts } from "~/features/posts/lib/posts";
 
 export const Route = createFileRoute("/")({
   component: Home,
-  loader: () => getPosts({ data: { limit: 6 } }),
   head: () => homeSeo(),
 });
 
 function Home() {
-  const posts = Route.useLoaderData();
   return (
     <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
       <HeroSection />
@@ -32,7 +29,7 @@ function Home() {
         />
       </div>
       <div className="relative with-box-underline">
-        <BlogSection initialPosts={posts} />
+        <BlogSection />
       </div>
       <div>
         <GitHubActivitySection />

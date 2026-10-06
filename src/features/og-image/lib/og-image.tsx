@@ -1,4 +1,3 @@
-import { fontFromUrl } from "takumi-js/helpers";
 import { z } from "zod";
 import { toOgContent } from "./og-content";
 import { OgCard } from "./parts";
@@ -25,23 +24,6 @@ export const ogImageSpecSchema = z.discriminatedUnion("type", [
     description: z.string().max(300),
   }),
 ]);
-
-/**
- * Brand fonts, pinned to a commit via jsDelivr (immutable, cacheable).
- *
- * Why not self-hosted /assets/fonts? The worker cannot subrequest its own
- * origin — edge returns HTTP 522 (verified in prod). External egress works.
- * Fonts change ~never; bump FONTS_REF when they do.
- */
-const FONTS_REF = "e8d6f52b57e60184a754d434a1f74f589d8a3190";
-const FONTS_BASE = `https://cdn.jsdelivr.net/gh/elianiva/elianiva.com@${FONTS_REF}/public/assets/fonts`;
-
-export function ogFonts() {
-  return [
-    fontFromUrl(`${FONTS_BASE}/google-sans.ttf`),
-    fontFromUrl(`${FONTS_BASE}/ibm-plex-mono.ttf`),
-  ];
-}
 
 export function OgImage({ spec }: { spec: OgImageSpec }) {
   const content = toOgContent(spec);

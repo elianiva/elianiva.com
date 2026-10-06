@@ -40,10 +40,24 @@ export interface ProjectSeoProps {
   image?: string;
 }
 
-export function defaultOgImageUrl(title: string, subtitle?: string) {
-  const params = new URLSearchParams({ type: "default", title });
-  if (subtitle) params.set("subtitle", subtitle);
-  return `${siteUrl}/api/og-image?${params.toString()}`;
+/**
+ * Static OG images, emitted by the `static-site` vite plugin into
+ * `assets/og/`. One card per post (`posts/<slug>.png`), one per project
+ * (`projects/<slug>.png`), and one fixed card per top-level page
+ * (`<page>.png`, see `OG_PAGES` in `scripts/vite-static-site.ts`).
+ */
+export function ogPageImageUrl(
+  page: "home" | "posts" | "projects" | "uses" | "neighbours" | "music",
+) {
+  return `${siteUrl}/assets/og/${page}.png`;
+}
+
+export function ogPostImageUrl(slug: string) {
+  return `${siteUrl}/assets/og/posts/${slug}.png`;
+}
+
+export function ogProjectImageUrl(slug: string) {
+  return `${siteUrl}/assets/og/projects/${slug}.png`;
 }
 
 function truncate(text: string, max: number) {
@@ -146,7 +160,7 @@ export function postSeo(props: PostSeoProps) {
       title: props.title,
       description: props.description,
       ogType: "article",
-      ogImage: `${siteUrl}/api/og-image?${new URLSearchParams({ type: "post", title: props.title, date: props.date, tags: props.tags.join(","), description: props.description }).toString()}`,
+      ogImage: ogPostImageUrl(props.slug),
       keywords: props.tags.join(", "),
       canonical: `${siteUrl}/posts/${props.slug}`,
       publishedTime: toIso(props.date),
@@ -176,7 +190,7 @@ export function projectSeo(props: ProjectSeoProps) {
       title: props.title,
       description: props.description,
       ogType: "website",
-      ogImage: defaultOgImageUrl(props.title, props.description),
+      ogImage: ogProjectImageUrl(props.slug),
       canonical: `${siteUrl}/projects/${props.slug}`,
       publishedTime: toIso(props.date),
     }),
@@ -221,7 +235,7 @@ export function homeSeo() {
       description:
         "Software engineer, building interfaces that don't annoy people. Writing about frontend, design engineering, and side projects.",
       ogTitle: sites.siteName,
-      ogImage: defaultOgImageUrl(profile.name, "software engineer · open source"),
+      ogImage: ogPageImageUrl("home"),
       path: "/",
     }),
     scripts: [

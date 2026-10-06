@@ -12,11 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MusicRouteImport } from './routes/music'
 import { Route as NeighboursRouteImport } from './routes/neighbours'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as UsesRouteImport } from './routes/uses'
-import { Route as ApiOgImageRouteImport } from './routes/api.og-image'
 import { Route as PostsIndexRouteImport } from './routes/posts.index'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -37,29 +33,9 @@ const NeighboursRoute = NeighboursRouteImport.update({
   path: '/neighbours',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RssDotxmlRoute = RssDotxmlRouteImport.update({
-  id: '/rss.xml',
-  path: '/rss.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const UsesRoute = UsesRouteImport.update({
   id: '/uses',
   path: '/uses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiOgImageRoute = ApiOgImageRouteImport.update({
-  id: '/api/og-image',
-  path: '/api/og-image',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostsIndexRoute = PostsIndexRouteImport.update({
@@ -87,11 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/rss.xml': typeof RssDotxmlRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uses': typeof UsesRoute
-  '/api/og-image': typeof ApiOgImageRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts/': typeof PostsIndexRoute
@@ -101,11 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/rss.xml': typeof RssDotxmlRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uses': typeof UsesRoute
-  '/api/og-image': typeof ApiOgImageRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts': typeof PostsIndexRoute
@@ -116,11 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/rss.xml': typeof RssDotxmlRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uses': typeof UsesRoute
-  '/api/og-image': typeof ApiOgImageRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts/': typeof PostsIndexRoute
@@ -132,11 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/music'
     | '/neighbours'
-    | '/robots.txt'
-    | '/rss.xml'
-    | '/sitemap.xml'
     | '/uses'
-    | '/api/og-image'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts/'
@@ -146,11 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/music'
     | '/neighbours'
-    | '/robots.txt'
-    | '/rss.xml'
-    | '/sitemap.xml'
     | '/uses'
-    | '/api/og-image'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts'
@@ -160,11 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/music'
     | '/neighbours'
-    | '/robots.txt'
-    | '/rss.xml'
-    | '/sitemap.xml'
     | '/uses'
-    | '/api/og-image'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts/'
@@ -175,11 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MusicRoute: typeof MusicRoute
   NeighboursRoute: typeof NeighboursRoute
-  RobotsDottxtRoute: typeof RobotsDottxtRoute
-  RssDotxmlRoute: typeof RssDotxmlRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UsesRoute: typeof UsesRoute
-  ApiOgImageRoute: typeof ApiOgImageRoute
   PostsSlugRoute: typeof PostsSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   PostsIndexRoute: typeof PostsIndexRoute
@@ -209,39 +157,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NeighboursRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rss.xml': {
-      id: '/rss.xml'
-      path: '/rss.xml'
-      fullPath: '/rss.xml'
-      preLoaderRoute: typeof RssDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/uses': {
       id: '/uses'
       path: '/uses'
       fullPath: '/uses'
       preLoaderRoute: typeof UsesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/og-image': {
-      id: '/api/og-image'
-      path: '/api/og-image'
-      fullPath: '/api/og-image'
-      preLoaderRoute: typeof ApiOgImageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/posts/': {
@@ -279,11 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MusicRoute: MusicRoute,
   NeighboursRoute: NeighboursRoute,
-  RobotsDottxtRoute: RobotsDottxtRoute,
-  RssDotxmlRoute: RssDotxmlRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   UsesRoute: UsesRoute,
-  ApiOgImageRoute: ApiOgImageRoute,
   PostsSlugRoute: PostsSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   PostsIndexRoute: PostsIndexRoute,

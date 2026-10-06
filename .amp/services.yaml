@@ -1,17 +1,14 @@
 services:
   web:
-    # Alchemy runs the TanStack Start dev server (dev.port: 3000) with hot reload.
-    # GH_TOKEN / LASTFM_API_KEY are optional: without real values the GitHub/music
-    # sections degrade to empty data via their KvCache fallbacks.
-    # Note: alchemy.run.ts uses Config.Redacted with no default, and empty strings
-    # fail schema validation — so fallback to a non-empty placeholder, not "".
+    # TanStack Start dev server (server.port: 3000 in vite.config.ts) with hot reload.
+    # VITE_GH_TOKEN / VITE_LASTFM_API_KEY are optional: without real values the
+    # GitHub/music sections degrade to empty data via their service fallbacks.
     command: >-
-      GH_TOKEN="${GH_TOKEN:-x}" LASTFM_API_KEY="${LASTFM_API_KEY:-x}"
-      pnpm alchemy dev --no-input
-    # Matches dev.port: 3000 in alchemy.run.ts (strictPort: true).
+      VITE_GH_TOKEN="${VITE_GH_TOKEN:-}" VITE_LASTFM_API_KEY="${VITE_LASTFM_API_KEY:-}"
+      pnpm dev
     port: 3000
     health: /
     portal:
       url: /
       title: elianiva.com
-      description: Local Alchemy dev server with hot reload.
+      description: Local TanStack Start dev server with hot reload.

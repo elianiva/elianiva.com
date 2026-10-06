@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getProjectBySlug } from "~/features/projects/lib/projects";
 import { projectSeo } from "~/lib/seo";
 import { ProjectDetailSkeleton } from "~/components/ui/page-skeleton";
@@ -8,17 +8,23 @@ import { Heading } from "~/components/ui/heading";
 
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
+  // Same crawl guarantee as the post page: the index only links real
+  // projects, so prerender never hits this for a bogus slug.
   pendingComponent: ProjectDetailSkeleton,
-  loader: ({ params: { slug } }) => getProjectBySlug({ data: slug }),
+  loader: ({ params: { slug } }) => {
+    const detail = getProjectBySlug(slug);
+    if (!detail) throw notFound();
+    return detail;
+  },
   head: ({ loaderData }) => {
     if (!loaderData) return {};
     return projectSeo({
-      title: loaderData.title,
-      description: loaderData.description,
-      date: loaderData.date,
-      slug: loaderData.slug,
-      stack: loaderData.stack,
-      image: loaderData.image,
+      title: loaderData.project.title,
+      description: loaderData.project.description,
+      date: loaderData.project.date,
+      slug: loaderData.project.slug,
+      stack: loaderData.project.stack,
+      image: loaderData.project.image,
     });
   },
   notFoundComponent: ProjectNotFoundPage,
@@ -55,7 +61,9 @@ function ProjectNotFoundPage() {
 }
 
 function ProjectDetailPage() {
-  const project = Route.useLoaderData();
+  const detail = Route.useLoaderData();
+  const { project } = detail;
+  const Mdx = detail.mdx;
 
   return (
     <>
@@ -106,7 +114,9 @@ function ProjectDetailPage() {
                   )}
                 </div>
               </div>
-              <div className="prose prose-pink max-w-full">{project.mdx}</div>
+              <div className="prose prose-pink max-w-full">
+                <Mdx />
+              </div>
             </div>
           </div>
 
@@ -144,33 +154,33 @@ function ProjectDetailPage() {
 
         <nav className="mt-12 pt-6 border-t border-pink-200/50">
           <div className="grid grid-cols-2 gap-4">
-            {project.prevProject ? (
+            {detail.prevProject ? (
               <Link
                 to="/projects/$slug"
-                params={{ slug: project.prevProject.slug }}
+                params={{ slug: detail.prevProject.slug }}
                 className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Previous
                 </span>
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {project.prevProject.title}
+                  {detail.prevProject.title}
                 </span>
               </Link>
             ) : (
               <div />
             )}
-            {project.nextProject ? (
+            {detail.nextProject ? (
               <Link
                 to="/projects/$slug"
-                params={{ slug: project.nextProject.slug }}
+                params={{ slug: detail.nextProject.slug }}
                 className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Next
                 </span>
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {project.nextProject.title}
+                  {detail.nextProject.title}
                 </span>
               </Link>
             ) : (

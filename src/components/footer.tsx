@@ -35,7 +35,7 @@ export function Footer() {
         <div className="w-24 h-px bg-pink-200/50"></div>
 
         <p className="text-[11px] font-mono text-pink-950/40 uppercase tracking-[0.15em]">
-          tanstack start · react · tailwind
+          tanstack router · react · tailwind
         </p>
         <BuildDate />
       </div>

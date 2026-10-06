@@ -13,6 +13,10 @@ catalog:
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
+  # @tailwindcss/node@4.3.3 pins lightningcss 1.32.0 while the rest of the
+  # toolchain (vite-plus-core, @tanstack/start-plugin-core) already uses
+  # 1.33.0. Pin to the newer one so a single copy is installed and bundled.
+  lightningcss: "1.33.0"
 peerDependencyRules:
   allowAny:
     - vite

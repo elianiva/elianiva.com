@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProjectsPage } from "~/features/projects/components/projects-page";
-import { seo, defaultOgImageUrl } from "~/lib/seo";
+import { seo, ogPageImageUrl } from "~/lib/seo";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/projects/")({
     seo({
       title: "Projects",
       description: "Things I've built",
-      ogImage: defaultOgImageUrl("Projects", "Things I've built"),
+      ogImage: ogPageImageUrl("projects"),
       path: "/projects",
     }),
 });

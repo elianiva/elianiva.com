@@ -1,24 +1,33 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getPostBySlug } from "~/features/posts/lib/posts";
 import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
 import { postSeo } from "~/lib/seo";
 import { PostDetailSkeleton } from "~/components/ui/page-skeleton";
+import { Heading } from "~/components/ui/heading";
 import PencilIcon from "~icons/ph/note-pencil";
 
 export const Route = createFileRoute("/posts/$slug")({
   component: PostDetailPage,
+  // The crawler only discovers links the index page renders, and the index
+  // only links real posts — so prerender never hits this for a bogus slug
+  // (a thrown notFound() would otherwise silently drop the page from the
+  // output with no file and no error, even under failOnError).
   pendingComponent: PostDetailSkeleton,
-  loader: ({ params: { slug } }) => getPostBySlug({ data: slug }),
+  loader: ({ params: { slug } }) => {
+    const detail = getPostBySlug(slug);
+    if (!detail) throw notFound();
+    return detail;
+  },
   head: ({ loaderData }) => {
     if (!loaderData)
       return postSeo({ title: "Post", description: "", date: "", tags: [], slug: "" });
     return postSeo({
-      title: loaderData.title,
-      description: loaderData.description,
-      date: loaderData.date,
-      tags: loaderData.tags,
-      slug: loaderData.slug,
+      title: loaderData.post.title,
+      description: loaderData.post.description,
+      date: loaderData.post.date,
+      tags: loaderData.post.tags,
+      slug: loaderData.post.slug,
     });
   },
   notFoundComponent: PostNotFoundPage,
@@ -55,7 +64,9 @@ function PostNotFoundPage() {
 }
 
 function PostDetailPage() {
-  const post = Route.useLoaderData();
+  const detail = Route.useLoaderData();
+  const { post } = detail;
+  const Mdx = detail.mdx;
 
   return (
     <>
@@ -83,7 +94,7 @@ function PostDetailPage() {
                 year: "numeric",
               })}
             </span>{" "}
-            · {post.readingTime} min read · {post.wordCount.toLocaleString("en-GB")} words ·{" "}
+            · {detail.readingTime} min read · {detail.wordCount.toLocaleString("en-GB")} words ·{" "}
             <a
               className="inline-flex items-center gap-1 text-pink-950/60 hover:text-pink-400 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2 rounded"
               href={`https://github.com/elianiva/elianiva.com/blob/master/src/content/posts/${post.slug}.mdx`}
@@ -105,7 +116,15 @@ function PostDetailPage() {
         </header>
         <article className="font-body mx-auto max-w-[64ch] prose prose-pink">
           <CodeCopy />
-          {post.mdx}
+          <Mdx
+            components={{
+              h2: (props) => <Heading level={2} {...props} />,
+              h3: (props) => <Heading level={3} {...props} />,
+              h4: (props) => <Heading level={4} {...props} />,
+              h5: (props) => <Heading level={5} {...props} />,
+              h6: (props) => <Heading level={6} {...props} />,
+            }}
+          />
 
           <div>
             <script
@@ -132,33 +151,33 @@ function PostDetailPage() {
 
         <nav className="mt-12 border-t border-pink-200/50 max-sm:-mx-2">
           <div className="grid md:grid-cols-2">
-            {post.prevPost ? (
+            {detail.prevPost ? (
               <Link
                 to="/posts/$slug"
-                params={{ slug: post.prevPost.slug }}
+                params={{ slug: detail.prevPost.slug }}
                 className="max-sm:border-b md:border-r group flex flex-col p-4 hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Previous
                 </span>
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {post.prevPost.title}
+                  {detail.prevPost.title}
                 </span>
               </Link>
             ) : (
               <div />
             )}
-            {post.nextPost ? (
+            {detail.nextPost ? (
               <Link
                 to="/posts/$slug"
-                params={{ slug: post.nextPost.slug }}
+                params={{ slug: detail.nextPost.slug }}
                 className="max-sm:border-b group flex flex-col items-end text-right p-4 hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
               >
                 <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
                   Next
                 </span>
                 <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {post.nextPost.title}
+                  {detail.nextPost.title}
                 </span>
               </Link>
             ) : (

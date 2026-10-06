@@ -186,57 +186,16 @@
   }
 }
 
-/* Shiki / rehype-pretty-code overrides */
-.prose
-  :where(figure[data-rehype-pretty-code-figure]):not(
-    :where([class~="not-prose"], [class~="not-prose"] *)
-  ) {
-  @apply my-6;
+/* TanStack Highlight code blocks (see src/lib/highlight.ts).
+ * Plain class selectors (not `:where`) on purpose: the typography plugin
+ * paints `pre` white with `!important`, so these need the extra specificity
+ * to win regardless of source order. */
+.prose pre.th-code:not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply my-6 bg-[#faf4ed]! border border-[#f2e9e1] border-dashed rounded-none p-4 font-mono text-sm leading-relaxed overflow-x-auto;
 }
 
-.prose
-  :where(figure[data-rehype-pretty-code-figure] pre):not(
-    :where([class~="not-prose"], [class~="not-prose"] *)
-  ) {
-  @apply bg-[#faf4ed]! border border-[#f2e9e1] border-dashed rounded-none;
-}
-
-.prose
-  :where(figure[data-rehype-pretty-code-figure] code):not(
-    :where([class~="not-prose"], [class~="not-prose"] *)
-  ) {
-  @apply bg-transparent! text-[#575279]!;
-}
-
-.prose
-  :where(figure[data-rehype-pretty-code-figure] code span):not(
-    :where([class~="not-prose"], [class~="not-prose"] *)
-  ) {
-  @apply text-[#575279];
-}
-
-/* Line highlighting */
-.prose
-  :where(figure[data-rehype-pretty-code-figure] .line--highlighted):not(
-    :where([class~="not-prose"], [class~="not-prose"] *)
-  ) {
-  @apply bg-[#f2e9e1]/60;
-}
-
-/* Word/char highlighting */
-.prose
-  :where(figure[data-rehype-pretty-code-figure] .word--highlighted):not(
-    :where([class~="not-prose"], [class~="not-prose"] *)
-  ) {
-  @apply bg-[#f2e9e1] rounded-sm px-1;
-}
-
-/* Code block title/caption */
-.prose
-  :where(figure[data-rehype-pretty-code-figure] [data-rehype-pretty-code-title]):not(
-    :where([class~="not-prose"], [class~="not-prose"] *)
-  ) {
-  @apply text-xs font-mono text-pink-700/70 mb-1 block;
+.prose pre.th-code code:not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  @apply bg-transparent! text-[#575279]! p-0;
 }
 
 .with-box-underline {

@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { useLoaderData, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
+import { getPosts } from "~/features/posts/lib/posts";
 import { PostCard } from "./post-card";
 import { Heading } from "~/components/ui/heading";
 import XIcon from "~icons/ph/x";
@@ -17,7 +18,7 @@ function searchPosts(posts: PostSummary[], query: string): PostSummary[] {
 }
 
 export function PostList() {
-  const posts = useLoaderData({ from: "/posts/" }) as PostSummary[];
+  const posts = useMemo(() => getPosts(), []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
