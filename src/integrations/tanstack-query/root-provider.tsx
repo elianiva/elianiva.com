@@ -1,5 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { QueryClient } from "@tanstack/react-query";
 
 export function createQueryClient() {
   return new QueryClient({
@@ -12,13 +11,15 @@ export function createQueryClient() {
   });
 }
 
+/**
+ * Router context factory. The router owns the single QueryClient and the
+ * root route provides that same instance via QueryClientProvider, so the
+ * SSR integration dehydrates/hydrates the exact cache the components read.
+ * Do not create a second client in a separate provider — that silently
+ * disconnects hydration (and the devtools panel) from the router's cache.
+ */
 export function getContext() {
   return {
     queryClient: createQueryClient(),
   };
-}
-
-export default function TanstackQueryProvider({ children }: { children: ReactNode }) {
-  const [client] = useState(() => createQueryClient());
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

@@ -1,12 +1,17 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 // Global styles: Tailwind theme + prose treatment (styles.css) and the
 // TanStack Highlight token colors (highlight.css). Imported here so Vite
 // bundles them into the client CSS Start injects into every prerendered
 // page — there is no `?url` link anymore.
 import "../styles.css";
 import "../highlight.css";
-import TanstackQueryProvider from "../integrations/tanstack-query/root-provider";
 import { Frame } from "../components/frame";
 import { CanvasBackground } from "../components/canvas-background";
 import { Footer } from "../components/footer";
@@ -51,7 +56,7 @@ const Devtools = lazy(async () => {
   };
 });
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   notFoundComponent: NotFoundPage,
   component: RootLayout,
   head: () => ({
@@ -69,6 +74,7 @@ export const Route = createRootRoute({
 });
 
 function RootLayout() {
+  const { queryClient } = Route.useRouteContext();
   return (
     <html lang="en" className="h-full">
       <head>
@@ -86,21 +92,28 @@ function RootLayout() {
         <Frame />
         <NavigationStrip />
 
-        <main id="main-content" role="main" className="relative z-0 flex-1 p-2 md:p-0">
-          <TooltipProvider>
-            <TanstackQueryProvider>
+        {/* Single shared client from the router context: the SSR
+            integration hydrates this exact cache — a separately created
+            client here would read empty while hydration lands elsewhere.
+            Everything that touches queries (page content and the query
+            devtools panel) lives inside this provider so `useQueryClient`
+            never resolves to null. */}
+        <QueryClientProvider client={queryClient}>
+          <main id="main-content" role="main" className="relative z-0 flex-1 p-2 md:p-0">
+            <TooltipProvider>
               <Outlet />
-            </TanstackQueryProvider>
-          </TooltipProvider>
-        </main>
+            </TooltipProvider>
+          </main>
 
-        <Footer />
+          <Footer />
 
-        {import.meta.env.DEV ? (
-          <Suspense fallback={null}>
-            <Devtools />
-          </Suspense>
-        ) : null}
+          {import.meta.env.DEV ? (
+            <Suspense fallback={null}>
+              <Devtools />
+            </Suspense>
+          ) : null}
+        </QueryClientProvider>
+
         <Scripts />
       </body>
     </html>

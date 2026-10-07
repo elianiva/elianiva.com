@@ -10,6 +10,13 @@ import { homeSeo } from "~/lib/seo";
 
 export const Route = createFileRoute("/")({
   component: Home,
+  // The GitHub sections below read secret-backed server functions that have
+  // no token at build time and answer with empty fallbacks. Disabling SSR for
+  // this route keeps that emptiness out of the prerendered HTML — the
+  // sections render their Suspense skeletons in the shell, then fetch live
+  // data in the browser after hydration (where the router's
+  // `shouldDehydrateQuery` filter also skips them).
+  ssr: false,
   head: () => homeSeo(),
 });
 

@@ -59,6 +59,10 @@ function MusicRoute() {
 }
 
 export const Route = createFileRoute("/music")({
+  // Same reason as the home route: Last.fm reads a secret-backed server
+  // function with no key at build time, so prerendering would bake in the
+  // empty fallback. Skip SSR and fetch live in the browser instead.
+  ssr: false,
   head: () =>
     seo({
       title: "Music",

@@ -25,7 +25,10 @@ import { Config } from "effect";
  */
 class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
   compatibility: {
-    flags: ["nodejs_compat"],
+    // `nodejs_compat_populate_process_env` exposes Worker env (GH_TOKEN,
+    // LASTFM_API_KEY) through `process.env` inside server functions — without
+    // it the handlers read empty and every section degrades to its fallback.
+    flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
   },
   assets: {
     runWorkerFirst: ["/_serverFn/*"],
