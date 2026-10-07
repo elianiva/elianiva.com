@@ -1,7 +1,6 @@
-import { Context, Duration, Effect, Layer, Redacted } from "effect";
+import { Context, Duration, Effect, Layer } from "effect";
 import { HttpClient, HttpClientResponse } from "effect/http";
 import { KvCache } from "~/lib/cache";
-import { LASTFM_API_KEY } from "~/lib/env";
 import type {
   LastFmTrack,
   MusicData,
@@ -92,238 +91,243 @@ export class LastFM extends Context.Service<
     readonly getTopListsData: () => Effect.Effect<TopListsData>;
   }
 >()("LastFM") {
-  static readonly layer = Layer.effect(
-    LastFM,
-    Effect.gen(function* () {
-      const apiKey = Redacted.value(yield* LASTFM_API_KEY);
+  /**
+   * Builds the service from an explicit API key. Server functions pass
+   * `process.env.LASTFM_API_KEY` read per request; an empty key degrades
+   * every read to empty data, decided once here.
+   */
+  static layerFromToken(apiKey: string) {
+    return Layer.effect(
+      LastFM,
+      Effect.gen(function* () {
+        // No credentials → every read degrades to empty data, decided once here.
+        if (!apiKey) {
+          return {
+            getRecentTracks: () => Effect.succeed(EMPTY_TRACKS),
+            getProfileInfo: () => Effect.succeed(null),
+            getTopArtists: () => Effect.succeed(EMPTY_ARTISTS),
+            getTopAlbums: () => Effect.succeed(EMPTY_ALBUMS),
+            getTopTracks: () => Effect.succeed(EMPTY_TOP_TRACKS),
+            getTopListsData: () => Effect.succeed(EMPTY_TOP_LISTS),
+          };
+        }
 
-      // No credentials → every read degrades to empty data, decided once here.
-      if (!apiKey) {
+        const client = yield* HttpClient.HttpClient;
+        const cache = yield* KvCache;
+
+        const apiUrl = (method: string, extra: Record<string, string | number> = {}) =>
+          `${API_BASE}?method=${method}&user=${LASTFM_USER}&api_key=${apiKey}&format=json&` +
+          new URLSearchParams(
+            Object.entries(extra).map(([k, v]) => [k, String(v)] as [string, string]),
+          ).toString();
+
+        const fetchJson = Effect.fn("LastFM.fetchJson")(function* <R>(url: string) {
+          const resp = yield* client.get(url, {
+            headers: { "User-Agent": "elianiva.com" },
+          });
+          yield* HttpClientResponse.filterStatusOk(resp);
+          return yield* resp.json as Effect.Effect<R & { error?: number; message?: string }>;
+        });
+
+        const getRecentTracks = Effect.fn("LastFM.getRecentTracks")(function* () {
+          return yield* cache.getOrElse({
+            key: "music:tracks",
+            ttl: Duration.minutes(2),
+            fallback: EMPTY_TRACKS,
+            load: Effect.gen(function* () {
+              const data = yield* fetchJson<LastFmResp>(
+                apiUrl("user.getrecenttracks", { limit: 100, extended: 1 }),
+              );
+              if (data.error) return EMPTY_TRACKS;
+              const raw = data.recenttracks?.track ?? [];
+              const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
+                const normalized = normalizeTrack(t);
+                if (normalized) acc.push(normalized);
+                return acc;
+              }, []);
+              const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length);
+              return { tracks, total };
+            }),
+          });
+        });
+
+        const getProfileInfo = Effect.fn("LastFM.getProfileInfo")(function* () {
+          return yield* cache.getOrElse({
+            key: "music:profile",
+            ttl: Duration.hours(1),
+            fallback: null,
+            load: Effect.gen(function* () {
+              const data = yield* fetchJson<{
+                user?: {
+                  playcount: string;
+                  registered: { unixtime: string; "#text": number };
+                  country: string;
+                  realname: string;
+                  image: Array<{ "#text": string; size: string }>;
+                };
+              }>(apiUrl("user.getinfo"));
+              if (data.error || !data.user) return null;
+              const u = data.user;
+              return {
+                playcount: Number(u.playcount),
+                registered: new Date(Number(u.registered.unixtime) * 1000).toISOString(),
+                country: u.country,
+                realname: u.realname,
+                image: pickImage(u.image),
+              };
+            }),
+          });
+        });
+
+        const getTopArtists = Effect.fn("LastFM.getTopArtists")(function* (
+          period: string,
+          limit: number,
+        ) {
+          return yield* cache.getOrElse({
+            key: `music:top-artists:${period}:${limit}`,
+            ttl: Duration.hours(1),
+            fallback: EMPTY_ARTISTS,
+            load: Effect.gen(function* () {
+              const data = yield* fetchJson<{
+                topartists?: {
+                  artist?: Array<{
+                    name: string;
+                    playcount: string;
+                    url: string;
+                    image: Array<{ "#text": string; size: string }>;
+                  }>;
+                  "@attr"?: { total?: string };
+                };
+              }>(apiUrl("user.gettopartists", { period, limit }));
+              if (data.error || !data.topartists) return EMPTY_ARTISTS;
+              const total = Number(data.topartists["@attr"]?.total ?? 0);
+              const artists: TopArtistItem[] = (data.topartists.artist ?? []).map((a) => ({
+                name: a.name,
+                playcount: Number(a.playcount),
+                url: a.url,
+                image: pickImage(a.image),
+              }));
+              return { artists, total };
+            }),
+          });
+        });
+
+        const getTopAlbums = Effect.fn("LastFM.getTopAlbums")(function* (
+          period: string,
+          limit: number,
+        ) {
+          return yield* cache.getOrElse({
+            key: `music:top-albums:${period}:${limit}`,
+            ttl: Duration.hours(1),
+            fallback: EMPTY_ALBUMS,
+            load: Effect.gen(function* () {
+              const data = yield* fetchJson<{
+                topalbums?: {
+                  album?: Array<{
+                    name: string;
+                    artist: { name: string; url: string };
+                    playcount: string;
+                    url: string;
+                    image: Array<{ "#text": string; size: string }>;
+                  }>;
+                  "@attr"?: { total?: string };
+                };
+              }>(apiUrl("user.gettopalbums", { period, limit }));
+              if (data.error || !data.topalbums) return EMPTY_ALBUMS;
+              const total = Number(data.topalbums["@attr"]?.total ?? 0);
+              const albums: TopAlbumItem[] = (data.topalbums.album ?? []).map((a) => ({
+                name: a.name,
+                artist: a.artist.name,
+                playcount: Number(a.playcount),
+                url: a.url,
+                image: pickImage(a.image),
+              }));
+              return { albums, total };
+            }),
+          });
+        });
+
+        const getTopTracks = Effect.fn("LastFM.getTopTracks")(function* (
+          period: string,
+          limit: number,
+        ) {
+          return yield* cache.getOrElse({
+            key: `music:top-tracks:${period}:${limit}`,
+            ttl: Duration.hours(1),
+            fallback: EMPTY_TOP_TRACKS,
+            load: Effect.gen(function* () {
+              const data = yield* fetchJson<{
+                toptracks?: {
+                  track?: Array<{
+                    name: string;
+                    artist: { name: string; url: string };
+                    playcount: string;
+                    url: string;
+                    image: Array<{ "#text": string; size: string }>;
+                  }>;
+                  "@attr"?: { total?: string };
+                };
+              }>(apiUrl("user.gettoptracks", { period, limit }));
+              if (data.error || !data.toptracks) return EMPTY_TOP_TRACKS;
+              const total = Number(data.toptracks["@attr"]?.total ?? 0);
+              const tracks: TopTrackItem[] = (data.toptracks.track ?? []).map((t) => ({
+                name: t.name,
+                artist: t.artist.name,
+                playcount: Number(t.playcount),
+                url: t.url,
+                image: pickImage(t.image),
+              }));
+              return { tracks, total };
+            }),
+          });
+        });
+
+        const getTopListsData = Effect.fn("LastFM.getTopListsData")(function* () {
+          const [
+            profile,
+            topArtistsAll,
+            topAlbumsAll,
+            topTracksAll,
+            topArtistsYear,
+            topAlbumsYear,
+            topTracksYear,
+          ] = yield* Effect.all(
+            [
+              getProfileInfo(),
+              getTopArtists("overall", 5),
+              getTopAlbums("overall", 5),
+              getTopTracks("overall", 5),
+              getTopArtists("12month", 5),
+              getTopAlbums("12month", 5),
+              getTopTracks("12month", 5),
+            ],
+            { concurrency: "unbounded" },
+          );
+
+          return {
+            stats: {
+              uniqueArtists: topArtistsAll.total,
+              uniqueAlbums: topAlbumsAll.total,
+              totalTracks: profile?.playcount ?? 0,
+            },
+            topArtists: topArtistsAll.artists,
+            topAlbums: topAlbumsAll.albums,
+            topTracks: topTracksAll.tracks,
+            topArtistsYear: topArtistsYear.artists,
+            topAlbumsYear: topAlbumsYear.albums,
+            topTracksYear: topTracksYear.tracks,
+          } satisfies TopListsData;
+        });
+
         return {
-          getRecentTracks: () => Effect.succeed(EMPTY_TRACKS),
-          getProfileInfo: () => Effect.succeed(null),
-          getTopArtists: () => Effect.succeed(EMPTY_ARTISTS),
-          getTopAlbums: () => Effect.succeed(EMPTY_ALBUMS),
-          getTopTracks: () => Effect.succeed(EMPTY_TOP_TRACKS),
-          getTopListsData: () => Effect.succeed(EMPTY_TOP_LISTS),
+          getRecentTracks,
+          getProfileInfo,
+          getTopArtists,
+          getTopAlbums,
+          getTopTracks,
+          getTopListsData,
         };
-      }
-
-      const client = yield* HttpClient.HttpClient;
-      const cache = yield* KvCache;
-
-      const apiUrl = (method: string, extra: Record<string, string | number> = {}) =>
-        `${API_BASE}?method=${method}&user=${LASTFM_USER}&api_key=${apiKey}&format=json&` +
-        new URLSearchParams(
-          Object.entries(extra).map(([k, v]) => [k, String(v)] as [string, string]),
-        ).toString();
-
-      const fetchJson = Effect.fn("LastFM.fetchJson")(function* <R>(url: string) {
-        const resp = yield* client.get(url, {
-          headers: { "User-Agent": "elianiva.com" },
-        });
-        yield* HttpClientResponse.filterStatusOk(resp);
-        return yield* resp.json as Effect.Effect<R & { error?: number; message?: string }>;
-      });
-
-      const getRecentTracks = Effect.fn("LastFM.getRecentTracks")(function* () {
-        return yield* cache.getOrElse({
-          key: "music:tracks",
-          ttl: Duration.minutes(2),
-          fallback: EMPTY_TRACKS,
-          load: Effect.gen(function* () {
-            const data = yield* fetchJson<LastFmResp>(
-              apiUrl("user.getrecenttracks", { limit: 100, extended: 1 }),
-            );
-            if (data.error) return EMPTY_TRACKS;
-            const raw = data.recenttracks?.track ?? [];
-            const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
-              const normalized = normalizeTrack(t);
-              if (normalized) acc.push(normalized);
-              return acc;
-            }, []);
-            const total = Number(data.recenttracks?.["@attr"]?.total ?? tracks.length);
-            return { tracks, total };
-          }),
-        });
-      });
-
-      const getProfileInfo = Effect.fn("LastFM.getProfileInfo")(function* () {
-        return yield* cache.getOrElse({
-          key: "music:profile",
-          ttl: Duration.hours(1),
-          fallback: null,
-          load: Effect.gen(function* () {
-            const data = yield* fetchJson<{
-              user?: {
-                playcount: string;
-                registered: { unixtime: string; "#text": number };
-                country: string;
-                realname: string;
-                image: Array<{ "#text": string; size: string }>;
-              };
-            }>(apiUrl("user.getinfo"));
-            if (data.error || !data.user) return null;
-            const u = data.user;
-            return {
-              playcount: Number(u.playcount),
-              registered: new Date(Number(u.registered.unixtime) * 1000).toISOString(),
-              country: u.country,
-              realname: u.realname,
-              image: pickImage(u.image),
-            };
-          }),
-        });
-      });
-
-      const getTopArtists = Effect.fn("LastFM.getTopArtists")(function* (
-        period: string,
-        limit: number,
-      ) {
-        return yield* cache.getOrElse({
-          key: `music:top-artists:${period}:${limit}`,
-          ttl: Duration.hours(1),
-          fallback: EMPTY_ARTISTS,
-          load: Effect.gen(function* () {
-            const data = yield* fetchJson<{
-              topartists?: {
-                artist?: Array<{
-                  name: string;
-                  playcount: string;
-                  url: string;
-                  image: Array<{ "#text": string; size: string }>;
-                }>;
-                "@attr"?: { total?: string };
-              };
-            }>(apiUrl("user.gettopartists", { period, limit }));
-            if (data.error || !data.topartists) return EMPTY_ARTISTS;
-            const total = Number(data.topartists["@attr"]?.total ?? 0);
-            const artists: TopArtistItem[] = (data.topartists.artist ?? []).map((a) => ({
-              name: a.name,
-              playcount: Number(a.playcount),
-              url: a.url,
-              image: pickImage(a.image),
-            }));
-            return { artists, total };
-          }),
-        });
-      });
-
-      const getTopAlbums = Effect.fn("LastFM.getTopAlbums")(function* (
-        period: string,
-        limit: number,
-      ) {
-        return yield* cache.getOrElse({
-          key: `music:top-albums:${period}:${limit}`,
-          ttl: Duration.hours(1),
-          fallback: EMPTY_ALBUMS,
-          load: Effect.gen(function* () {
-            const data = yield* fetchJson<{
-              topalbums?: {
-                album?: Array<{
-                  name: string;
-                  artist: { name: string; url: string };
-                  playcount: string;
-                  url: string;
-                  image: Array<{ "#text": string; size: string }>;
-                }>;
-                "@attr"?: { total?: string };
-              };
-            }>(apiUrl("user.gettopalbums", { period, limit }));
-            if (data.error || !data.topalbums) return EMPTY_ALBUMS;
-            const total = Number(data.topalbums["@attr"]?.total ?? 0);
-            const albums: TopAlbumItem[] = (data.topalbums.album ?? []).map((a) => ({
-              name: a.name,
-              artist: a.artist.name,
-              playcount: Number(a.playcount),
-              url: a.url,
-              image: pickImage(a.image),
-            }));
-            return { albums, total };
-          }),
-        });
-      });
-
-      const getTopTracks = Effect.fn("LastFM.getTopTracks")(function* (
-        period: string,
-        limit: number,
-      ) {
-        return yield* cache.getOrElse({
-          key: `music:top-tracks:${period}:${limit}`,
-          ttl: Duration.hours(1),
-          fallback: EMPTY_TOP_TRACKS,
-          load: Effect.gen(function* () {
-            const data = yield* fetchJson<{
-              toptracks?: {
-                track?: Array<{
-                  name: string;
-                  artist: { name: string; url: string };
-                  playcount: string;
-                  url: string;
-                  image: Array<{ "#text": string; size: string }>;
-                }>;
-                "@attr"?: { total?: string };
-              };
-            }>(apiUrl("user.gettoptracks", { period, limit }));
-            if (data.error || !data.toptracks) return EMPTY_TOP_TRACKS;
-            const total = Number(data.toptracks["@attr"]?.total ?? 0);
-            const tracks: TopTrackItem[] = (data.toptracks.track ?? []).map((t) => ({
-              name: t.name,
-              artist: t.artist.name,
-              playcount: Number(t.playcount),
-              url: t.url,
-              image: pickImage(t.image),
-            }));
-            return { tracks, total };
-          }),
-        });
-      });
-
-      const getTopListsData = Effect.fn("LastFM.getTopListsData")(function* () {
-        const [
-          profile,
-          topArtistsAll,
-          topAlbumsAll,
-          topTracksAll,
-          topArtistsYear,
-          topAlbumsYear,
-          topTracksYear,
-        ] = yield* Effect.all(
-          [
-            getProfileInfo(),
-            getTopArtists("overall", 5),
-            getTopAlbums("overall", 5),
-            getTopTracks("overall", 5),
-            getTopArtists("12month", 5),
-            getTopAlbums("12month", 5),
-            getTopTracks("12month", 5),
-          ],
-          { concurrency: "unbounded" },
-        );
-
-        return {
-          stats: {
-            uniqueArtists: topArtistsAll.total,
-            uniqueAlbums: topAlbumsAll.total,
-            totalTracks: profile?.playcount ?? 0,
-          },
-          topArtists: topArtistsAll.artists,
-          topAlbums: topAlbumsAll.albums,
-          topTracks: topTracksAll.tracks,
-          topArtistsYear: topArtistsYear.artists,
-          topAlbumsYear: topAlbumsYear.albums,
-          topTracksYear: topTracksYear.tracks,
-        } satisfies TopListsData;
-      });
-
-      return {
-        getRecentTracks,
-        getProfileInfo,
-        getTopArtists,
-        getTopAlbums,
-        getTopTracks,
-        getTopListsData,
-      };
-    }),
-  );
+      }),
+    );
+  }
 }

@@ -1,7 +1,6 @@
-import { Context, Duration, Effect, Layer, Redacted } from "effect";
+import { Context, Duration, Effect, Layer } from "effect";
 import { Octokit } from "octokit";
 import { KvCache } from "~/lib/cache";
-import { GH_TOKEN } from "~/lib/env";
 import type {
   GitHubPullRequest,
   GroupedPRs,
@@ -253,44 +252,49 @@ interface GithubServiceShape {
 }
 
 export class GitHubService extends Context.Service<GitHubService, GithubServiceShape>()("GitHub") {
-  static readonly layer = Layer.effect(
-    GitHubService,
-    Effect.gen(function* () {
-      const token = Redacted.value(yield* GH_TOKEN);
+  /**
+   * Builds the service from an explicit token. Server functions pass
+   * `process.env.GH_TOKEN` read per request; an empty token degrades every
+   * read to empty data, decided once here.
+   */
+  static layerFromToken(token: string) {
+    return Layer.effect(
+      GitHubService,
+      Effect.gen(function* () {
+        // No credentials → every read degrades to empty data, decided once here.
+        if (!token) {
+          return {
+            getPRs: () => Effect.succeed(EMPTY_PRS),
+            getContributions: () => Effect.succeed(null),
+          };
+        }
 
-      // No credentials → every read degrades to empty data, decided once here.
-      if (!token) {
-        return {
-          getPRs: () => Effect.succeed(EMPTY_PRS),
-          getContributions: () => Effect.succeed(null),
-        };
-      }
+        const cache = yield* KvCache;
+        const octokit = new Octokit({ auth: token });
 
-      const cache = yield* KvCache;
-      const octokit = new Octokit({ auth: token });
-
-      const getPRs = Effect.fn("GitHub.getPRs")(function* () {
-        return yield* cache.getOrElse({
-          key: "github-prs:v2",
-          ttl: Duration.hours(24),
-          fallback: EMPTY_PRS,
-          load: Effect.gen(function* () {
-            const prs = yield* fetchAllPRs(octokit, USERNAME, Date.now());
-            return { grouped: groupPRs(prs), totalPRs: prs.length };
-          }),
+        const getPRs = Effect.fn("GitHub.getPRs")(function* () {
+          return yield* cache.getOrElse({
+            key: "github-prs:v2",
+            ttl: Duration.hours(24),
+            fallback: EMPTY_PRS,
+            load: Effect.gen(function* () {
+              const prs = yield* fetchAllPRs(octokit, USERNAME, Date.now());
+              return { grouped: groupPRs(prs), totalPRs: prs.length };
+            }),
+          });
         });
-      });
 
-      const getContributions = Effect.fn("GitHub.getContributions")(function* () {
-        return yield* cache.getOrElse({
-          key: "github-contributions",
-          ttl: Duration.hours(24),
-          fallback: null,
-          load: fetchContributions(octokit, USERNAME),
+        const getContributions = Effect.fn("GitHub.getContributions")(function* () {
+          return yield* cache.getOrElse({
+            key: "github-contributions",
+            ttl: Duration.hours(24),
+            fallback: null,
+            load: fetchContributions(octokit, USERNAME),
+          });
         });
-      });
 
-      return { getPRs, getContributions };
-    }),
-  );
+        return { getPRs, getContributions };
+      }),
+    );
+  }
 }

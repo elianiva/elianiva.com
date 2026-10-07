@@ -1,10 +1,11 @@
 services:
   web:
     # TanStack Start dev server (server.port: 3000 in vite.config.ts) with hot reload.
-    # VITE_GH_TOKEN / VITE_LASTFM_API_KEY are optional: without real values the
+    # GH_TOKEN / LASTFM_API_KEY are read per request by server functions.
+    # Export real values for live GitHub/music data; without them the
     # GitHub/music sections degrade to empty data via their service fallbacks.
     command: >-
-      VITE_GH_TOKEN="${VITE_GH_TOKEN:-}" VITE_LASTFM_API_KEY="${VITE_LASTFM_API_KEY:-}"
+      GH_TOKEN="${GH_TOKEN:-}" LASTFM_API_KEY="${LASTFM_API_KEY:-}"
       pnpm dev
     port: 3000
     health: /

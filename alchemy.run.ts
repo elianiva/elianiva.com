@@ -1,33 +1,39 @@
 import * as Alchemy from "alchemy";
 import * as Cloudflare from "alchemy/Cloudflare";
 import * as Effect from "effect/Effect";
+import { Config } from "effect";
 
 /**
- * Fully static site via TanStack Start's own prerendering: `spa.enabled`
- * + `prerender.crawlLinks` in `vite.config.ts` emits one static HTML file
- * per route (dynamic slugs included) plus the `_shell.html` fallback and
- * `sitemap.xml` into `dist/client`. `robots.txt`, `rss.xml`, and the OG
- * images are emitted alongside by `scripts/build-static-assets.ts`
- * (`pnpm build` runs it after `vp build`).
+ * Static SPA shell + server functions for the secret-backed data.
  *
- * There is no SSR at request time: alchemy uploads `dist/client` as plain
- * static assets on a Worker with no entry. `notFoundHandling:
- * "single-page-application"` falls back to the prerendered root for
- * unknown paths (Cloudflare serves `/index.html`), where the client
- * router renders the 404 page — deep links to real pages resolve to
- * their prerendered files directly.
+ * TanStack Start's `spa.enabled` + `prerender.crawlLinks` in
+ * `vite.config.ts` emits one static HTML file per route (dynamic slugs
+ * included) plus the `_shell.html` fallback and `sitemap.xml` into
+ * `dist/client`. `robots.txt`, `rss.xml`, and the OG images are emitted
+ * alongside by `scripts/build-static-assets.ts` (`pnpm build` runs it after
+ * `vp build`).
  *
- * GitHub / Last.fm data is fetched from the browser. The client bundle
- * carries no secrets: without `VITE_GH_TOKEN` / `VITE_LASTFM_API_KEY` the
- * sections render their empty states (see `src/lib/env.ts`).
+ * Posts/projects/uses/neighbours stay fully static. Home GitHub + `/music`
+ * prerender as shells — their queries run in the browser after hydration and
+ * call server functions (`/_serverFn/*`, allow-listed below so they reach the
+ * Worker instead of the static assets) that hold `GH_TOKEN` /
+ * `LASTFM_API_KEY` as secrets. The browser never sees the tokens.
+ *
+ * `pnpm build` needs no secrets; `alchemy deploy` reads `GH_TOKEN` /
+ * `LASTFM_API_KEY` from the deploy environment (see `deploy.yml`) and binds
+ * them as `secret_text` on the Worker.
  */
 class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
   compatibility: {
     flags: ["nodejs_compat"],
   },
   assets: {
-    runWorkerFirst: false,
+    runWorkerFirst: ["/_serverFn/*"],
     notFoundHandling: "single-page-application",
+  },
+  env: {
+    GH_TOKEN: Config.Redacted("GH_TOKEN"),
+    LASTFM_API_KEY: Config.Redacted("LASTFM_API_KEY"),
   },
   dev: {
     port: 3000,

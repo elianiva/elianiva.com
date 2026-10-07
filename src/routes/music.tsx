@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Heading } from "~/components/ui/heading";
 import { MusicTopListsSkeleton, MusicTracksSkeleton } from "~/components/ui/page-skeleton";
-import { getRecentTracks, getTopListsData } from "~/features/music/lib/music";
+import { getRecentTracks, getTopListsData } from "~/features/music/lib/music-server";
 import { MusicTopListsSection } from "~/features/music/components/music-top-lists-section";
 import { MusicTracksSection } from "~/features/music/components/music-tracks-section";
 import { seo, ogPageImageUrl } from "~/lib/seo";

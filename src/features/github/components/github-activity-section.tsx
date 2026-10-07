@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getGitHubContributions } from "../lib/github";
+import { getGitHubContributions } from "../lib/github-server";
 import { Heading } from "~/components/ui/heading";
 import { HeatmapGrid, COMPACT_WEEK_COUNT, type HeatmapCell } from "~/components/ui/heatmap-grid";
 import { cn } from "~/lib/utils";
