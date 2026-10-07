@@ -1,9 +1,4 @@
-import {
-  HeadContent,
-  Outlet,
-  Scripts,
-  createRootRouteWithContext,
-} from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 // Global styles: Tailwind theme + prose treatment (styles.css) and the
