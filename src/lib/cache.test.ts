@@ -140,6 +140,37 @@ it("corrupted JSON → treated as miss and reloads", async () => {
   expect(val).toBe("recovered");
 });
 
+it("load throws synchronously → returns fallback and does not cache", async () => {
+  const { ns, store } = fakeKv();
+  let loads = 0;
+
+  const run = () =>
+    Effect.runPromise(
+      Effect.gen(function* () {
+        const cache = yield* KvCache;
+        return yield* cache.getOrElse({
+          key: "test-defect",
+          ttl: Duration.minutes(5),
+          fallback: "fallback",
+          // A sync throw inside `load` is an Effect defect (not a failure) —
+          // e.g. reading a field off a malformed API response. It must still
+          // degrade to the fallback instead of escaping the server function.
+          load: Effect.sync(() => {
+            loads++;
+            throw new TypeError("Cannot read properties of undefined");
+          }),
+        });
+      }).pipe(provideCache(ns)),
+    );
+
+  expect(await run()).toBe("fallback");
+  expect(loads).toBe(1);
+  // Subsequent call retries — fallback is NOT cached
+  expect(await run()).toBe("fallback");
+  expect(loads).toBe(2);
+  expect(store.has("cache:test-defect")).toBe(false);
+});
+
 it("no KV namespace → loads every time, still returns fallback on error", async () => {
   let loads = 0;
   const val = await Effect.runPromise(

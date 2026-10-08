@@ -81,6 +81,63 @@ function isWorthListing(fullName: string, stargazerCount: number): boolean {
   return owner !== USERNAME && stargazerCount >= MIN_STARS;
 }
 
+export function decodePRs(
+  response: PRContributionsResponse,
+): Effect.Effect<GitHubPullRequest[], Error> {
+  const repoContribs =
+    response?.user?.contributionsCollection?.pullRequestContributionsByRepository;
+  if (!Array.isArray(repoContribs)) {
+    return Effect.fail(new Error("unexpected GitHub PR contributions shape"));
+  }
+  const allPRs: GitHubPullRequest[] = [];
+
+  for (const repo of repoContribs) {
+    const repository = repo?.repository;
+    if (
+      !repository ||
+      typeof repository.nameWithOwner !== "string" ||
+      typeof repository.stargazerCount !== "number"
+    ) {
+      continue;
+    }
+    if (!isWorthListing(repository.nameWithOwner, repository.stargazerCount)) continue;
+
+    const nodes = repo?.contributions?.nodes;
+    if (!Array.isArray(nodes)) continue;
+    for (const node of nodes) {
+      const pr = node?.pullRequest;
+      if (!pr || pr.state !== "MERGED") continue;
+      if (!pr.repository || !pr.author) continue;
+
+      allPRs.push({
+        id: pr.id,
+        number: pr.number,
+        title: pr.title,
+        state: "merged",
+        merged_at: pr.mergedAt,
+        created_at: pr.createdAt,
+        updated_at: pr.updatedAt,
+        url: pr.url,
+        repository: {
+          name: pr.repository.name,
+          full_name: pr.repository.nameWithOwner,
+          url: pr.repository.url,
+          stargazerCount: pr.repository.stargazerCount,
+        },
+        user: {
+          login: pr.author.login,
+          url: pr.author.url,
+        },
+        additions: pr.additions,
+        deletions: pr.deletions,
+        changed_files: pr.changedFiles,
+      });
+    }
+  }
+
+  return Effect.succeed(allPRs);
+}
+
 function fetchAllPRs(
   octokit: Octokit,
   username: string,
@@ -98,44 +155,7 @@ function fetchAllPRs(
       catch: (e) => new Error(String(e)),
     });
 
-    const repoContribs = response.user.contributionsCollection.pullRequestContributionsByRepository;
-    const allPRs: GitHubPullRequest[] = [];
-
-    for (const repo of repoContribs) {
-      const { repository } = repo;
-      if (!isWorthListing(repository.nameWithOwner, repository.stargazerCount)) continue;
-
-      for (const node of repo.contributions.nodes) {
-        if (!node || node.pullRequest.state !== "MERGED") continue;
-        const pr = node.pullRequest;
-
-        allPRs.push({
-          id: pr.id,
-          number: pr.number,
-          title: pr.title,
-          state: "merged",
-          merged_at: pr.mergedAt,
-          created_at: pr.createdAt,
-          updated_at: pr.updatedAt,
-          url: pr.url,
-          repository: {
-            name: pr.repository.name,
-            full_name: pr.repository.nameWithOwner,
-            url: pr.repository.url,
-            stargazerCount: pr.repository.stargazerCount,
-          },
-          user: {
-            login: pr.author.login,
-            url: pr.author.url,
-          },
-          additions: pr.additions,
-          deletions: pr.deletions,
-          changed_files: pr.changedFiles,
-        });
-      }
-    }
-
-    return allPRs;
+    return yield* decodePRs(response);
   });
 }
 
@@ -200,6 +220,49 @@ const CONTRIBUTIONS_QUERY = `
   }
 `;
 
+export function decodeContributions(
+  response: GitHubContributionsResponse,
+): Effect.Effect<ContributionsResponse, Error> {
+  // A malformed shape here used to throw a synchronous `TypeError` — an
+  // Effect defect, not a failure — which skipped the `Effect.match`
+  // fallback in `KvCache.getOrElse`, escaped the server function, and
+  // surfaced in the browser as `["github-contributions"] data is
+  // undefined`. Validate instead so every bad shape degrades to the
+  // fallback through the normal error channel.
+  const calendar = response?.user?.contributionsCollection?.contributionCalendar;
+  if (
+    !calendar ||
+    typeof calendar.totalContributions !== "number" ||
+    !Array.isArray(calendar.weeks)
+  ) {
+    return Effect.fail(new Error("unexpected GitHub contributions shape"));
+  }
+
+  let longestStreak = 0;
+  let currentStreak = 0;
+  const allDays: ContributionDay[] = [];
+  for (const week of calendar.weeks) {
+    if (!Array.isArray(week?.contributionDays)) continue;
+    for (const day of week.contributionDays) {
+      allDays.push(day);
+    }
+  }
+  for (const day of allDays) {
+    if (day.contributionCount > 0) {
+      currentStreak++;
+      longestStreak = Math.max(longestStreak, currentStreak);
+    } else {
+      currentStreak = 0;
+    }
+  }
+
+  return Effect.succeed({
+    totalContributions: calendar.totalContributions,
+    weeks: calendar.weeks,
+    longestStreak,
+  });
+}
+
 function fetchContributions(
   octokit: Octokit,
   username: string,
@@ -211,30 +274,7 @@ function fetchContributions(
       catch: (e) => new Error(String(e)),
     });
 
-    const calendar = response.user.contributionsCollection.contributionCalendar;
-
-    let longestStreak = 0;
-    let currentStreak = 0;
-    const allDays: ContributionDay[] = [];
-    for (const week of calendar.weeks) {
-      for (const day of week.contributionDays) {
-        allDays.push(day);
-      }
-    }
-    for (const day of allDays) {
-      if (day.contributionCount > 0) {
-        currentStreak++;
-        longestStreak = Math.max(longestStreak, currentStreak);
-      } else {
-        currentStreak = 0;
-      }
-    }
-
-    return {
-      totalContributions: calendar.totalContributions,
-      weeks: calendar.weeks,
-      longestStreak,
-    };
+    return yield* decodeContributions(response);
   });
 }
 

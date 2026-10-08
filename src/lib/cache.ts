@@ -59,7 +59,14 @@ export class KvCache extends Context.Service<
         type LoadResult =
           | { readonly tag: "ok"; readonly value: A }
           | { readonly tag: "err"; readonly error: unknown };
+        // A synchronous throw inside `load` (e.g. reading a field off a
+        // malformed API response) is an Effect defect, not a failure, and
+        // `match` only handles failures — the defect would skip the fallback,
+        // escape the server function, and surface in the browser as
+        // `<queryKey> data is undefined`. Convert defects into failures so
+        // they degrade to the fallback too; interruptions still propagate.
         const result: LoadResult = yield* load.pipe(
+          Effect.catchDefect((defect) => Effect.fail(defect)),
           Effect.match({
             onSuccess: (value) => ({ tag: "ok" as const, value }),
             onFailure: (error) => ({ tag: "err" as const, error }),
