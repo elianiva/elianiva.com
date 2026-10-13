@@ -1,0 +1,33 @@
+---
+title: Meiro
+date: 2026-10-08
+description: A native desktop player for YouTube Music, with its own interface instead of a Chromium web front end.
+source: https://github.com/elianiva/meiro
+type: personal
+featured: true
+stack:
+  - ["Go", "https://go.dev"]
+  - ["MyGO", "https://github.com/egoist/mygo"]
+  - ["Material 3", "https://m3.material.io"]
+---
+
+## Background
+
+Meiro is a native desktop player for YouTube Music. It draws its own interface in a native window instead of wrapping a Chromium-based web front end.
+
+It's built with [MyGO](https://github.com/egoist/mygo). The name comes from one of MyGO!!!!!'s songs, [迷路日々](https://www.youtube.com/watch?v=STgVa-reZkM). The title is written with the characters for _meiro_ (迷路, "maze") and _hibi_ (日々, "days"), but the song is pronounced "Melody" (メロディ). It's a pun, and I named the app after the first half.
+
+Like [Nook](/projects/nook), I made this by prompting [Amp](https://ampcode.com) and wrote none of the code by hand.
+
+## What it does
+
+- Browse your Home feed and Explore, then open artist, album, and playlist pages. Sign in to see your Library.
+- Search across songs, albums, artists, playlists, and videos. It keeps your eight most recent searches.
+- Play with seek, volume, shuffle, repeat, and a queue. Auto-play adds YouTube Music recommendations when the queue ends.
+- Pick a Material 3 palette, or let the current track's artwork set the app colours.
+- Cache recently played audio (ten tracks by default, and the limit and folder are configurable).
+- Control playback from macOS Now Playing or a Linux MPRIS client.
+
+You can browse and play public music without signing in. Meiro imports a browser session to show your personalised Home feed and Library.
+
+It's still experimental.

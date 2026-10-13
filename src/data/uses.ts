@@ -128,9 +128,9 @@ export const uses: UsesSection[] = [
       {
         name: "Claude Code",
         spec: "Coding Agent",
-        note: "Used for work stuff.",
+        note: "Mostly through Amp these days.",
         href: "https://claude.com/product/claude-code",
-        why: "Probably one of the most used coding agents out there. It's what the default for most people. I only use it because the company pays for it and use it for work related stuff only.",
+        why: "Probably one of the most used coding agents out there. It's what the default for most people. I use it quite a bit these days, mostly through Amp, and for work stuff.",
       },
       {
         name: "Pi",
