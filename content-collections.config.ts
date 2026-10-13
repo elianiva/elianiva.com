@@ -1,6 +1,5 @@
-import { createDefaultImport, defineCollection, defineConfig } from "@content-collections/core";
+import { defineCollection, defineConfig } from "@content-collections/core";
 import { z } from "zod";
-import type { MDXContent } from "mdx/types";
 
 const posts = defineCollection({
   name: "posts",
@@ -15,14 +14,14 @@ const posts = defineCollection({
     hidden: z.boolean().optional().default(false),
     content: z.string(),
   }),
-  transform: async ({ _meta, ...post }) => {
-    const mdx = createDefaultImport<MDXContent>(`~/content/posts/${_meta.filePath}`);
-    return {
-      ...post,
-      slug: _meta.path,
-      mdx,
-    };
-  },
+  // The MDX body is loaded lazily per route (see `features/content/lib/mdx`),
+  // and the raw text is reduced to a word count here, so neither is bundled
+  // into every page that reads the collection.
+  transform: async ({ _meta, content, ...post }) => ({
+    ...post,
+    slug: _meta.path,
+    wordCount: content.replace(/^(#+\s*)/gm, "").split(/\s+/).length,
+  }),
 });
 
 /**
@@ -54,14 +53,10 @@ const projects = defineCollection({
     image: z.string().optional(),
     content: z.string(),
   }),
-  transform: async ({ _meta, ...project }) => {
-    const mdx = createDefaultImport<MDXContent>(`~/content/projects/${_meta.filePath}`);
-    return {
-      ...project,
-      slug: _meta.path,
-      mdx,
-    };
-  },
+  transform: async ({ _meta, content: _content, ...project }) => ({
+    ...project,
+    slug: _meta.path,
+  }),
 });
 
 export default defineConfig({

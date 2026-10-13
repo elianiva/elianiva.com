@@ -1,4 +1,3 @@
-import type { MDXContent } from "mdx/types";
 import { byDateDesc, toNeighbour } from "./shared";
 
 export type ProjectDoc = {
@@ -12,7 +11,6 @@ export type ProjectDoc = {
   demo?: string | null;
   stack: string[][];
   image?: string;
-  mdx: MDXContent;
 };
 
 export type ProjectType = "personal" | "open-source" | "assignment";
@@ -31,7 +29,6 @@ export type ProjectNeighbour = { slug: string; title: string };
 
 export type ProjectDetail = {
   project: ProjectSummary & { source: string; demo: string | null };
-  mdx: MDXContent;
   prevProject: ProjectNeighbour | null;
   nextProject: ProjectNeighbour | null;
 };
@@ -71,7 +68,6 @@ export function getProject(projects: ProjectDoc[], slug: string): ProjectDetail 
   const project = sorted[index];
   return {
     project: { ...toSummary(project), source: project.source, demo: project.demo ?? null },
-    mdx: project.mdx,
     prevProject: toNeighbour(sorted[index + 1]),
     nextProject: toNeighbour(sorted[index - 1]),
   };

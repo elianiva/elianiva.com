@@ -1,4 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Suspense } from "react";
+import { postMdx } from "~/features/content/lib/mdx";
 import { getPostBySlug } from "~/features/posts/lib/posts";
 import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
@@ -17,12 +19,7 @@ export const Route = createFileRoute("/posts/$slug")({
   loader: ({ params: { slug } }) => {
     const detail = getPostBySlug(slug);
     if (!detail) throw notFound();
-    // The MDX component is a function: it cannot be serialized into the
-    // prerendered payload (Seroval dehydration would 500 the page). Return
-    // the serializable meta here; the component resolves `mdx` itself from
-    // the bundled collection.
-    const { mdx: _mdx, ...meta } = detail;
-    return meta;
+    return detail;
   },
   head: ({ loaderData }) => {
     if (!loaderData)
@@ -72,10 +69,9 @@ function PostDetailPage() {
   const detail = Route.useLoaderData();
   const { post } = detail;
   const params = Route.useParams();
-  // Resolved here (not in the loader) because the MDX component cannot be
-  // serialized into the prerender payload — see the loader above. The
-  // collection is bundled, so this is a synchronous in-memory lookup.
-  const Mdx = getPostBySlug(params.slug)?.mdx;
+  // A component cannot be serialized into the prerender payload, so it is
+  // resolved here and loaded lazily as its own chunk.
+  const Mdx = postMdx(params.slug);
   if (!Mdx) throw notFound();
 
   return (
@@ -126,15 +122,17 @@ function PostDetailPage() {
         </header>
         <article className="font-body mx-auto max-w-[64ch] prose prose-pink">
           <CodeCopy />
-          <Mdx
-            components={{
-              h2: (props) => <Heading level={2} {...props} />,
-              h3: (props) => <Heading level={3} {...props} />,
-              h4: (props) => <Heading level={4} {...props} />,
-              h5: (props) => <Heading level={5} {...props} />,
-              h6: (props) => <Heading level={6} {...props} />,
-            }}
-          />
+          <Suspense fallback={null}>
+            <Mdx
+              components={{
+                h2: (props) => <Heading level={2} {...props} />,
+                h3: (props) => <Heading level={3} {...props} />,
+                h4: (props) => <Heading level={4} {...props} />,
+                h5: (props) => <Heading level={5} {...props} />,
+                h6: (props) => <Heading level={6} {...props} />,
+              }}
+            />
+          </Suspense>
 
           <div>
             <script

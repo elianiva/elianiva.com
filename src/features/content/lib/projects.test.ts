@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
 import { listProjects, getProject, type ProjectDoc } from "./projects";
-import type { MDXContent } from "mdx/types";
-
-const mdx = (() => null) as unknown as MDXContent;
 
 function makeProject(overrides: Partial<ProjectDoc> = {}): ProjectDoc {
   return {
@@ -15,7 +12,6 @@ function makeProject(overrides: Partial<ProjectDoc> = {}): ProjectDoc {
     source: "https://github.com/test/test",
     demo: null,
     stack: [["React", "https://react.dev"]] as string[][],
-    mdx,
     ...overrides,
   };
 }

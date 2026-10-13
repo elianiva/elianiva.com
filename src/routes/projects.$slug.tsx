@@ -1,4 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Suspense } from "react";
+import { projectMdx } from "~/features/content/lib/mdx";
 import { getProjectBySlug } from "~/features/projects/lib/projects";
 import { projectSeo } from "~/lib/seo";
 import { ProjectDetailSkeleton } from "~/components/ui/page-skeleton";
@@ -14,12 +16,7 @@ export const Route = createFileRoute("/projects/$slug")({
   loader: ({ params: { slug } }) => {
     const detail = getProjectBySlug(slug);
     if (!detail) throw notFound();
-    // The MDX component is a function: it cannot be serialized into the
-    // prerendered payload (Seroval dehydration would 500 the page). Return
-    // the serializable meta here; the component resolves `mdx` itself from
-    // the bundled collection.
-    const { mdx: _mdx, ...meta } = detail;
-    return meta;
+    return detail;
   },
   head: ({ loaderData }) => {
     if (!loaderData) return {};
@@ -69,10 +66,9 @@ function ProjectDetailPage() {
   const detail = Route.useLoaderData();
   const { project } = detail;
   const params = Route.useParams();
-  // Resolved here (not in the loader) because the MDX component cannot be
-  // serialized into the prerender payload — see the loader above. The
-  // collection is bundled, so this is a synchronous in-memory lookup.
-  const Mdx = getProjectBySlug(params.slug)?.mdx;
+  // A component cannot be serialized into the prerender payload, so it is
+  // resolved here and loaded lazily as its own chunk.
+  const Mdx = projectMdx(params.slug);
   if (!Mdx) throw notFound();
 
   return (
@@ -125,7 +121,9 @@ function ProjectDetailPage() {
                 </div>
               </div>
               <div className="prose prose-pink max-w-full">
-                <Mdx />
+                <Suspense fallback={null}>
+                  <Mdx />
+                </Suspense>
               </div>
             </div>
           </div>

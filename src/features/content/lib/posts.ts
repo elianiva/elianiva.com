@@ -1,4 +1,3 @@
-import type { MDXContent } from "mdx/types";
 import { byDateDesc, toNeighbour } from "./shared";
 
 export type PostDoc = {
@@ -8,8 +7,7 @@ export type PostDoc = {
   date: string;
   tags: string[];
   hidden: boolean;
-  content: string;
-  mdx: MDXContent;
+  wordCount: number;
 };
 
 export type PostSummary = {
@@ -24,7 +22,6 @@ export type PostNeighbour = { slug: string; title: string };
 
 export type PostDetail = {
   post: PostSummary;
-  mdx: MDXContent;
   wordCount: number;
   readingTime: number;
   prevPost: PostNeighbour | null;
@@ -51,13 +48,10 @@ export function getPost(posts: PostDoc[], slug: string): PostDetail | null {
   if (index === -1) return null;
 
   const post = sorted[index];
-  const words = post.content.replace(/^(#+\s*)/gm, "").split(/\s+/);
-
   return {
     post: toSummary(post),
-    mdx: post.mdx,
-    wordCount: words.length,
-    readingTime: Math.ceil(words.length / 200),
+    wordCount: post.wordCount,
+    readingTime: Math.ceil(post.wordCount / 200),
     prevPost: toNeighbour(sorted[index + 1]),
     nextPost: toNeighbour(sorted[index - 1]),
   };

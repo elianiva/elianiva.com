@@ -264,8 +264,8 @@ export function personJsonLd() {
     url: siteUrl,
     image: {
       "@type": "ImageObject",
-      url: "https://avatars.githubusercontent.com/u/51877647?v=4",
-      contentUrl: "https://avatars.githubusercontent.com/u/51877647?v=4",
+      url: `${siteUrl}/avatar.webp`,
+      contentUrl: `${siteUrl}/avatar.webp`,
       caption: profile.name,
     },
     email: `mailto:${sites.email}`,

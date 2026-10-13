@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
 import { listPosts, getPost, type PostDoc } from "./posts";
-import type { MDXContent } from "mdx/types";
-
-const mdx = (() => null) as unknown as MDXContent;
 
 function makePost(overrides: Partial<PostDoc> = {}): PostDoc {
   return {
@@ -12,8 +9,7 @@ function makePost(overrides: Partial<PostDoc> = {}): PostDoc {
     date: "2024-06-01",
     tags: ["react"],
     hidden: false,
-    content: "## Hello world\n\nSome content here.",
-    mdx,
+    wordCount: 5,
     ...overrides,
   };
 }

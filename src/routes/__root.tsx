@@ -7,8 +7,9 @@ import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 // page — there is no `?url` link anymore.
 import "../styles.css";
 import "../highlight.css";
+import googleSansLatin from "@fontsource-variable/google-sans/files/google-sans-latin-wght-normal.woff2?url";
 import { Frame } from "../components/frame";
-import { CanvasBackground } from "../components/canvas-background";
+import { DeferredCanvasBackground } from "../components/deferred-canvas-background";
 import { Footer } from "../components/footer";
 
 import { NavigationStrip } from "~/components/navigation";
@@ -63,7 +64,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "32x32" },
       { rel: "alternate", href: "/rss.xml", type: "application/rss+xml", title: "elianiva" },
-      { rel: "preconnect", href: "https://avatars.githubusercontent.com" },
+      // The body font is otherwise only discovered after the CSS parses.
+      {
+        rel: "preload",
+        href: googleSansLatin,
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
+      },
     ],
   }),
 });
@@ -83,7 +91,7 @@ function RootLayout() {
           Skip to main content
         </a>
 
-        <CanvasBackground />
+        <DeferredCanvasBackground />
         <Frame />
         <NavigationStrip />
 
