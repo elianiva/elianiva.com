@@ -8,8 +8,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Posts", href: "/posts" },
   { label: "Projects", href: "/projects" },
   { label: "Uses", href: "/uses" },
-  { label: "Neighbours", href: "/neighbours" },
-  { label: "Music", href: "/music" },
 ];
 
 export function NavigationStrip() {

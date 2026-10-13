@@ -13,7 +13,8 @@ import { Config } from "effect";
  * alongside by `scripts/build-static-assets.ts` (`pnpm build` runs it after
  * `vp build`).
  *
- * Posts/projects/uses/neighbours stay fully static. Home GitHub + `/music`
+ * Home, posts, projects, uses, and neighbours stay fully static, so crawlers
+ * read them without running JavaScript. The home GitHub sections and `/music`
  * prerender as shells — their queries run in the browser after hydration and
  * call server functions (`/_serverFn/*`, allow-listed below so they reach the
  * Worker instead of the static assets) that hold `GH_TOKEN` /

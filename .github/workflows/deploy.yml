@@ -3,6 +3,11 @@ name: Deploy
 on:
   push:
     branches: [master]
+  # The home page bakes in the GitHub activity heatmap at build time, so
+  # redeploy daily to keep it current.
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
 
 concurrency:
   group: deploy-${{ github.ref }}

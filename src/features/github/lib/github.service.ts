@@ -278,7 +278,7 @@ function fetchContributions(
   });
 }
 
-type ContributionsResponse = {
+export type ContributionsResponse = {
   totalContributions: number;
   weeks: GitHubContributionsResponse["user"]["contributionsCollection"]["contributionCalendar"]["weeks"];
   longestStreak: number;

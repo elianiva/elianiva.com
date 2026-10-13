@@ -2,6 +2,9 @@ import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import yaml from "yaml";
 import sites from "../src/data/sites";
+import { profile } from "../src/data/profile";
+import { work } from "../src/data/work-experience";
+import { openSource, prUrl } from "../src/data/open-source";
 import { escapeXml } from "../src/lib/xml";
 import { OgImage } from "../src/features/og-image/lib/og-image";
 
@@ -35,6 +38,7 @@ export type ContentMeta = {
   tags: string[];
   hidden: boolean;
   type?: string;
+  featured?: boolean;
   stack?: string[][];
 };
 
@@ -81,6 +85,7 @@ export function readContent(root: string): {
   const posts = ogPosts.filter((p) => !p.hidden);
   const projects = read("projects", (fm) => ({
     type: typeof fm.type === "string" ? fm.type : undefined,
+    featured: fm.featured === true,
     stack: Array.isArray(fm.stack) ? (fm.stack as string[][]) : undefined,
   })).sort(byDateDesc);
   return { posts, ogPosts, projects };
@@ -95,6 +100,62 @@ export function buildRobots(siteUrl: string): string {
     "Disallow: /api/",
     "",
     `Sitemap: ${siteUrl}/sitemap.xml`,
+    "",
+  ].join("\n");
+}
+
+/**
+ * `/llms.txt`: the site as plain Markdown for agents and recruiter tooling
+ * that never run the page's JavaScript. Roles come from the same
+ * `work-experience` records the site and CV print, so nothing is written twice.
+ */
+export function buildLlmsTxt(
+  siteUrl: string,
+  roles: typeof work,
+  posts: ContentMeta[],
+  projects: ContentMeta[],
+): string {
+  const period = ([from, to]: readonly [string, string | null]) => `${from} to ${to ?? "present"}`;
+  const link = (kind: "posts" | "projects", item: ContentMeta) =>
+    `- [${item.title}](${siteUrl}/${kind}/${item.slug}): ${item.description}`;
+  return [
+    `# ${profile.name} (${profile.handle})`,
+    "",
+    `> Product engineer, mostly web, based in ${profile.location} and working remotely.`,
+    "",
+    "## Contact",
+    "",
+    `- Email: ${profile.email}`,
+    `- GitHub: ${profile.urls.github}`,
+    `- LinkedIn: ${profile.urls.linkedin}`,
+    `- CV (PDF): ${siteUrl}${sites.cv}`,
+    "",
+    "## Experience",
+    "",
+    ...roles
+      .filter((role) => role.cv)
+      .map((role) => `- ${role.position}, ${role.company} (${role.time}, ${period(role.period)})`),
+    "",
+    "## Projects",
+    "",
+    ...projects.filter((p) => p.featured).map((p) => link("projects", p)),
+    "",
+    "## Open source",
+    "",
+    ...openSource.flatMap((entry) => [
+      `- ${entry.repo}: ${entry.about}`,
+      ...entry.prs.map((pr) => `  - [#${pr.number}](${prUrl(entry.repo, pr.number)}): ${pr.note}`),
+    ]),
+    "",
+    "## Posts",
+    "",
+    ...posts.map((p) => link("posts", p)),
+    "",
+    "## Optional",
+    "",
+    `- [Uses](${siteUrl}/uses): hardware, software, and the coding agents I use`,
+    `- [All projects](${siteUrl}/projects)`,
+    `- [All posts](${siteUrl}/posts)`,
     "",
   ].join("\n");
 }
@@ -233,11 +294,12 @@ export const OG_PAGES = [
 
 /**
  * Emits the non-Start static assets into the client outDir:
- * `robots.txt`, `rss.xml`, and the OG images.
+ * `robots.txt`, `llms.txt`, `rss.xml`, and the OG images.
  */
 export async function emitStaticAssets(root: string, outDir: string) {
   const { posts, ogPosts, projects } = readContent(root);
   writeFileSync(path.join(outDir, "robots.txt"), buildRobots(sites.siteUrl));
+  writeFileSync(path.join(outDir, "llms.txt"), buildLlmsTxt(sites.siteUrl, work, posts, projects));
   writeFileSync(
     path.join(outDir, "rss.xml"),
     buildRss(sites.siteName, sites.siteUrl, sites.description, posts, projects),

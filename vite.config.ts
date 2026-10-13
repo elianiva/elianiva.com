@@ -75,8 +75,13 @@ const config = defineConfig({
         // the conventional suffix vitest discovers.
         routeFileIgnorePattern: "\\.(test|spec)\\.(ts|tsx|js|jsx)$",
       },
+      pages: [{ path: "/" }],
       spa: {
         enabled: true,
+        // The shell defaults to masking `/`, which leaves the home page as an
+        // empty `_shell.html` for crawlers and agents that never run JS. Mask
+        // a path nothing links to so `/` prerenders as a real page.
+        maskPath: "/posts/__shell",
         prerender: {
           crawlLinks: true,
         },

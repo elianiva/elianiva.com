@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 function BuildDate() {
@@ -33,6 +34,18 @@ export function Footer() {
         </p>
 
         <div className="w-24 h-px bg-pink-200/50"></div>
+
+        <nav
+          aria-label="Personal"
+          className="flex gap-4 text-[11px] font-mono text-pink-950/40 uppercase tracking-[0.15em]"
+        >
+          <Link to="/music" className="hover:text-pink-500 transition-colors">
+            Music
+          </Link>
+          <Link to="/neighbours" className="hover:text-pink-500 transition-colors">
+            Neighbours
+          </Link>
+        </nav>
 
         <p className="text-[11px] font-mono text-pink-950/40 uppercase tracking-[0.15em]">
           tanstack router · react · tailwind

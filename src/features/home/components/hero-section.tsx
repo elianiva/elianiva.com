@@ -3,7 +3,6 @@ import EnvelopeIcon from "~icons/ph/envelope-duotone";
 import GithubLogoIcon from "~icons/ph/github-logo-duotone";
 import LinkedinLogoIcon from "~icons/ph/linkedin-logo-duotone";
 import CvLogoIcon from "~icons/ph/read-cv-logo-duotone";
-import XLogoIcon from "~icons/ph/x-logo-duotone";
 import { Heading } from "~/components/ui/heading";
 import { Button } from "~/components/ui/button";
 
@@ -17,7 +16,6 @@ const socials: Social[] = [
   { icon: EnvelopeIcon, link: `mailto:${siteData.email}`, label: "Email" },
   { icon: GithubLogoIcon, link: siteData.github, label: "Github" },
   { icon: LinkedinLogoIcon, link: siteData.linkedin, label: "LinkedIn" },
-  { icon: XLogoIcon, link: siteData.twitter, label: "Twitter" },
   { icon: CvLogoIcon, link: siteData.cv, label: "Résumé" },
 ];
 

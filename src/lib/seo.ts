@@ -257,7 +257,7 @@ export function personJsonLd() {
     "@type": "Person",
     "@id": `${siteUrl}/#person`,
     name: profile.name,
-    alternateName: [profile.handle, "dichaa", "not.elianiva", "elianiva_"],
+    alternateName: [profile.handle, "dichaa", "elianiva_"],
     givenName: "Dicha",
     familyName: "Arkana",
     additionalName: "Zelianivan",
@@ -269,7 +269,7 @@ export function personJsonLd() {
       caption: profile.name,
     },
     email: `mailto:${sites.email}`,
-    jobTitle: "Software Engineer",
+    jobTitle: "Product Engineer",
     description:
       "Software engineer focused on frontend and design engineering. Building interfaces that don't annoy people.",
     sameAs: [
@@ -277,11 +277,7 @@ export function personJsonLd() {
       sites.twitter,
       sites.linkedin,
       sites.bluesky,
-      sites.instagram,
-      sites.threads,
-      sites.reddit,
       sites.devto,
-      sites.lastfm,
       sites.npm,
     ].filter(Boolean),
     knowsAbout: [

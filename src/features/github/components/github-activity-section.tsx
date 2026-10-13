@@ -1,6 +1,4 @@
-import { Suspense } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { getGitHubContributions } from "../lib/github-server";
+import type { ContributionsResponse } from "../lib/github.service";
 import { Heading } from "~/components/ui/heading";
 import { HeatmapGrid, COMPACT_WEEK_COUNT, type HeatmapCell } from "~/components/ui/heatmap-grid";
 import { cn } from "~/lib/utils";
@@ -23,43 +21,7 @@ function toHeatmapLevel(level: string): number {
   return map[level] ?? 0;
 }
 
-/** Skeleton columns follow the same week counts as the real grid, so nothing shifts. */
-function HeatmapSkeleton() {
-  return (
-    <>
-      {[
-        { weeks: 53, className: "hidden sm:flex" },
-        { weeks: COMPACT_WEEK_COUNT, className: "flex sm:hidden" },
-      ].map(({ weeks, className }) => (
-        <div key={weeks} className={cn("gap-0.75", className)}>
-          {Array.from({ length: weeks }).map((_, column) => (
-            <div key={column} className="flex flex-1 flex-col gap-0.75">
-              {Array.from({ length: 7 }).map((__, day) => (
-                <div key={day} className="aspect-square bg-pink-100/20" />
-              ))}
-            </div>
-          ))}
-        </div>
-      ))}
-    </>
-  );
-}
-
-function GitHubActivityGrid() {
-  const { data } = useSuspenseQuery({
-    queryKey: ["github-contributions"],
-    queryFn: () => getGitHubContributions(),
-    staleTime: 1000 * 60 * 60 * 24,
-  });
-
-  if (!data) {
-    return (
-      <p className="text-sm font-body text-pink-950/60 pt-2">
-        Set GH_TOKEN to fetch contribution data.
-      </p>
-    );
-  }
-
+function GitHubActivityGrid({ data }: { data: ContributionsResponse }) {
   const { totalContributions, weeks, longestStreak } = data;
 
   // The compact grid only draws the recent weeks, so it gets its own total.
@@ -101,7 +63,14 @@ function GitHubActivityGrid() {
   );
 }
 
-export function GitHubActivitySection() {
+/**
+ * Baked into the page at build time: the route loader reads the contributions
+ * once while prerendering, so the browser never fetches them. Without a token
+ * there is nothing to show, so the section is left out instead of printing a
+ * setup hint into the public page.
+ */
+export function GitHubActivitySection({ data }: { data: ContributionsResponse | null }) {
+  if (!data) return null;
   return (
     <section
       aria-labelledby="github-activity-heading"
@@ -112,24 +81,7 @@ export function GitHubActivitySection() {
           Git Activity
         </Heading>
       </div>
-
-      <Suspense
-        fallback={
-          <div className="pt-2 pb-4">
-            <div className="flex items-baseline gap-3">
-              <span className={cn(TOTAL_CLASS, "text-pink-950/20")}>0</span>
-              <span className="text-xs md:text-sm font-mono text-pink-950/30">
-                contributions · past 365 days
-              </span>
-            </div>
-            <div className="pt-4">
-              <HeatmapSkeleton />
-            </div>
-          </div>
-        }
-      >
-        <GitHubActivityGrid />
-      </Suspense>
+      <GitHubActivityGrid data={data} />
     </section>
   );
 }

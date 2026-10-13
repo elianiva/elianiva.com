@@ -35,11 +35,16 @@ describe("root query wiring", () => {
     expect(routerSource).toContain("shouldDehydrateQuery");
   });
 
-  it("token-gated routes skip SSR so builds never bake empty fallbacks", async () => {
-    for (const path of ["src/routes/index.tsx", "src/routes/music.tsx"]) {
-      const source = await readFile(path, "utf8");
-      expect(source, `${path} must opt out of SSR`).toMatch(/ssr:\s*false/);
-    }
+  it("token-gated routes never bake empty fallbacks into the prerender", async () => {
+    const music = await readFile("src/routes/music.tsx", "utf8");
+    expect(music, "src/routes/music.tsx must opt out of SSR").toMatch(/ssr:\s*false/);
+
+    // The home page prerenders and bakes its GitHub data in at build time, so
+    // it must load it in the route loader and never fetch in the browser.
+    const home = await readFile("src/routes/index.tsx", "utf8");
+    expect(home).not.toMatch(/ssr:\s*false/);
+    expect(home).not.toContain("ClientOnly");
+    expect(home).toMatch(/loader:\s*\(\)\s*=>\s*getGitHubContributions\(\)/);
   });
 
   it("worker exposes env through process.env for server functions", async () => {

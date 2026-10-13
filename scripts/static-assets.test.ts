@@ -1,5 +1,13 @@
+import { work } from "../src/data/work-experience";
 import { describe, expect, it } from "vite-plus/test";
-import { buildRobots, buildRss, ogSpecs, readContent, type ContentMeta } from "./static-assets";
+import {
+  buildLlmsTxt,
+  buildRobots,
+  buildRss,
+  ogSpecs,
+  readContent,
+  type ContentMeta,
+} from "./static-assets";
 
 const post: ContentMeta = {
   slug: "hello-world",
@@ -89,5 +97,20 @@ describe("ogSpecs", () => {
     expect(files).toContain("posts/hello-world.png");
     expect(files).toContain("projects/demo.png");
     expect(new Set(files).size).toBe(files.length);
+  });
+});
+
+describe("buildLlmsTxt", () => {
+  it("lists featured projects, visible posts, and CV roles as Markdown links", () => {
+    const featured = { ...project, featured: true };
+    const archived = { ...project, slug: "old", title: "Old", featured: false };
+    const txt = buildLlmsTxt("https://elianiva.com", work, [post], [featured, archived]);
+    expect(txt).toContain("# Dicha Zelianivan Arkana");
+    expect(txt).toContain("[Demo](https://elianiva.com/projects/demo)");
+    expect(txt).not.toContain("projects/old");
+    expect(txt).toContain("(https://elianiva.com/posts/hello-world)");
+    expect(txt).toContain("pull/8499");
+    expect(txt).toContain("Aerotalon");
+    expect(txt).not.toContain("Cubix");
   });
 });

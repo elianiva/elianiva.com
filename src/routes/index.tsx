@@ -3,24 +3,25 @@ import { HeroSection } from "~/features/home/components/hero-section";
 import { BlogSection } from "~/features/home/components/blog-section";
 import { ProjectSection } from "~/features/projects/components/project-section";
 import { WorkExperienceSection } from "~/features/home/components/work-experience-section";
-import { OpenSourceSection } from "~/features/github/components/open-source-section";
+import { OpenSourcePicks } from "~/features/home/components/open-source-picks";
 import { workExperiences } from "~/data/work-experience";
 import { GitHubActivitySection } from "~/features/github/components/github-activity-section";
+import { getGitHubContributions } from "~/features/github/lib/github-server";
 import { homeSeo } from "~/lib/seo";
 
 export const Route = createFileRoute("/")({
   component: Home,
-  // The GitHub sections below read secret-backed server functions that have
-  // no token at build time and answer with empty fallbacks. Disabling SSR for
-  // this route keeps that emptiness out of the prerendered HTML — the
-  // sections render their Suspense skeletons in the shell, then fetch live
-  // data in the browser after hydration (where the router's
-  // `shouldDehydrateQuery` filter also skips them).
-  ssr: false,
+  // Everything on this page is prerendered, so crawlers and agents that do not
+  // run JavaScript read it. The contributions heatmap is fetched once here at
+  // build time (`GH_TOKEN` is set for `alchemy deploy`) and baked into the HTML.
+  // The deploy workflow also runs daily to keep it fresh.
+  loader: () => getGitHubContributions(),
+  staleTime: Infinity,
   head: () => homeSeo(),
 });
 
 function Home() {
+  const contributions = Route.useLoaderData();
   return (
     <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
       <HeroSection />
@@ -28,7 +29,7 @@ function Home() {
         <WorkExperienceSection workExperiences={workExperiences} />
       </div>
       <div className="relative with-box-underline grid md:grid-cols-2 gap-4 px-2 md:px-8 py-4 md:py-8">
-        <OpenSourceSection />
+        <OpenSourcePicks />
         <ProjectSection
           title="Personal Projects"
           description="Mostly made them just for fun and to learn new things."
@@ -39,7 +40,7 @@ function Home() {
         <BlogSection />
       </div>
       <div>
-        <GitHubActivitySection />
+        <GitHubActivitySection data={contributions} />
       </div>
     </div>
   );
