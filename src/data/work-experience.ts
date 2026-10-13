@@ -75,7 +75,7 @@ export const work: Work[] = [
   },
   {
     cv: false,
-    company: "[Undisclosed]",
+    company: "Various freelance work",
     position: "Fullstack Web Developer",
     time: "freelance",
     remote: false,
@@ -138,6 +138,26 @@ export function place(entry: Work): string {
 export function engagement(entry: Work): string {
   const label = engagements[entry.time];
   return entry.remote ? `${label}, Remote` : label;
+}
+
+/** Roles with no end date, newest first — the ones the home page calls current. */
+export function currentRoles(): Work[] {
+  return work.filter((entry) => entry.period[1] === null);
+}
+
+/** The finished roles, newest first. */
+export function pastRoles(): Work[] {
+  return work.filter((entry) => entry.period[1] !== null);
+}
+
+/**
+ * "2024–2025", "2023" when it started and ended in the same year, or
+ * "2026–Present" — the shorthand the home page prints under "Previously".
+ */
+export function yearRange(entry: Work): string {
+  const start = entry.period[0].slice(0, 4);
+  const end = entry.period[1]?.slice(0, 4) ?? "Present";
+  return start === end ? start : `${start}–${end}`;
 }
 
 /** "2026-01" to a local Date, so the month reads the same in every timezone. */

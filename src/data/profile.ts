@@ -6,6 +6,8 @@ export const profile = {
   name: "Dicha Zelianivan Arkana",
   handle: "elianiva",
   location: "Indonesia",
+  /** The zone the site prints the live clock in, and reads `UTC+7` from. */
+  timeZone: "Asia/Jakarta",
   /** Where the site's contact button points. */
   email: "contact@elianiva.com",
   /**
@@ -31,4 +33,16 @@ export const profile = {
 /** `https://www.linkedin.com/in/dichaa` becomes `linkedin.com/in/dichaa`. */
 export function bareHost(url: string): string {
   return url.replace(/^https?:\/\//, "").replace(/^www\./, "");
+}
+
+/**
+ * `Europe/Berlin` becomes `UTC+2` — read from the zone rather than typed next
+ * to it, so a moved zone cannot leave a stale offset on the page. Zones that
+ * observe DST report the offset in effect right now.
+ */
+export function utcOffsetLabel(timeZone: string): string {
+  const part = new Intl.DateTimeFormat("en-GB", { timeZone, timeZoneName: "shortOffset" })
+    .formatToParts(new Date())
+    .find((entry) => entry.type === "timeZoneName")?.value;
+  return (part ?? "GMT").replace(/^GMT/, "UTC");
 }

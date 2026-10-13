@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeroSection } from "~/features/home/components/hero-section";
+import { ProfileFacts } from "~/features/home/components/profile-facts";
 import { BlogSection } from "~/features/home/components/blog-section";
 import { ProjectSection } from "~/features/projects/components/project-section";
 import { WorkExperienceSection } from "~/features/home/components/work-experience-section";
@@ -25,9 +26,7 @@ function Home() {
   return (
     <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
       <HeroSection />
-      <div className="relative with-box-underline">
-        <WorkExperienceSection workExperiences={workExperiences} />
-      </div>
+      <ProfileFacts />
       <div className="relative with-box-underline grid md:grid-cols-2 gap-4 px-2 md:px-8 py-4 md:py-8">
         <OpenSourcePicks />
         <ProjectSection
@@ -35,6 +34,9 @@ function Home() {
           description="Mostly made them just for fun and to learn new things."
           seeMoreUrl="/projects"
         />
+      </div>
+      <div className="relative with-box-underline">
+        <WorkExperienceSection workExperiences={workExperiences} />
       </div>
       <div className="relative with-box-underline">
         <BlogSection />
