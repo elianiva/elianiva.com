@@ -17,8 +17,8 @@ export function DeferredCanvasBackground() {
       const id = window.requestIdleCallback(run, { timeout: 1500 });
       return () => window.cancelIdleCallback(id);
     }
-    const id = window.setTimeout(run, 200);
-    return () => window.clearTimeout(id);
+    const id = setTimeout(run, 200);
+    return () => clearTimeout(id);
   }, []);
 
   return ready ? (

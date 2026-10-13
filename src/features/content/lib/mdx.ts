@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from "react";
-import type { MDXContent } from "mdx/types";
+import type { MDXContent, MDXProps } from "mdx/types";
 
 type Loaders = Record<string, () => Promise<{ default: MDXContent }>>;
 
@@ -9,7 +9,7 @@ type Loaders = Record<string, () => Promise<{ default: MDXContent }>>;
 const postLoaders = import.meta.glob<{ default: MDXContent }>("/src/content/posts/*.mdx");
 const projectLoaders = import.meta.glob<{ default: MDXContent }>("/src/content/projects/*.mdx");
 
-const cache = new Map<string, ComponentType<{ components?: Record<string, unknown> }>>();
+const cache = new Map<string, ComponentType<MDXProps>>();
 
 function lazyMdx(kind: "posts" | "projects", loaders: Loaders, slug: string) {
   const key = `${kind}/${slug}`;
@@ -17,7 +17,7 @@ function lazyMdx(kind: "posts" | "projects", loaders: Loaders, slug: string) {
   if (!component) {
     const load = loaders[`/src/content/${kind}/${slug}.mdx`];
     if (!load) return null;
-    component = lazy(load) as ComponentType<{ components?: Record<string, unknown> }>;
+    component = lazy(load) as ComponentType<MDXProps>;
     cache.set(key, component);
   }
   return component;
