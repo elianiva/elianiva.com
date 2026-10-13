@@ -27,6 +27,7 @@ function Home() {
     <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
       <HeroSection />
       <ProfileFacts />
+      <GitHubActivitySection data={contributions} />
       <div className="relative with-box-underline grid md:grid-cols-2 gap-4 px-2 md:px-8 py-4 md:py-8">
         <OpenSourcePicks />
         <ProjectSection
@@ -40,9 +41,6 @@ function Home() {
       </div>
       <div className="relative with-box-underline">
         <BlogSection />
-      </div>
-      <div>
-        <GitHubActivitySection data={contributions} />
       </div>
     </div>
   );

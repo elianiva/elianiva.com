@@ -81,7 +81,7 @@ export function HeroSection() {
               <a
                 href={`mailto:${siteData.email}`}
                 title="Email me about work"
-                aria-label="Email me about work"
+                aria-label="Work with me, by email"
               />
             }
           >

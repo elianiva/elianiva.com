@@ -6,12 +6,19 @@ export type Engagement = "full-time" | "part-time" | "freelance" | "contract";
 /** A `YYYY-MM` start and an end that is still `null` when the role is current. */
 export type Period = [start: string, end: string | null];
 
+/** A company website and the favicon bundled from that site. */
+export interface CompanyWebsite {
+  href: string;
+  favicon: string;
+}
+
 /** One role, as authored. This is the single source for the site and the CV. */
 export interface Work {
   /** Whether the CV prints this role. The site prints every role. */
   cv: boolean;
   /** Short brand, e.g. `IPB Training`. */
   company: string;
+  website?: CompanyWebsite;
   /** Registered entity, where it differs from the brand. */
   legalName?: string;
   position: string;

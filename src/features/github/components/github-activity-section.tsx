@@ -1,6 +1,7 @@
 import type { ContributionsResponse } from "../lib/github.service";
 import { Heading } from "~/components/ui/heading";
 import { HeatmapGrid, COMPACT_WEEK_COUNT, type HeatmapCell } from "~/components/ui/heatmap-grid";
+import { profile } from "~/data/profile";
 import { cn } from "~/lib/utils";
 
 const TOTAL_CLASS =
@@ -65,12 +66,10 @@ function GitHubActivityGrid({ data }: { data: ContributionsResponse }) {
 
 /**
  * Baked into the page at build time: the route loader reads the contributions
- * once while prerendering, so the browser never fetches them. Without a token
- * there is nothing to show, so the section is left out instead of printing a
- * setup hint into the public page.
+ * once while prerendering, so the browser never fetches them. Without data, the
+ * section still points to the public profile instead of disappearing.
  */
 export function GitHubActivitySection({ data }: { data: ContributionsResponse | null }) {
-  if (!data) return null;
   return (
     <section
       aria-labelledby="github-activity-heading"
@@ -81,7 +80,20 @@ export function GitHubActivitySection({ data }: { data: ContributionsResponse | 
           Git Activity
         </Heading>
       </div>
-      <GitHubActivityGrid data={data} />
+      {data ? (
+        <GitHubActivityGrid data={data} />
+      ) : (
+        <p className="font-mono text-sm text-pink-950/60">
+          <a
+            href={profile.urls.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-pink-300 decoration-dotted underline-offset-4 hover:text-pink-600 hover:decoration-solid"
+          >
+            See my GitHub activity
+          </a>
+        </p>
+      )}
     </section>
   );
 }

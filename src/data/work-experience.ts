@@ -10,6 +10,10 @@ export const work: Work[] = [
   {
     cv: true,
     company: "Aerotalon",
+    website: {
+      href: "https://aerotalon.com",
+      favicon: "/assets/company-favicons/aerotalon.jpg",
+    },
     position: "Frontend Web Developer",
     time: "contract",
     remote: true,
@@ -27,6 +31,10 @@ export const work: Work[] = [
   {
     cv: true,
     company: "IPB Training",
+    website: {
+      href: "https://ipbtraining.com",
+      favicon: "/assets/company-favicons/ipbtraining.png",
+    },
     legalName: "PT. Global Scholarship Services Indonesia",
     position: "Fullstack Web Developer",
     time: "full-time",
@@ -59,6 +67,10 @@ export const work: Work[] = [
   {
     cv: false,
     company: "Cubix Branding Agency",
+    website: {
+      href: "https://cubix.co.id",
+      favicon: "/assets/company-favicons/cubix.png",
+    },
     position: "Fullstack Web Developer",
     time: "contract",
     remote: false,
@@ -107,6 +119,10 @@ export const work: Work[] = [
   {
     cv: false,
     company: "Enam Dua Teknologi",
+    website: {
+      href: "https://62teknologi.com",
+      favicon: "/assets/company-favicons/enam-dua.png",
+    },
     position: "Frontend Web Developer",
     time: "freelance",
     remote: false,
