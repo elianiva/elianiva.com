@@ -342,7 +342,7 @@
   --sidebar-accent-foreground: oklch(0.212 0.019 322.12);
   --sidebar-border: oklch(0.922 0.005 325.62);
   --sidebar-ring: oklch(0.711 0.019 323.02);
-  --container: 1080px;
+  --container: 960px;
 }
 
 @theme inline {
