@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { getPosts } from "~/features/posts/lib/posts";
 import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -8,11 +7,8 @@ import { Button } from "~/components/ui/button";
 import { PostRow } from "~/features/posts/components/post-row";
 
 function BlogPostList() {
-  const { data: posts } = useSuspenseQuery({
-    queryKey: ["blog-posts"],
-    queryFn: () => getPosts({ limit: 6 }),
-    staleTime: Infinity,
-  });
+  // Bundled content: read synchronously so navigation never flashes a skeleton.
+  const posts = getPosts({ limit: 6 });
 
   return (
     <div>

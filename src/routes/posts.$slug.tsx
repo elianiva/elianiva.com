@@ -1,11 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { postMdx } from "~/features/content/lib/mdx";
+import { postMdx, preloadPostMdx } from "~/features/content/lib/mdx";
 import { getPostBySlug } from "~/features/posts/lib/posts";
 import { CodeCopy } from "~/components/code-copy";
 import { Badge } from "~/components/ui/badge";
 import { postSeo } from "~/lib/seo";
-import { PostDetailSkeleton } from "~/components/ui/page-skeleton";
 import { Heading } from "~/components/ui/heading";
 import PencilIcon from "~icons/ph/note-pencil";
 
@@ -15,10 +14,10 @@ export const Route = createFileRoute("/posts/$slug")({
   // only links real posts — so prerender never hits this for a bogus slug
   // (a thrown notFound() would otherwise silently drop the page from the
   // output with no file and no error, even under failOnError).
-  pendingComponent: PostDetailSkeleton,
-  loader: ({ params: { slug } }) => {
+  loader: async ({ params: { slug } }) => {
     const detail = getPostBySlug(slug);
     if (!detail) throw notFound();
+    await preloadPostMdx(slug);
     return detail;
   },
   head: ({ loaderData }) => {

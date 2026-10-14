@@ -1,9 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { projectMdx } from "~/features/content/lib/mdx";
+import { projectMdx, preloadProjectMdx } from "~/features/content/lib/mdx";
 import { getProjectBySlug } from "~/features/projects/lib/projects";
 import { projectSeo } from "~/lib/seo";
-import { ProjectDetailSkeleton } from "~/components/ui/page-skeleton";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
 import { Heading } from "~/components/ui/heading";
@@ -12,10 +11,10 @@ export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
   // Same crawl guarantee as the post page: the index only links real
   // projects, so prerender never hits this for a bogus slug.
-  pendingComponent: ProjectDetailSkeleton,
-  loader: ({ params: { slug } }) => {
+  loader: async ({ params: { slug } }) => {
     const detail = getProjectBySlug(slug);
     if (!detail) throw notFound();
+    await preloadProjectMdx(slug);
     return detail;
   },
   head: ({ loaderData }) => {

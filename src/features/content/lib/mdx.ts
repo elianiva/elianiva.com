@@ -10,9 +10,13 @@ const postLoaders = import.meta.glob<{ default: MDXContent }>("/src/content/post
 const projectLoaders = import.meta.glob<{ default: MDXContent }>("/src/content/projects/*.mdx");
 
 const cache = new Map<string, ComponentType<MDXProps>>();
+// Components whose chunk has already been fetched. Rendering one never suspends.
+const loaded = new Map<string, ComponentType<MDXProps>>();
 
 function lazyMdx(kind: "posts" | "projects", loaders: Loaders, slug: string) {
   const key = `${kind}/${slug}`;
+  const ready = loaded.get(key);
+  if (ready) return ready;
   let component = cache.get(key);
   if (!component) {
     const load = loaders[`/src/content/${kind}/${slug}.mdx`];
@@ -23,5 +27,17 @@ function lazyMdx(kind: "posts" | "projects", loaders: Loaders, slug: string) {
   return component;
 }
 
+// Called from route loaders so the chunk is fetched during navigation (and on
+// link hover/focus via preload) instead of suspending after the page renders.
+async function preloadMdx(kind: "posts" | "projects", loaders: Loaders, slug: string) {
+  const key = `${kind}/${slug}`;
+  const load = loaders[`/src/content/${kind}/${slug}.mdx`];
+  if (!load || loaded.has(key)) return;
+  const mod = await load();
+  loaded.set(key, mod.default as ComponentType<MDXProps>);
+}
+
 export const postMdx = (slug: string) => lazyMdx("posts", postLoaders, slug);
 export const projectMdx = (slug: string) => lazyMdx("projects", projectLoaders, slug);
+export const preloadPostMdx = (slug: string) => preloadMdx("posts", postLoaders, slug);
+export const preloadProjectMdx = (slug: string) => preloadMdx("projects", projectLoaders, slug);

@@ -7,7 +7,7 @@ import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 // page — there is no `?url` link anymore.
 import "../styles.css";
 import "../highlight.css";
-import googleSansLatin from "@fontsource-variable/google-sans/files/google-sans-latin-wght-normal.woff2?url";
+import googleSansLatin from "~/assets/fonts/google-sans-subset.woff2?url";
 import { Frame } from "../components/frame";
 import { DeferredFloatingShapes } from "../components/deferred-floating-shapes";
 import { Footer } from "../components/footer";

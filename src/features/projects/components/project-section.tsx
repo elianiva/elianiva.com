@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { getProjects } from "../lib/projects";
 import type { ProjectType } from "~/features/content/lib/projects";
 import { Heading } from "~/components/ui/heading";
@@ -26,11 +25,8 @@ function ProjectCardFallback() {
 }
 
 function ProjectCardList({ type, featured }: { type: ProjectType; featured: boolean }) {
-  const { data: projects } = useSuspenseQuery({
-    queryKey: ["projects", type, featured],
-    queryFn: () => getProjects({ type, featured }),
-    staleTime: Infinity,
-  });
+  // Bundled content: read synchronously so navigation never flashes a skeleton.
+  const projects = getProjects({ type, featured });
 
   return (
     <>

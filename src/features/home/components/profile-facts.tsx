@@ -427,13 +427,13 @@ export function ProfileFacts() {
                 <ProjectBadge
                   name="Meiro"
                   href="https://github.com/elianiva/meiro"
-                  icon="https://raw.githubusercontent.com/elianiva/meiro/master/resources/icon.png"
+                  icon="/assets/project-icons/meiro.webp"
                 />
                 , a YouTube Music client, and{" "}
                 <ProjectBadge
                   name="Nook"
                   href="https://github.com/elianiva/nook"
-                  icon="https://raw.githubusercontent.com/elianiva/nook/master/apps/frontend/public/favicon.svg"
+                  icon="/assets/project-icons/nook.svg"
                 />
                 , my own Anki clone for learning Japanese.
               </p>
