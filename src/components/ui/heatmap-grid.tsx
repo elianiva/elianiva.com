@@ -1,4 +1,3 @@
-import { Tooltip, TooltipTrigger, TooltipContent } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 
 export type HeatmapCell = {
@@ -107,56 +106,62 @@ function getMonthLabels(columns: Column[]): MonthLabel[] {
     }));
 }
 
-function Heatmap({ columns, className }: { columns: Column[]; className: string }) {
-  const monthLabels = getMonthLabels(columns);
+/**
+ * One grid for every viewport: cells flow column by column into explicit rows, so
+ * the older weeks only need `display: none` on phones and the rest reflow. Month
+ * labels differ per range, so each range gets its own set, shown by breakpoint.
+ */
+function Heatmap({ columns }: { columns: Column[] }) {
+  const compactStart = columns.length - COMPACT_WEEK_COUNT;
+  const fullLabels = getMonthLabels(columns);
+  const compactLabels = getMonthLabels(columns.slice(-COMPACT_WEEK_COUNT));
+
+  const labels = (items: MonthLabel[], className: string) =>
+    items.map((label) => (
+      <span
+        key={`${className}-${label.column}-${label.text}`}
+        className={cn(
+          "text-[10px] font-mono uppercase tracking-wider text-pink-950/40 whitespace-nowrap pointer-events-none justify-self-start",
+          className,
+        )}
+        style={{ gridRow: 1, gridColumn: `${label.column} / span ${label.span}` }}
+      >
+        {label.text}
+      </span>
+    ));
 
   return (
     <div
-      className={cn("grid gap-0.75", className)}
-      style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}
+      className="grid grid-flow-col gap-0.75 [--cols:26] sm:[--cols:53]"
+      style={{
+        gridTemplateColumns: "repeat(var(--cols), minmax(0, 1fr))",
+        gridTemplateRows: "auto repeat(7, auto)",
+      }}
     >
-      {monthLabels.map((label) => (
-        <span
-          key={`${label.column}-${label.text}`}
-          className="text-[10px] font-mono uppercase tracking-wider text-pink-950/40 whitespace-nowrap pointer-events-none"
-          style={{
-            gridRow: 1,
-            gridColumn: `${label.column} / span ${label.span}`,
-            justifySelf: "start",
-          }}
-        >
-          {label.text}
-        </span>
-      ))}
+      {labels(fullLabels, "hidden sm:block")}
+      {labels(compactLabels, "sm:hidden")}
 
       {columns.map((column, colIndex) =>
         column.map((cell, dayIndex) => {
+          const visibility = colIndex < compactStart ? "hidden sm:block" : "";
           if (!cell) {
             return (
               <div
                 key={`empty-${colIndex}-${dayIndex}`}
-                className="aspect-square bg-pink-100/20"
-                style={{ gridRow: dayIndex + 2, gridColumn: colIndex + 1 }}
+                className={cn("aspect-square bg-pink-100/20", visibility)}
+                style={{ gridRow: dayIndex + 2 }}
               />
             );
           }
 
           const color = INTENSITY_COLORS[Math.min(4, Math.max(0, cell.intensity))];
           return (
-            <Tooltip key={cell.date}>
-              <TooltipTrigger
-                render={
-                  <div
-                    className={cn(
-                      "cursor-default aspect-square transition-colors duration-150",
-                      color,
-                    )}
-                    style={{ gridRow: dayIndex + 2, gridColumn: colIndex + 1 }}
-                  />
-                }
-              ></TooltipTrigger>
-              <TooltipContent className="pointer-events-none">{cell.tooltip}</TooltipContent>
-            </Tooltip>
+            <div
+              key={cell.date}
+              data-tip={cell.tooltip}
+              className={cn("heat-cell cursor-default aspect-square", color, visibility)}
+              style={{ gridRow: dayIndex + 2 }}
+            />
           );
         }),
       )}
@@ -180,8 +185,7 @@ export function HeatmapGrid({ weeks, legendLabel, emptyLabel = "No data availabl
 
   return (
     <div className="relative pt-4 w-full">
-      <Heatmap columns={columns} className="hidden sm:grid" />
-      <Heatmap columns={columns.slice(-COMPACT_WEEK_COUNT)} className="grid sm:hidden" />
+      <Heatmap columns={columns} />
 
       <div className="flex items-center gap-1 mt-3">
         <span className="text-xs font-mono text-pink-950/30">{legendLabel ?? "less"}</span>

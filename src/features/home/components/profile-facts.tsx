@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import * as DateTime from "effect/DateTime";
 import type { CSSProperties, MouseEvent } from "react";
 import siteData from "~/data/sites";
 import { currentRoles, pastRoles, yearRange } from "~/data/work-experience";
@@ -287,6 +286,8 @@ function CafeStack() {
                   alt=""
                   width={36}
                   height={36}
+                  loading="lazy"
+                  decoding="async"
                   className={`absolute -right-px top-1/2 size-9 -translate-y-1/2 rotate-6 rounded-[10px] border object-contain p-1 shadow-[0_3px_0_rgba(0,0,0,0.12)] ${logo}`}
                 />
                 <span>{name}</span>
@@ -308,7 +309,15 @@ function ProjectBadge({ name, href, icon }: { name: string; href: string; icon: 
       rel="noreferrer"
       className={`${TILE_PILL} mx-1 no-underline transition-colors hover:border-pink-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-pink-400 motion-reduce:transition-none`}
     >
-      <img src={icon} alt="" width={36} height={36} className={TILE} />
+      <img
+        src={icon}
+        alt=""
+        width={36}
+        height={36}
+        className={TILE}
+        loading="lazy"
+        decoding="async"
+      />
       {name}
     </a>
   );
@@ -333,11 +342,11 @@ function Takes() {
                 {post.title}
               </Link>
               <span className="font-mono text-xs text-pink-950/70">
-                {DateTime.format(DateTime.makeUnsafe(post.date), {
-                  locale: "en-GB",
+                {new Intl.DateTimeFormat("en-GB", {
                   month: "short",
                   year: "numeric",
-                })}
+                  timeZone: "UTC",
+                }).format(new Date(post.date))}
               </span>
             </li>
           );

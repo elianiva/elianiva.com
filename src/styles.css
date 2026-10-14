@@ -287,12 +287,6 @@
   .prose :where(li) p:first-child {
     @apply mb-2;
   }
-
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 200ms;
-    animation-timing-function: ease-out;
-  }
 }
 
 /* TanStack Highlight code blocks (see src/lib/highlight.ts).
@@ -391,4 +385,118 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --max-width-container: var(--container);
+}
+
+/* Heatmap cell tooltip: pure CSS so the ~370 cells need no JS or portals. */
+.heat-cell {
+  position: relative;
+}
+
+.heat-cell:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 50;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* Floating background shapes (see components/floating-shapes.tsx). Only
+ * transform and opacity are animated, so everything stays on the compositor. */
+.floating-shapes {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+  container-type: size;
+  --ar: 1.6;
+  background: linear-gradient(
+    to top right,
+    rgb(255, 245, 240),
+    rgb(255, 249, 245) 50%,
+    rgb(255, 240, 245)
+  );
+}
+
+.fs-x,
+.fs-y,
+.fs-spin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+
+.fs-x {
+  animation: fs-x var(--x-dur) linear var(--x-delay) infinite var(--x-dir);
+}
+
+.fs-y {
+  animation: fs-y var(--y-dur) linear var(--y-delay) infinite var(--y-dir);
+}
+
+.fs-spin {
+  animation: fs-spin var(--spin-dur) linear var(--spin-delay) infinite var(--spin-dir);
+}
+
+.fs-svg {
+  position: absolute;
+  width: calc(var(--side) * 1cqh);
+  height: calc(var(--side) * 1cqh);
+  left: calc(var(--side) * -0.5cqh);
+  top: calc(var(--side) * -0.5cqh);
+  transform: scaleX(var(--ar));
+  animation: fs-breathe var(--breathe-dur) ease-in-out var(--breathe-delay) infinite alternate;
+}
+
+@keyframes fs-x {
+  from {
+    transform: translateX(calc(var(--m) * -1cqw));
+  }
+  to {
+    transform: translateX(calc(100cqw + var(--m) * 1cqw));
+  }
+}
+
+@keyframes fs-y {
+  from {
+    transform: translateY(calc(var(--m) * -1cqh));
+  }
+  to {
+    transform: translateY(calc(100cqh + var(--m) * 1cqh));
+  }
+}
+
+@keyframes fs-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fs-breathe {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: var(--alpha);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fs-x,
+  .fs-y,
+  .fs-spin,
+  .fs-svg {
+    animation-play-state: paused;
+  }
 }

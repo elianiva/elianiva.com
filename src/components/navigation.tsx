@@ -14,8 +14,8 @@ export function NavigationStrip() {
   const { pathname } = useLocation();
 
   return (
-    <header className="fixed md:top-2 inset-x-0 z-40 flex justify-center max-sm:bg-cream/70 max-sm:backdrop-blur-md">
-      <nav className="mt-4 md:mt-0 mx-auto flex items-center h-10 md:bg-cream/70 md:backdrop-blur-md border-y md:border border-pink-200/50 max-w-container w-full overflow-x-auto scrollbar-none">
+    <header className="fixed md:top-2 inset-x-0 z-40 flex justify-center max-sm:bg-cream/95">
+      <nav className="mt-4 md:mt-0 mx-auto flex items-center h-10 md:bg-cream/95 border-y md:border border-pink-200/50 max-w-container w-full overflow-x-auto scrollbar-none">
         {NAV_ITEMS.map((item) => {
           const isActive =
             item.href === "/"

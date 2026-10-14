@@ -35,7 +35,7 @@ export const Route = createFileRoute("/projects/$slug")({
 function ProjectNotFoundPage() {
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
-      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
+      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / projects</p>
         <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
           This project has not materialized.
@@ -139,7 +139,7 @@ function ProjectDetailPage() {
                         className={`w-full h-full object-contain ${
                           stackName.toLowerCase() === "nextjs" ? "filter invert" : ""
                         }`}
-                        src={`/assets/logo/${stackName.toLowerCase().replace(/\s+/g, "-")}.png`}
+                        src={`/assets/logo/${stackName.toLowerCase().replace(/\s+/g, "-")}.webp`}
                         alt={stackName}
                         loading="lazy"
                         decoding="async"

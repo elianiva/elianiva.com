@@ -1,4 +1,3 @@
-import * as DateTime from "effect/DateTime";
 import { uses, usesUpdatedAt, type UsesItem, type UsesSection } from "~/data/uses";
 
 function ItemName({ item }: { item: UsesItem }) {
@@ -19,7 +18,7 @@ function ItemName({ item }: { item: UsesItem }) {
 
 function Item({ item }: { item: UsesItem }) {
   return (
-    <article className="relative border border-pink-200/60 bg-white/70 backdrop-blur-lg p-4 md:p-5">
+    <article className="relative border border-pink-200/60 bg-white/70 p-4 md:p-5">
       <div
         aria-hidden="true"
         className="absolute -left-1 -top-1 size-2 border border-pink-200/60 bg-white"
@@ -102,12 +101,12 @@ export function UsesPage() {
             <p className="font-mono text-xs text-pink-950/50 md:text-right leading-relaxed">
               updated{" "}
               <span className="text-pink-500">
-                {DateTime.format(DateTime.makeUnsafe(usesUpdatedAt), {
-                  locale: "en-GB",
+                {new Intl.DateTimeFormat("en-GB", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
-                })}
+                  timeZone: "UTC",
+                }).format(new Date(usesUpdatedAt))}
               </span>
               <span className="block">
                 {String(total).padStart(2, "0")} items across {uses.length} groups

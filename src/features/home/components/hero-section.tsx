@@ -68,7 +68,6 @@ export function HeroSection() {
             variant="default"
             size="lg"
             className="font-mono text-xs uppercase tracking-wide"
-            nativeButton={false}
             render={
               <a
                 href={`mailto:${siteData.email}`}
@@ -87,7 +86,6 @@ export function HeroSection() {
                 key={social.label}
                 variant="ghost"
                 size="lg"
-                nativeButton={false}
                 render={
                   <a
                     href={social.link}

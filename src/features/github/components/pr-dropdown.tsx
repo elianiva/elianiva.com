@@ -4,7 +4,6 @@ import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
 import CaretDownIcon from "~icons/ph/caret-down";
 import GitPullRequestIcon from "~icons/ph/git-pull-request-duotone";
 import StarIcon from "~icons/ph/star-fill";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "~/components/ui/collapsible";
 
 interface PRDropdownProps {
   repository: {
@@ -38,12 +37,14 @@ export function PRDropdown({ repository, prs, mergedCount, lastMergedAt }: PRDro
   const detailsId = `pr-details-${repository.full_name}`;
 
   return (
-    <Collapsible
-      open={isOpen}
-      onOpenChange={setIsOpen}
-      className="bg-blur-xl bg-white/70 hover:bg-white focus:bg-white"
-    >
-      <CollapsibleTrigger className="list-none w-full px-4 py-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 text-left">
+    <div className="bg-white/70 hover:bg-white focus:bg-white">
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        aria-controls={detailsId}
+        onClick={() => setIsOpen((open) => !open)}
+        className="list-none w-full px-4 py-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 text-left"
+      >
         <div className="flex flex-row sm:items-center justify-between">
           <div className="flex items-center gap-2">
             <div
@@ -83,9 +84,9 @@ export function PRDropdown({ repository, prs, mergedCount, lastMergedAt }: PRDro
             </p>
           </div>
         </div>
-      </CollapsibleTrigger>
+      </button>
 
-      <CollapsibleContent>
+      {isOpen ? (
         <div className="border-t border-pink-200/50">
           <div id={detailsId} className="p-3">
             <div className="space-y-2">
@@ -125,7 +126,7 @@ export function PRDropdown({ repository, prs, mergedCount, lastMergedAt }: PRDro
             </div>
           </div>
         </div>
-      </CollapsibleContent>
-    </Collapsible>
+      ) : null}
+    </div>
   );
 }

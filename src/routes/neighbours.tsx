@@ -23,7 +23,7 @@ function NeighboursRoute() {
                 href={neighbour.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative border border-pink-200/50 bg-linear-to-br from-white/60 via-pink-50/30 to-white/20 p-3 hover:bg-white/80 transition-all duration-150 block backdrop-blur-lg"
+                className="group relative border border-pink-200/50 bg-linear-to-br from-white/60 via-pink-50/30 to-white/20 p-3 hover:bg-white/80 transition-all duration-150 block"
               >
                 <div className="absolute -left-1 -top-1 size-2 border border-pink-200/50 bg-white" />
                 <div className="absolute -right-1 -top-1 size-2 border border-pink-200/50 bg-white" />

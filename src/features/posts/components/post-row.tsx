@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import * as DateTime from "effect/DateTime";
 
 type PostRowProps = {
   slug: string;
@@ -17,11 +16,11 @@ export function PostRow({ slug, title, description, date, tags }: PostRowProps) 
       className="group grid md:grid-cols-[6.5rem_1fr] gap-x-4 px-3 py-2.5 hover:bg-white/70 transition-colors"
     >
       <span className="font-mono text-xs text-pink-950/50 md:pt-1.5" suppressHydrationWarning>
-        {DateTime.format(DateTime.makeUnsafe(date), {
-          locale: "en-GB",
+        {new Intl.DateTimeFormat("en-GB", {
           month: "short",
           year: "numeric",
-        })}
+          timeZone: "UTC",
+        }).format(new Date(date))}
       </span>
       <div className="min-w-0">
         <div className="font-display font-semibold capitalize text-pink-950 group-hover:text-pink-700 transition-colors">

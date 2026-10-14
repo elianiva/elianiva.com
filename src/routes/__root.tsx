@@ -9,11 +9,10 @@ import "../styles.css";
 import "../highlight.css";
 import googleSansLatin from "@fontsource-variable/google-sans/files/google-sans-latin-wght-normal.woff2?url";
 import { Frame } from "../components/frame";
-import { DeferredCanvasBackground } from "../components/deferred-canvas-background";
+import { DeferredFloatingShapes } from "../components/deferred-floating-shapes";
 import { Footer } from "../components/footer";
 
 import { NavigationStrip } from "~/components/navigation";
-import { TooltipProvider } from "~/components/ui/tooltip";
 
 function NotFoundPage() {
   return (
@@ -91,7 +90,7 @@ function RootLayout() {
           Skip to main content
         </a>
 
-        <DeferredCanvasBackground />
+        <DeferredFloatingShapes />
         <Frame />
         <NavigationStrip />
 
@@ -103,9 +102,7 @@ function RootLayout() {
             never resolves to null. */}
         <QueryClientProvider client={queryClient}>
           <main id="main-content" role="main" className="relative z-0 flex-1 p-2 md:p-0">
-            <TooltipProvider>
-              <Outlet />
-            </TooltipProvider>
+            <Outlet />
           </main>
 
           <Footer />

@@ -1,4 +1,3 @@
-import * as DateTime from "effect/DateTime";
 import sites from "~/data/sites";
 import { profile } from "~/data/profile";
 
@@ -65,11 +64,11 @@ function truncate(text: string, max: number) {
 }
 
 function toIso(date: string): string {
-  return DateTime.formatIso(DateTime.makeUnsafe(date));
+  return new Date(date).toISOString();
 }
 
 function nowIso(): string {
-  return DateTime.formatIso(DateTime.nowUnsafe());
+  return new Date().toISOString();
 }
 
 /**

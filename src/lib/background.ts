@@ -112,25 +112,3 @@ export function generateShapes(): ShapeParams {
     baseAlpha,
   };
 }
-
-export interface BackgroundRenderer {
-  resize(width: number, height: number): void;
-  frame(time: number): void;
-  destroy(): void;
-}
-
-const MAX_DPR = 1.5;
-const PIXEL_BUDGET = 1_200_000;
-
-export function computeCanvasSize(clientWidth: number, clientHeight: number) {
-  const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-  let width = Math.max(1, Math.floor(clientWidth * dpr));
-  let height = Math.max(1, Math.floor(clientHeight * dpr));
-  const pixels = width * height;
-  if (pixels > PIXEL_BUDGET) {
-    const k = Math.sqrt(PIXEL_BUDGET / pixels);
-    width = Math.max(1, Math.floor(width * k));
-    height = Math.max(1, Math.floor(height * k));
-  }
-  return { width, height };
-}

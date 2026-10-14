@@ -93,11 +93,11 @@ After installing it, it will be available to Fcitx as an input method.
 
 Now what we need to do is set Mozc as Fcitx input method. To do that, open up the `fcitx5-configtool`. It will roughly look like this, it may look different because of your theme.
 
-![fcitx configtool](/assets/posts/japanese-input-method-on-linux/configtool-1.png)
+![fcitx configtool](/assets/posts/japanese-input-method-on-linux/configtool-1.webp)
 
 Make sure the checkbox for `Only Show Current Language` is unchecked, otherwise you won't find mozc.
 
-![fcitx configtool](/assets/posts/japanese-input-method-on-linux/configtool-2.png)
+![fcitx configtool](/assets/posts/japanese-input-method-on-linux/configtool-2.webp)
 
 Find mozc, click it, then press the top button. Not sure why the icon is missing, probably some weird QT and GTK compatibility issue.
 
@@ -111,7 +111,7 @@ If you put it on `~/.xinitrc`, it will get executed when you log in into xorg.
 
 Fcitx is toggleable using a keybind that you can change from the `fcitx5-confgitool` which looks like this.
 
-![fcitx configtool](/assets/posts/japanese-input-method-on-linux/configtool-3.png)
+![fcitx configtool](/assets/posts/japanese-input-method-on-linux/configtool-3.webp)
 
 You can change the `Trigger Input Method` to whatever key you like. I personally use `alt+space`.
 
@@ -119,7 +119,7 @@ You can change the `Trigger Input Method` to whatever key you like. I personally
 
 If you've done configuring it, try to activate it by pressing the keybind that you've defined before then try to type on something. It will look like this.
 
-![fcitx completion preview](/assets/posts/japanese-input-method-on-linux/preview.png)
+![fcitx completion preview](/assets/posts/japanese-input-method-on-linux/preview.webp)
 
 It looks like an autocomplete from a text editor. The way it works is if you write `romaji`, it auto converts it to `hiragana` which you can then press `TAB` to scroll the options.
 

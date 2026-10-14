@@ -1,5 +1,3 @@
-import * as DateTime from "effect/DateTime";
-
 export function fmtTokens(n = 0): string {
   if (n >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
   if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
@@ -14,9 +12,7 @@ export function fmtCost(n = 0): string {
 
 export function fmtRel(iso: string | null): string {
   if (!iso) return "now";
-  const now = DateTime.nowUnsafe();
-  const target = DateTime.makeUnsafe(iso);
-  const diffMs = DateTime.toEpochMillis(now) - DateTime.toEpochMillis(target);
+  const diffMs = Date.now() - new Date(iso).getTime();
   const diff = diffMs / 1000;
   if (diff < 60) return "just now";
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;

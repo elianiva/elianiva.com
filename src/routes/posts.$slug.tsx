@@ -22,8 +22,9 @@ export const Route = createFileRoute("/posts/$slug")({
     return detail;
   },
   head: ({ loaderData }) => {
+    // Hidden or unknown slugs render the 404 page; there is no post to describe.
     if (!loaderData)
-      return postSeo({ title: "Post", description: "", date: "", tags: [], slug: "" });
+      return { meta: [{ title: "Post not found" }, { name: "robots", content: "noindex" }] };
     return postSeo({
       title: loaderData.post.title,
       description: loaderData.post.description,
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/posts/$slug")({
 function PostNotFoundPage() {
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
-      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft backdrop-blur-sm md:p-10">
+      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft md:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / posts</p>
         <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
           This post shelf is empty here.
