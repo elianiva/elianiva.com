@@ -31,12 +31,12 @@ function Home() {
       <HeroSection />
       <ProfileFacts />
       <GitHubActivitySection data={contributions} />
+      <div className="relative with-box-underline">
+        <WorkExperienceSection workExperiences={workExperiences} />
+      </div>
       <div className="relative with-box-underline grid md:grid-cols-2 gap-4 px-2 md:px-8 py-4 md:py-8">
         <OpenSourcePicks />
         <ProjectSection title="Personal Projects" seeMoreUrl="/projects" />
-      </div>
-      <div className="relative with-box-underline">
-        <WorkExperienceSection workExperiences={workExperiences} />
       </div>
       <div className="relative with-box-underline">
         <BlogSection />
