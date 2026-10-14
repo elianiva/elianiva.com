@@ -3,24 +3,20 @@ import type { ProjectType } from "~/features/content/lib/projects";
 
 type ProjectSectionItem = {
   title: string;
-  description: string;
   type: ProjectType;
 };
 
 const SECTIONS: ProjectSectionItem[] = [
   {
     title: "Personal Projects",
-    description: "Mostly made them just for fun and to learn new things.",
     type: "personal",
   },
   {
     title: "Open Source Projects",
-    description: "These are some open source projects I've helped building",
     type: "open-source",
   },
   {
     title: "Assignments",
-    description: "Projects I've worked on during high school and university courses.",
     type: "assignment",
   },
 ];
