@@ -22,16 +22,103 @@ function hourIn(timeZone: string, date: Date): number {
   return Number(part?.value ?? 0) % 24;
 }
 
-/** What I am likely up to at a given hour, and the colour of the dot that says so. */
-const STATES: [until: number, text: string, dot: string][] = [
-  [2, "winding down for the night", "bg-neutral-400"],
-  [6, "asleep, I'll reply when I'm up", "bg-neutral-400"],
-  [9, "morning coffee o'clock", "bg-amber-400"],
-  [17, "probably at my desk", "bg-green-500"],
-  [22, "winding down, replies are likely", "bg-green-500"],
-  [24, "late-night coding, replies might be slow", "bg-amber-400"],
+/**
+ * A stretch of my day: the hour it ends at (exclusive), the colour of the dot
+ * that says so, and the ways I put it into words. Add or reword a line and the
+ * sentence follows; the rotation below needs no other change.
+ */
+interface Stretch {
+  until: number;
+  dot: string;
+  lines: readonly string[];
+}
+
+const STATES: readonly Stretch[] = [
+  {
+    until: 2,
+    dot: "bg-neutral-400",
+    lines: [
+      "winding down for the night",
+      "calling it a night soon",
+      "off the keyboard in a bit",
+      "should be asleep already, honestly",
+    ],
+  },
+  {
+    until: 6,
+    dot: "bg-neutral-400",
+    lines: [
+      "asleep, I'll reply when I'm up",
+      "in bed, replies wait until morning",
+      "fast asleep, I'll get back to you tomorrow",
+      "out cold, replies resume with my coffee",
+    ],
+  },
+  {
+    until: 9,
+    dot: "bg-amber-400",
+    lines: [
+      "morning coffee o'clock",
+      "coffee first, words later",
+      "easing into the day with a coffee",
+      "shaking off sleep, mug in hand",
+    ],
+  },
+  {
+    until: 17,
+    dot: "bg-green-500",
+    lines: [
+      "probably at my desk",
+      "heads down at work, replies come quick",
+      "at my desk, between meetings",
+      "deep in a ticket somewhere",
+    ],
+  },
+  {
+    until: 22,
+    dot: "bg-green-500",
+    lines: [
+      "winding down, replies are likely",
+      "wrapping up loose ends from today",
+      "off the clock, but still around",
+      "evening tinkering, replies are likely",
+    ],
+  },
+  {
+    until: 24,
+    dot: "bg-amber-400",
+    lines: [
+      "late-night coding, replies might be slow",
+      "up late tinkering, replies might lag",
+      "one more commit, I promise",
+      "down a rabbit hole, replies might be slow",
+    ],
+  },
 ];
-const stateFor = (h: number) => STATES.find(([until]) => h < until) ?? STATES[STATES.length - 1];
+const stateFor = (h: number) => STATES.find((s) => h < s.until) ?? STATES[STATES.length - 1]!;
+
+/** Hours since the epoch: the rotation's clock, and blind to time zones. */
+const hourIndex = (now: Date) => Math.floor(now.getTime() / 3_600_000);
+
+/**
+ * One of the stretch's lines, mixed from the hour so it holds still while you
+ * read and turns over as my day does. It never changes mid-tick, and everyone
+ * reading at once sees the same line.
+ */
+function pickLine(lines: readonly string[], index: number): string {
+  let seed = index | 0;
+  seed = Math.imul(seed ^ 0x9e3779b9, 0x85ebca6b);
+  seed ^= seed >>> 13;
+  return lines[(seed >>> 0) % lines.length]!;
+}
+
+/** My hour, the dot's colour, and the line to print. Null before I'm mounted. */
+function currently(now: Date | null): { hour: number; dot: string; line: string } | null {
+  if (!now) return null;
+  const hour = hourIn(profile.timeZone, now);
+  const stretch = stateFor(hour);
+  return { hour, dot: stretch.dot, line: pickLine(stretch.lines, hourIndex(now)) };
+}
 
 /**
  * The visitor's hour offset from mine, read from their browser. Null until
@@ -187,8 +274,8 @@ function Activity({ now }: { now: Date }) {
 export function BasedRow() {
   const now = useNow();
   const offset = useVisitorOffset(now);
-  const hour = now ? hourIn(profile.timeZone, now) : null;
-  const state = hour === null ? null : stateFor(hour);
+  const state = currently(now);
+  const hour = state?.hour ?? null;
 
   return (
     <>
@@ -196,14 +283,14 @@ export function BasedRow() {
         <span className="relative mr-2 inline-flex size-2 align-middle">
           {isWorking(hour) && (
             <span
-              className={`absolute inline-flex size-full animate-ping rounded-full opacity-60 motion-reduce:animate-none ${state[2]}`}
+              className={`absolute inline-flex size-full animate-ping rounded-full opacity-60 motion-reduce:animate-none ${state.dot}`}
             />
           )}
-          <span className={`relative inline-flex size-2 rounded-full ${state[2]}`} />
+          <span className={`relative inline-flex size-2 rounded-full ${state.dot}`} />
         </span>
       )}
       {profile.location} · {utcOffsetLabel(profile.timeZone)} — <LocalClock className={MONO} /> here
-      {state ? `, ${state[1]}.` : "."}
+      {state ? `, ${state.line}.` : "."}
       {offset !== null && hour !== null && (
         <>
           {" "}
