@@ -5,7 +5,7 @@ import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Link } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
-import { PostCard } from "~/features/posts/components/post-card";
+import { PostRow } from "~/features/posts/components/post-row";
 
 function BlogPostList() {
   const { data: posts } = useSuspenseQuery({
@@ -15,17 +15,15 @@ function BlogPostList() {
   });
 
   return (
-    <div className="grid gap-1">
+    <div>
       {posts.map((post) => (
-        <Link key={post.slug} to="/posts/$slug" params={{ slug: post.slug }} className="block">
-          <PostCard
-            slug={post.slug}
-            title={post.title}
-            description={post.description}
-            date={post.date}
-            tags={post.tags}
-          />
-        </Link>
+        <PostRow
+          key={post.slug}
+          slug={post.slug}
+          title={post.title}
+          description={post.description}
+          date={post.date}
+        />
       ))}
     </div>
   );
@@ -50,7 +48,7 @@ export function BlogSection() {
           fallback={
             <div className="space-y-1">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-18 w-full" />
+                <Skeleton key={i} className="h-14 w-full" />
               ))}
             </div>
           }

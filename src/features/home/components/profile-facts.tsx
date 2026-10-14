@@ -3,12 +3,10 @@ import { Link } from "@tanstack/react-router";
 import * as DateTime from "effect/DateTime";
 import type { CSSProperties, MouseEvent } from "react";
 import siteData from "~/data/sites";
-import { profile, utcOffsetLabel } from "~/data/profile";
 import { currentRoles, pastRoles, yearRange } from "~/data/work-experience";
 import type { Work } from "~/types/work-experience";
-import { takes } from "~/data/takes";
-import { getPostBySlug } from "~/features/posts/lib/posts";
-import { LocalClock } from "./local-clock";
+import { getPosts } from "~/features/posts/lib/posts";
+import { BasedRow } from "./based-row";
 
 const LABEL = "font-mono text-[11px] uppercase tracking-[0.18em] text-pink-950/65 md:pt-0.5";
 const VALUE = "font-body text-[17px] leading-[1.95] text-pink-950/80";
@@ -316,41 +314,31 @@ function ProjectBadge({ name, href, icon }: { name: string; href: string; icon: 
   );
 }
 
-/**
- * The claims from `~/data/takes`, each linked to the post that argues it. The
- * post supplies the date, so a claim is never dated by hand.
- */
+/** The latest three posts, each shown by its title. */
 function Takes() {
   return (
     <>
       <ul className="divide-y divide-pink-200/40">
-        {takes.map((take) => {
-          const post = getPostBySlug(take.post)?.post;
+        {getPosts({ limit: 3 }).map((post) => {
           return (
             <li
-              key={take.post}
+              key={post.slug}
               className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 py-2 first:pt-0 last:pb-0"
             >
-              {post ? (
-                <Link
-                  to="/posts/$slug"
-                  params={{ slug: post.slug }}
-                  className="max-w-[52ch] text-pretty underline decoration-pink-300 decoration-dotted underline-offset-4 transition-colors hover:text-pink-600 hover:decoration-pink-500 hover:decoration-solid"
-                >
-                  {take.claim}
-                </Link>
-              ) : (
-                <span className="max-w-[52ch] text-pretty">{take.claim}</span>
-              )}
-              {post && (
-                <span className="font-mono text-xs text-pink-950/70">
-                  {DateTime.format(DateTime.makeUnsafe(post.date), {
-                    locale: "en-GB",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </span>
-              )}
+              <Link
+                to="/posts/$slug"
+                params={{ slug: post.slug }}
+                className="max-w-[52ch] text-pretty underline decoration-pink-300 decoration-dotted underline-offset-4 transition-colors hover:text-pink-600 hover:decoration-pink-500 hover:decoration-solid"
+              >
+                {post.title}
+              </Link>
+              <span className="font-mono text-xs text-pink-950/70">
+                {DateTime.format(DateTime.makeUnsafe(post.date), {
+                  locale: "en-GB",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
             </li>
           );
         })}
@@ -511,9 +499,7 @@ export function ProfileFacts() {
         <div className={ROW}>
           <dt className={LABEL}>Based</dt>
           <dd className={VALUE}>
-            {profile.location} · {utcOffsetLabel(profile.timeZone)} —{" "}
-            <LocalClock className="font-mono text-pink-700" /> here, so I am probably awake right
-            now.
+            <BasedRow />
           </dd>
         </div>
 

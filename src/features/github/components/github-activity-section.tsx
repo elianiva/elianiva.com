@@ -1,7 +1,6 @@
 import type { ContributionsResponse } from "../lib/github.service";
 import { Heading } from "~/components/ui/heading";
 import { HeatmapGrid, COMPACT_WEEK_COUNT, type HeatmapCell } from "~/components/ui/heatmap-grid";
-import { profile } from "~/data/profile";
 import { cn } from "~/lib/utils";
 
 const TOTAL_CLASS =
@@ -65,9 +64,30 @@ function GitHubActivityGrid({ data }: { data: ContributionsResponse }) {
 }
 
 /**
+ * A year of blank days ending today, for when there is no data (no token at
+ * build time, or the fetch failed). The section keeps its shape, with 0 and an
+ * empty grid, instead of collapsing to a link.
+ */
+export function emptyContributions(now: Date = new Date()): ContributionsResponse {
+  const DAY_MS = 86_400_000;
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const start = today - 364 * DAY_MS;
+  const weeks: ContributionsResponse["weeks"] = [];
+  for (let t = start; t <= today; t += DAY_MS) {
+    if (weeks.length === 0 || new Date(t).getUTCDay() === 0) weeks.push({ contributionDays: [] });
+    weeks[weeks.length - 1].contributionDays.push({
+      date: new Date(t).toISOString().slice(0, 10),
+      contributionCount: 0,
+      contributionLevel: "NONE",
+    });
+  }
+  return { totalContributions: 0, weeks, longestStreak: 0 };
+}
+
+/**
  * Baked into the page at build time: the route loader reads the contributions
  * once while prerendering, so the browser never fetches them. Without data, the
- * section still points to the public profile instead of disappearing.
+ * section still renders, with a blank grid and 0 contributions.
  */
 export function GitHubActivitySection({ data }: { data: ContributionsResponse | null }) {
   return (
@@ -80,20 +100,7 @@ export function GitHubActivitySection({ data }: { data: ContributionsResponse | 
           Git Activity
         </Heading>
       </div>
-      {data ? (
-        <GitHubActivityGrid data={data} />
-      ) : (
-        <p className="font-mono text-sm text-pink-950/60">
-          <a
-            href={profile.urls.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline decoration-pink-300 decoration-dotted underline-offset-4 hover:text-pink-600 hover:decoration-solid"
-          >
-            See my GitHub activity
-          </a>
-        </p>
-      )}
+      <GitHubActivityGrid data={data ?? emptyContributions()} />
     </section>
   );
 }

@@ -61,16 +61,8 @@ export function HeroSection() {
           </Heading>
         </div>
         <p className="font-display text-lg leading-snug text-pink-950/85 max-w-[34ch] text-pretty md:text-2xl">
-          Software engineer, lately leaning into design engineering.
+          Frontend-leaning Product Engineer
         </p>
-        <div>
-          <p className="text-sm leading-relaxed font-body text-pink-950/70 py-3 max-w-[65ch] text-pretty md:text-base">
-            I'm a software engineer with 4+ years mostly in web frontend, though I've dipped into
-            backend, databases, and infra when needed. I like building interfaces that don't annoy
-            people and cleaning up AI slop from codebases. Outside work, I tinker with side
-            projects, contribute to OSS, and drink a lot of coffee.
-          </p>
-        </div>
         <div className="flex items-center flex-wrap gap-2 pt-2">
           <Button
             variant="default"
@@ -118,7 +110,7 @@ export function HeroSection() {
           href={siteData.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="relative block size-30 md:size-40 group"
+          className="relative block size-30 md:size-36 group"
           aria-label="Visit GitHub profile"
         >
           <div className="relative w-full h-full border border-pink-200/50 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md group-hover:ring-1 group-hover:ring-pink-200">

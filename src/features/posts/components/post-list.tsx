@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { Link } from "@tanstack/react-router";
 import { getPosts } from "~/features/posts/lib/posts";
-import { PostCard } from "./post-card";
+import { PostRow } from "./post-row";
 import { Heading } from "~/components/ui/heading";
 import XIcon from "~icons/ph/x";
 import type { PostSummary } from "~/features/content/lib/posts";
@@ -187,22 +186,16 @@ export function PostList() {
           )}
           {/* Post grid */}
           {filteredPosts.length > 0 ? (
-            <div className="grid gap-1">
+            <div>
               {filteredPosts.map((post) => (
-                <Link
+                <PostRow
                   key={post.slug}
-                  to="/posts/$slug"
-                  params={{ slug: post.slug }}
-                  className="h-full"
-                >
-                  <PostCard
-                    slug={post.slug}
-                    title={post.title}
-                    description={post.description}
-                    date={post.date}
-                    tags={post.tags}
-                  />
-                </Link>
+                  slug={post.slug}
+                  title={post.title}
+                  description={post.description}
+                  date={post.date}
+                  tags={post.tags}
+                />
               ))}
             </div>
           ) : (
