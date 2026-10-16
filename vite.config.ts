@@ -12,6 +12,13 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { rehypeHighlightCodeBlocks } from "@tanstack/highlight/rehype";
 import { highlighter } from "./src/lib/highlight";
 
+/**
+ * Links to files in `public/` (the CV PDF) get crawled like pages, and the
+ * prerenderer rewrites them as UTF-8 text, corrupting the binary and leaving
+ * a blank PDF. Only extension-less paths are real routes.
+ */
+const isPrerenderablePage = ({ path }: { path: string }) => !/\.[a-z0-9]+$/i.test(path);
+
 const config = defineConfig({
   staged: {
     "*": "vp check --fix",
@@ -91,6 +98,7 @@ const config = defineConfig({
       },
       prerender: {
         crawlLinks: true,
+        filter: isPrerenderablePage,
         failOnError: false,
       },
     }),
