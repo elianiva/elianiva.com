@@ -20,7 +20,7 @@ export function MusicTracksSection({ data }: { data: MusicData }) {
           status ·{" "}
           <b
             className={cn(
-              "text-foreground/50 font-normal animate-pulse",
+              "text-foreground/50 font-normal animate-pulse motion-reduce:animate-none",
               isLive && "text-pink-500",
             )}
           >

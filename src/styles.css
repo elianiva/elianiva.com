@@ -425,27 +425,18 @@
   );
 }
 
-.fs-x,
-.fs-y,
-.fs-spin {
+/* Two compositor layers per shape: the wrapper carries x (`translate`) and y
+ * (`transform`) drift, the svg carries spin (`rotate`) and breathing (`opacity`).
+ * Running animations promote layers themselves, so no `will-change`. */
+.fs-pos {
   position: absolute;
   top: 0;
   left: 0;
   width: 0;
   height: 0;
-  will-change: transform;
-}
-
-.fs-x {
-  animation: fs-x var(--x-dur) linear var(--x-delay) infinite var(--x-dir);
-}
-
-.fs-y {
-  animation: fs-y var(--y-dur) linear var(--y-delay) infinite var(--y-dir);
-}
-
-.fs-spin {
-  animation: fs-spin var(--spin-dur) linear var(--spin-delay) infinite var(--spin-dir);
+  animation:
+    fs-x var(--x-dur) linear var(--x-delay) infinite var(--x-dir),
+    fs-y var(--y-dur) linear var(--y-delay) infinite var(--y-dir);
 }
 
 .fs-svg {
@@ -455,15 +446,22 @@
   left: calc(var(--side) * -0.5cqh);
   top: calc(var(--side) * -0.5cqh);
   transform: scaleX(var(--ar));
-  animation: fs-breathe var(--breathe-dur) ease-in-out var(--breathe-delay) infinite alternate;
+  animation:
+    fs-spin var(--spin-dur) linear infinite var(--spin-dir),
+    fs-breathe var(--breathe-dur) ease-in-out var(--breathe-delay) infinite alternate;
+}
+
+.floating-shapes[data-paused] .fs-pos,
+.floating-shapes[data-paused] .fs-svg {
+  animation-play-state: paused;
 }
 
 @keyframes fs-x {
   from {
-    transform: translateX(calc(var(--m) * -1cqw));
+    translate: calc(var(--m) * -1cqw) 0;
   }
   to {
-    transform: translateX(calc(100cqw + var(--m) * 1cqw));
+    translate: calc(100cqw + var(--m) * 1cqw) 0;
   }
 }
 
@@ -478,7 +476,7 @@
 
 @keyframes fs-spin {
   to {
-    transform: rotate(360deg);
+    rotate: 360deg;
   }
 }
 
@@ -488,14 +486,5 @@
   }
   to {
     opacity: var(--alpha);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fs-x,
-  .fs-y,
-  .fs-spin,
-  .fs-svg {
-    animation-play-state: paused;
   }
 }

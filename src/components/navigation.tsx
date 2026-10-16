@@ -419,7 +419,7 @@ function PaperHand({ pathname }: { pathname: string }) {
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-0 z-30 -ml-12 h-0 w-24 opacity-0 will-change-transform"
         >
-          <span className="absolute -top-2 -right-2 grid size-7 rotate-12 place-items-center rounded-full border-2 border-dashed border-pink-500/70 font-mono text-[7px] font-bold text-pink-500/80 mix-blend-multiply">
+          <span className="absolute -top-2 -right-2 grid size-7 rotate-12 place-items-center rounded-full border-2 border-dashed border-pink-500/70 font-mono text-[7px] font-bold text-pink-500/80">
             HERE
           </span>
         </span>

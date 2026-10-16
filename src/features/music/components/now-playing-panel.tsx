@@ -13,7 +13,7 @@ export function NowPlayingPanel({ track }: { track: LastFmTrack }) {
       >
         <div className="min-w-0 space-y-2 flex-1 pl-4">
           <div className="flex items-center gap-2 mb-4 font-mono text-xs text-pink-500 uppercase tracking-widest">
-            <span className="size-2 rounded-full bg-pink-500 shadow-[0_0_8px_#ec4899] animate-pulse" />
+            <span className="size-2 rounded-full bg-pink-500 shadow-[0_0_8px_#ec4899] animate-pulse motion-reduce:animate-none" />
             now playing
           </div>
           <div className="leading-none text-xl font-semibold text-pink-950 truncate group-hover:text-pink-500 transition-colors">

@@ -1,16 +1,32 @@
-import { useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useSyncExternalStore, type CSSProperties } from "react";
 import { generateShapes, N } from "~/lib/background";
 
 /**
  * Decorative drifting shapes. Every motion is a CSS transform/opacity animation,
- * so the compositor runs it off the main thread: no per-frame JS, no repaint,
- * and scrolling never competes with it. Geometry is expressed in container-query
+ * so the compositor runs it off the main thread. Layers are kept to two per shape,
+ * the animation pauses while the tab is hidden, unfocused or idle, low-end devices get fewer shapes, and nothing renders under
+ * prefers-reduced-motion. Geometry is expressed in container-query
  * units, so resizing needs no work beyond updating one aspect-ratio variable.
  *
  * Timing is derived from the same parameters the old canvas renderer used:
  * drift wraps around the viewport (a negative delay seeds the phase), rotation is
  * linear, and the opacity "breathes" on a sine.
  */
+
+function subscribeReduceMotion(cb: () => void) {
+  const mq = matchMedia("(prefers-reduced-motion: reduce)");
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+
+/** Pause the drift after this long without input; any input resumes it. */
+const IDLE_MS = 45_000;
+const LOW_END_SHAPES = 3;
+
+function isLowEnd() {
+  const { hardwareConcurrency, deviceMemory } = navigator as Navigator & { deviceMemory?: number };
+  return (hardwareConcurrency ?? 8) <= 4 || (deviceMemory ?? 8) <= 4;
+}
 
 const TAU = Math.PI * 2;
 /** How many sizes of travel past the edge before a wrapping shape reappears. */
@@ -91,7 +107,6 @@ function buildShapes(): Shape[] {
         "--y-delay": `${y.delay}s`,
         "--y-dir": y.direction,
         "--spin-dur": `${spinDuration}s`,
-        "--spin-delay": "0s",
         "--spin-dir": rot < 0 ? "reverse" : "normal",
         "--breathe-dur": `${breathe}s`,
         "--breathe-delay": `${-breathePhase}s`,
@@ -104,36 +119,69 @@ function buildShapes(): Shape[] {
 
 export function FloatingShapes() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const shapes = useMemo(buildShapes, []);
+  const shapes = useMemo(() => buildShapes().slice(0, isLowEnd() ? LOW_END_SHAPES : N), []);
+  const reduceMotion = useSyncExternalStore(
+    subscribeReduceMotion,
+    () => matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  );
 
   useEffect(() => {
-    const root = rootRef.current!;
+    const root = rootRef.current;
+    if (!root) return;
     const update = () => root.style.setProperty("--ar", String(innerWidth / innerHeight));
+    let idleTimer: ReturnType<typeof setTimeout>;
+    let idle = false;
+    const syncPaused = () =>
+      root.toggleAttribute("data-paused", document.hidden || !document.hasFocus() || idle);
+    const wake = () => {
+      clearTimeout(idleTimer);
+      if (idle) {
+        idle = false;
+        syncPaused();
+      }
+      idleTimer = setTimeout(() => {
+        idle = true;
+        syncPaused();
+      }, IDLE_MS);
+    };
+    const wakeEvents = ["pointermove", "pointerdown", "keydown", "wheel", "scroll", "touchstart"];
     update();
+    syncPaused();
+    wake();
     addEventListener("resize", update, { passive: true });
-    return () => removeEventListener("resize", update);
-  }, []);
+    addEventListener("focus", syncPaused);
+    addEventListener("blur", syncPaused);
+    document.addEventListener("visibilitychange", syncPaused);
+    for (const ev of wakeEvents) addEventListener(ev, wake, { passive: true });
+    return () => {
+      clearTimeout(idleTimer);
+      removeEventListener("resize", update);
+      removeEventListener("focus", syncPaused);
+      removeEventListener("blur", syncPaused);
+      document.removeEventListener("visibilitychange", syncPaused);
+      for (const ev of wakeEvents) removeEventListener(ev, wake);
+    };
+  }, [reduceMotion]);
+
+  if (reduceMotion) return null;
 
   return (
     <div ref={rootRef} className="floating-shapes" aria-hidden="true">
       {shapes.map((shape, i) => (
-        <div key={i} className="fs-x" style={shape.style}>
-          <div className="fs-y">
-            <div className="fs-spin">
-              <svg
-                className="fs-svg"
-                viewBox={`${-shape.extent} ${-shape.extent} ${shape.extent * 2} ${shape.extent * 2}`}
-              >
-                <polygon
-                  points={shape.points}
-                  strokeLinejoin="round"
-                  strokeWidth={0.15}
-                  fill={shape.filled ? shape.fill : "none"}
-                  stroke={shape.filled ? "none" : shape.fill}
-                />
-              </svg>
-            </div>
-          </div>
+        <div key={i} className="fs-pos" style={shape.style}>
+          <svg
+            className="fs-svg"
+            viewBox={`${-shape.extent} ${-shape.extent} ${shape.extent * 2} ${shape.extent * 2}`}
+          >
+            <polygon
+              points={shape.points}
+              strokeLinejoin="round"
+              strokeWidth={0.15}
+              fill={shape.filled ? shape.fill : "none"}
+              stroke={shape.filled ? "none" : shape.fill}
+            />
+          </svg>
         </div>
       ))}
     </div>

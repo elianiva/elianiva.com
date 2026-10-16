@@ -1,4 +1,4 @@
-export const N = 10;
+export const N = 5;
 export const COLS = 4;
 export const ROWS = 3;
 
