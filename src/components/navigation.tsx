@@ -273,9 +273,15 @@ function PaperHand({ pathname }: { pathname: string }) {
       if (!released) {
         // closed: only the current page's tab shows; the rest wait invisibly behind it
         pose.dy = CLOSED_DY;
-        pose.op = i === activeIdx ? 1 : 0;
         pose.mk = 0;
-        pose.scale = i === activeIdx ? 1 : 0.92;
+        if (i !== activeIdx) {
+          // a messy stack: the other tabs peek out from under the current one at alternating tilts
+          const depth = Math.abs(i - activeIdx);
+          const side = i % 2 === 0 ? -1 : 1;
+          pose.rot = side * (3 + depth * 2.5);
+          pose.dx = side * depth * 7;
+          pose.dy = CLOSED_DY + depth * 1.5;
+        }
       }
       // stacking order never changes while moving; a z-index swap mid-flight pops a card
       // through its neighbours. Only the card under the pointer is raised.
