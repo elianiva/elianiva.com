@@ -3,7 +3,7 @@
 #let accent-color = "#861043"
 #let body-font = "Libertinus Serif"
 #let paper = "us-letter"
-#let font-size = 10pt
+#let font-size = 9pt
 #let author-font-size = 20pt
 
 #show heading.where(level: 2): set block(above: 1em, below: 0.5em)
@@ -51,6 +51,12 @@
   personal-info-position: left,
 )
 
+// The template pulls the rule 10pt up against the heading text. Ease it to 7pt.
+#show heading.where(level: 2): it => [
+  #pad(top: 0pt, bottom: -7pt, [#smallcaps(it.body)])
+  #line(length: 100%, stroke: 1pt)
+]
+
 == Work Experience
 
 // The gap goes above each entry rather than below it. A trailing gap after the
@@ -84,7 +90,8 @@
 
 == Education
 
-#for school in cv.education [
+#for (i, school) in cv.education.enumerate() [
+  #if i > 0 [#parbreak()]
   #edu(
     institution: school.institution,
     location: school.location,
@@ -94,5 +101,4 @@
   #for detail in school.details [
     - #detail
   ]
-  #parbreak()
 ]

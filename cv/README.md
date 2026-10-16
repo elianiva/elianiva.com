@@ -98,5 +98,6 @@ The CV is one page, but only just. The site writes longer bullets than your old
 CV did, so `main.typ` buys the room back two ways: the gap between entries goes
 above each entry rather than below it, and the section headings use less block
 spacing than Typst's 1.4em default. Drop either and education falls onto a
-second page. If you add a role or a bullet, expect to trim `details` or repeat
-one of those two trims.
+second page. The body font is 9pt for the same reason: with Enam Dua Teknologi and Meiro on
+it, 9.2pt spilled one line onto a second page. If you add a role or a bullet,
+expect to trim `details` or repeat one of those trims.

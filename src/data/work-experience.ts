@@ -117,7 +117,7 @@ export const work: Work[] = [
     ],
   },
   {
-    cv: false,
+    cv: true,
     company: "Enam Dua Teknologi",
     website: {
       href: "https://62teknologi.com",
