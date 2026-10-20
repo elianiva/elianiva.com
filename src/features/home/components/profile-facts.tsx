@@ -352,6 +352,12 @@ function Takes() {
           );
         })}
       </ul>
+      <Link
+        to="/posts"
+        className={`${INLINE_LINK} mt-3 inline-block font-mono text-xs uppercase tracking-wide`}
+      >
+        See all posts →
+      </Link>
     </>
   );
 }

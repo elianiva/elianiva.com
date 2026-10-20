@@ -1,26 +1,18 @@
 import siteData from "~/data/sites";
 import { profile, utcOffsetLabel } from "~/data/profile";
 import ArrowUpRightIcon from "~icons/ph/arrow-up-right-duotone";
-import GithubLogoIcon from "~icons/ph/github-logo-duotone";
-import LinkedinLogoIcon from "~icons/ph/linkedin-logo-duotone";
-import CvLogoIcon from "~icons/ph/read-cv-logo-duotone";
 import { Heading } from "~/components/ui/heading";
-import { Button } from "~/components/ui/button";
 import { LocalClock } from "./local-clock";
 
-interface Social {
-  icon: React.ComponentType<{ className?: string }>;
-  link: string;
-  label: string;
-}
+/** GitHub, LinkedIn and the résumé first, so the filled call to action closes the strip. */
+const links = [
+  { label: "GitHub", href: siteData.github, external: true },
+  { label: "LinkedIn", href: siteData.linkedin, external: true },
+  { label: "Résumé", href: siteData.cv, external: true },
+  { label: "Work with me", href: `mailto:${siteData.email}`, primary: true },
+] as const;
 
-const socials: Social[] = [
-  { icon: GithubLogoIcon, link: siteData.github, label: "Github" },
-  { icon: LinkedinLogoIcon, link: siteData.linkedin, label: "LinkedIn" },
-  { icon: CvLogoIcon, link: siteData.cv, label: "Résumé" },
-];
-
-/** The location, the UTC offset, and the live clock, sitting above the name. */
+/** The location, the UTC offset, and the live clock. */
 function StatusLine() {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.2em] text-pink-950/70 md:text-[11px]">
@@ -45,90 +37,48 @@ function StatusLine() {
 
 export function HeroSection() {
   return (
-    <section
-      aria-labelledby="hero-heading"
-      className="relative flex flex-col-reverse md:flex-row gap-6 pb-8 px-2 md:px-8 with-box-underline"
-    >
-      <div className="flex-1">
-        <StatusLine />
-        <div>
-          <Heading level={1} id="hero-heading" className="first-letter:text-pink-950">
-            Dicha Z
-            <span className="text-pink-500" title="Yes, this is where the username comes from">
-              elianiva
-            </span>
-            n Arkana
-          </Heading>
+    <section aria-labelledby="hero-heading" className="relative with-box-underline">
+      <div className="px-2 pb-8 md:px-8">
+        <Heading level={1} id="hero-heading" className="first-letter:text-pink-950">
+          Dicha Z
+          <span className="text-pink-500" title="Yes, this is where the username comes from">
+            elianiva
+          </span>
+          n Arkana
+        </Heading>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-pink-700">
+            Frontend-leaning Product Engineer
+          </p>
+          <StatusLine />
         </div>
-        <p className="font-display text-lg leading-snug text-pink-950/85 max-w-[34ch] text-pretty md:text-2xl">
-          Frontend-leaning Product Engineer
+        <p className="mt-2 font-display text-xl leading-snug text-pink-950/85 text-pretty md:text-2xl">
+          I care about making fast software that&rsquo;s{" "}
+          <em className="text-pink-600">delightful</em> to use.
         </p>
-        <div className="flex items-center flex-wrap gap-2 pt-2">
-          <Button
-            variant="default"
-            size="lg"
-            className="font-mono text-xs uppercase tracking-wide"
-            render={
-              <a
-                href={`mailto:${siteData.email}`}
-                title="Email me about work"
-                aria-label="Work with me, by email"
-              />
-            }
+      </div>
+      <nav
+        aria-label="Contact and profiles"
+        className="grid grid-cols-2 divide-x divide-pink-200/50 border-t border-pink-200/50 md:grid-cols-[1fr_1fr_1fr_1.5fr]"
+      >
+        {links.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            {...("external" in link
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : { title: "Email me about work" })}
+            className={`group flex items-center justify-between px-2 py-4 font-mono text-xs uppercase tracking-wide transition-colors md:px-8 ${
+              "primary" in link
+                ? "bg-pink-600 text-white hover:bg-pink-700"
+                : "text-pink-950/80 hover:bg-pink-50 hover:text-pink-700"
+            }`}
           >
-            Work with me
-            <ArrowUpRightIcon data-icon="inline-end" />
-          </Button>
-          {socials.map((social) => {
-            const Icon = social.icon;
-            return (
-              <Button
-                key={social.label}
-                variant="ghost"
-                size="lg"
-                render={
-                  <a
-                    href={social.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={social.label}
-                    aria-label={`Visit ${social.label} profile`}
-                  />
-                }
-              >
-                <Icon className="size-4" />
-                <span className="text-xs font-mono uppercase">{social.label}</span>
-              </Button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="relative mb-4 md:mb-0 mx-auto">
-        <a
-          href={siteData.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative block size-30 md:size-36 group"
-          aria-label="Visit GitHub profile"
-        >
-          <div className="relative w-full h-full border border-pink-200/50 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md group-hover:ring-1 group-hover:ring-pink-200">
-            <div className="absolute left-0 top-0 border border-pink-200/50 bg-white size-3 z-10 -translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute left-0 bottom-0 border border-pink-200/50 bg-white size-3 z-10 -translate-x-1/2 translate-y-1/2" />
-            <div className="absolute right-0 top-0 border border-pink-200/50 bg-white size-3 z-10 translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute right-0 bottom-0 border border-pink-200/50 bg-white size-3 z-10 translate-x-1/2 translate-y-1/2" />
-            <img
-              src="/avatar.webp"
-              alt="Profile photo of Dicha Zelianivan Arkana"
-              className="w-full h-full object-cover"
-              width={160}
-              height={160}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
-          </div>
-        </a>
-      </div>
+            {link.label}
+            <ArrowUpRightIcon className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transition-none" />
+          </a>
+        ))}
+      </nav>
     </section>
   );
 }

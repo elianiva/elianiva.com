@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeroSection } from "~/features/home/components/hero-section";
 import { ProfileFacts } from "~/features/home/components/profile-facts";
-import { BlogSection } from "~/features/home/components/blog-section";
 import { ProjectSection } from "~/features/projects/components/project-section";
 import { WorkExperienceSection } from "~/features/home/components/work-experience-section";
 import { OpenSourcePicks } from "~/features/home/components/open-source-picks";
@@ -30,7 +29,6 @@ function Home() {
     <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
       <HeroSection />
       <ProfileFacts />
-      <GitHubActivitySection data={contributions} />
       <div className="relative with-box-underline">
         <WorkExperienceSection workExperiences={workExperiences} />
       </div>
@@ -38,9 +36,7 @@ function Home() {
         <OpenSourcePicks />
         <ProjectSection title="Personal Projects" seeMoreUrl="/projects" />
       </div>
-      <div className="relative with-box-underline">
-        <BlogSection />
-      </div>
+      <GitHubActivitySection data={contributions} />
     </div>
   );
 }
