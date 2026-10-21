@@ -61,7 +61,7 @@ export function HeroSection() {
         aria-label="Contact and profiles"
         className="grid grid-cols-2 divide-x divide-pink-200/50 border-t border-pink-200/50 md:grid-cols-[1fr_1fr_1fr_1.5fr]"
       >
-        {links.map((link) => (
+        {links.map((link, index) => (
           <a
             key={link.label}
             href={link.href}
@@ -69,6 +69,8 @@ export function HeroSection() {
               ? { target: "_blank", rel: "noopener noreferrer" }
               : { title: "Email me about work" })}
             className={`group flex items-center justify-between px-2 py-4 font-mono text-xs uppercase tracking-wide transition-colors md:px-8 ${
+              index < 2 ? "border-b border-pink-200/50 md:border-b-0" : ""
+            } ${
               "primary" in link
                 ? "bg-pink-600 text-white hover:bg-pink-700"
                 : "text-pink-950/80 hover:bg-pink-50 hover:text-pink-700"

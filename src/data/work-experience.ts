@@ -14,7 +14,7 @@ export const work: Work[] = [
       href: "https://aerotalon.com",
       favicon: "/assets/company-favicons/aerotalon.jpg",
     },
-    position: "Frontend Web Developer",
+    position: "Fullstack Web Developer",
     time: "contract",
     remote: true,
     country: "Australia",

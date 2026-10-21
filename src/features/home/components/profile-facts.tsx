@@ -424,9 +424,9 @@ export function ProfileFacts() {
                   expandedCompany={expandedCompany}
                   onToggle={toggleCompany}
                 />
-                , a company focused on modernizing aviation operations software. I build end-to-end
-                features, mostly on the frontend, including maintenance, repair, and operations
-                tools that help flight-ops teams work more efficiently.
+                , a company focused on modernizing aviation operations software. I build fullstack
+                features, including maintenance, repair, and operations tools that help flight-ops
+                teams work more efficiently.
               </div>
               <p>
                 Outside work, I build{" "}
