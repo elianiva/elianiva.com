@@ -32,7 +32,7 @@ jobs:
       - name: Lint
         run: pnpm lint
       - name: Typecheck
-        run: pnpm exec tsc --noEmit
+        run: pnpm exec tsrs --noEmit
       - name: Test
         run: pnpm test
       - name: Build
