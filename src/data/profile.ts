@@ -9,7 +9,7 @@ export const profile = {
   /** The zone the site prints the live clock in, and reads `UTC+7` from. */
   timeZone: "Asia/Jakarta",
   /** Where the site's contact button points. */
-  email: "contact@elianiva.com",
+  email: "hi@elianiva.com",
   /**
    * The address the CV prints. It is a personal inbox, so it stays out of the
    * site's markup where scrapers would pick it up.
