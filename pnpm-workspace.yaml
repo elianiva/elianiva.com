@@ -7,9 +7,11 @@ allowBuilds:
   workerd: true
 minimumReleaseAge: 0
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@1.4.0
-  vitest: 5.0.5
-  vite-plus: 1.4.0
+  # vite-plus and its vite alias no longer share a version. Core encodes the
+  # bundled Vite version: 8.3.8000 is Vite 8.3.8.
+  vite: npm:@voidzero-dev/vite-plus-core@8.3.8000
+  vitest: 5.1.0
+  vite-plus: 1.7.0
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
@@ -17,20 +19,13 @@ overrides:
   # toolchain (vite-plus-core, @tanstack/start-plugin-core) already uses
   # 1.33.0. Pin to the newer one so a single copy is installed and bundled.
   lightningcss: "1.33.0"
-peerDependencyRules:
-  allowAny:
-    - vite
-    - vitest
-  allowedVersions:
-    vite: "*"
-    vitest: "*"
 minimumReleaseAgeExclude:
   - vite-plus
   - "@voidzero-dev/*"
   - oxlint
   - "@oxlint/*"
-  - oxlint-tsgolint
-  - "@oxlint-tsgolint/*"
+  - tsrs
+  - "@tsrs/*"
   - oxfmt
   - "@oxfmt/*"
   - vitest
