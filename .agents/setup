@@ -8,19 +8,24 @@ timed() { local start end; start=$(date +%s); "$@"; end=$(date +%s); printf '(to
 
 # --- 1. System packages: typst (CV PDF build, pinned to CI version) ---
 step "system packages"
-if ! command -v typst >/dev/null 2>&1; then
-  TYPST_VERSION="0.15.1"
-  TMP_DIR="$(mktemp -d)"
-  trap 'rm -rf "$TMP_DIR"' EXIT
-  timed curl -fsSL -o "$TMP_DIR/typst.tar.xz" \
-    "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz"
-  tar -xf "$TMP_DIR/typst.tar.xz" -C "$TMP_DIR"
-  sudo install -m 0755 "$TMP_DIR/typst-x86_64-unknown-linux-musl/typst" /usr/local/bin/typst
-  rm -rf "$TMP_DIR"
-  trap - EXIT
-else
-  echo "typst already installed: $(typst --version)"
-fi
+TYPST_VERSION="0.15.1"
+# Compare the version, not just presence: a stale snapshot can carry an older
+# binary from before the pin moved, and the CV must match CI's output.
+case "$(typst --version 2>/dev/null || true)" in
+  "typst ${TYPST_VERSION} "*)
+    echo "typst ${TYPST_VERSION} already installed"
+    ;;
+  *)
+    TMP_DIR="$(mktemp -d)"
+    trap 'rm -rf "$TMP_DIR"' EXIT
+    timed curl -fsSL -o "$TMP_DIR/typst.tar.xz" \
+      "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz"
+    tar -xf "$TMP_DIR/typst.tar.xz" -C "$TMP_DIR"
+    sudo install -m 0755 "$TMP_DIR/typst-x86_64-unknown-linux-musl/typst" /usr/local/bin/typst
+    rm -rf "$TMP_DIR"
+    trap - EXIT
+    ;;
+esac
 
 # --- 2. JS dependencies (pnpm is preinstalled in orbs; pin matches packageManager) ---
 step "pnpm install"

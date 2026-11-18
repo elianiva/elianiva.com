@@ -2,12 +2,22 @@
 # Orb resume hook: fast, idempotent checks after activation and each wake (<10s budget).
 set -euo pipefail
 
-# Cloudflare credentials (Amp user secrets) are required for `alchemy dev` headless auth.
-missing=0
+# Oxc's JS lint plugins reserve a 4 GiB mapping per thread; the default
+# heuristic overcommit setting refuses that on a 4 GB orb and `pnpm lint`
+# panics. Kernel state does not survive a snapshot, so repair it every boot.
+if [ "$(cat /proc/sys/vm/overcommit_memory)" != "1" ]; then
+  if sudo -n sh -c 'echo 1 > /proc/sys/vm/overcommit_memory' 2>/dev/null; then
+    echo "resume: enabled vm.overcommit_memory for the Oxc lint plugins"
+  else
+    echo "resume: could not enable vm.overcommit_memory, pnpm lint may crash" >&2
+  fi
+fi
+
+# Cloudflare credentials are only needed for `pnpm deploy`. Their absence must
+# not fail activation: setup and `pnpm dev` work without them.
 for var in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
   if [ -z "${!var:-}" ]; then
-    echo "resume: $var is not set — alchemy dev cannot authenticate" >&2
-    missing=1
+    echo "resume: $var is not set — pnpm deploy will fail (expected without Cloudflare access)" >&2
   fi
 done
 
@@ -18,4 +28,4 @@ for var in GH_TOKEN LASTFM_API_KEY; do
   fi
 done
 
-exit "$missing"
+exit 0
