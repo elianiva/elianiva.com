@@ -3,14 +3,15 @@ import { useEffect, useRef } from "react";
 import { cn } from "~/lib/utils";
 import { Box, Cell, cutouts } from "./box";
 
+/** Each page and its three-letter route code, printed faintly on its ticket like a destination. */
 const NAV_ITEMS = [
-  { label: "Home", href: "/" },
-  { label: "Posts", href: "/posts" },
-  { label: "Projects", href: "/projects" },
-  { label: "Work", href: "/work" },
-  { label: "Music", href: "/music" },
-  { label: "Uses", href: "/uses" },
-  { label: "Neighbours", href: "/neighbours" },
+  { label: "Home", href: "/", code: "HOM" },
+  { label: "Posts", href: "/posts", code: "PST" },
+  { label: "Projects", href: "/projects", code: "PRJ" },
+  { label: "Work", href: "/work", code: "WRK" },
+  { label: "Music", href: "/music", code: "MSC" },
+  { label: "Uses", href: "/uses", code: "USE" },
+  { label: "Neighbours", href: "/neighbours", code: "NBR" },
 ] as const;
 
 const TONES = ["bg-yellow-200", "bg-sky-200", "bg-pink-200", "bg-purple-200"];
@@ -34,7 +35,17 @@ function ticketMask(punched: boolean) {
 const BARCODE =
   "repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 3px, currentColor 3px 5px, transparent 5px 6px, currentColor 6px 7px, transparent 7px 9px, currentColor 9px 9.5px, transparent 9.5px 11px)";
 
-function Ticket({ label, n, active }: { label: string; n: number; active: boolean }) {
+function Ticket({
+  label,
+  code,
+  n,
+  active,
+}: {
+  label: string;
+  code: string;
+  n: number;
+  active: boolean;
+}) {
   return (
     <span
       className={cn(
@@ -57,7 +68,16 @@ function Ticket({ label, n, active }: { label: string; n: number; active: boolea
         >
           <span className="rotate-180">No.{String(n + 1).padStart(2, "0")}</span>
         </span>
-        <span className="flex flex-1 flex-col justify-center gap-1 pr-4 pl-2.5">
+        {/* A container: the route code sits in the bottom-right corner, beside
+            the barcode and under the label, and only shows once the ticket is
+            wide enough for both. */}
+        <span className="@container relative flex flex-1 flex-col justify-center gap-1 pr-4 pl-2.5">
+          <span
+            aria-hidden
+            className="absolute right-3 bottom-1.5 hidden font-display text-xl leading-none font-extrabold tracking-wider opacity-10 @[7.75rem]:block"
+          >
+            {code}
+          </span>
           <span
             className={cn(
               "font-heading text-[11px] leading-none tracking-[0.16em] uppercase",
@@ -153,7 +173,7 @@ export function NavigationStrip() {
                     aria-current={active ? "page" : undefined}
                     className="group/t block focus-visible:outline-none"
                   >
-                    <Ticket label={item.label} n={i} active={active} />
+                    <Ticket label={item.label} code={item.code} n={i} active={active} />
                   </Link>
                   {active && (
                     <span
