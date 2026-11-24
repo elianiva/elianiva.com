@@ -13,23 +13,10 @@ import { DeferredFloatingShapes } from "../components/deferred-floating-shapes";
 import { Footer } from "../components/footer";
 
 import { NavigationStrip } from "~/components/navigation";
+import { LostPage } from "~/components/lost-page";
 
 function NotFoundPage() {
-  return (
-    <div className="mx-auto flex min-h-[70vh] max-w-container items-center justify-center px-4 py-20">
-      <div className="w-full max-w-2xl">
-        <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">
-          404 / lost in the blush
-        </p>
-        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
-          This page drifted off somewhere.
-        </h1>
-        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">
-          The URL you opened does not exist here anymore.
-        </p>
-      </div>
-    </div>
-  );
+  return <LostPage section="page" home="/" />;
 }
 
 const Devtools = lazy(async () => {
@@ -101,11 +88,7 @@ function RootLayout() {
             devtools panel) lives inside this provider so `useQueryClient`
             never resolves to null. */}
         <QueryClientProvider client={queryClient}>
-          <main
-            id="main-content"
-            role="main"
-            className="relative z-0 flex-1 p-2 pt-8 md:p-0 md:pt-6"
-          >
+          <main id="main-content" role="main" className="relative z-0 flex-1 md:-mt-px">
             <Outlet />
           </main>
 

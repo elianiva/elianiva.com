@@ -18,13 +18,8 @@ function format(timeZone: string): string {
  * value, then re-aligns to each minute boundary in the browser. Hydration can
  * land a minute late, so the text warns React off it.
  */
-export function LocalClock({
-  timeZone = profile.timeZone,
-  className,
-}: {
-  timeZone?: string;
-  className?: string;
-}) {
+/** The time in `timeZone`, re-read on each minute boundary. */
+export function useLocalTime(timeZone: string = profile.timeZone): string {
   const [time, setTime] = useState(() => format(timeZone));
 
   useEffect(() => {
@@ -38,6 +33,17 @@ export function LocalClock({
     return () => window.clearTimeout(timeout);
   }, [timeZone]);
 
+  return time;
+}
+
+export function LocalClock({
+  timeZone = profile.timeZone,
+  className,
+}: {
+  timeZone?: string;
+  className?: string;
+}) {
+  const time = useLocalTime(timeZone);
   return (
     <span className={className} suppressHydrationWarning>
       {time}

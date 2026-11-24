@@ -287,6 +287,7 @@ export const OG_PAGES = [
   { title: "elianiva", subtitle: "software engineer · open source", file: "home.png" },
   { title: "Posts", subtitle: "All blog posts", file: "posts.png" },
   { title: "Projects", subtitle: "Things I've built", file: "projects.png" },
+  { title: "Work", subtitle: "Experience and open source", file: "work.png" },
   { title: "Uses", subtitle: "Stuff I actually use", file: "uses.png" },
   { title: "Neighbours", subtitle: "Cool people I know on the web", file: "neighbours.png" },
   { title: "Music", subtitle: "Recently played tracks via Last.fm", file: "music.png" },

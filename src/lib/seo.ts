@@ -46,7 +46,7 @@ export interface ProjectSeoProps {
  * (`<page>.png`, see `OG_PAGES` in `scripts/vite-static-site.ts`).
  */
 export function ogPageImageUrl(
-  page: "home" | "posts" | "projects" | "uses" | "neighbours" | "music",
+  page: "home" | "posts" | "projects" | "work" | "uses" | "neighbours" | "music",
 ) {
   return `${siteUrl}/assets/og/${page}.png`;
 }

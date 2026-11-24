@@ -92,7 +92,7 @@ export const work: Work[] = [
     time: "freelance",
     remote: false,
     country: "Indonesia",
-    period: ["2021-12", "2022-09"],
+    period: ["2022-01", "2024-03"],
     details: [
       "Built CodeWars-like programming test platform with i18n and full user activity capture (clicks, keystrokes, mouse paths) streamed via SignalR to ASP.NET Core for research analysis. Open-sourced as teknologi-umum/spectator",
       "Shipped React frontend (Redux Toolkit, ChakraUI) with over 80% test coverage via Vitest and React Testing Library, catching regressions before they hit staging",

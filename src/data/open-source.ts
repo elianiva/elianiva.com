@@ -85,6 +85,69 @@ export const openSource: OpenSourceContribution[] = [
       },
     ],
   },
+  {
+    repo: "neovim/neovim",
+    about: "The editor. Three merged PRs to its built-in LSP client, 2021.",
+    prs: [
+      {
+        number: 14300,
+        title: "feat(lsp): make hover/signature_help borders configurable",
+        note: "Diagnostic, hover, and signature help floats take a `border` option.",
+      },
+      {
+        number: 14482,
+        title: "feat(lsp): hide triple - in hover window",
+        note: "Hover windows drop the markdown `---` rules, which a terminal cannot draw as a thin line.",
+      },
+      {
+        number: 16218,
+        title: "fix(lsp): convert range to byteidx before highlighting",
+        note: "`document_highlight()` converts LSP ranges to byte indexes, so highlights land on the right text in lines with multibyte characters.",
+      },
+    ],
+  },
+  {
+    repo: "nvim-treesitter/nvim-treesitter",
+    about: "Tree-sitter parsers and queries for Neovim. 20 merged PRs, 2020 to 2021.",
+    prs: [
+      {
+        number: 920,
+        title: "feat: add support for svelte",
+        note: "Svelte parser support, with queries shared with HTML.",
+      },
+      {
+        number: 1109,
+        title: "feat: add scss parser",
+        note: "SCSS parser support, with highlight queries.",
+      },
+      {
+        number: 1958,
+        title: "feat: add prisma support",
+        note: "Prisma schema parser support.",
+      },
+    ],
+  },
+  {
+    repo: "nvim-telescope/telescope.nvim",
+    about: "A fuzzy finder for Neovim. 13 merged PRs, 2020 to 2021.",
+    prs: [
+      {
+        number: 636,
+        title: "feat: add `add_to_qflist`, `add_selected`, and `smart_add`",
+        note: "Actions that add picker results to the quickfix list instead of replacing it.",
+      },
+      {
+        number: 610,
+        title: "feat: define scroll speed + smart_send to qflist",
+        note: "A configurable preview scroll speed per layout, and `smart_send` to the quickfix list.",
+      },
+      {
+        number: 560,
+        title: "fix: proper multibytes chars alignment",
+        note: "Results with multibyte characters line up, measured by display width instead of byte length.",
+      },
+    ],
+  },
 ];
 
 export function prUrl(repo: string, number: number): string {

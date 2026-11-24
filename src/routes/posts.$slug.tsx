@@ -3,9 +3,11 @@ import { Suspense } from "react";
 import { postMdx, preloadPostMdx } from "~/features/content/lib/mdx";
 import { getPostBySlug } from "~/features/posts/lib/posts";
 import { CodeCopy } from "~/components/code-copy";
-import { Badge } from "~/components/ui/badge";
+import { Box, Cell, Postmark, STRETCHED } from "~/components/box";
+import { Contents, proseComponents } from "~/components/prose";
+import { LostPage } from "~/components/lost-page";
 import { postSeo } from "~/lib/seo";
-import { Heading } from "~/components/ui/heading";
+import { cn } from "~/lib/utils";
 import PencilIcon from "~icons/ph/note-pencil";
 
 export const Route = createFileRoute("/posts/$slug")({
@@ -36,34 +38,15 @@ export const Route = createFileRoute("/posts/$slug")({
 });
 
 function PostNotFoundPage() {
-  return (
-    <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
-      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft md:p-10">
-        <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / posts</p>
-        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
-          This post shelf is empty here.
-        </h1>
-        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">
-          The post you asked for does not exist. Maybe it drifted out of the archive.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            to="/"
-            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
-          >
-            Home
-          </Link>
-          <Link
-            to="/posts"
-            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
-          >
-            Posts index
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
+  return <LostPage section="post" home="/posts" />;
 }
+
+const longDate = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
 
 function PostDetailPage() {
   const detail = Route.useLoaderData();
@@ -73,68 +56,51 @@ function PostDetailPage() {
   // resolved here and loaded lazily as its own chunk.
   const Mdx = postMdx(params.slug);
   if (!Mdx) throw notFound();
+  const neighbours = [
+    { dir: "Previous", post: detail.prevPost },
+    { dir: "Next", post: detail.nextPost },
+  ];
 
   return (
-    <>
-      <div className="px-2 md:px-0 pt-24 border-x mx-auto max-w-container">
-        <header className="mx-auto max-w-[64ch] flex flex-col items-center gap-3 pb-6 text-center">
-          <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.3em] text-pink-400">
-            <span aria-hidden="true" className="size-2 bg-pink-400" />
-            Post
-          </p>
-          <h1 className="font-display text-xl font-extrabold uppercase leading-[1.12] tracking-wide text-pink-950 text-balance md:text-3xl">
-            {post.title}
-          </h1>
-          <div aria-hidden="true" className="relative h-px w-full bg-pink-200/50">
-            <div className="absolute bottom-0 left-1/2 flex h-0.5 -translate-x-1/2">
-              <div className="h-0.5 w-[5ch] bg-pink-200" />
-              <div className="h-0.5 w-[2ch] bg-pink-300" />
-            </div>
-          </div>
-          <p className="font-body text-sm leading-snug text-pink-950/70">{post.description}</p>
-          <p className="font-body text-xs leading-relaxed text-pink-950/60 md:text-sm">
-            <span suppressHydrationWarning>
-              {new Date(post.date).toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </span>{" "}
-            · {detail.readingTime} min read · {detail.wordCount.toLocaleString("en-GB")} words ·{" "}
-            <a
-              className="inline-flex items-center gap-1 text-pink-950/60 hover:text-pink-400 focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2 rounded"
-              href={`https://github.com/elianiva/elianiva.com/blob/master/src/content/posts/${post.slug}.mdx`}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Suggest an edit to this post on GitHub"
-            >
-              Suggest An Edit
-              <PencilIcon width="14" height="14" className="inline-block" />
-            </a>
-          </p>
-          <div className="flex flex-wrap justify-center gap-1.5">
-            {post.tags.map((tag) => (
-              <Badge key={tag} variant="secondary">
-                #{tag}
-              </Badge>
-            ))}
-          </div>
-        </header>
-        <article className="font-body mx-auto max-w-[64ch] prose prose-pink">
+    <Box square={false}>
+      <Cell as="header" span="w3" tone="white" label="Post" className="gap-4 py-8 md:p-10">
+        <h1 className="font-display text-4xl leading-[1.05] font-extrabold text-pink-950 text-balance md:text-6xl">
+          {post.title}
+        </h1>
+        <p className="max-w-[56ch] text-lg text-pink-950/70 text-pretty">{post.description}</p>
+      </Cell>
+      <Cell as="aside" tone="yellow" className="col-span-2 justify-between gap-5 md:col-span-1">
+        <Postmark className="size-24 self-end text-[11px]">
+          <span suppressHydrationWarning>{longDate.format(new Date(post.date))}</span>
+        </Postmark>
+        <dl className="grid grid-cols-2 gap-y-1 font-mono text-[11px] text-pink-950/65">
+          <dt>read</dt>
+          <dd className="text-right text-pink-950">{detail.readingTime} min</dd>
+          <dt>words</dt>
+          <dd className="text-right text-pink-950">{detail.wordCount.toLocaleString("en-GB")}</dd>
+        </dl>
+        <p className="font-mono text-[11px] text-pink-600">
+          {post.tags.map((tag) => `#${tag}`).join(" ")}
+        </p>
+        <a
+          className="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-wider text-pink-950/70 uppercase hover:text-pink-600"
+          href={`https://github.com/elianiva/elianiva.com/blob/master/src/content/posts/${post.slug}.mdx`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Suggest an edit to this post on GitHub"
+        >
+          <PencilIcon className="size-3.5" />
+          Suggest an edit
+        </a>
+      </Cell>
+
+      <Cell as="div" span="w3" className="p-4 py-8 md:p-10">
+        <article id="post-body" className="prose prose-pink mx-auto w-full max-w-[66ch] font-body">
           <CodeCopy />
           <Suspense fallback={null}>
-            <Mdx
-              components={{
-                h2: (props) => <Heading level={2} {...props} />,
-                h3: (props) => <Heading level={3} {...props} />,
-                h4: (props) => <Heading level={4} {...props} />,
-                h5: (props) => <Heading level={5} {...props} />,
-                h6: (props) => <Heading level={6} {...props} />,
-              }}
-            />
+            <Mdx components={proseComponents} />
           </Suspense>
-
-          <div>
+          <div className="mt-14">
             <script
               src="https://giscus.app/client.js"
               data-repo="elianiva/elianiva.com"
@@ -156,44 +122,33 @@ function PostDetailPage() {
             If you don&apos;t see any comment section, please turn off your adblocker :)
           </p>
         </article>
+      </Cell>
+      <Cell as="aside" className="hidden md:flex">
+        <Contents articleId="post-body" />
+      </Cell>
 
-        <nav className="mt-12 border-t border-pink-200/50 max-sm:-mx-2">
-          <div className="grid md:grid-cols-2">
-            {detail.prevPost ? (
-              <Link
-                to="/posts/$slug"
-                params={{ slug: detail.prevPost.slug }}
-                className="max-sm:border-b md:border-r group flex flex-col p-4 hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
-              >
-                <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
-                  Previous
-                </span>
-                <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {detail.prevPost.title}
-                </span>
+      {neighbours.map(({ dir, post: other }) =>
+        other ? (
+          <Cell
+            key={dir}
+            linked
+            span="w2"
+            tone={dir === "Next" ? "pink" : "paper"}
+            label={
+              <Link to="/posts/$slug" params={{ slug: other.slug }} className={STRETCHED}>
+                {dir}
               </Link>
-            ) : (
-              <div />
-            )}
-            {detail.nextPost ? (
-              <Link
-                to="/posts/$slug"
-                params={{ slug: detail.nextPost.slug }}
-                className="max-sm:border-b group flex flex-col items-end text-right p-4 hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
-              >
-                <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
-                  Next
-                </span>
-                <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {detail.nextPost.title}
-                </span>
-              </Link>
-            ) : (
-              <div />
-            )}
-          </div>
-        </nav>
-      </div>
-    </>
+            }
+            className={cn("xl:col-span-3", dir === "Next" && "md:items-end md:text-right")}
+          >
+            <p className="font-display text-xl font-bold text-pink-950 text-balance">
+              {other.title}
+            </p>
+          </Cell>
+        ) : (
+          <Cell key={dir} span="w2" tone="hatch" className="hidden md:flex xl:col-span-3" />
+        ),
+      )}
+    </Box>
   );
 }

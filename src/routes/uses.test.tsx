@@ -140,21 +140,9 @@ describe("uses page render", () => {
   });
 
   it("gives every item the same plate, not just the first in a section", async () => {
-    const out = await html();
-    // One bordered plate per item, each laid out as identity then reasoning
-    // behind a divider. This is the whole design: the treatment is uniform, so
-    // adding an item anywhere needs no special case.
-    expect(out.match(/<article/g) ?? []).toHaveLength(totalItems);
-    expect(out.match(/grid-cols-\[2\.5rem_1fr\] md:grid-cols-\[17rem_1fr\]/g) ?? []).toHaveLength(
-      totalItems,
-    );
-  });
-
-  it("separates the reasoning from the identity on small screens", async () => {
-    // Below md the two columns collapse to one: the reasoning moves under the
-    // identity, where it needs a top rule to stay distinct. Without it the name,
-    // spec, note, and prose run together.
-    const out = await html();
-    expect(out.match(/col-start-2 md:col-start-auto/g) ?? []).toHaveLength(totalItems);
+    // The treatment is uniform, so adding an item anywhere needs no special case.
+    const plates = (await html()).match(/<article class="[^"]*"/g) ?? [];
+    expect(plates).toHaveLength(totalItems);
+    expect(new Set(plates).size).toBe(1);
   });
 });

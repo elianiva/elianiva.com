@@ -1,14 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HeroSection } from "~/features/home/components/hero-section";
-import { ProfileFacts } from "~/features/home/components/profile-facts";
-import { ProjectSection } from "~/features/projects/components/project-section";
-import { WorkExperienceSection } from "~/features/home/components/work-experience-section";
-import { OpenSourcePicks } from "~/features/home/components/open-source-picks";
-import { workExperiences } from "~/data/work-experience";
-import {
-  GitHubActivitySection,
-  emptyContributions,
-} from "~/features/github/components/github-activity-section";
+import { HomeGrid } from "~/features/home/components/home-grid";
+import { emptyContributions } from "~/features/github/components/github-activity-section";
 import { getGitHubContributions } from "~/features/github/lib/github-server";
 import { homeSeo } from "~/lib/seo";
 
@@ -25,18 +17,5 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const contributions = Route.useLoaderData();
-  return (
-    <div className="mx-auto max-w-container pt-20 border-x border-pink-200/50">
-      <HeroSection />
-      <ProfileFacts />
-      <div className="relative with-box-underline">
-        <WorkExperienceSection workExperiences={workExperiences} />
-      </div>
-      <div className="relative with-box-underline grid md:grid-cols-2 gap-4 px-2 md:px-8 py-4 md:py-8">
-        <OpenSourcePicks />
-        <ProjectSection title="Personal Projects" seeMoreUrl="/projects" />
-      </div>
-      <GitHubActivitySection data={contributions} />
-    </div>
-  );
+  return <HomeGrid contributions={contributions} />;
 }

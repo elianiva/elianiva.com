@@ -10,9 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EncoreRouteImport } from './routes/encore'
 import { Route as MusicRouteImport } from './routes/music'
 import { Route as NeighboursRouteImport } from './routes/neighbours'
 import { Route as UsesRouteImport } from './routes/uses'
+import { Route as WorkRouteImport } from './routes/work'
 import { Route as PostsIndexRouteImport } from './routes/posts.index'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -21,6 +23,11 @@ import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EncoreRoute = EncoreRouteImport.update({
+  id: '/encore',
+  path: '/encore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MusicRoute = MusicRouteImport.update({
@@ -36,6 +43,11 @@ const NeighboursRoute = NeighboursRouteImport.update({
 const UsesRoute = UsesRouteImport.update({
   id: '/uses',
   path: '/uses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkRoute = WorkRouteImport.update({
+  id: '/work',
+  path: '/work',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostsIndexRoute = PostsIndexRouteImport.update({
@@ -61,9 +73,11 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/encore': typeof EncoreRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
+  '/work': typeof WorkRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts/': typeof PostsIndexRoute
@@ -71,9 +85,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/encore': typeof EncoreRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
+  '/work': typeof WorkRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts': typeof PostsIndexRoute
@@ -82,9 +98,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/encore': typeof EncoreRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
+  '/work': typeof WorkRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts/': typeof PostsIndexRoute
@@ -94,9 +112,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/encore'
     | '/music'
     | '/neighbours'
     | '/uses'
+    | '/work'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts/'
@@ -104,9 +124,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/encore'
     | '/music'
     | '/neighbours'
     | '/uses'
+    | '/work'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts'
@@ -114,9 +136,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/encore'
     | '/music'
     | '/neighbours'
     | '/uses'
+    | '/work'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts/'
@@ -125,9 +149,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EncoreRoute: typeof EncoreRoute
   MusicRoute: typeof MusicRoute
   NeighboursRoute: typeof NeighboursRoute
   UsesRoute: typeof UsesRoute
+  WorkRoute: typeof WorkRoute
   PostsSlugRoute: typeof PostsSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   PostsIndexRoute: typeof PostsIndexRoute
@@ -141,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/encore': {
+      id: '/encore'
+      path: '/encore'
+      fullPath: '/encore'
+      preLoaderRoute: typeof EncoreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/music': {
@@ -162,6 +195,13 @@ declare module '@tanstack/react-router' {
       path: '/uses'
       fullPath: '/uses'
       preLoaderRoute: typeof UsesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/work': {
+      id: '/work'
+      path: '/work'
+      fullPath: '/work'
+      preLoaderRoute: typeof WorkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/posts/': {
@@ -197,9 +237,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EncoreRoute: EncoreRoute,
   MusicRoute: MusicRoute,
   NeighboursRoute: NeighboursRoute,
   UsesRoute: UsesRoute,
+  WorkRoute: WorkRoute,
   PostsSlugRoute: PostsSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   PostsIndexRoute: PostsIndexRoute,

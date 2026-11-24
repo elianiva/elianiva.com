@@ -1,55 +1,58 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Box, Cell, Fill, PageHead, STAMP_CYCLE, Stamp } from "~/components/box";
 import { neighbours } from "~/data/neighbours";
-import { Heading } from "~/components/ui/heading";
+import { cn } from "~/lib/utils";
 import { seo, ogPageImageUrl } from "~/lib/seo";
 
+const LETTER_TONES = ["text-yellow-200", "text-sky-200", "text-pink-200", "text-purple-200"];
+
+/** Each neighbour is a compartment with their initial set huge, like a letterpress block. */
 function NeighboursRoute() {
+  const people = [...neighbours].sort((a, b) => a.name.localeCompare(b.name));
   return (
-    <div className="mx-auto max-w-container pt-10 border-x border-pink-200/50 min-h-screen">
-      <div className="py-4 md:py-8 px-2 md:px-8">
-        <section className="relative">
-          <Heading level={1}>Neighbours</Heading>
-          <p className="text-sm md:text-base font-body text-pink-950/70 pt-2 pb-4">
-            A bunch of cool people I know / interacted with on the web.
-          </p>
-        </section>
-
-        <section className="grid gap-3 grid-cols-2 md:grid-cols-3 py-4">
-          {[...neighbours]
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((neighbour) => (
-              <a
-                key={neighbour.url}
-                href={neighbour.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative border border-pink-200/50 bg-linear-to-br from-white/60 via-pink-50/30 to-white/20 p-3 hover:bg-white/80 transition-all duration-150 block"
-              >
-                <div className="absolute -left-1 -top-1 size-2 border border-pink-200/50 bg-white" />
-                <div className="absolute -right-1 -top-1 size-2 border border-pink-200/50 bg-white" />
-                <div className="absolute -left-1 -bottom-1 size-2 border border-pink-200/50 bg-white" />
-                <div className="absolute -right-1 -bottom-1 size-2 border border-pink-200/50 bg-white" />
-
-                <div className="flex items-center gap-3">
-                  {/* Initial badge */}
-                  <div className="relative flex items-center justify-center border-2 border-pink-200/50 uppercase size-10 font-black text-sm bg-white/80 text-pink-600 shrink-0">
-                    {neighbour.name[0]}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <p className="font-display text-sm font-semibold text-pink-800 group-hover:text-pink-600 underline underline-offset-2 decoration-pink-300/50 transition-colors">
-                      {neighbour.name}
-                    </p>
-                    <p className="text-[11px] font-mono text-pink-950/40 truncate">
-                      {neighbour.url.replace(/^https?:\/\//, "")}
-                    </p>
-                  </div>
-                </div>
-              </a>
-            ))}
-        </section>
-      </div>
-    </div>
+    <Box>
+      <PageHead
+        title="Neighbours"
+        n={1}
+        tone="sky"
+        kicker="A bunch of cool people I know or have run into on the web. Go say hi."
+        aside={
+          <>
+            <p className="mt-auto font-display text-7xl leading-none font-extrabold text-pink-950 tabular-nums">
+              {people.length}
+            </p>
+            <p className="font-mono text-[11px] text-pink-950/60">sites worth a visit</p>
+          </>
+        }
+      />
+      {people.map((person, i) => (
+        <Cell key={person.url} as="article" n={i + 2} className="overflow-hidden">
+          <span
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute -right-3 -bottom-10 font-display text-[11rem] leading-none font-extrabold transition-transform duration-300 ease-out",
+              LETTER_TONES[i % 4],
+            )}
+          >
+            {person.name[0]}
+          </span>
+          <a
+            href={person.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-auto after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-4 focus-visible:after:outline-pink-500"
+          >
+            <Stamp tone={STAMP_CYCLE[i % 4]} className="transition-transform duration-300">
+              <span className="font-display text-base font-bold">{person.name}</span>
+            </Stamp>
+            <span className="relative mt-2 block truncate font-mono text-[11px] text-pink-950/70">
+              {person.url.replace(/^https?:\/\//, "").replace(/\/$/, "")} ↗
+            </span>
+          </a>
+        </Cell>
+      ))}
+      <Fill used={people.length} />
+    </Box>
   );
 }
 

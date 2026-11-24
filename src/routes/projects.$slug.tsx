@@ -1,11 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
+import { Box, Cell, STRETCHED } from "~/components/box";
+import { LostPage } from "~/components/lost-page";
+import { proseComponents } from "~/components/prose";
+import { ProjectMark } from "~/features/projects/components/project-mark";
+import { cn } from "~/lib/utils";
 import { projectMdx, preloadProjectMdx } from "~/features/content/lib/mdx";
 import { getProjectBySlug } from "~/features/projects/lib/projects";
 import { projectSeo } from "~/lib/seo";
 import GithubIcon from "~icons/ph/github-logo-duotone";
 import GlobeIcon from "~icons/ph/globe-hemisphere-west-duotone";
-import { Heading } from "~/components/ui/heading";
 
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
@@ -32,32 +36,28 @@ export const Route = createFileRoute("/projects/$slug")({
 });
 
 function ProjectNotFoundPage() {
+  return <LostPage section="project" home="/projects" />;
+}
+
+/** The stack's logo, or its first letter when the logo file is missing. */
+function StackLogo({ name }: { name: string }) {
+  const [broken, setBroken] = useState(false);
+  const file = name.toLowerCase().replace(/\s+/g, "-");
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-container items-center justify-center px-4 py-16">
-      <div className="w-full max-w-2xl border border-pink-200 bg-white/80 p-6 shadow-soft md:p-10">
-        <p className="font-mono text-xs uppercase tracking-[0.3em] text-pink-400">404 / projects</p>
-        <h1 className="mt-3 text-3xl font-display text-pink-800 md:text-5xl">
-          This project has not materialized.
-        </h1>
-        <p className="mt-4 max-w-prose text-sm leading-relaxed text-pink-950/75 md:text-base">
-          The thing you were looking for is not here. Maybe check the project list again.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            to="/"
-            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
-          >
-            Home
-          </Link>
-          <Link
-            to="/projects"
-            className="border border-pink-300 bg-pink-50 px-4 py-2 text-sm text-pink-900 transition hover:bg-pink-100"
-          >
-            Projects index
-          </Link>
-        </div>
-      </div>
-    </div>
+    <span className="grid size-10 shrink-0 place-items-center border border-pink-200 bg-white p-1.5 transition-transform duration-300 group-hover/stack:-rotate-6">
+      {broken ? (
+        <span className="font-display text-sm font-extrabold text-pink-500">{name[0]}</span>
+      ) : (
+        <img
+          className={cn("size-full object-contain", file === "nextjs" && "invert")}
+          src={`/assets/logo/${file}.webp`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onError={() => setBroken(true)}
+        />
+      )}
+    </span>
   );
 }
 
@@ -69,133 +69,111 @@ function ProjectDetailPage() {
   // resolved here and loaded lazily as its own chunk.
   const Mdx = projectMdx(params.slug);
   if (!Mdx) throw notFound();
+  const neighbours = [
+    { dir: "Previous", project: detail.prevProject },
+    { dir: "Next", project: detail.nextProject },
+  ];
+  const buttons = [
+    { label: "Source", href: project.source, Icon: GithubIcon },
+    ...(project.demo ? [{ label: "Visit", href: project.demo, Icon: GlobeIcon }] : []),
+  ];
 
   return (
-    <>
-      <main
-        className="mx-auto max-w-container px-2 md:px-4 py-10 border-x border-pink-200/50 h-full"
-        style={{ viewTransitionName: `project-card-${project.slug}` }}
+    <Box square={false}>
+      <Cell
+        as="header"
+        span="w3"
+        tone="white"
+        label={`Project · ${project.date.slice(0, 4)}`}
+        className="gap-5 py-8 md:p-10"
       >
-        <section
-          className="grid grid-cols-1 md:grid-cols-[2.5fr_1fr] gap-4 pt-6"
-          style={{ viewTransitionName: `project-content-${project.slug}` }}
-        >
-          <div className="space-y-4">
-            {project.image && (
-              <div className="overflow-hidden border-[0.5px] border-pink-200/50">
-                <img
-                  src={`/assets/projects/${project.slug}/${project.image}`}
-                  alt={project.title}
-                  className="block w-full h-full bg-pink-100"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
+        <ProjectMark slug={project.slug} title={project.title} />
+        <h1 className="font-display text-5xl leading-none font-extrabold tracking-wide text-pink-950 uppercase md:text-7xl">
+          <span className="text-pink-500">{project.title[0]}</span>
+          {project.title.slice(1)}
+        </h1>
+        <p className="max-w-[56ch] text-lg text-pink-950/70 text-pretty">{project.description}</p>
+      </Cell>
+      <Cell as="aside" tone="yellow" className="col-span-2 justify-end gap-2 md:col-span-1">
+        {buttons.map(({ label, href, Icon }, i) => (
+          <a
+            key={label}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              "flex items-center justify-between border px-3 py-2.5 font-mono text-xs tracking-wider uppercase transition-[color,background-color,border-color,box-shadow,transform,translate,rotate,scale] active:scale-[0.97] hover:-translate-y-0.5 hover:shadow-[0_3px_0_rgba(190,24,93,0.2)]",
+              i === 0
+                ? "border-pink-950 bg-pink-950 text-pink-50"
+                : "border-pink-300 bg-white text-pink-950",
             )}
+          >
+            <span className="flex items-center gap-2">
+              <Icon className="size-4" />
+              {label}
+            </span>
+            ↗
+          </a>
+        ))}
+      </Cell>
 
-            <div>
-              <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-pink-200/50">
-                <Heading level={1}>{project.title}</Heading>
-                <div className="flex gap-2">
-                  <a
-                    className="flex gap-2 items-center bg-white/60 hover:bg-white border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
-                    href={project.source}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <GithubIcon className="size-5" />
-                    <span className="text-sm font-mono uppercase">Source</span>
-                  </a>
-                  {project.demo !== null && project.demo !== undefined && (
-                    <a
-                      className="flex gap-2 items-center bg-pink-50/80 hover:bg-pink-50 border-[0.5px] border-pink-200/50 hover:border-pink-200 py-2 px-4 text-pink-950 hover:text-pink-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
-                      href={project.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <GlobeIcon className="size-5" />
-                      <span className="text-sm font-mono uppercase">Visit</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-              <div className="prose prose-pink max-w-full">
-                <Suspense fallback={null}>
-                  <Mdx />
-                </Suspense>
-              </div>
-            </div>
-          </div>
+      {project.image && (
+        <Cell span="w4" className="p-0">
+          <img
+            src={`/assets/projects/${project.slug}/${project.image}`}
+            alt={project.title}
+            className="block w-full bg-pink-100"
+            loading="lazy"
+            decoding="async"
+          />
+        </Cell>
+      )}
 
-          <aside className="h-fit">
-            <div>
-              <Heading level={2}>Tech Stack</Heading>
-              <div className="space-y-3 pt-4">
-                {(project.stack || []).map(([stackName, stackHomepage]) => (
-                  <div key={stackName} className="flex items-center gap-3 group">
-                    <div className="flex items-center justify-center p-2 bg-pink-50/80 border-[0.5px] border-pink-200/50 size-12 shrink-0">
-                      <img
-                        className={`w-full h-full object-contain ${
-                          stackName.toLowerCase() === "nextjs" ? "filter invert" : ""
-                        }`}
-                        src={`/assets/logo/${stackName.toLowerCase().replace(/\s+/g, "-")}.webp`}
-                        alt={stackName}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    <a
-                      href={stackHomepage}
-                      className="text-sm font-body text-pink-950 hover:text-pink-700 transition-colors focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-1"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {stackName}
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </aside>
-        </section>
-
-        <nav className="mt-12 pt-6 border-t border-pink-200/50">
-          <div className="grid grid-cols-2 gap-4">
-            {detail.prevProject ? (
-              <Link
-                to="/projects/$slug"
-                params={{ slug: detail.prevProject.slug }}
-                className="group flex flex-col bg-white/60 p-4 hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
+      <Cell as="div" span="w3" className="p-4 py-8 md:p-10">
+        <article className="prose prose-pink mx-auto w-full max-w-[66ch] font-body">
+          <Suspense fallback={null}>
+            <Mdx components={proseComponents} />
+          </Suspense>
+        </article>
+      </Cell>
+      <Cell as="aside" label="Built with" className="col-span-2 md:col-span-1">
+        <ul className="grid gap-2 md:sticky md:top-6">
+          {(project.stack || []).map(([name, homepage]) => (
+            <li key={name}>
+              <a
+                href={homepage}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group/stack flex items-center gap-3 text-sm text-pink-950 hover:text-pink-600"
               >
-                <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
-                  Previous
-                </span>
-                <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {detail.prevProject.title}
-                </span>
+                <StackLogo name={name} />
+                {name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Cell>
+
+      {neighbours.map(({ dir, project: other }) =>
+        other ? (
+          <Cell
+            key={dir}
+            linked
+            span="w2"
+            className="xl:col-span-3"
+            tone={dir === "Next" ? "pink" : "paper"}
+            label={
+              <Link to="/projects/$slug" params={{ slug: other.slug }} className={STRETCHED}>
+                {dir}
               </Link>
-            ) : (
-              <div />
-            )}
-            {detail.nextProject ? (
-              <Link
-                to="/projects/$slug"
-                params={{ slug: detail.nextProject.slug }}
-                className="group flex flex-col items-end text-right bg-white/60 p-4 hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2"
-              >
-                <span className="text-xs font-mono text-pink-950/50 uppercase tracking-wider">
-                  Next
-                </span>
-                <span className="font-display font-semibold text-pink-950 group-hover:text-pink-700 transition-colors line-clamp-2">
-                  {detail.nextProject.title}
-                </span>
-              </Link>
-            ) : (
-              <div />
-            )}
-          </div>
-        </nav>
-      </main>
-    </>
+            }
+          >
+            <p className="font-display text-xl font-bold text-pink-950">{other.title}</p>
+          </Cell>
+        ) : (
+          <Cell key={dir} span="w2" tone="hatch" className="hidden md:flex xl:col-span-3" />
+        ),
+      )}
+    </Box>
   );
 }

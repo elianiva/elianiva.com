@@ -66,7 +66,7 @@ export function Quiz({ question, options, correctResponse, errorResponse }: Quiz
             <button
               key={option.id}
               onClick={() => handleSelect(option.id)}
-              className={`w-full text-left p-3 border transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2
+              className={`w-full text-left p-3 border transition-[color,background-color,border-color,scale] active:scale-[0.97] focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2
                 ${showCorrect ? "border-green-400 bg-green-50/50" : ""}
                 ${showWrong ? "border-red-400 bg-red-50/50" : ""}
                 ${isSelected && !showResult ? "border-pink-400 bg-pink-50/50" : ""}
@@ -89,7 +89,7 @@ export function Quiz({ question, options, correctResponse, errorResponse }: Quiz
         <button
           onClick={handleSubmit}
           disabled={!selected}
-          className="bg-pink-50/80 hover:bg-pink-50 border border-pink-200/50 hover:border-pink-200 py-2 px-6 text-sm font-mono text-pink-950 transition-all disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+          className="bg-pink-50/80 hover:bg-pink-50 border border-pink-200/50 hover:border-pink-200 py-2 px-6 text-sm font-mono text-pink-950 transition-[color,background-color,border-color,scale] active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
         >
           Check Answer
         </button>
@@ -108,7 +108,7 @@ export function Quiz({ question, options, correctResponse, errorResponse }: Quiz
           {!isCorrect && (
             <button
               onClick={handleRetry}
-              className="mt-3 bg-white/60 hover:bg-white border border-pink-200/50 hover:border-pink-200 py-1.5 px-4 text-xs font-mono text-pink-950 transition-all focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
+              className="mt-3 bg-white/60 hover:bg-white border border-pink-200/50 hover:border-pink-200 py-1.5 px-4 text-xs font-mono text-pink-950 transition-[color,background-color,border-color,scale] active:scale-[0.97] focus:outline-none focus:ring focus:ring-pink-400 focus:ring-offset-2"
             >
               Try again
             </button>
