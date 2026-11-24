@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { AppPill } from "~/components/app-pill";
 import { Box, Cell, LABEL, RULE, STRETCHED, Stamp, type StampTone } from "~/components/box";
 import siteData from "~/data/sites";
@@ -42,6 +42,62 @@ const monthYear = new Intl.DateTimeFormat("en-GB", {
   timeZone: "UTC",
 });
 
+/** Where the sparkles pop round the word, and when, in ms after the hop starts. */
+const SPARKS = [
+  { at: { left: "-0.25em", top: "-0.1em" }, d: 90 },
+  { at: { left: "52%", top: "-0.45em" }, d: 200 },
+  { at: { right: "-0.35em", top: "0.05em" }, d: 290 },
+];
+
+/**
+ * The hero's accent word. The letters hop in a wave, the squiggle redraws,
+ * and sparkles pop, on load and on every pointer entry (see `.delight-*` in
+ * `~/styles.css`). Bumping `run` remounts the word, so each run plays in full.
+ */
+function Delightful() {
+  const [run, setRun] = useState(0);
+  return (
+    <em className="relative not-italic text-pink-600" onPointerEnter={() => setRun((n) => n + 1)}>
+      <span className="sr-only">delightful</span>
+      <span key={run} aria-hidden className="whitespace-nowrap">
+        {"delightful".split("").map((letter, i) => (
+          <span
+            key={i}
+            className="delight-letter"
+            style={{ "--d": `${i * 30}ms`, "--tilt": `${i % 2 ? 6 : -6}deg` } as CSSProperties}
+          >
+            {letter}
+          </span>
+        ))}
+        {SPARKS.map(({ at, d }) => (
+          <span
+            key={d}
+            className="delight-spark pointer-events-none absolute text-[0.32em] leading-none text-pink-400"
+            style={{ ...at, "--d": `${d}ms` } as CSSProperties}
+          >
+            ✦
+          </span>
+        ))}
+        <svg
+          viewBox="0 0 200 12"
+          preserveAspectRatio="none"
+          className="absolute -bottom-1.5 left-0 h-2.5 w-full text-pink-300"
+        >
+          <path
+            d="M2 8 Q 50 1 100 6 T 198 4"
+            pathLength={1}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="4"
+            strokeLinecap="round"
+            className="delight-line"
+          />
+        </svg>
+      </span>
+    </em>
+  );
+}
+
 function IntroCell() {
   return (
     <section
@@ -66,25 +122,7 @@ function IntroCell() {
           n Arkana
         </h1>
         <p className="font-display text-[8cqw] leading-[1.05] font-extrabold text-pink-950 text-pretty md:text-[4.1cqw] xl:text-[3.5cqw]">
-          I care about making fast software that&rsquo;s{" "}
-          <em className="relative not-italic text-pink-600">
-            delightful
-            <svg
-              aria-hidden
-              viewBox="0 0 200 12"
-              preserveAspectRatio="none"
-              className="absolute -bottom-1.5 left-0 h-2.5 w-full text-pink-300"
-            >
-              <path
-                d="M2 8 Q 50 1 100 6 T 198 4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
-            </svg>
-          </em>{" "}
-          to use.
+          I care about making fast software that&rsquo;s <Delightful /> to use.
         </p>
         <div className="mt-auto flex flex-col gap-3 text-[15px] leading-[2.1] text-pink-950/80 text-pretty xl:text-base xl:leading-[2.1]">
           <p>
@@ -509,7 +547,12 @@ function ProjectCells() {
             </Link>
           }
         >
-          <ProjectMark slug={project.slug} title={project.title} />
+          {/* A third of the card, so the icon holds its half of the cell. */}
+          <ProjectMark
+            slug={project.slug}
+            title={project.title}
+            className="aspect-square h-auto w-[34%] p-[5%] shadow-[0_4px_0_rgba(190,24,93,0.13)]"
+          />
           <div className="mt-auto min-w-0">
             <p className="w-fit bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_2px] bg-left-bottom bg-no-repeat font-display text-lg font-bold text-pink-950 transition-[background-size,color] duration-300 group-hover/cell:bg-[length:100%_2px] group-hover/cell:text-pink-600">
               {project.title}

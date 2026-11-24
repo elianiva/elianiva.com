@@ -556,6 +556,57 @@
   animation-delay: 195ms;
 }
 
+/* The hero's "delightful": the letters hop in a wave, the squiggle under
+ * them draws itself in, and three sparkles pop. It plays on load and again
+ * each time the pointer enters; the word remounts, so a run always finishes
+ * instead of snapping back when the pointer leaves. */
+@keyframes delight-hop {
+  35% {
+    transform: translateY(-0.14em) rotate(var(--tilt));
+  }
+  70% {
+    transform: translateY(0.02em);
+  }
+}
+@keyframes delight-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes delight-spark {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.4) rotate(90deg);
+  }
+}
+.delight-letter {
+  display: inline-block;
+  animation: delight-hop 360ms var(--ease-out-strong) var(--d) both;
+}
+.delight-line {
+  stroke-dasharray: 1;
+  animation: delight-draw 420ms var(--ease-out-strong) 150ms both;
+}
+.delight-spark {
+  opacity: 0;
+  animation: delight-spark 520ms var(--ease-out-strong) var(--d) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .delight-letter,
+  .delight-line,
+  .delight-spark {
+    animation: none;
+  }
+}
+
 /* Reduced motion keeps fades and colour changes and drops the movement. */
 @media (prefers-reduced-motion: reduce) {
   .cells-enter > * {
