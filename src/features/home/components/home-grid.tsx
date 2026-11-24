@@ -158,12 +158,12 @@ const LISTENING = "xl:col-[6] xl:row-[1/3]";
 
 function ListeningCell() {
   const music = useQuery({
-    queryKey: ["home", "now-playing"],
-    queryFn: async () => (await getRecentTracks()).tracks[0] ?? null,
+    queryKey: ["home", "recent-plays"],
+    queryFn: async () => (await getRecentTracks()).tracks.slice(0, 5),
     staleTime: 2 * 60_000,
     retry: false,
   });
-  const track = music.data;
+  const [track, ...earlier] = music.data ?? [];
   const label = (
     <Link to="/music" className={STRETCHED}>
       {track?.nowPlaying ? "Listening now" : "Last played"}
@@ -190,24 +190,63 @@ function ListeningCell() {
     );
   }
 
+  const now = new Date();
   return (
-    <Cell linked tone="ink" label={label} className={cn("overflow-hidden", LISTENING)}>
-      <img
-        src={track.art}
-        alt=""
-        className="absolute inset-0 size-full object-cover opacity-90 transition-transform duration-300 ease-out"
-      />
+    <Cell linked tone="dusk" label={label} className={cn("overflow-hidden xl:gap-4", LISTENING)}>
+      {/* The cover keeps its own square: last.fm art is only 300px, so it never
+          stretches. On wide screens it sits in a jewel case with the disc
+          peeking out behind it, spinning while the track plays. */}
+      <div className="absolute inset-0 xl:relative xl:inset-auto xl:mr-7">
+        <span
+          aria-hidden
+          className={cn(
+            "absolute top-[3%] left-[3%] hidden aspect-square w-[94%] rounded-full bg-[conic-gradient(from_20deg,#f5d0fe,#e0f2fe,#fef9c3,#fbcfe8,#ddd6fe,#e0f2fe,#f5d0fe)] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.5)] transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] [mask:radial-gradient(circle,#0000_9%,#000_9.5%,#000_17%,#0003_17.5%,#0003_19%,#000_19.5%)] xl:block xl:translate-x-6 group-hover/cell:xl:translate-x-9",
+            track.nowPlaying && "motion-safe:animate-[spin_4s_linear_infinite]",
+          )}
+        />
+        <img
+          src={track.art}
+          alt={track.album ? `${track.album} cover` : ""}
+          className="relative size-full object-cover opacity-90 xl:aspect-square xl:h-auto xl:opacity-100 xl:shadow-[2px_2px_0_rgb(0_0_0/0.35)]"
+        />
+        {/* The case's hinge: a lighter strip down the left edge. */}
+        <span
+          aria-hidden
+          className="absolute inset-y-0 left-0 hidden w-2 border-r border-white/25 bg-white/10 xl:block"
+        />
+      </div>
       <span
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-t from-pink-950/85 via-pink-950/10 to-pink-950/40"
+        className="absolute inset-0 bg-gradient-to-t from-pink-950/85 via-pink-950/10 to-pink-950/40 xl:hidden"
       />
-      <p className="relative mt-auto min-w-0 text-sm leading-snug">
-        <span className="block truncate font-semibold">{track.track}</span>
-        <span className="block truncate opacity-80">
-          {track.artist}
-          {!track.nowPlaying && track.ts && <> · {timeAgo(track.ts, new Date())}</>}
-        </span>
-      </p>
+      <div className="relative mt-auto min-w-0 text-sm leading-snug xl:mt-0">
+        <p className="truncate font-semibold xl:text-base">{track.track}</p>
+        <p className="truncate opacity-80">{track.artist}</p>
+        <p className="mt-1 hidden truncate font-mono text-[10px] tracking-wider uppercase opacity-60 xl:block">
+          {track.album && <>{track.album} · </>}
+          {track.nowPlaying ? "on now" : track.ts && timeAgo(track.ts, now)}
+        </p>
+      </div>
+      {earlier.length > 0 && (
+        <ol className="relative mt-auto hidden border-t border-dashed border-white/20 xl:block">
+          {earlier.map((play, i) => (
+            <li
+              key={`${play.url}-${play.ts ?? i}`}
+              className="flex items-baseline gap-2 border-b border-dashed border-white/10 py-1.5 last:border-b-0"
+            >
+              <span className="min-w-0 flex-1 truncate text-[12px]">
+                {play.track}
+                <span className="opacity-55"> · {play.artist}</span>
+              </span>
+              {play.ts && (
+                <span className="shrink-0 font-mono text-[10px] opacity-50">
+                  {timeAgo(play.ts, now)}
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
     </Cell>
   );
 }
@@ -222,11 +261,18 @@ const LEVEL: Record<string, number> = {
 };
 
 /**
- * A year of squares, Sunday on top. Phones get the last 26 weeks. Without
- * data (`null`) the squares stay blank and faded, and no count is shown.
+ * The past year as a barcode: one bar per week, rising from the card's bottom
+ * edge. A bar's height is the week's total against the busiest week, stacked
+ * day by day in each day's heat colour, so the busiest weeks reach the top.
+ * Hovering the cell runs a scan across, left to right. Phones get the last
+ * 26 weeks. Without data (`null`) every week is a flat stub and no count shows.
  */
 function GitCell({ data }: { data: ContributionsResponse | null }) {
-  const weeks = (data ?? emptyContributions()).weeks.slice(-53);
+  const weeks = (data ?? emptyContributions()).weeks.slice(-53).map((week) => {
+    const days = [...week.contributionDays].sort((x, y) => x.date.localeCompare(y.date));
+    return { days, total: days.reduce((sum, day) => sum + day.contributionCount, 0) };
+  });
+  const busiest = Math.max(1, ...weeks.map((week) => week.total));
   return (
     <Cell
       linked
@@ -250,32 +296,6 @@ function GitCell({ data }: { data: ContributionsResponse | null }) {
           The contribution count did not load. It is on GitHub.
         </p>
       )}
-      <div
-        aria-hidden
-        className={cn(
-          "mt-auto grid grid-flow-col grid-rows-7 gap-[3px] [grid-template-columns:repeat(26,minmax(0,1fr))] md:[grid-template-columns:repeat(53,minmax(0,1fr))]",
-          !data && "opacity-50",
-        )}
-      >
-        {weeks.flatMap((week, w) =>
-          Array.from({ length: 7 }, (_, d) => {
-            const day = week.contributionDays.find((x) => new Date(x.date).getUTCDay() === d);
-            return (
-              <span
-                key={`${w}-${d}`}
-                title={day ? `${day.date} · ${day.contributionCount}` : undefined}
-                style={stagger(w, 4)}
-                className={cn(
-                  HOVER_DELAY,
-                  "aspect-square transition-[border-radius,scale] duration-300 group-hover/cell:rounded-full",
-                  day ? HEAT[LEVEL[day.contributionLevel] ?? 0] : "bg-transparent",
-                  w < weeks.length - 26 && "hidden md:block",
-                )}
-              />
-            );
-          }),
-        )}
-      </div>
       <div className="flex items-center justify-between gap-3">
         <LastPushTag />
         {data && (
@@ -283,6 +303,39 @@ function GitCell({ data }: { data: ContributionsResponse | null }) {
             longest streak {data.longestStreak}d
           </span>
         )}
+      </div>
+      {/* Takes the rest of the cell and runs to its sides and bottom. */}
+      <div
+        aria-hidden
+        className="-mx-4 -mb-4 flex min-h-20 flex-1 items-end gap-[2px] border-t border-dashed border-pink-200/70 px-px md:-mx-5 md:-mb-5"
+      >
+        {weeks.map((week, w) => (
+          <span
+            key={week.days[0]?.date ?? w}
+            title={
+              week.days[0]
+                ? `Week of ${week.days[0].date} · ${week.total} contributions`
+                : undefined
+            }
+            style={{ height: `${(week.total / busiest) * 100}%`, ...stagger(w, 5) }}
+            className={cn(
+              HOVER_DELAY,
+              "flex min-h-[3px] flex-1 flex-col-reverse bg-pink-100 opacity-75 transition-opacity duration-200 group-hover/cell:opacity-100 hover:!opacity-60",
+              w < weeks.length - 26 && "hidden md:flex",
+            )}
+          >
+            {week.days.map(
+              (day) =>
+                day.contributionCount > 0 && (
+                  <span
+                    key={day.date}
+                    style={{ flexGrow: day.contributionCount }}
+                    className={HEAT[LEVEL[day.contributionLevel] ?? 0]}
+                  />
+                ),
+            )}
+          </span>
+        ))}
       </div>
     </Cell>
   );
