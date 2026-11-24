@@ -7,7 +7,6 @@ import { cn } from "~/lib/utils";
 import { currentRoles } from "~/data/work-experience";
 import { getPosts } from "~/features/posts/lib/posts";
 import { getProjects } from "~/features/projects/lib/projects";
-import { getRecentTracks } from "~/features/music/lib/music-server";
 
 const INLINE_LINK =
   "text-pink-800 underline decoration-pink-300 decoration-dotted underline-offset-4 transition-colors hover:text-pink-600 hover:decoration-solid";
@@ -173,13 +172,6 @@ function BoardRow({ code, children, when }: { code: string; children: ReactNode;
 export function StatusTile() {
   const now = useNow();
   const activity = useActivity(now !== null);
-  const track = useQuery({
-    queryKey: ["home", "now-playing"],
-    queryFn: async () => (await getRecentTracks()).tracks[0] ?? null,
-    staleTime: 2 * 60_000,
-    retry: false,
-    enabled: now !== null,
-  }).data;
   const role = currentRoles()[0];
   const post = getPosts({ limit: 1 })[0];
   const project = getProjects()[0];
@@ -277,17 +269,6 @@ export function StatusTile() {
               <Link to="/posts/$slug" params={{ slug: post.slug }} className={ROW_LINK}>
                 {post.title}
               </Link>
-            </BoardRow>
-          )}
-          {track && (
-            <BoardRow
-              code={track.nowPlaying ? "Playing" : "Played"}
-              when={track.nowPlaying ? "now" : track.ts ? ago(track.ts) : undefined}
-            >
-              <Link to="/music" className={ROW_LINK}>
-                {track.track}
-              </Link>
-              <span className="truncate text-pink-200/60">{track.artist}</span>
             </BoardRow>
           )}
           {activity?.starred && (

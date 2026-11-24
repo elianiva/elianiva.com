@@ -15,6 +15,9 @@ const LASTFM_USER = "elianiva";
 const API_BASE = "https://ws.audioscrobbler.com/2.0/";
 
 const EMPTY_TRACKS: MusicData = { tracks: [], total: 0 };
+/** The file name of last.fm's grey star placeholder image. */
+const PLACEHOLDER_ART = "2a96cbd8b46e442fc41c2b86b821562f";
+
 const EMPTY_ARTISTS: { artists: TopArtistItem[]; total: number } = { artists: [], total: 0 };
 const EMPTY_ALBUMS: { albums: TopAlbumItem[]; total: number } = { albums: [], total: 0 };
 const EMPTY_TOP_TRACKS: { tracks: TopTrackItem[]; total: number } = { tracks: [], total: 0 };
@@ -60,7 +63,8 @@ function normalizeTrack(
     album: albumName,
     url: track.url,
     artistUrl,
-    art: artSrc && artSrc["#text"] ? artSrc["#text"] : null,
+    // last.fm serves a grey star when a track has no art; treat it as none.
+    art: artSrc?.["#text"] && !artSrc["#text"].includes(PLACEHOLDER_ART) ? artSrc["#text"] : null,
     nowPlaying: track["@attr"]?.nowplaying === "true",
     ts: track.date?.uts ? new Date(Number(track.date.uts) * 1000).toISOString() : null,
   };

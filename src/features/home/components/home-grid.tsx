@@ -192,7 +192,15 @@ function ListeningCell() {
 
   const now = new Date();
   return (
-    <Cell linked tone="dusk" label={label} className={cn("overflow-hidden xl:gap-4", LISTENING)}>
+    <Cell
+      linked
+      tone="pink"
+      label={label}
+      className={cn(
+        "overflow-hidden xl:gap-4 *:first:relative *:first:z-10 max-xl:[&_h2]:text-white/80",
+        LISTENING,
+      )}
+    >
       {/* The cover keeps its own square: last.fm art is only 300px, so it never
           stretches. On wide screens it sits in a jewel case with the disc
           peeking out behind it, spinning while the track plays. */}
@@ -207,19 +215,19 @@ function ListeningCell() {
         <img
           src={track.art}
           alt={track.album ? `${track.album} cover` : ""}
-          className="relative size-full object-cover opacity-90 xl:aspect-square xl:h-auto xl:opacity-100 xl:shadow-[2px_2px_0_rgb(0_0_0/0.35)]"
+          className="relative size-full object-cover opacity-90 xl:aspect-square xl:h-auto xl:opacity-100 xl:shadow-[3px_3px_0_rgb(190_24_93/0.18)]"
         />
         {/* The case's hinge: a lighter strip down the left edge. */}
         <span
           aria-hidden
-          className="absolute inset-y-0 left-0 hidden w-2 border-r border-white/25 bg-white/10 xl:block"
+          className="absolute inset-y-0 left-0 hidden w-2 border-r border-white/40 bg-white/20 xl:block"
         />
       </div>
       <span
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-t from-pink-950/85 via-pink-950/10 to-pink-950/40 xl:hidden"
+        className="absolute inset-0 bg-gradient-to-t from-pink-950/85 via-pink-950/10 to-pink-950/75 xl:hidden"
       />
-      <div className="relative mt-auto min-w-0 text-sm leading-snug xl:mt-0">
+      <div className="relative mt-auto min-w-0 text-sm leading-snug text-white xl:mt-0 xl:text-pink-950">
         <p className="truncate font-semibold xl:text-base">{track.track}</p>
         <p className="truncate opacity-80">{track.artist}</p>
         <p className="mt-1 hidden truncate font-mono text-[10px] tracking-wider uppercase opacity-60 xl:block">
@@ -228,11 +236,11 @@ function ListeningCell() {
         </p>
       </div>
       {earlier.length > 0 && (
-        <ol className="relative mt-auto hidden border-t border-dashed border-white/20 xl:block">
+        <ol className="relative mt-auto hidden border-t border-dashed border-pink-300/70 text-pink-950 xl:block">
           {earlier.map((play, i) => (
             <li
               key={`${play.url}-${play.ts ?? i}`}
-              className="flex items-baseline gap-2 border-b border-dashed border-white/10 py-1.5 last:border-b-0"
+              className="flex items-baseline gap-2 border-b border-dashed border-pink-200/80 py-1.5 last:border-b-0"
             >
               <span className="min-w-0 flex-1 truncate text-[12px]">
                 {play.track}
