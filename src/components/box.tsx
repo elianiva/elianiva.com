@@ -36,6 +36,8 @@ export const TONES = {
   lilac: "pat-diag bg-purple-50/40 [--pat-ink:rgb(192_132_252/0.1)]",
   ink: "pat-graph bg-pink-950 text-pink-50 [--pat-ink:rgb(255_255_255/0.04)]",
   hot: "pat-fade bg-pink-600 text-white [--pat-ink:rgb(255_255_255/0.16)]",
+  /** hot's dotted fade, in a quiet plum. */
+  dusk: "pat-fade bg-[#4a1630] text-pink-50 [--pat-ink:rgb(244_114_182/0.2)]",
   /** An empty compartment: diagonal pencil hatching instead of a blank hole. */
   hatch: "pat-diag [--pat-ink:rgb(251_207_232/0.4)]",
 } as const;
@@ -58,9 +60,18 @@ export function Box({
   square = true,
   className,
   label,
+  dense = false,
+  head,
 }: {
   children: ReactNode;
   square?: boolean;
+  /** Let later cells fill holes left earlier in the flow, for grids whose order is loose. */
+  dense?: boolean;
+  /**
+   * The box opens with a PageHead and this many more rows (0 for none) that
+   * size to their content instead of to square cells.
+   */
+  head?: number;
   className?: string;
   label?: string;
 }) {
@@ -73,9 +84,21 @@ export function Box({
     >
       <div
         aria-label={label}
+        // PageHead stacks into two rows on mobile and sits on one row from md up.
+        style={
+          head === undefined
+            ? undefined
+            : ({
+                "--head-rows": `repeat(${2 + head}, auto)`,
+                "--head-rows-md": `repeat(${1 + head}, auto)`,
+              } as CSSProperties)
+        }
         className={cn(
           "cells-enter grid grid-cols-2 bg-[#fff8f4]/80 max-md:w-[calc(100%+1px)] md:grid-cols-4 md:border-t md:border-l xl:grid-cols-6",
           RULE,
+          dense && "grid-flow-row-dense",
+          head !== undefined &&
+            "[grid-template-rows:var(--head-rows)] md:[grid-template-rows:var(--head-rows-md)]",
           square &&
             "[grid-auto-rows:minmax(50cqw,auto)] md:[grid-auto-rows:minmax(25cqw,auto)] xl:[grid-auto-rows:minmax(calc(100cqw/6),auto)]",
         )}
@@ -86,20 +109,10 @@ export function Box({
   );
 }
 
-/** A tiny catalogue number in the cell's corner: No.07. */
-export function CellNumber({ n, className }: { n: number; className?: string }) {
-  return (
-    <span className={cn("font-mono text-[9px] tracking-widest text-current opacity-45", className)}>
-      No.{String(n).padStart(2, "0")}
-    </span>
-  );
-}
-
 export function Cell({
   span = "1",
   tone = "paper",
   label,
-  n,
   linked = false,
   as: Tag = "section",
   className,
@@ -110,14 +123,13 @@ export function Cell({
   tone?: Tone;
   /** The mono caption; pass a link with `STRETCHED` and set `linked` to make the cell open it. */
   label?: ReactNode;
-  n?: number;
   linked?: boolean;
   as?: "section" | "article" | "div" | "header" | "aside" | "nav" | "li";
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
 }) {
-  const dark = tone === "ink" || tone === "hot";
+  const dark = tone === "ink" || tone === "hot" || tone === "dusk";
   return (
     <Tag
       style={style}
@@ -135,7 +147,7 @@ export function Cell({
         className,
       )}
     >
-      {(label || n !== undefined || linked) && (
+      {(label || linked) && (
         <div className="flex items-start justify-between gap-3">
           {label ? (
             <h2 className={cn(LABEL, dark && "text-current opacity-75")}>{label}</h2>
@@ -143,7 +155,6 @@ export function Cell({
             <span />
           )}
           <span className="flex items-center gap-2">
-            {n !== undefined && <CellNumber n={n} />}
             {linked && (
               <ArrowUpRightIcon
                 aria-hidden
@@ -264,13 +275,11 @@ export function Postmark({ children, className }: { children: ReactNode; classNa
 export function PageHead({
   title,
   kicker,
-  n,
   tone = "yellow",
   aside,
 }: {
   title: string;
   kicker?: ReactNode;
-  n: number;
   tone?: Tone;
   aside: ReactNode;
 }) {
@@ -282,12 +291,12 @@ export function PageHead({
           {title.slice(1)}
         </h1>
         {kicker && (
-          <p className="max-w-[56ch] text-[15px] leading-relaxed text-pink-950/70 text-pretty">
+          <p className="text-base leading-relaxed text-pink-950/75 text-pretty md:text-lg">
             {kicker}
           </p>
         )}
       </Cell>
-      <Cell as="aside" tone={tone} n={n} className="col-span-2 justify-between md:col-span-1">
+      <Cell as="aside" tone={tone} className="col-span-2 justify-between md:col-span-1">
         {aside}
       </Cell>
     </>

@@ -13,7 +13,6 @@ function NeighboursRoute() {
     <Box>
       <PageHead
         title="Neighbours"
-        n={1}
         tone="sky"
         kicker="A bunch of cool people I know or have run into on the web. Go say hi."
         aside={
@@ -26,7 +25,7 @@ function NeighboursRoute() {
         }
       />
       {people.map((person, i) => (
-        <Cell key={person.url} as="article" n={i + 2} className="overflow-hidden">
+        <Cell key={person.url} as="article" className="overflow-hidden">
           <span
             aria-hidden
             className={cn(

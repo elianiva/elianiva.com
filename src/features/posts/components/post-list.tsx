@@ -84,10 +84,9 @@ export function PostList() {
   const used = filtered.length * 2 + (!filtering && filtered.length > 0 ? 2 : 0);
 
   return (
-    <Box>
+    <Box head={1}>
       <PageHead
         title="Posts"
-        n={1}
         tone="sky"
         kicker="Notes on editors, the web, Japanese, and the tools I keep rebuilding."
         aside={
@@ -100,7 +99,7 @@ export function PostList() {
         }
       />
 
-      <Cell span="w4" label="Find a post" className="gap-4 [min-height:auto]">
+      <Cell span="w4" label="Find a post" className="gap-2.5 py-3 md:py-4">
         <div className="relative">
           <input
             type="search"
@@ -108,14 +107,14 @@ export function PostList() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type to search…"
             aria-label="Search posts"
-            className="w-full border-b-2 border-pink-200 bg-transparent pb-2 font-display text-2xl text-pink-950 placeholder:text-pink-950/30 focus:border-pink-500 focus:outline-none md:text-3xl"
+            className="w-full border-b-2 border-pink-200 bg-transparent pb-1 font-display text-xl text-pink-950 placeholder:text-pink-950/30 focus:border-pink-500 focus:outline-none md:text-2xl"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
               aria-label="Clear search"
-              className="absolute top-1 right-0 text-pink-400 hover:text-pink-600"
+              className="absolute top-0.5 right-0 text-pink-400 hover:text-pink-600"
             >
               <XIcon className="size-5" />
             </button>
@@ -143,7 +142,10 @@ export function PostList() {
             );
           })}
         </ul>
-        <p aria-live="polite" className="font-mono text-[11px] text-pink-950/50">
+        <p
+          aria-live="polite"
+          className="absolute top-4 right-4 font-mono text-[11px] text-pink-950/50 md:top-5 md:right-5"
+        >
           {filtering ? `${filtered.length} of ${posts.length} posts` : "\u00a0"}
         </p>
       </Cell>

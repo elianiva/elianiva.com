@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Box, Cell, Fill, PageHead, STRETCHED, type Tone } from "~/components/box";
 import { ProjectMark } from "./project-mark";
+import { cn } from "~/lib/utils";
 import type { ProjectType } from "~/features/content/lib/projects";
 import { getProjects } from "../lib/projects";
 
@@ -22,21 +23,24 @@ const SECTIONS: { title: string; type: ProjectType; tone: Tone; blurb: string }[
 
 /**
  * Every project as a square compartment, grouped behind a coloured section
- * card that says how many sit in the group. Numbering runs across the page.
+ * card that says how many sit in the group, most recently pushed first. Each
+ * label shows the year of its last push. Numbering runs across the page.
  */
-export function ProjectsPage() {
-  const groups = SECTIONS.map((s) => ({ ...s, projects: getProjects({ type: s.type }) }));
+export function ProjectsPage({ activity }: { activity: Record<string, string> }) {
+  // Most recently pushed first; a project off GitHub counts from its own date.
+  const lastActive = (p: { slug: string; date: string }) => activity[p.slug] ?? p.date;
+  const groups = SECTIONS.map((s) => ({
+    ...s,
+    projects: getProjects({ type: s.type })
+      .map((p) => ({ ...p, active: lastActive(p) }))
+      .sort((a, b) => b.active.localeCompare(a.active)),
+  }));
   const total = groups.reduce((sum, g) => sum + g.projects.length, 0);
-  // No.01 is the page head; each shelf card takes a number, then its projects.
-  const starts = groups.map(
-    (_, i) => 2 + groups.slice(0, i).reduce((sum, g) => sum + g.projects.length + 1, 0),
-  );
 
   return (
-    <Box>
+    <Box head={0}>
       <PageHead
         title="Projects"
-        n={1}
         tone="hot"
         kicker="Apps, tools, and experiments, from my first CRUD app to the ones I use every day."
         aside={
@@ -48,8 +52,8 @@ export function ProjectsPage() {
           </>
         }
       />
-      {groups.map((group, i) => (
-        <ProjectShelf key={group.type} group={group} start={starts[i]} />
+      {groups.map((group) => (
+        <ProjectShelf key={group.type} group={group} />
       ))}
     </Box>
   );
@@ -57,17 +61,25 @@ export function ProjectsPage() {
 
 function ProjectShelf({
   group,
-  start,
 }: {
-  group: (typeof SECTIONS)[number] & { projects: ReturnType<typeof getProjects> };
-  start: number;
+  group: (typeof SECTIONS)[number] & {
+    projects: (ReturnType<typeof getProjects>[number] & { active: string })[];
+  };
 }) {
   return (
     <>
-      <Cell as="header" tone={group.tone} n={start} className="justify-between">
-        <p className="font-display text-6xl leading-none font-extrabold text-pink-950 tabular-nums">
-          {String(group.projects.length).padStart(2, "0")}
-        </p>
+      <Cell as="header" tone={group.tone} className="justify-between">
+        {/* The shelf's three latest projects, fanned out like cards in a hand. */}
+        <div aria-hidden className="flex pt-1 pl-1">
+          {group.projects.slice(0, 3).map((project, i) => (
+            <span
+              key={project.slug}
+              className={cn("-ml-3 first:ml-0", ["-rotate-6", "rotate-3", "rotate-12"][i])}
+            >
+              <ProjectMark slug={project.slug} title={project.title} />
+            </span>
+          ))}
+        </div>
         <div>
           <h2 className="font-display text-2xl font-extrabold tracking-wide text-pink-950 uppercase">
             <span className="text-pink-500">{group.title[0]}</span>
@@ -76,15 +88,14 @@ function ProjectShelf({
           <p className="text-sm text-pink-950/65">{group.blurb}</p>
         </div>
       </Cell>
-      {group.projects.map((project, i) => (
+      {group.projects.map((project) => (
         <Cell
           key={project.slug}
           as="article"
           linked
-          n={start + 1 + i}
           label={
             <Link to="/projects/$slug" params={{ slug: project.slug }} className={STRETCHED}>
-              <span suppressHydrationWarning>{project.date.slice(0, 4)}</span>
+              <span suppressHydrationWarning>{project.active.slice(0, 4)}</span>
             </Link>
           }
         >

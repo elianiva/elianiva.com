@@ -1,134 +1,16 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { profile, utcOffsetLabel } from "~/data/profile";
+import { profile } from "~/data/profile";
 import { Cell } from "~/components/box";
 import { cn } from "~/lib/utils";
-import { useLocalTime } from "./local-clock";
 import { currentRoles } from "~/data/work-experience";
 import { getPosts } from "~/features/posts/lib/posts";
+import { getProjects } from "~/features/projects/lib/projects";
 import { getRecentTracks } from "~/features/music/lib/music-server";
 
 const INLINE_LINK =
   "text-pink-800 underline decoration-pink-300 decoration-dotted underline-offset-4 transition-colors hover:text-pink-600 hover:decoration-solid";
-
-function hourIn(timeZone: string, date: Date): number {
-  const part = new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", hour12: false })
-    .formatToParts(date)
-    .find((p) => p.type === "hour");
-  return Number(part?.value ?? 0) % 24;
-}
-
-/**
- * A stretch of my day: the hour it ends at (exclusive), the colour of the dot
- * that says so, and the ways I put it into words. Add or reword a line and the
- * sentence follows; the rotation below needs no other change.
- */
-interface Stretch {
-  until: number;
-  dot: string;
-  lines: readonly string[];
-}
-
-const STATES: readonly Stretch[] = [
-  {
-    until: 2,
-    dot: "bg-neutral-400",
-    lines: [
-      "winding down for the night",
-      "calling it a night soon",
-      "off the keyboard in a bit",
-      "should be asleep already, honestly",
-    ],
-  },
-  {
-    until: 6,
-    dot: "bg-neutral-400",
-    lines: [
-      "asleep, I'll reply when I'm up",
-      "in bed, replies wait until morning",
-      "fast asleep, I'll get back to you tomorrow",
-      "out cold, replies resume with my coffee",
-    ],
-  },
-  {
-    until: 9,
-    dot: "bg-amber-400",
-    lines: [
-      "morning coffee o'clock",
-      "coffee first, words later",
-      "easing into the day with a coffee",
-      "shaking off sleep, mug in hand",
-    ],
-  },
-  {
-    until: 17,
-    dot: "bg-green-500",
-    lines: [
-      "probably at my desk",
-      "heads down at work, replies come quick",
-      "at my desk, between meetings",
-      "deep in a ticket somewhere",
-    ],
-  },
-  {
-    until: 22,
-    dot: "bg-green-500",
-    lines: [
-      "winding down, replies are likely",
-      "wrapping up loose ends from today",
-      "off the clock, but still around",
-      "evening tinkering, replies are likely",
-    ],
-  },
-  {
-    until: 24,
-    dot: "bg-amber-400",
-    lines: [
-      "late-night coding, replies might be slow",
-      "up late tinkering, replies might lag",
-      "one more commit, I promise",
-      "down a rabbit hole, replies might be slow",
-    ],
-  },
-];
-const stateFor = (h: number) => STATES.find((s) => h < s.until) ?? STATES[STATES.length - 1]!;
-
-/** Hours since the epoch: the rotation's clock, and blind to time zones. */
-const hourIndex = (now: Date) => Math.floor(now.getTime() / 3_600_000);
-
-/**
- * One of the stretch's lines, mixed from the hour so it holds still while you
- * read and turns over as my day does. It never changes mid-tick, and everyone
- * reading at once sees the same line.
- */
-function pickLine(lines: readonly string[], index: number): string {
-  let seed = index | 0;
-  seed = Math.imul(seed ^ 0x9e3779b9, 0x85ebca6b);
-  seed ^= seed >>> 13;
-  return lines[(seed >>> 0) % lines.length]!;
-}
-
-/** My hour, the dot's colour, and the line to print. Null before I'm mounted. */
-function currently(now: Date | null): { hour: number; dot: string; line: string } | null {
-  if (!now) return null;
-  const hour = hourIn(profile.timeZone, now);
-  const stretch = stateFor(hour);
-  return { hour, dot: stretch.dot, line: pickLine(stretch.lines, hourIndex(now)) };
-}
-
-/**
- * The visitor's hour offset from mine, read from their browser. Null until
- * mounted: the prerendered HTML cannot know who is reading it.
- */
-function useVisitorOffset(now: Date | null): number | null {
-  if (!now) return null;
-  let diff =
-    hourIn(Intl.DateTimeFormat().resolvedOptions().timeZone, now) - hourIn(profile.timeZone, now);
-  if (diff > 12) diff -= 24;
-  if (diff < -12) diff += 24;
-  return diff;
-}
 
 /** `null` during prerender and the first client render, then ticks every 30s. */
 function useNow(): Date | null {
@@ -153,7 +35,13 @@ export function timeAgo(from: string | number, now: Date): string {
 type GitHubActivity = {
   push: { repo: string; at: string; message: string | null } | null;
   release: { repo: string; tag: string; at: string } | null;
+  starred: { repo: string; at: string } | null;
+  pr: { repo: string; number: number; title: string; at: string; merged: boolean } | null;
+  /** Repos I pushed to in the last week, busiest first. */
+  recent: { repo: string; commits: number }[];
 };
+
+const WEEK = 7 * 24 * 3_600_000;
 
 /**
  * My latest public push and release, read from GitHub's public events.
@@ -163,23 +51,55 @@ async function fetchActivity(): Promise<GitHubActivity> {
   const res = await fetch(
     `https://api.github.com/users/${profile.handle}/events/public?per_page=100`,
   );
-  if (!res.ok) return { push: null, release: null };
+  if (!res.ok) return { push: null, release: null, starred: null, pr: null, recent: [] };
   const events = (await res.json()) as {
     type: string;
     repo: { name: string };
     created_at: string;
     payload: {
       commits?: { message: string }[];
+      size?: number;
       ref_type?: string;
       ref?: string;
       release?: { tag_name: string };
+      action?: string;
+      pull_request?: { number: number; title: string; merged?: boolean };
     };
   }[];
   const push = events.find((e) => e.type === "PushEvent");
   const release = events.find(
     (e) => e.type === "ReleaseEvent" || (e.type === "CreateEvent" && e.payload.ref_type === "tag"),
   );
+  const starred = events.find((e) => e.type === "WatchEvent");
+  // A pull request I opened or got merged in someone else's repo.
+  const pr = events.find(
+    (e) =>
+      e.type === "PullRequestEvent" &&
+      !e.repo.name.startsWith(`${profile.handle}/`) &&
+      (e.payload.action === "opened" || e.payload.pull_request?.merged),
+  );
+  const since = Date.now() - WEEK;
+  const counts = new Map<string, number>();
+  for (const e of events) {
+    if (e.type !== "PushEvent" || Date.parse(e.created_at) < since) continue;
+    const n = e.payload.size ?? e.payload.commits?.length ?? 1;
+    counts.set(e.repo.name, (counts.get(e.repo.name) ?? 0) + n);
+  }
+  const recent = [...counts]
+    .map(([repo, commits]) => ({ repo, commits }))
+    .sort((x, y) => y.commits - x.commits);
   return {
+    recent,
+    starred: starred ? { repo: starred.repo.name, at: starred.created_at } : null,
+    pr: pr?.payload.pull_request
+      ? {
+          repo: pr.repo.name,
+          number: pr.payload.pull_request.number,
+          title: pr.payload.pull_request.title,
+          at: pr.created_at,
+          merged: Boolean(pr.payload.pull_request.merged),
+        }
+      : null,
     push: push
       ? {
           repo: push.repo.name,
@@ -229,40 +149,6 @@ export function LastPushTag() {
   );
 }
 
-const visitorTime = new Intl.DateTimeFormat("en-GB", {
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
-});
-
-/**
- * Text on split-flap tiles, one per character. A tile is keyed by its
- * character, so when the minute changes only the digits that changed flip.
- */
-function Flaps({ text, dim = false }: { text: string; dim?: boolean }) {
-  return (
-    <span className="flex gap-[0.06em]" suppressHydrationWarning>
-      {text.split("").map((ch, i) =>
-        ch === ":" || ch === " " ? (
-          <span key={i} className="w-[0.3em] self-center text-center text-pink-300/70">
-            {ch}
-          </span>
-        ) : (
-          <span
-            key={`${i}-${ch}`}
-            className={cn(
-              "relative grid w-[0.7em] animate-flap place-items-center rounded-[0.08em] bg-pink-950 leading-[1.25] after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-black/60",
-              dim ? "text-pink-200/70" : "text-pink-50",
-            )}
-          >
-            {ch}
-          </span>
-        ),
-      )}
-    </span>
-  );
-}
-
 const ROW_LABEL = "font-mono text-[9px] tracking-[0.25em] text-yellow-300 uppercase";
 const ROW_LINK = "relative z-10 min-w-0 truncate text-pink-50 hover:text-yellow-200";
 const ROW_TIME = "shrink-0 font-mono text-[10px] text-pink-300/70 tabular-nums";
@@ -279,16 +165,13 @@ function BoardRow({ code, children, when }: { code: string; children: ReactNode;
 }
 
 /**
- * What I'm up to, as an arrivals board: my clock on split-flap tiles, then
- * one row each for my job, my latest push and release on GitHub, my latest
- * post, and what I last played. The GitHub and last.fm rows fill in after
+ * What I'm up to, as a board: the repos I pushed to this week, then one row
+ * each for my job, my latest push and release on GitHub, my latest post, and
+ * what I last played. The GitHub and last.fm rows fill in after
  * mount; when either is unreachable, its row stays out.
  */
 export function StatusTile() {
   const now = useNow();
-  const offset = useVisitorOffset(now);
-  const state = currently(now);
-  const mine = useLocalTime();
   const activity = useActivity(now !== null);
   const track = useQuery({
     queryKey: ["home", "now-playing"],
@@ -299,34 +182,29 @@ export function StatusTile() {
   }).data;
   const role = currentRoles()[0];
   const post = getPosts({ limit: 1 })[0];
+  const project = getProjects()[0];
   const ago = (at: string | number) => (now ? timeAgo(at, now) : undefined);
 
   return (
-    <Cell
-      tone="graph"
-      n={2}
-      label="Status"
-      className="@container max-md:col-span-2 xl:col-[4/6] xl:row-[1]"
-    >
-      <div className="flex flex-1 flex-col gap-3 rounded-sm bg-pink-950/95 p-3 shadow-[inset_0_2px_0_rgb(0_0_0/0.35)] @xs:p-4">
-        <div className="flex items-end justify-between gap-3">
-          <span className="font-mono text-[min(10cqw,3rem)] font-semibold tabular-nums">
-            <Flaps text={mine} />
-          </span>
-          <span className="pb-1 text-right font-mono text-[9px] tracking-[0.25em] text-pink-200/80 uppercase">
-            {profile.location} · {utcOffsetLabel(profile.timeZone)}
-            {now && offset !== null && (
-              <span className="block text-pink-300/60">
-                {offset === 0 ? "same as you" : `${visitorTime.format(now)} for you`}
-              </span>
-            )}
-          </span>
-        </div>
+    <Cell tone="dusk" label="Status" className="@container col-span-2 xl:col-[4/6] xl:row-[1]">
+      <div className="flex flex-1 flex-col gap-3">
         <ul className="mt-auto">
-          {state && (
-            <BoardRow code="Now">
-              <span className={cn("size-1.5 shrink-0 self-center rounded-full", state.dot)} />
-              <span className="truncate text-pink-50">{state.line}</span>
+          {activity && activity.recent.length > 0 && (
+            <BoardRow code="Recently" when="this week">
+              <span className="flex min-w-0 flex-wrap gap-x-2">
+                {activity.recent.slice(0, 3).map(({ repo, commits }) => (
+                  <a
+                    key={repo}
+                    href={`https://github.com/${repo}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(ROW_LINK, "font-mono text-[13px]")}
+                  >
+                    {repo.split("/").pop()}
+                    <span className="ml-1 text-pink-300/60">×{commits}</span>
+                  </a>
+                ))}
+              </span>
             </BoardRow>
           )}
           {role && (
@@ -369,6 +247,31 @@ export function StatusTile() {
               </a>
             </BoardRow>
           )}
+          {activity?.pr && (
+            <BoardRow code={activity.pr.merged ? "Merged" : "Opened"} when={ago(activity.pr.at)}>
+              <a
+                href={`https://github.com/${activity.pr.repo}/pull/${activity.pr.number}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(ROW_LINK, "shrink-0 font-mono text-[13px]")}
+              >
+                {activity.pr.repo.split("/").pop()}#{activity.pr.number}
+              </a>
+              <span className="truncate text-pink-200/60">{activity.pr.title}</span>
+            </BoardRow>
+          )}
+          {project && (
+            <BoardRow code="Built" when={ago(project.date)}>
+              <Link
+                to="/projects/$slug"
+                params={{ slug: project.slug }}
+                className={cn(ROW_LINK, "shrink-0")}
+              >
+                {project.title}
+              </Link>
+              <span className="truncate text-pink-200/60">{project.description}</span>
+            </BoardRow>
+          )}
           {post && (
             <BoardRow code="Wrote" when={ago(post.date)}>
               <Link to="/posts/$slug" params={{ slug: post.slug }} className={ROW_LINK}>
@@ -385,6 +288,18 @@ export function StatusTile() {
                 {track.track}
               </Link>
               <span className="truncate text-pink-200/60">{track.artist}</span>
+            </BoardRow>
+          )}
+          {activity?.starred && (
+            <BoardRow code="Starred" when={ago(activity.starred.at)}>
+              <a
+                href={`https://github.com/${activity.starred.repo}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(ROW_LINK, "font-mono text-[13px]")}
+              >
+                {activity.starred.repo}
+              </a>
             </BoardRow>
           )}
         </ul>

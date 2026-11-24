@@ -53,7 +53,6 @@ function IntroCell() {
       <div className="flex flex-1 flex-col gap-5 p-4 md:p-6">
         <div className="flex items-start justify-between gap-3">
           <p className={LABEL}>Frontend-leaning product engineer</p>
-          <span className="font-mono text-[9px] tracking-widest opacity-45">No.01</span>
         </div>
         <h1
           id="hero-heading"
@@ -94,30 +93,29 @@ function IntroCell() {
               href="https://aerotalon.com"
               icon="/assets/company-favicons/aerotalon.jpg"
             />{" "}
-            on aviation operations software: flight records that keep working offline, a maintenance
-            module for work orders and parts, and permissions for 200 operators. Most days that
-            means React, TypeScript, and Cloudflare Workers.
+            on software that makes aviation operations easier: less paperwork, fewer handoffs, and
+            records that keep up with the people doing the work.
           </p>
           <p>
-            Outside work, I build the things I want to use.{" "}
+            Outside work, I tinker with my own things.{" "}
             <AppPill
               name="Quorum"
               href="https://playquorum.dev"
               icon="/assets/project-icons/quorum.webp"
             />{" "}
-            is a systems design game about fixing one bottleneck after another.{" "}
+            is a game about designing systems that survive real traffic.{" "}
             <AppPill
               name="Meiro"
               href="https://github.com/elianiva/meiro"
               icon="/assets/project-icons/meiro.webp"
             />{" "}
-            is a native desktop player for YouTube Music, and{" "}
+            is a desktop YouTube Music client that feels native, and{" "}
             <AppPill
               name="Mizook"
               href="https://github.com/elianiva/mizook"
               icon="/assets/project-icons/mizook.webp"
             />{" "}
-            is my own assistant that remembers every chat. I write most of it in Effect and Foldkit.
+            is my own assistant: chat, a bot, and an agent that runs on its own.
           </p>
         </div>
       </div>
@@ -173,7 +171,7 @@ function ListeningCell() {
 
   if (!track?.art) {
     return (
-      <Cell linked tone="pink" n={3} label={label} className={LISTENING}>
+      <Cell linked tone="pink" label={label} className={LISTENING}>
         <div className="grid flex-1 place-items-center">
           <span className="grid size-20 rotate-6 place-items-center rounded-full border-2 border-dashed border-pink-400/70 font-mono text-2xl text-pink-500 transition-transform duration-300 ease-out">
             ♪
@@ -194,7 +192,7 @@ function ListeningCell() {
   }
 
   return (
-    <Cell linked tone="ink" n={3} label={label} className={cn("overflow-hidden", LISTENING)}>
+    <Cell linked tone="ink" label={label} className={cn("overflow-hidden", LISTENING)}>
       <img
         src={track.art}
         alt=""
@@ -231,7 +229,6 @@ function GitCell({ data }: { data: ContributionsResponse }) {
     <Cell
       linked
       span="w2"
-      n={4}
       className="xl:col-[1/3] xl:row-[3]"
       label={
         <a href={siteData.github} target="_blank" rel="noopener noreferrer" className={STRETCHED}>
@@ -284,7 +281,6 @@ function WritingCell() {
       linked
       span="w2"
       tone="yellow"
-      n={5}
       className="xl:col-[4/6] xl:row-[2]"
       label={
         <Link to="/posts" className={STRETCHED}>
@@ -355,7 +351,6 @@ function ExperienceCell() {
     <Cell
       linked
       span="w2"
-      n={6}
       className="xl:col-[2/4] xl:row-[4]"
       label={
         <Link to="/work" className={STRETCHED}>
@@ -434,7 +429,6 @@ function ProjectCells() {
           key={project.slug}
           linked
           className={`xl:row-[3] ${PROJECT_COLS[i]}`}
-          n={7 + i}
           label={
             <Link to="/projects/$slug" params={{ slug: project.slug }} className={STRETCHED}>
               Project
@@ -455,7 +449,6 @@ function ProjectCells() {
       <Cell
         linked
         tone="hot"
-        n={10}
         className="xl:col-[6] xl:row-[3]"
         label={
           <Link to="/projects" className={STRETCHED}>
@@ -484,7 +477,6 @@ function OpenSourceCell() {
       linked
       span="w2"
       tone="lilac"
-      n={11}
       className="xl:col-[4/6] xl:row-[4]"
       label={
         <Link to="/work" hash="open-source" className={STRETCHED}>
@@ -558,22 +550,23 @@ function OpenSourceCell() {
 /** What I reach for in each slot, by name from the uses list. */
 const LOADOUT = [
   { slot: "Machine", name: "MacBook Air", glyph: "⌘" },
-  { slot: "Editor", name: "Zed", glyph: "{ }" },
+  { slot: "Editor", name: "Zed", glyph: "¶" },
+  { slot: "Keyboard", name: "Mao Wang GK65", glyph: "⌨" },
+  { slot: "Language", name: "TypeScript", glyph: "λ" },
   { slot: "Agent", name: "AmpCode", glyph: "✦" },
   { slot: "Camera", name: "Fujifilm X-T20", glyph: "◉" },
 ] as const;
 
 /**
- * The uses page as an equipped loadout: four inventory slots, each with
- * what sits in it today. A narrow cell lists them instead.
+ * The uses page as a till receipt: one line per slot with a dotted leader to
+ * what sits in it, a count, and a barcode, filling the whole cell.
  */
 function UsesCell() {
   const items = uses.flatMap((section) => section.items);
   return (
     <Cell
       linked
-      tone="dots"
-      n={12}
+      tone="white"
       className="@container xl:col-[1] xl:row-[4]"
       label={
         <Link to="/uses" className={STRETCHED}>
@@ -581,36 +574,31 @@ function UsesCell() {
         </Link>
       }
     >
-      <ul className="grid flex-1 auto-rows-fr grid-cols-1 gap-1.5 @[13rem]:grid-cols-2">
-        {LOADOUT.map((pick, i) => (
-          <li
-            key={pick.slot}
-            style={stagger(i, 50)}
-            className={cn(
-              "relative flex items-baseline justify-between gap-2 overflow-hidden border border-pink-200 bg-white/85 px-2 py-1.5 transition-[translate,border-color] duration-200 ease-out group-hover/cell:border-pink-300 @[13rem]:min-h-[5.25rem] @[13rem]:flex-col @[13rem]:justify-between @[13rem]:p-2.5",
-              HOVER_DELAY,
-            )}
-          >
-            <span
-              aria-hidden
-              className="absolute -right-1 -bottom-3 hidden font-mono text-6xl leading-none text-pink-100 @[13rem]:block"
-            >
-              {pick.glyph}
-            </span>
-            <span className="font-mono text-[9px] tracking-widest text-pink-500 uppercase">
-              {pick.slot}
-            </span>
-            <span className="relative min-w-0 text-right @[13rem]:text-left">
-              <span className="block truncate text-[13px] leading-tight font-semibold text-pink-950">
-                {pick.name}
+      <div className="-mx-4 flex flex-1 flex-col gap-2 border-t border-dashed border-pink-200 px-4 pt-2.5 font-mono text-[11px] text-pink-950 md:-mx-5 md:px-5">
+        <ul className="flex flex-col gap-1.5">
+          {LOADOUT.map((pick, i) => (
+            <li key={pick.slot} style={stagger(i, 50)} className="flex items-baseline gap-1.5">
+              <span className="w-3 shrink-0 text-center text-pink-400">{pick.glyph}</span>
+              <span className="shrink-0 text-[9px] tracking-wider text-pink-950/55 uppercase">
+                {pick.slot}
               </span>
-              <span className="hidden truncate font-mono text-[9px] text-pink-950/50 @[13rem]:block">
-                {items.find((item) => item.name === pick.name)?.spec}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
+              <span
+                aria-hidden
+                className="min-w-2 flex-1 translate-y-[-3px] border-b border-dotted border-pink-300"
+              />
+              <span className="min-w-0 truncate font-semibold">{pick.name}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-auto flex justify-between border-t border-dashed border-pink-200 pt-1.5 text-[10px] uppercase">
+          <span>Total</span>
+          <span>{items.length} things</span>
+        </p>
+        <span
+          aria-hidden
+          className="block h-5 w-full bg-[repeating-linear-gradient(90deg,rgb(80_7_36)_0_1px,transparent_1px_3px,rgb(80_7_36)_3px_5px,transparent_5px_6px,rgb(80_7_36)_6px_7px,transparent_7px_10px)] opacity-70"
+        />
+      </div>
     </Cell>
   );
 }
@@ -652,7 +640,6 @@ function NeighboursCell() {
     <Cell
       linked
       tone="sky"
-      n={13}
       className="max-md:col-span-2 xl:col-[6] xl:row-[4]"
       label={
         <Link to="/neighbours" className={STRETCHED}>
@@ -731,14 +718,18 @@ function NeighboursCell() {
  */
 export function HomeGrid({ contributions }: { contributions: ContributionsResponse }) {
   return (
-    <Box>
+    <Box dense>
       <IntroCell />
       <StatusTile />
       <ListeningCell />
       <UsesCell />
-      <NeighboursCell />
-      <GitCell data={contributions} />
-      <WritingCell />
+      {/* On four columns, git, writing, and neighbours share one row at 3:3:1.
+          On two and six columns the wrapper drops out and they sit in the grid. */}
+      <div className="contents md:col-span-4 md:grid md:grid-cols-[3fr_3fr_1fr] md:*:col-span-1 xl:contents">
+        <GitCell data={contributions} />
+        <WritingCell />
+        <NeighboursCell />
+      </div>
       <ProjectCells />
       <ExperienceCell />
       <OpenSourceCell />

@@ -61,15 +61,11 @@ function Section({ section, index }: { section: UsesSection; index: number }) {
       <Cell
         as="header"
         tone={SECTION_TONES[index % 4]}
-        n={index + 2}
         className="col-span-2 md:col-span-1 md:[grid-row:span_var(--rows)]"
         style={{ "--rows": section.items.length } as CSSProperties}
       >
         <div className="md:sticky md:top-6">
-          <p className="font-display text-6xl leading-none font-extrabold text-pink-950 tabular-nums">
-            {String(section.items.length).padStart(2, "0")}
-          </p>
-          <h2 className="mt-3 font-display text-2xl font-extrabold tracking-wide text-pink-950 uppercase">
+          <h2 className="font-display text-2xl font-extrabold tracking-wide text-pink-950 uppercase">
             <span className="text-pink-500">{section.title.slice(0, 1)}</span>
             {section.title.slice(1)}
           </h2>
@@ -92,7 +88,6 @@ export function UsesPage() {
     <Box square={false}>
       <PageHead
         title="Uses"
-        n={1}
         tone="white"
         kicker="These are the things that I use on a daily basis, and reasons why I use them."
         aside={

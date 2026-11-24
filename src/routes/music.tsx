@@ -228,7 +228,6 @@ function MusicRoute() {
     <Box>
       <PageHead
         title="Music"
-        n={1}
         tone="pink"
         kicker={
           <>

@@ -1,4 +1,5 @@
 import { defineConfig, lazyPlugins } from "vite-plus";
+import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { devtools } from "@tanstack/devtools-vite";
@@ -19,7 +20,31 @@ import { highlighter } from "./src/lib/highlight";
  */
 const isPrerenderablePage = ({ path }: { path: string }) => !/\.[a-z0-9]+$/i.test(path);
 
+/**
+ * The site's latest commits and its commit count, read once when Vite starts
+ * and baked into the footer. A checkout without history gets an empty receipt;
+ * the deploy workflow fetches the full history for this.
+ */
+function siteHistory() {
+  try {
+    const git = (args: string) => execSync(`git ${args}`, { encoding: "utf8" }).trim();
+    const commits = git("log -6 --no-merges --format=%h%x1f%cI%x1f%s")
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => {
+        const [hash = "", date = "", subject = ""] = line.split("\x1f");
+        return { hash, date, subject };
+      });
+    return { total: Number(git("rev-list --count HEAD")), commits };
+  } catch {
+    return { total: 0, commits: [] };
+  }
+}
+
 const config = defineConfig({
+  define: {
+    __SITE_HISTORY__: JSON.stringify(siteHistory()),
+  },
   staged: {
     "*": "vp check --fix",
   },

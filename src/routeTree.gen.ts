@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as EncoreRouteImport } from './routes/encore'
 import { Route as MusicRouteImport } from './routes/music'
 import { Route as NeighboursRouteImport } from './routes/neighbours'
 import { Route as UsesRouteImport } from './routes/uses'
@@ -23,11 +22,6 @@ import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EncoreRoute = EncoreRouteImport.update({
-  id: '/encore',
-  path: '/encore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MusicRoute = MusicRouteImport.update({
@@ -73,7 +67,6 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/encore': typeof EncoreRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
@@ -85,7 +78,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/encore': typeof EncoreRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
@@ -98,7 +90,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/encore': typeof EncoreRoute
   '/music': typeof MusicRoute
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
@@ -112,7 +103,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/encore'
     | '/music'
     | '/neighbours'
     | '/uses'
@@ -124,7 +114,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/encore'
     | '/music'
     | '/neighbours'
     | '/uses'
@@ -136,7 +125,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/encore'
     | '/music'
     | '/neighbours'
     | '/uses'
@@ -149,7 +137,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  EncoreRoute: typeof EncoreRoute
   MusicRoute: typeof MusicRoute
   NeighboursRoute: typeof NeighboursRoute
   UsesRoute: typeof UsesRoute
@@ -167,13 +154,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/encore': {
-      id: '/encore'
-      path: '/encore'
-      fullPath: '/encore'
-      preLoaderRoute: typeof EncoreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/music': {
@@ -237,7 +217,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  EncoreRoute: EncoreRoute,
   MusicRoute: MusicRoute,
   NeighboursRoute: NeighboursRoute,
   UsesRoute: UsesRoute,

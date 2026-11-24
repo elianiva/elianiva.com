@@ -10,6 +10,13 @@ import { seo, ogPageImageUrl } from "~/lib/seo";
 const month = new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" });
 const fmt = (value: string | null) => (value ? month.format(new Date(`${value}-01`)) : "Now");
 
+const LEG = "font-mono text-[9px] tracking-[0.25em] text-pink-950/45 uppercase";
+const CODE =
+  "font-display text-2xl leading-none font-extrabold text-pink-950 uppercase tabular-nums";
+/** Irregular bars, so the strip reads as a barcode and not as stripes. */
+const BARCODE =
+  "repeating-linear-gradient(90deg, rgb(80 7 36) 0 1px, transparent 1px 3px, rgb(80 7 36) 3px 5px, transparent 5px 6px, rgb(80 7 36) 6px 7px, transparent 7px 9px, rgb(80 7 36) 9px 9.5px, transparent 9.5px 11px)";
+
 /** `fix(ui)!: x` becomes `{ kind: "fix!", text: "x" }`. */
 function parseTitle(title: string) {
   const match = title.match(/^(\w+)(?:\([^)]*\))?(!)?:\s*(.*)$/);
@@ -25,7 +32,6 @@ function WorkRoute() {
     <Box square={false}>
       <PageHead
         title="Work"
-        n={1}
         tone="hot"
         kicker={
           <>
@@ -42,8 +48,8 @@ function WorkRoute() {
         }
         aside={
           <>
-            <p className="mt-auto font-display text-5xl leading-none font-extrabold tabular-nums">
-              {first}–
+            <p className="mt-auto font-display text-4xl leading-none font-extrabold whitespace-nowrap tabular-nums xl:text-[2.1rem] 2xl:text-4xl">
+              {first}–now
             </p>
             <p className="font-mono text-[11px] opacity-85">{work.length} roles so far</p>
             <a
@@ -56,7 +62,7 @@ function WorkRoute() {
         }
       />
 
-      {work.map((role, i) => {
+      {work.map((role) => {
         const current = role.period[1] === null;
         return (
           <Cell
@@ -64,24 +70,22 @@ function WorkRoute() {
             as="article"
             span="w2"
             tone={current ? "white" : "paper"}
-            n={i + 2}
-            label={`${fmt(role.period[0])} – ${fmt(role.period[1])}`}
             className="gap-4"
           >
             {current && (
               <Postmark className="absolute top-3 right-14 size-11 text-[8px]">now</Postmark>
             )}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3.5">
               {role.website ? (
                 <img
                   src={role.website.favicon}
                   alt=""
-                  width={52}
-                  height={52}
-                  className="size-13 -rotate-6 rounded-[14px] border border-pink-200 bg-white object-contain p-1.5 shadow-[0_3px_0_rgba(190,24,93,0.13)] transition-transform duration-300"
+                  width={44}
+                  height={44}
+                  className="size-11 shrink-0 border border-pink-200 bg-white object-contain p-1"
                 />
               ) : (
-                <span className="grid size-13 -rotate-6 place-items-center rounded-[14px] border border-pink-200 bg-white font-display text-xl font-extrabold text-pink-500 shadow-[0_3px_0_rgba(190,24,93,0.13)]">
+                <span className="grid size-11 shrink-0 place-items-center border border-pink-200 bg-white font-display text-lg font-extrabold text-pink-500">
                   {role.company[0]}
                 </span>
               )}
@@ -100,11 +104,46 @@ function WorkRoute() {
                     role.company
                   )}
                 </h2>
-                <p className="text-sm text-pink-950/65">
-                  {role.position} · {engagement(role)} · {place(role)}
-                </p>
+                <p className="truncate text-sm text-pink-950/65">{role.position}</p>
               </div>
             </div>
+
+            {/* From, to, and the details of the role. */}
+            <div className="grid grid-cols-[auto_1fr_auto] items-end gap-3">
+              <div>
+                <p className={LEG}>From</p>
+                <p className={CODE}>{fmt(role.period[0])}</p>
+              </div>
+              <div aria-hidden className="relative mb-3 border-t-2 border-dashed border-pink-300">
+                <span className="absolute -top-[0.8em] left-1/2 -translate-x-1/2 bg-inherit px-1 text-sm text-pink-500">
+                  ✈
+                </span>
+              </div>
+              <div className="text-right">
+                <p className={LEG}>To</p>
+                <p className={cn(CODE, current && "text-pink-600")}>{fmt(role.period[1])}</p>
+              </div>
+            </div>
+            <dl className="grid grid-cols-3 gap-3 font-mono text-[11px] text-pink-950">
+              {[
+                ["Type", engagement(role)],
+                ["Location", place(role)],
+                ["Years", yearRange(role)],
+              ].map(([term, value]) => (
+                <div key={term} className="min-w-0">
+                  <dt className={LEG}>{term}</dt>
+                  <dd className="truncate">{value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            {/* Perforation: a dashed tear line with a notch cut at each edge. */}
+            <div aria-hidden className="relative -mx-4 md:-mx-5">
+              <div className="border-t-2 border-dashed border-pink-200" />
+              <span className="absolute top-1/2 -left-2 size-4 -translate-y-1/2 rounded-full border border-pink-200 bg-pink-50" />
+              <span className="absolute top-1/2 -right-2 size-4 -translate-y-1/2 rounded-full border border-pink-200 bg-pink-50" />
+            </div>
+
             <ul className="grid gap-1.5">
               {role.details.map((detail) => (
                 <li
@@ -115,10 +154,16 @@ function WorkRoute() {
                 </li>
               ))}
             </ul>
-            <p className="mt-auto font-mono text-[11px] text-pink-500">
-              {role.technologies.map((tech) => `#${tech}`).join(" ")}
-              <span className="float-right text-pink-950/45">{yearRange(role)}</span>
-            </p>
+            <div className="mt-auto flex items-end justify-between gap-4">
+              <p className="font-mono text-[11px] text-pink-500">
+                {role.technologies.map((tech) => `#${tech}`).join(" ")}
+              </p>
+              <span
+                aria-hidden
+                className="block h-6 w-24 shrink-0 opacity-30"
+                style={{ backgroundImage: BARCODE }}
+              />
+            </div>
           </Cell>
         );
       })}

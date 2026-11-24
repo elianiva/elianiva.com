@@ -39,6 +39,22 @@ export const openSource: OpenSourceContribution[] = [
     ],
   },
   {
+    repo: "teknologi-umum/flourite",
+    about: "Detects the programming language of a code snippet.",
+    prs: [
+      {
+        number: 92,
+        title: "fix: overhaul language detection regexes across all 26 languages",
+        note: "Reworked the detection patterns for every supported language.",
+      },
+      {
+        number: 91,
+        title: "refactor: use vite-plus and modernize everything",
+        note: "Moved the build and tests to Vite+ and updated the toolchain.",
+      },
+    ],
+  },
+  {
     repo: "RooCodeInc/Roo-Code",
     about: "AI coding assistant for VS Code. 21 merged PRs, April to October 2025.",
     prs: [
@@ -71,6 +87,17 @@ export const openSource: OpenSourceContribution[] = [
         number: 3343,
         title: "fix(prompts): revert to vscodetextarea to prevent race condition",
         note: "Prompt settings synced on every change, so a slow backend reset the input. They now sync on blur.",
+      },
+    ],
+  },
+  {
+    repo: "TanStack/cli",
+    about: "TanStack's official CLI for scaffolding projects.",
+    prs: [
+      {
+        number: 197,
+        title: "fix(solid): vite config template missing newline",
+        note: "The Solid template's Vite config was missing a newline, and without semicolons that made it invalid syntax.",
       },
     ],
   },

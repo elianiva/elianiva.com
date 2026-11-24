@@ -130,15 +130,6 @@ describe("uses page render", () => {
     expect(out).toContain(`${totalItems} items across ${uses.length} groups`);
   });
 
-  it("shows how many items each section holds", async () => {
-    const out = text(await html());
-    for (const section of uses) {
-      expect(out, `missing count for ${section.title}`).toContain(
-        String(section.items.length).padStart(2, "0"),
-      );
-    }
-  });
-
   it("gives every item the same plate, not just the first in a section", async () => {
     // The treatment is uniform, so adding an item anywhere needs no special case.
     const plates = (await html()).match(/<article class="[^"]*"/g) ?? [];

@@ -88,7 +88,7 @@ function RootLayout() {
             devtools panel) lives inside this provider so `useQueryClient`
             never resolves to null. */}
         <QueryClientProvider client={queryClient}>
-          <main id="main-content" role="main" className="relative z-0 flex-1 md:-mt-px">
+          <main id="main-content" role="main" className="relative z-0 md:-mt-px">
             <Outlet />
           </main>
 

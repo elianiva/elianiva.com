@@ -17,7 +17,7 @@ export function LostPage({
 }) {
   return (
     <Box>
-      <Cell span="s2" tone="white" n={404} className="justify-between">
+      <Cell span="s2" tone="white" className="justify-between">
         <Postmark className="self-end">return to sender</Postmark>
         <p className="font-display text-[7rem] leading-none font-extrabold text-pink-950 md:text-[10rem]">
           <span className="text-pink-500">4</span>04

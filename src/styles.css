@@ -42,6 +42,11 @@
 }
 
 @theme {
+  /* Six columns only once each cell is at least ~235px wide; below that the
+     fixed-size labels and lists inside a cell truncate. Four columns cover
+     laptops, including a MacBook at 125% zoom (~1176px). */
+  --breakpoint-xl: 90rem;
+  --breakpoint-2xl: 120rem;
   --font-sans: "Google Sans Variable", sans-serif;
   --font-display: "Google Sans Variable", sans-serif;
   --font-heading: "Google Sans Variable", sans-serif;
@@ -62,10 +67,6 @@
   --ease-out: var(--ease-out-strong);
   --ease-in-out: var(--ease-in-out-strong);
   --default-transition-duration: 200ms;
-  --animate-judge: judge 200ms var(--ease-out-strong);
-  --animate-blink: blink 3.6s linear infinite;
-  --animate-flap: flap 250ms var(--ease-out-strong);
-  --animate-knock: knock 250ms var(--ease-out-strong);
   --default-transition-timing-function: var(--ease-out-strong);
 }
 
@@ -512,43 +513,6 @@
   }
 }
 
-/* A rhythm game judgement lands, then holds. */
-@keyframes judge {
-  from {
-    opacity: 0;
-    transform: translateY(4px) scale(0.92);
-  }
-}
-
-/* The box jumps a little when you knock on it. */
-@keyframes knock {
-  25% {
-    transform: rotate(-3deg);
-  }
-  60% {
-    transform: rotate(2deg);
-  }
-}
-
-/* A split-flap tile turning over to its new character. */
-@keyframes flap {
-  from {
-    transform: perspective(200px) rotateX(-80deg);
-  }
-}
-
-/* Two quick blinks every few seconds, for the face in the footer box. */
-@keyframes blink {
-  0%,
-  92%,
-  100% {
-    transform: scaleY(1);
-  }
-  95% {
-    transform: scaleY(0.1);
-  }
-}
-
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -596,14 +560,6 @@
 @media (prefers-reduced-motion: reduce) {
   .cells-enter > * {
     animation-name: fade-in, none;
-  }
-  .animate-judge,
-  .animate-flap {
-    animation-name: fade-in;
-  }
-  .animate-blink,
-  .animate-knock {
-    animation: none;
   }
   *,
   ::before,

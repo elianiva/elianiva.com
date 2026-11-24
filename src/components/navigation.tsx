@@ -95,20 +95,23 @@ export function NavigationStrip() {
   }, [pathname]);
 
   return (
-    <header className="md:pt-8">
+    <header className="md:pt-4">
       <Box square={false}>
-        <Cell tone="yellow" className="col-span-2 justify-center px-3 py-3 md:col-span-1 md:px-4">
+        <Cell
+          tone="yellow"
+          className="col-span-2 justify-center px-2.5 py-2 md:col-span-1 md:px-3 md:py-2"
+        >
           <Link
             to="/"
             aria-label="elianiva, home"
-            className="group/stub flex h-full min-h-16 drop-shadow-[0_2px_0_rgb(244_114_182/0.4)] focus-visible:outline-none"
+            className="group/stub flex h-full min-h-14 drop-shadow-[0_2px_0_rgb(244_114_182/0.4)] focus-visible:outline-none"
           >
             <span
               className="flex min-w-0 flex-1 flex-col justify-between bg-white py-2.5 pr-3 pl-4"
               style={cutouts([6, "0 50%"], [5, "100% 0"], [5, "100% 100%"])}
             >
               <span className="font-mono text-[8px] tracking-[0.3em] text-pink-500 uppercase">
-                Admit one
+                elianiva.com
               </span>
               <span className="font-display text-2xl leading-none font-extrabold tracking-wide text-pink-950 uppercase">
                 <span className="text-pink-500">e</span>lianiva
@@ -133,7 +136,7 @@ export function NavigationStrip() {
           <ul
             ref={strip}
             aria-label="Main"
-            className="flex snap-x items-center gap-1.5 overflow-x-auto px-4 pt-5 pb-3 [scrollbar-width:none] md:px-5 [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x items-center gap-1 overflow-x-auto px-3 pt-3 pb-2 [scrollbar-width:none] md:px-3 [&::-webkit-scrollbar]:hidden"
           >
             {NAV_ITEMS.map((item, i) => {
               const active = isActiveFor(pathname, item.href);
