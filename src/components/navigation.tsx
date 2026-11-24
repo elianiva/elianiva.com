@@ -68,13 +68,10 @@ function Ticket({
         >
           <span className="rotate-180">No.{String(n + 1).padStart(2, "0")}</span>
         </span>
-        {/* A container: the route code sits in the bottom-right corner, beside
-            the barcode and under the label, and only shows once the ticket is
-            wide enough for both. */}
-        <span className="@container relative flex flex-1 flex-col justify-center gap-1 pr-4 pl-2.5">
+        <span className="relative flex flex-1 flex-col justify-center gap-1 pr-4 pl-2.5">
           <span
             aria-hidden
-            className="absolute right-3 bottom-1.5 hidden font-display text-xl leading-none font-extrabold tracking-wider opacity-10 @[7.75rem]:block"
+            className="absolute right-3 bottom-1.5 hidden font-display text-xl leading-none font-extrabold tracking-wider opacity-10 @[65rem]:block"
           >
             {code}
           </span>
@@ -153,10 +150,14 @@ export function NavigationStrip() {
           </Link>
         </Cell>
         <Cell as="nav" span="w3" className="justify-center p-0 md:p-0">
+          {/* The strip is the query container for the route codes: they print
+              once every ticket has room for one. Keeping the container here
+              rather than on each ticket lets the tickets size to their labels
+              and scroll on narrow screens instead of collapsing. */}
           <ul
             ref={strip}
             aria-label="Main"
-            className="flex snap-x items-center gap-1 overflow-x-auto px-3 pt-3 pb-2 [scrollbar-width:none] md:px-3 [&::-webkit-scrollbar]:hidden"
+            className="@container flex snap-x items-center gap-1 overflow-x-auto px-3 pt-3 pb-2 [scrollbar-width:none] md:px-3 [&::-webkit-scrollbar]:hidden"
           >
             {NAV_ITEMS.map((item, i) => {
               const active = isActiveFor(pathname, item.href);
