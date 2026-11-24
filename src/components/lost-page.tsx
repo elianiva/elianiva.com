@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import sites from "~/data/sites";
 import { Box, Cell, Postmark, STRETCHED } from "./box";
 
 const COPY = {
@@ -17,6 +18,9 @@ export function LostPage({
 }) {
   return (
     <Box>
+      {/* Not-found routes get no `head`, so the page sets its own title. */}
+      <title>{`Not found | ${sites.siteName}`}</title>
+      <meta name="robots" content="noindex" />
       <Cell span="s2" tone="white" className="justify-between">
         <Postmark className="self-end">return to sender</Postmark>
         <p className="font-display text-[7rem] leading-none font-extrabold text-pink-950 md:text-[10rem]">

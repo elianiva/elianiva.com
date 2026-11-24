@@ -105,7 +105,8 @@ function MusicTopLists() {
     queryFn: () => getTopListsData(),
     staleTime: 1000 * 60 * 60,
   });
-  return <TopLists data={data} />;
+  // No scrobbles means last.fm did not answer; the panel below says so.
+  return data.stats.totalTracks ? <TopLists data={data} /> : null;
 }
 
 /** One scrobble as a square sleeve: the cover fills the cell, the title sits on it. */
@@ -165,8 +166,17 @@ function MusicRecentTracks() {
   if (!lead) {
     return (
       <Cell span="w4" tone="hatch" className="items-center justify-center text-center">
-        <p className="font-mono text-sm text-pink-700">
-          No scrobbles yet. Set LASTFM_API_KEY if running locally.
+        <p className="text-sm text-pink-950/70">
+          last.fm did not answer. The full history is on{" "}
+          <a
+            href={LASTFM_PROFILE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-pink-600 underline decoration-pink-300 underline-offset-4"
+          >
+            my profile
+          </a>
+          .
         </p>
       </Cell>
     );
@@ -220,7 +230,16 @@ function ScrobbleCount() {
     queryFn: () => getTopListsData(),
     staleTime: 1000 * 60 * 60,
   });
-  return <>{data.stats.totalTracks.toLocaleString()}</>;
+  const total = data.stats.totalTracks;
+  if (!total) return null;
+  return (
+    <>
+      <p className="mt-auto font-display text-5xl leading-none font-extrabold text-pink-950 tabular-nums">
+        {total.toLocaleString()}
+      </p>
+      <p className="font-mono text-[11px] text-pink-950/60">scrobbles so far</p>
+    </>
+  );
 }
 
 function MusicRoute() {
@@ -244,14 +263,9 @@ function MusicRoute() {
           </>
         }
         aside={
-          <>
-            <p className="mt-auto font-display text-5xl leading-none font-extrabold text-pink-950 tabular-nums">
-              <Suspense fallback="…">
-                <ScrobbleCount />
-              </Suspense>
-            </p>
-            <p className="font-mono text-[11px] text-pink-950/60">scrobbles so far</p>
-          </>
+          <Suspense fallback={<p className="mt-auto font-display text-5xl text-pink-950">…</p>}>
+            <ScrobbleCount />
+          </Suspense>
         }
       />
       <Suspense fallback={<Loading span="w4" />}>

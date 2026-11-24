@@ -2,8 +2,7 @@ import type { ContributionsResponse } from "../lib/github.service";
 
 /**
  * A year of blank days ending today, for when there is no data (no token at
- * build time, or the fetch failed). The section keeps its shape, with 0 and an
- * empty grid, instead of collapsing to a link.
+ * build time, or the fetch failed). The heatmap keeps its shape, faded.
  */
 export function emptyContributions(now: Date = new Date()): ContributionsResponse {
   const DAY_MS = 86_400_000;

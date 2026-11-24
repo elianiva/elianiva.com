@@ -44,7 +44,7 @@ describe("root query wiring", () => {
     const home = await readFile("src/routes/index.tsx", "utf8");
     expect(home).not.toMatch(/ssr:\s*false/);
     expect(home).not.toContain("ClientOnly");
-    // A missing token falls back to an empty heatmap rather than failing the build.
+    // A missing token gives `null`, which the cell shows as "did not load".
     expect(home).toMatch(/loader:\s*async\s*\(\)\s*=>\s*\(await getGitHubContributions\(\)\)/);
   });
 

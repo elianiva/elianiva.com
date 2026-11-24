@@ -12,6 +12,7 @@ import { getPosts } from "~/features/posts/lib/posts";
 import { getProjectBySlug, getProjects } from "~/features/projects/lib/projects";
 import { getRecentTracks } from "~/features/music/lib/music-server";
 import type { ContributionsResponse } from "~/features/github/lib/github.service";
+import { emptyContributions } from "~/features/github/components/github-activity-section";
 import { cn } from "~/lib/utils";
 import { LastPushTag, StatusTile, timeAgo } from "./based-row";
 import { ProjectMark } from "~/features/projects/components/project-mark";
@@ -177,16 +178,14 @@ function ListeningCell() {
             ♪
           </span>
         </div>
-        <p className="min-w-0 text-sm leading-snug text-pink-950/70">
-          {track ? (
-            <>
-              <span className="block truncate font-medium text-pink-950">{track.track}</span>
-              <span className="block truncate">{track.artist}</span>
-            </>
-          ) : (
-            "Scrobbles from last.fm"
-          )}
-        </p>
+        {track ? (
+          <p className="min-w-0 text-sm leading-snug text-pink-950/70">
+            <span className="block truncate font-medium text-pink-950">{track.track}</span>
+            <span className="block truncate">{track.artist}</span>
+          </p>
+        ) : (
+          !music.isPending && <p className="text-sm text-pink-950/65">last.fm did not answer.</p>
+        )}
       </Cell>
     );
   }
@@ -222,9 +221,12 @@ const LEVEL: Record<string, number> = {
   FOURTH_QUARTILE: 4,
 };
 
-/** A year of squares, Sunday on top. Phones get the last 26 weeks. */
-function GitCell({ data }: { data: ContributionsResponse }) {
-  const weeks = data.weeks.slice(-53);
+/**
+ * A year of squares, Sunday on top. Phones get the last 26 weeks. Without
+ * data (`null`) the squares stay blank and faded, and no count is shown.
+ */
+function GitCell({ data }: { data: ContributionsResponse | null }) {
+  const weeks = (data ?? emptyContributions()).weeks.slice(-53);
   return (
     <Cell
       linked
@@ -236,15 +238,24 @@ function GitCell({ data }: { data: ContributionsResponse }) {
         </a>
       }
     >
-      <p className="flex flex-wrap items-baseline gap-x-3">
-        <span className="font-mono text-4xl font-bold text-pink-600 tabular-nums">
-          {data.totalContributions.toLocaleString("en-US")}
-        </span>
-        <span className="text-sm text-pink-950/65">contributions in the past year</span>
-      </p>
+      {data ? (
+        <p className="flex flex-wrap items-baseline gap-x-3">
+          <span className="font-mono text-4xl font-bold text-pink-600 tabular-nums">
+            {data.totalContributions.toLocaleString("en-US")}
+          </span>
+          <span className="text-sm text-pink-950/65">contributions in the past year</span>
+        </p>
+      ) : (
+        <p className="text-sm text-pink-950/65">
+          The contribution count did not load. It is on GitHub.
+        </p>
+      )}
       <div
         aria-hidden
-        className="mt-auto grid grid-flow-col grid-rows-7 gap-[3px] [grid-template-columns:repeat(26,minmax(0,1fr))] md:[grid-template-columns:repeat(53,minmax(0,1fr))]"
+        className={cn(
+          "mt-auto grid grid-flow-col grid-rows-7 gap-[3px] [grid-template-columns:repeat(26,minmax(0,1fr))] md:[grid-template-columns:repeat(53,minmax(0,1fr))]",
+          !data && "opacity-50",
+        )}
       >
         {weeks.flatMap((week, w) =>
           Array.from({ length: 7 }, (_, d) => {
@@ -267,9 +278,11 @@ function GitCell({ data }: { data: ContributionsResponse }) {
       </div>
       <div className="flex items-center justify-between gap-3">
         <LastPushTag />
-        <span className="ml-auto font-mono text-[11px] text-pink-950/50">
-          longest streak {data.longestStreak}d
-        </span>
+        {data && (
+          <span className="ml-auto font-mono text-[11px] text-pink-950/50">
+            longest streak {data.longestStreak}d
+          </span>
+        )}
       </div>
     </Cell>
   );
@@ -716,7 +729,7 @@ function NeighboursCell() {
  * The home page: the whole site as one bento box. Each compartment
  * summarises a page and opens it.
  */
-export function HomeGrid({ contributions }: { contributions: ContributionsResponse }) {
+export function HomeGrid({ contributions }: { contributions: ContributionsResponse | null }) {
   return (
     <Box dense>
       <IntroCell />
