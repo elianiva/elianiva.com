@@ -87,14 +87,17 @@ function TopLists({ data }: { data: TopListsData }) {
           <dd className="text-right text-pink-950">{data.stats.uniqueAlbums.toLocaleString()}</dd>
         </dl>
       </Cell>
-      <TopCell label="Top artists" items={artists} tone="yellow" />
-      <TopCell
-        label="Top albums"
-        items={albums.map((a) => ({ ...a, artist: a.artist }))}
-        tone="sky"
-      />
-      <TopCell label="Top tracks" items={tracks} tone="lilac" />
-      <Fill used={4} />
+      {/* The three lists share the rest of the row in equal parts, off the
+          column grid. On phones the wrapper drops out and they sit in the grid. */}
+      <div className="contents md:col-span-3 md:grid md:grid-cols-3 xl:col-span-5">
+        <TopCell label="Top artists" items={artists} tone="yellow" />
+        <TopCell
+          label="Top albums"
+          items={albums.map((a) => ({ ...a, artist: a.artist }))}
+          tone="sky"
+        />
+        <TopCell label="Top tracks" items={tracks} tone="lilac" />
+      </div>
     </>
   );
 }
