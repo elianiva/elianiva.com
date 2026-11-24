@@ -84,7 +84,9 @@ const config = defineConfig({
       },
       pages: [{ path: "/" }],
       spa: {
-        enabled: true,
+        // Dev renders each request on the server, like the prerendered
+        // build, instead of sending an empty shell.
+        enabled: process.env.NODE_ENV === "production",
         // The shell defaults to masking `/`, which leaves the home page as an
         // empty `_shell.html` for crawlers and agents that never run JS. Mask
         // a path nothing links to so `/` prerenders as a real page.
