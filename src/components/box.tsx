@@ -4,13 +4,18 @@ import { cn } from "~/lib/utils";
 
 /**
  * The site's one layout: a bento box. Every page is a `Box` of `Cell`s on a
- * 4-column grid (2 on phones, 6 from 1280px up, full width up to 1920px) with shared pink hairlines and no gaps. On
+ * 4-column grid (2 on phones, 6 from 1280px up, full width up to 1920px) with shared hairlines and no gaps. On
  * phones it runs edge to edge: the outer hairlines fall off the screen. In a
  * `square` box each row is as tall as a column is wide, so a 1×1 cell is a
  * square; rows still grow when their content needs more room.
  */
 
-export const RULE = "border-pink-200/80";
+/**
+ * The hairline between cells. On paper this pink sits at about the old
+ * pink-200 weight; on tinted and dark cells its alpha lets the paper colour
+ * come through, so it settles in instead of cutting across as a fixed pink.
+ */
+export const RULE = "border-pink-400/30";
 export const LABEL = "font-mono text-[10px] uppercase tracking-[0.2em] text-pink-950/55";
 
 /**

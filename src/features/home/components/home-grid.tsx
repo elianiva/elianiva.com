@@ -168,7 +168,8 @@ function IntroCell() {
               : { title: "Email me about work" })}
             className={cn(
               "group/link flex items-center justify-between gap-2 px-4 py-3 font-mono text-[11px] tracking-wide whitespace-nowrap uppercase transition-colors",
-              "border-pink-200/80 [&:not(:last-child)]:border-r [&:nth-child(-n+2)]:border-b md:[&:nth-child(-n+2)]:border-b-0",
+              RULE,
+              "[&:not(:last-child)]:border-r [&:nth-child(-n+2)]:border-b md:[&:nth-child(-n+2)]:border-b-0",
               "primary" in link
                 ? "bg-pink-600 text-white hover:bg-pink-700"
                 : "text-pink-950/80 hover:bg-pink-50 hover:text-pink-700",
