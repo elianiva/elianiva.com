@@ -16,6 +16,7 @@ export default {
   npm: profile.urls.npm,
   cv: "/assets/cv_dicha.pdf",
   email: profile.email,
-  description: "elianiva's home row",
+  description:
+    "Software engineer, building interfaces that don't annoy people. Writing about frontend, design engineering, and side projects.",
   keywords: ["personal", "website", "blog", "article", "portfolio", "elianiva"],
 } as const;

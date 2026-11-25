@@ -40,10 +40,10 @@ export interface ProjectSeoProps {
 }
 
 /**
- * Static OG images, emitted by the `static-site` vite plugin into
+ * Static OG images, emitted by the `emit-static-assets` Vite plugin into
  * `assets/og/`. One card per post (`posts/<slug>.png`), one per project
  * (`projects/<slug>.png`), and one fixed card per top-level page
- * (`<page>.png`, see `OG_PAGES` in `scripts/vite-static-site.ts`).
+ * (`<page>.png`, see `OG_PAGES` in `scripts/static-assets.ts`).
  */
 export function ogPageImageUrl(
   page: "home" | "posts" | "projects" | "work" | "uses" | "neighbours" | "music",
@@ -231,8 +231,7 @@ export function homeSeo() {
   return {
     ...seo({
       title: "Home",
-      description:
-        "Software engineer, building interfaces that don't annoy people. Writing about frontend, design engineering, and side projects.",
+      description: sites.description,
       ogTitle: sites.siteName,
       ogImage: ogPageImageUrl("home"),
       path: "/",

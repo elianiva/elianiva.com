@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "vp dev",
-    "build": "vp build && tsx scripts/build-static-assets.ts",
+    "build": "vp build",
     "preview": "vp preview",
     "test": "vp test run",
     "deploy": "alchemy deploy",

@@ -1,5 +1,5 @@
-import { defineConfig, lazyPlugins } from "vite-plus";
-import { execSync } from "node:child_process";
+import { defineConfig, lazyPlugins, type Plugin } from "vite-plus";
+import { execFileSync, execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { devtools } from "@tanstack/devtools-vite";
@@ -39,6 +39,32 @@ function siteHistory() {
   } catch {
     return { total: 0, commits: [] };
   }
+}
+
+/**
+ * `robots.txt`, `llms.txt`, `rss.xml`, and the OG cards are plain files, not
+ * routes, so Start never emits them. They are built from inside the Vite build
+ * rather than from a script after `vp build`: `alchemy deploy` runs its own
+ * `vite build` child process, so a post-build step never runs on a real deploy
+ * and every one of these files fell through to the SPA shell (the feed served
+ * HTML). The builder runs under `tsx` because the OG cards render the real
+ * `.tsx` components.
+ */
+function emitStaticAssets(): Plugin {
+  let emitted = false;
+  return {
+    name: "emit-static-assets",
+    apply: "build",
+    closeBundle() {
+      // Vite closes the client and server builds separately; the files are
+      // shared, so emit once.
+      if (emitted) return;
+      emitted = true;
+      execFileSync("node_modules/.bin/tsx", ["scripts/build-static-assets.ts"], {
+        stdio: "inherit",
+      });
+    },
+  };
 }
 
 const config = defineConfig({
@@ -129,6 +155,7 @@ const config = defineConfig({
         failOnError: false,
       },
     }),
+    emitStaticAssets(),
     viteReact({ include: /\.(jsx|js|tsx|ts)$/ }),
     Icons({ compiler: "jsx", jsx: "react" }),
   ]),

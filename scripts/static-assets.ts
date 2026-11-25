@@ -175,6 +175,7 @@ export function buildRss(
   posts: ContentMeta[],
   projects: ContentMeta[],
 ): string {
+  const siteHref = `${siteUrl.replace(/\/+$/, "")}/`;
   const items: FeedItem[] = [
     ...posts.map((post) => ({
       title: post.title,
@@ -199,11 +200,19 @@ export function buildRss(
       // oxlint-disable-next-line efx-no-native-date
       const pubDate = new Date(`${item.date}T00:00:00Z`).toUTCString();
       const cats = item.categories.map((cat) => `<category>${escapeXml(cat)}</category>`).join("");
-      return `<item><title>${escapeXml(item.title)}</title><link>${escapeXml(item.url)}</link><guid>${escapeXml(item.url)}</guid><pubDate>${pubDate}</pubDate><description>${escapeXml(item.description)}</description>${cats}</item>`;
+      return `<item><title>${escapeXml(item.title)}</title><link>${escapeXml(item.url)}</link><guid isPermaLink="true">${escapeXml(item.url)}</guid><pubDate>${pubDate}</pubDate><description>${escapeXml(item.description)}</description>${cats}</item>`;
     })
     .join("");
 
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>${escapeXml(siteName)}</title><link>${siteUrl}</link><description>${escapeXml(description)}</description><language>en</language><atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />${channelItems}</channel></rss>`;
+  // The feed changes when its newest item does, so the build date stays
+  // reproducible instead of changing on every deploy.
+  // oxlint-disable-next-line efx-no-native-date
+  const lastBuildDate = items[0]
+    ? new Date(`${items[0].date}T00:00:00Z`).toUTCString()
+    : // oxlint-disable-next-line efx-no-native-date
+      new Date(0).toUTCString();
+
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>${escapeXml(siteName)}</title><link>${escapeXml(siteHref)}</link><description>${escapeXml(description)}</description><language>en</language><generator>${escapeXml(siteHref)}</generator><lastBuildDate>${lastBuildDate}</lastBuildDate><atom:link href="${escapeXml(`${siteHref}rss.xml`)}" rel="self" type="application/rss+xml" />${channelItems}</channel></rss>`;
 }
 
 export type OgSpec =

@@ -87,6 +87,15 @@ describe("buildRss", () => {
     expect(xml).toContain("First &amp; best");
     expect(xml).toContain("<category>meta&lt;char&gt;</category>");
   });
+
+  it("points the channel and guids at real URLs", () => {
+    const xml = buildRss("Site", "https://elianiva.com", "Desc", [post], []);
+    expect(xml).toContain("<link>https://elianiva.com/</link>");
+    expect(xml).toContain('<guid isPermaLink="true">https://elianiva.com/posts/hello-world</guid>');
+    expect(xml).toContain('<atom:link href="https://elianiva.com/rss.xml"');
+    // The newest item dates the build, so redeploys do not churn the feed.
+    expect(xml).toContain("<lastBuildDate>Thu, 15 Jan 2026 00:00:00 GMT</lastBuildDate>");
+  });
 });
 
 describe("ogSpecs", () => {
