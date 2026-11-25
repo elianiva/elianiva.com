@@ -25,9 +25,6 @@ import { ProjectMark } from "~/features/projects/components/project-mark";
 const stagger = (i: number, step = 45) => ({ "--d": `${i * step}ms` }) as CSSProperties;
 const HOVER_DELAY = "group-hover/cell:delay-(--d)";
 
-const ROW =
-  "flex items-baseline justify-between gap-3 border-b border-dashed py-1.5 last:border-b-0";
-
 /** GitHub, LinkedIn and the résumé first, so the filled call to action closes the strip. */
 const links = [
   { label: "GitHub", href: siteData.github, external: true },
@@ -409,27 +406,24 @@ function WritingCell() {
             style={stagger(i, 60)}
             className={cn(
               HOVER_DELAY,
-              ROW,
-              "flex-col gap-1 border-pink-300/70 py-2.5 transition-transform duration-300",
+              "grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-2 gap-y-1 border-b border-dashed border-pink-300/70 py-2.5 transition-transform duration-300 last:border-b-0",
             )}
           >
-            <span className="flex w-full items-baseline justify-between gap-3">
-              <Link
-                to="/posts/$slug"
-                params={{ slug: post.slug }}
-                className="relative z-10 min-w-0 font-display text-[17px] leading-snug font-semibold text-pink-950 hover:text-pink-600"
-              >
-                <span className="mr-2 font-mono text-[11px] font-normal text-pink-500 transition-colors group-hover/cell:text-pink-700">
-                  0{i + 1}
-                </span>
-                {post.title}
-              </Link>
-              <span className="shrink-0 font-mono text-[11px] text-pink-950/55">
-                {monthYear.format(new Date(post.date))}
-              </span>
+            <span className="font-mono text-[11px] font-normal text-pink-500 transition-colors group-hover/cell:text-pink-700">
+              0{i + 1}
+            </span>
+            <Link
+              to="/posts/$slug"
+              params={{ slug: post.slug }}
+              className="relative z-10 font-display text-[17px] leading-snug font-semibold text-pink-950 hover:text-pink-600"
+            >
+              {post.title}
+            </Link>
+            <span className="font-mono text-[11px] text-pink-950/55">
+              {monthYear.format(new Date(post.date))}
             </span>
             {post.description && (
-              <span className="line-clamp-2 pl-6 text-sm leading-snug text-pink-950/60">
+              <span className="col-span-2 col-start-2 line-clamp-2 text-sm leading-snug text-pink-950/60">
                 {post.description}
               </span>
             )}
