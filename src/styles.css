@@ -505,10 +505,14 @@
 }
 
 /* Cells rise into place when a page opens, one after another. The delays
- * shrink as they go, so a long page is fully in by about 250ms. */
+ * shrink as they go, so a long page is fully in by about 250ms.
+ *
+ * The rise moves, it does not fade. Starting from `opacity: 0` kept every
+ * cell out of the LCP candidate set until the animation ended, so the hero
+ * text only counted as painted ~300ms after it actually appeared. A
+ * transform alone paints on the first frame. */
 @keyframes cell-in {
   from {
-    opacity: 0;
     transform: translateY(10px);
   }
 }
