@@ -253,6 +253,8 @@ function ListeningCell() {
         <img
           src={track.art}
           alt={track.album ? `${track.album} cover` : ""}
+          decoding="async"
+          loading="lazy"
           className="relative size-full object-cover opacity-90 xl:aspect-square xl:h-auto xl:opacity-100 xl:shadow-[3px_3px_0_rgb(190_24_93/0.18)]"
         />
         {/* The case's hinge: a lighter strip down the left edge. */}
@@ -617,6 +619,7 @@ function OpenSourceCell() {
                   src={`https://github.com/${owner}.png?size=48`}
                   alt=""
                   loading="lazy"
+                  decoding="async"
                   className="size-6 shrink-0 rounded-md bg-white ring-1 ring-purple-200"
                 />
                 <a
