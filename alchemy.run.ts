@@ -20,37 +20,52 @@ import { Config } from "effect";
  * Worker instead of the static assets) that hold `GH_TOKEN` /
  * `LASTFM_API_KEY` as secrets. The browser never sees the tokens.
  *
+ * Last.fm and GitHub responses live in the `CACHE` KV namespace. A visit reads
+ * the last good copy immediately and revalidates stale entries in the
+ * background, so an upstream outage never blocks the page.
+ *
  * `pnpm build` needs no secrets; `alchemy deploy` reads `GH_TOKEN` /
  * `LASTFM_API_KEY` from the deploy environment (see `deploy.yml`) and binds
  * them as `secret_text` on the Worker.
  */
-class Website extends Cloudflare.Website.Vite<Website>()("elianiva-com", {
-  compatibility: {
-    // `nodejs_compat_populate_process_env` exposes Worker env (GH_TOKEN,
-    // LASTFM_API_KEY) through `process.env` inside server functions — without
-    // it the handlers read empty and every section degrades to its fallback.
-    flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
-  },
-  assets: {
-    runWorkerFirst: ["/_serverFn/*"],
-    notFoundHandling: "single-page-application",
-  },
-  env: {
-    GH_TOKEN: Config.Redacted("GH_TOKEN"),
-    LASTFM_API_KEY: Config.Redacted("LASTFM_API_KEY"),
-  },
-  dev: {
-    port: 3000,
-    strictPort: true,
-  },
-  domain: "elianiva.com",
-  observability: {
-    enabled: true,
-    headSamplingRate: 0.1,
-    logs: { enabled: true, headSamplingRate: 0.1, persist: true, invocationLogs: true },
-    traces: { enabled: true, persist: true, headSamplingRate: 0.1 },
-  },
-}) {}
+class Website extends Cloudflare.Website.Vite<Website>()(
+  "elianiva-com",
+  Effect.gen(function* () {
+    const cache = yield* Cloudflare.KV.Namespace("Cache", {
+      // Adopt the namespace the pre-Alchemy deployment created.
+      title: "elianiva-com-cache",
+    });
+
+    return {
+      compatibility: {
+        // `nodejs_compat_populate_process_env` exposes Worker env (GH_TOKEN,
+        // LASTFM_API_KEY) through `process.env` inside server functions — without
+        // it the handlers read empty and every section degrades to its fallback.
+        flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
+      },
+      assets: {
+        runWorkerFirst: ["/_serverFn/*"],
+        notFoundHandling: "single-page-application",
+      },
+      env: {
+        GH_TOKEN: Config.Redacted("GH_TOKEN"),
+        LASTFM_API_KEY: Config.Redacted("LASTFM_API_KEY"),
+        CACHE: cache,
+      },
+      dev: {
+        port: 3000,
+        strictPort: true,
+      },
+      domain: "elianiva.com",
+      observability: {
+        enabled: true,
+        headSamplingRate: 0.1,
+        logs: { enabled: true, headSamplingRate: 0.1, persist: true, invocationLogs: true },
+        traces: { enabled: true, persist: true, headSamplingRate: 0.1 },
+      },
+    };
+  }),
+) {}
 
 export type WebsiteEnv = Cloudflare.InferEnv<typeof Website>;
 

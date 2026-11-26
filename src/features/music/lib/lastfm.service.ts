@@ -126,11 +126,21 @@ export class LastFM extends Context.Service<
           ).toString();
 
         const fetchJson = Effect.fn("LastFM.fetchJson")(function* <R>(url: string) {
-          const resp = yield* client.get(url, {
-            headers: { "User-Agent": "elianiva.com" },
-          });
+          const resp = yield* client
+            .get(url, {
+              headers: { "User-Agent": "elianiva.com" },
+            })
+            .pipe(Effect.timeout("5 seconds"));
           yield* HttpClientResponse.filterStatusOk(resp);
-          return yield* resp.json as Effect.Effect<R & { error?: number; message?: string }>;
+          const body = yield* resp.json as Effect.Effect<R & { error?: number; message?: string }>;
+          // Last.fm reports some failures with HTTP 200 and an error body.
+          // Treat them as failures so the cache keeps its last good copy.
+          if (body.error) {
+            return yield* Effect.fail(
+              new Error(`Last.fm API error ${body.error}: ${body.message ?? "unknown"}`),
+            );
+          }
+          return body;
         });
 
         const getRecentTracks = Effect.fn("LastFM.getRecentTracks")(function* () {
@@ -142,8 +152,10 @@ export class LastFM extends Context.Service<
               const data = yield* fetchJson<LastFmResp>(
                 apiUrl("user.getrecenttracks", { limit: 100, extended: 1 }),
               );
-              if (data.error) return EMPTY_TRACKS;
-              const raw = data.recenttracks?.track ?? [];
+              if (!data.recenttracks) {
+                return yield* Effect.fail(new Error("Last.fm returned no recent tracks payload"));
+              }
+              const raw = data.recenttracks.track ?? [];
               const tracks = raw.reduce<LastFmTrack[]>((acc, t) => {
                 const normalized = normalizeTrack(t);
                 if (normalized) acc.push(normalized);
@@ -170,7 +182,9 @@ export class LastFM extends Context.Service<
                   image: Array<{ "#text": string; size: string }>;
                 };
               }>(apiUrl("user.getinfo"));
-              if (data.error || !data.user) return null;
+              if (!data.user) {
+                return yield* Effect.fail(new Error("Last.fm returned no user payload"));
+              }
               const u = data.user;
               return {
                 playcount: Number(u.playcount),
@@ -203,7 +217,9 @@ export class LastFM extends Context.Service<
                   "@attr"?: { total?: string };
                 };
               }>(apiUrl("user.gettopartists", { period, limit }));
-              if (data.error || !data.topartists) return EMPTY_ARTISTS;
+              if (!data.topartists) {
+                return yield* Effect.fail(new Error("Last.fm returned no top artists payload"));
+              }
               const total = Number(data.topartists["@attr"]?.total ?? 0);
               const artists: TopArtistItem[] = (data.topartists.artist ?? []).map((a) => ({
                 name: a.name,
@@ -237,7 +253,9 @@ export class LastFM extends Context.Service<
                   "@attr"?: { total?: string };
                 };
               }>(apiUrl("user.gettopalbums", { period, limit }));
-              if (data.error || !data.topalbums) return EMPTY_ALBUMS;
+              if (!data.topalbums) {
+                return yield* Effect.fail(new Error("Last.fm returned no top albums payload"));
+              }
               const total = Number(data.topalbums["@attr"]?.total ?? 0);
               const albums: TopAlbumItem[] = (data.topalbums.album ?? []).map((a) => ({
                 name: a.name,
@@ -272,7 +290,9 @@ export class LastFM extends Context.Service<
                   "@attr"?: { total?: string };
                 };
               }>(apiUrl("user.gettoptracks", { period, limit }));
-              if (data.error || !data.toptracks) return EMPTY_TOP_TRACKS;
+              if (!data.toptracks) {
+                return yield* Effect.fail(new Error("Last.fm returned no top tracks payload"));
+              }
               const total = Number(data.toptracks["@attr"]?.total ?? 0);
               const tracks: TopTrackItem[] = (data.toptracks.track ?? []).map((t) => ({
                 name: t.name,

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { Effect, Layer, ManagedRuntime } from "effect";
 import { FetchHttpClient } from "effect/http";
-import { KvCache } from "~/lib/cache";
+import { getCacheBindings, KvCache } from "~/lib/cache";
 import { LastFM } from "./lastfm.service";
 
 /**
@@ -9,13 +9,15 @@ import { LastFM } from "./lastfm.service";
  * read per request inside the handler — it never reaches the client bundle,
  * the browser only ever receives the returned data.
  *
- * Without `LASTFM_API_KEY` the service degrades to empty data, so the
- * sections render their empty states instead of failing.
+ * Cached reads come from KV. A fresh entry is returned directly, a stale one
+ * is returned while the refresh runs in the background, and a failed refresh
+ * keeps serving the last good copy.
  */
 export const fetchRecentTracks = createServerFn().handler(async () => {
   const apiKey = process.env.LASTFM_API_KEY ?? "";
+  const { namespace, waitUntil } = await getCacheBindings();
   const live = LastFM.layerFromToken(apiKey).pipe(
-    Layer.provideMerge(Layer.merge(FetchHttpClient.layer, KvCache.layerFrom(undefined))),
+    Layer.provideMerge(Layer.merge(FetchHttpClient.layer, KvCache.layerFrom(namespace, waitUntil))),
   );
   const runtime = ManagedRuntime.make(live);
   return runtime.runPromise(
@@ -28,8 +30,9 @@ export const fetchRecentTracks = createServerFn().handler(async () => {
 
 export const fetchTopListsData = createServerFn().handler(async () => {
   const apiKey = process.env.LASTFM_API_KEY ?? "";
+  const { namespace, waitUntil } = await getCacheBindings();
   const live = LastFM.layerFromToken(apiKey).pipe(
-    Layer.provideMerge(Layer.merge(FetchHttpClient.layer, KvCache.layerFrom(undefined))),
+    Layer.provideMerge(Layer.merge(FetchHttpClient.layer, KvCache.layerFrom(namespace, waitUntil))),
   );
   const runtime = ManagedRuntime.make(live);
   return runtime.runPromise(

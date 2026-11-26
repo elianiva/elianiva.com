@@ -15,7 +15,7 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["unplugin-icons/types/react"],
+    "types": ["unplugin-icons/types/react", "@cloudflare/workers-types"],
     "ignoreDeprecations": "6.0"
   }
 }

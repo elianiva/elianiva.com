@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { Effect, Layer, ManagedRuntime } from "effect";
-import { KvCache } from "~/lib/cache";
+import { getCacheBindings, KvCache } from "~/lib/cache";
 import { GitHubService } from "./github.service";
 
 /**
@@ -8,13 +8,14 @@ import { GitHubService } from "./github.service";
  * per request inside the handler — it never reaches the client bundle, the
  * browser only ever receives the returned data.
  *
- * Without `GH_TOKEN` the service degrades to empty data, so the sections
- * render their empty states instead of failing.
+ * Cached reads come from KV. A stale entry is returned first and refreshed
+ * after the response, and a failed refresh keeps serving the last good copy.
  */
 export const fetchGitHubPRs = createServerFn().handler(async () => {
   const token = process.env.GH_TOKEN ?? "";
+  const { namespace, waitUntil } = await getCacheBindings();
   const live = GitHubService.layerFromToken(token).pipe(
-    Layer.provideMerge(KvCache.layerFrom(undefined)),
+    Layer.provideMerge(KvCache.layerFrom(namespace, waitUntil)),
   );
   const runtime = ManagedRuntime.make(live);
   return runtime.runPromise(
@@ -27,8 +28,9 @@ export const fetchGitHubPRs = createServerFn().handler(async () => {
 
 export const fetchGitHubContributions = createServerFn().handler(async () => {
   const token = process.env.GH_TOKEN ?? "";
+  const { namespace, waitUntil } = await getCacheBindings();
   const live = GitHubService.layerFromToken(token).pipe(
-    Layer.provideMerge(KvCache.layerFrom(undefined)),
+    Layer.provideMerge(KvCache.layerFrom(namespace, waitUntil)),
   );
   const runtime = ManagedRuntime.make(live);
   return runtime.runPromise(
