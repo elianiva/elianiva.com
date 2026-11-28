@@ -18,7 +18,8 @@
 @font-face {
   font-family: "Google Sans Variable";
   font-style: normal;
-  font-display: swap;
+  /* The preloaded face holds text back for a moment instead of painting a fallback first. */
+  font-display: block;
   font-weight: 400 700;
   src: url("./assets/fonts/google-sans-subset.woff2") format("woff2-variations");
   unicode-range:
