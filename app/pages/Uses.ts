@@ -6,6 +6,7 @@ import { uses, usesUpdatedAt, type UsesItem, type UsesSection } from "../data/us
 import { seoHead, ogPageImageUrl } from "../lib/seo";
 import { Box, Cell, type Style, type Tone } from "../ui/box";
 import { PageHead } from "../ui/pagehead";
+import { formatUtcDate } from "../lib/date";
 
 const SECTION_TONES: Tone[] = ["yellow", "sky", "pink", "lilac"];
 
@@ -177,12 +178,7 @@ const Section = <M>(h: HtmlNs.H<M>, section: UsesSection, index: number) => [
   ...section.items.map((item) => Item(h, item).key(`${section.slug}:${item.name}`)),
 ];
 
-const updated = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-}).format(new Date(usesUpdatedAt));
+const updated = formatUtcDate(usesUpdatedAt, { day: "numeric", month: "short", year: true });
 
 export const Uses = Html.component({
   name: "Uses",

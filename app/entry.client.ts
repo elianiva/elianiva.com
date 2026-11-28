@@ -6,6 +6,7 @@ import { JsonApi } from "./queries/JsonApi";
 import { App } from "./App";
 import * as Pages from "./pages/lazy.ts";
 import { AppRoute } from "./routes";
+import { listenForCopies } from "./ui/code-copy";
 
 const hydrate = Effect.gen(function* () {
   // Load the current page's chunk first, so hydration adopts the prerendered
@@ -33,6 +34,7 @@ const hydrate = Effect.gen(function* () {
     state,
   );
   yield* root.adopted;
+  yield* listenForCopies;
   return yield* Effect.never;
 }).pipe(
   Effect.scoped,

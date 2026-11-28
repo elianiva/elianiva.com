@@ -13,6 +13,7 @@ import { LostPage } from "../ui/lost-page";
 import { renderMarkdown } from "../ui/markdown";
 import { Postmark } from "../ui/pagehead";
 import { Contents, contentsOf } from "../ui/prose";
+import { formatCount, formatUtcDate } from "../lib/date";
 
 /**
  * The post's Markdown body, loaded as its own chunk. A Query, so the server
@@ -29,12 +30,10 @@ class PostBody extends Query.Service<PostBody>()("posts/PostBody", {
   });
 }
 
-const longDate = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const longDate = {
+  format: (d: Date | string | number) =>
+    formatUtcDate(d, { day: "numeric", month: "short", year: true }),
+};
 
 const PostNoDeps = Html.component({
   name: "Post",
@@ -118,7 +117,7 @@ const PostNoDeps = Html.component({
               h.dt.children("words"),
               h.dd
                 .class(css({ textAlign: "right", color: "pink.950" }))
-                .children(detail.wordCount.toLocaleString("en-GB")),
+                .children(formatCount(detail.wordCount)),
             ),
           h.p
             .class(css(meta, { color: "pink.600" }))

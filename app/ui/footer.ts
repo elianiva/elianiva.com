@@ -3,6 +3,7 @@ import { Html } from "@effect/ui/html";
 import { Effect, Schema } from "effect";
 import { css } from "../../styled-system/css";
 import { Box, Cell } from "./box";
+import { formatCount, formatUtcDate } from "../lib/date";
 
 const BuildDateMessage = UiSchema.TaggedEnum({ Stamped: { value: Schema.String } });
 
@@ -48,11 +49,9 @@ const KIND_TONES: Record<string, string> = {
 };
 const OTHER_KIND_TONE = css({ bg: "purple.200" });
 // UTC, so the prerendered date matches the browser's.
-const receiptDate = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-  timeZone: "UTC",
-});
+const receiptDate = {
+  format: (d: Date | string | number) => formatUtcDate(d, { day: "2-digit", month: "short" }),
+};
 
 /** `fix(dev): x` becomes `{ kind: "fix", text: "x" }`. */
 const parseSubject = (subject: string) => {
@@ -178,7 +177,7 @@ const ChangelogCell = <M>(h: Html.H<M>) => {
         .children(
           h.span.children(
             "Total ",
-            h.span.class(css({ color: "pink.600" })).children(total.toLocaleString("en-GB")),
+            h.span.class(css({ color: "pink.600" })).children(formatCount(total)),
             " commits",
           ),
           h.span

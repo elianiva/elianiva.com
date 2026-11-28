@@ -3,12 +3,11 @@ import { css } from "../../styled-system/css";
 import type { PostSummary } from "../lib/posts";
 import { Cell, stretched } from "./box";
 import { Postmark } from "./pagehead";
+import { formatUtcDate } from "../lib/date";
 
-const monthYear = new Intl.DateTimeFormat("en-GB", {
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const monthYear = {
+  format: (d: Date | string | number) => formatUtcDate(d, { month: "short", year: true }),
+};
 
 export const matches = (post: PostSummary, query: string): boolean => {
   const q = query.toLowerCase();

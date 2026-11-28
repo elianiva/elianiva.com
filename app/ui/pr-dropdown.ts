@@ -5,6 +5,7 @@ import { css } from "../../styled-system/css";
 import { RepositoryContributions } from "../features/github/types";
 import { stretched } from "./box";
 import { Icon } from "./icons";
+import { formatUtcDate } from "../lib/date";
 
 const abbreviateNumber = (num: number): string => {
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
@@ -13,11 +14,9 @@ const abbreviateNumber = (num: number): string => {
 };
 
 /** Fixed to UTC so the server and the client always render the same month. */
-const monthYear = new Intl.DateTimeFormat("en-GB", {
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const monthYear = {
+  format: (d: Date | string | number) => formatUtcDate(d, { month: "short", year: true }),
+};
 
 const PRDropdownMessage = UiSchema.TaggedEnum({ ToggledDetails: {} });
 

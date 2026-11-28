@@ -20,6 +20,7 @@ import { LastPushTag, StatusBoard, StatusTile, timeAgo } from "./based-row";
 import { Box, Cell, label, ruleColor, stretched, type Style } from "./box";
 import { Stamp, type StampTone } from "./pagehead";
 import { ProjectMark } from "./project-mark";
+import { formatUtcDate } from "../lib/date";
 
 /**
  * Staggers a hover transition down a list: item `i` starts `step` ms after the
@@ -43,11 +44,9 @@ const links = [
   { label: "Work with me", href: `mailto:${siteData.email}`, external: false },
 ] as const;
 
-const monthYear = new Intl.DateTimeFormat("en-GB", {
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const monthYear = {
+  format: (d: Date | string | number) => formatUtcDate(d, { month: "short", year: true }),
+};
 
 /** Where the sparkles pop round the word, and when, in ms after the hop starts. */
 const SPARKS = [

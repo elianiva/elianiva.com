@@ -5,6 +5,7 @@ import pandacss from "@pandacss/vite";
 import { plugin as htmlServer } from "@effect/ui/html/HtmlServerVite";
 import { DevToolsVite } from "@effect/ui-devtools/node";
 import { content } from "./app/plugins/content";
+import { hoistCss } from "./panda/hoist-css";
 
 /**
  * The site's latest commits and its commit count, read once when Vite starts
@@ -77,6 +78,7 @@ const config = defineConfig({
   plugins: [
     pandacss(),
     content(),
+    hoistCss(),
     htmlServer({ entry: "/app/entry.server.ts" }),
     ...(process.env.NODE_ENV !== "production" ? [DevToolsVite.plugin()] : []),
     emitStaticAssets(),

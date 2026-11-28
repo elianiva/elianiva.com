@@ -7,13 +7,12 @@ import { highlighter } from "../lib/highlight";
 import { CodeCopy } from "./code-copy";
 import { proseHeading } from "./prose";
 import { Quiz } from "./quiz";
+import { formatUtcDate } from "../lib/date";
 
-const longDate = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const longDate = {
+  format: (d: Date | string | number) =>
+    formatUtcDate(d, { day: "numeric", month: "long", year: true }),
+};
 
 /**
  * A fence whose info string names a pattern set in `regexPresets`: each line
@@ -70,12 +69,7 @@ const RegexBlock = <M>(
 };
 
 /** A highlighted fence in `th-*` classes, with a copy button that shows on hover. */
-const HighlightedBlock = <M>(
-  h: Html.H<M>,
-  language: string | undefined,
-  value: string,
-  index: number,
-) => {
+const HighlightedBlock = <M>(h: Html.H<M>, language: string | undefined, value: string) => {
   const { tokens, lang } = highlighter.tokenize(value, { lang: language ?? "plaintext" });
   return h.div.class("group", css({ position: "relative" })).children(
     h.pre
@@ -93,7 +87,7 @@ const HighlightedBlock = <M>(
           ),
         ),
       ),
-    CodeCopy(h, { key: `copy-${index}`, props: { code: value } }),
+    CodeCopy(h),
   );
 };
 
@@ -114,12 +108,12 @@ export const renderMarkdown = <M>(h: Html.H<M>, encoded: unknown) =>
   Markdown.view(h, Markdown.decodeDocument(encoded), {
     views: {
       Heading: (h, { level, content }, rendered) => proseHeading(h, level, content, rendered),
-      CodeBlock: (h, { language, value }, index) => {
+      CodeBlock: (h, { language, value }) => {
         const name = language._tag === "Some" ? language.value : undefined;
         const preset = name === undefined ? undefined : regexPresets[name];
         return preset
           ? RegexBlock(h, value, preset)
-          : HighlightedBlock(h, name, value.replace(/\n$/, ""), index);
+          : HighlightedBlock(h, name, value.replace(/\n$/, ""));
       },
     },
     islands: Markdown.islandsFor(Islands, {
