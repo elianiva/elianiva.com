@@ -1082,96 +1082,103 @@ const NeighboursCell = <M>(h: Html.H<M>) => {
             zIndex: "10",
             minHeight: "28",
             flex: "1",
-            display: "flex",
-            justifyContent: "center",
           }),
         )
         .children(
+          // Absolute, so its height is definite and the square below can size from it.
           h.div
             .class(
-              css({ position: "relative", height: "full", maxWidth: "full", aspectRatio: "1" }),
+              css({ position: "absolute", inset: "0", display: "flex", justifyContent: "center" }),
             )
             .children(
-              h.svg
-                .attrs({ viewBox: "0 0 100 100", "aria-label": `${people.length} sites` })
+              h.div
                 .class(
-                  css({
-                    position: "absolute",
-                    inset: "0",
-                    width: "full",
-                    height: "full",
-                    overflow: "visible",
-                  }),
+                  css({ position: "relative", height: "full", maxWidth: "full", aspectRatio: "1" }),
                 )
                 .children(
+                  h.svg
+                    .attrs({ viewBox: "0 0 100 100", "aria-label": `${people.length} sites` })
+                    .class(
+                      css({
+                        position: "absolute",
+                        inset: "0",
+                        width: "full",
+                        height: "full",
+                        overflow: "visible",
+                      }),
+                    )
+                    .children(
+                      stars.map((star, i) =>
+                        h.line
+                          .key(star.url)
+                          .class(line)
+                          .attrs({
+                            x1: "50",
+                            y1: "50",
+                            x2: String(star.x),
+                            y2: String(star.y),
+                            pathLength: "1",
+                            "stroke-dasharray": "1",
+                          })
+                          .style(stagger(i, 15)),
+                      ),
+                      h.circle
+                        .attrs({ cx: "50", cy: "50", r: "2.4" })
+                        .class(css({ fill: "pink.500" })),
+                      h.circle
+                        .attrs({ cx: "50", cy: "50", r: "4.5", "stroke-dasharray": "1.2 1.2" })
+                        .class(css({ fill: "none", stroke: "pink.400/60", strokeWidth: "0.4" })),
+                    ),
                   stars.map((star, i) =>
-                    h.line
+                    h.a
                       .key(star.url)
-                      .class(line)
-                      .attrs({
-                        x1: "50",
-                        y1: "50",
-                        x2: String(star.x),
-                        y2: String(star.y),
-                        pathLength: "1",
-                        "stroke-dasharray": "1",
-                      })
-                      .style(stagger(i, 15)),
-                  ),
-                  h.circle.attrs({ cx: "50", cy: "50", r: "2.4" }).class(css({ fill: "pink.500" })),
-                  h.circle
-                    .attrs({ cx: "50", cy: "50", r: "4.5", "stroke-dasharray": "1.2 1.2" })
-                    .class(css({ fill: "none", stroke: "pink.400/60", strokeWidth: "0.4" })),
-                ),
-              stars.map((star, i) =>
-                h.a
-                  .key(star.url)
-                  .class(
-                    css({
-                      pointerEvents: "auto",
-                      position: "absolute",
-                      width: "10%",
-                      height: "10%",
-                      translate: "-50% -50%",
-                      display: "grid",
-                      placeItems: "center",
-                      outline: "none",
-                      "&:hover > .star, &:focus-visible > .star": { scale: "1.8" },
-                      "&:hover > .name, &:focus-visible > .name": { opacity: "1" },
-                    }),
-                  )
-                  .style({ left: `${star.x}%`, top: `${star.y}%` })
-                  .attrs({ href: star.url, "aria-label": star.name, ...ext })
-                  .children(
-                    h.span
                       .class(
-                        "star",
                         css({
-                          display: "block",
-                          rounded: "full",
-                          border: "1px solid white",
-                          transition: "scale 200ms ease-out",
-                        }),
-                        STAR_TONES[i % 4],
-                      )
-                      .style({ width: `${star.size * 20}%`, height: `${star.size * 20}%` }),
-                    h.span
-                      .class(
-                        "name",
-                        css({
+                          pointerEvents: "auto",
                           position: "absolute",
-                          bottom: "100%",
-                          whiteSpace: "nowrap",
-                          fontFamily: "mono",
-                          fontSize: "9px",
-                          color: "sky.900",
-                          opacity: "0",
-                          transition: "opacity 150ms",
+                          width: "10%",
+                          height: "10%",
+                          translate: "-50% -50%",
+                          display: "grid",
+                          placeItems: "center",
+                          outline: "none",
+                          "&:hover > .star, &:focus-visible > .star": { scale: "1.8" },
+                          "&:hover > .name, &:focus-visible > .name": { opacity: "1" },
                         }),
                       )
-                      .children(star.name),
+                      .style({ left: `${star.x}%`, top: `${star.y}%` })
+                      .attrs({ href: star.url, "aria-label": star.name, ...ext })
+                      .children(
+                        h.span
+                          .class(
+                            "star",
+                            css({
+                              display: "block",
+                              rounded: "full",
+                              border: "1px solid white",
+                              transition: "scale 200ms ease-out",
+                            }),
+                            STAR_TONES[i % 4],
+                          )
+                          .style({ width: `${star.size * 20}%`, height: `${star.size * 20}%` }),
+                        h.span
+                          .class(
+                            "name",
+                            css({
+                              position: "absolute",
+                              bottom: "100%",
+                              whiteSpace: "nowrap",
+                              fontFamily: "mono",
+                              fontSize: "9px",
+                              color: "sky.900",
+                              opacity: "0",
+                              transition: "opacity 150ms",
+                            }),
+                          )
+                          .children(star.name),
+                      ),
                   ),
-              ),
+                ),
             ),
         ),
     ],
