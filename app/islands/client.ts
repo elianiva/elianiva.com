@@ -1,23 +1,13 @@
-import { HtmlHydrate } from "@effect/ui/html";
-import { Effect, Layer } from "effect";
-import { browserLayer } from "../queries/browser";
-import type { IslandLoad, IslandName } from "./island";
+import type { IslandLoad } from "./island";
 
-/** One chunk per island, so a page loads only the islands it holds. */
-const loaders: Record<IslandName, () => Promise<{ island: any }>> = {
-  Quiz: () => import("./Quiz"),
-  Comments: () => import("./Comments"),
-  StatusTile: () => import("./StatusTile"),
-  ListeningCell: () => import("./ListeningCell"),
-  LastPushTag: () => import("./LastPushTag"),
-};
+/**
+ * Decides when each island is due. It imports no Effect code: the runtime
+ * (`./hydrate.ts`) is fetched when the first island is due, so a page whose
+ * islands are all off screen loads none of it.
+ */
 
-const states: Record<string, any> = JSON.parse(document.getElementById("state")!.textContent!)[
-  "~islands"
-];
-
-/** Resolves when the island's container is near the viewport, or the main thread is idle. */
-const whenDue = (el: Element, load: IslandLoad) =>
+/** Resolves when the island's content is near the viewport, or the main thread is idle. */
+const whenDue = (el: HTMLElement, load: IslandLoad) =>
   new Promise<void>((resolve) => {
     if (load === "idle") {
       (window.requestIdleCallback ?? ((run: () => void) => setTimeout(run, 200)))(() => resolve(), {
@@ -34,30 +24,12 @@ const whenDue = (el: Element, load: IslandLoad) =>
       },
       { rootMargin: "300px" },
     );
-    observer.observe(el);
+    // The wrapper is `display: contents`, so it has no box to observe.
+    observer.observe(el.firstElementChild ?? el);
   });
 
-const hydrateIsland = (el: HTMLElement) =>
-  Effect.gen(function* () {
-    const { island } = yield* Effect.promise(() => loaders[el.dataset.island as IslandName]());
-    const state = states[el.dataset.islandId!];
-    const root = yield* HtmlHydrate.hydrateEffect(
-      island,
-      HtmlHydrate.decodeProps(island, state),
-      el,
-      state,
-    );
-    yield* root.adopted;
-    return yield* Effect.never;
+for (const el of document.querySelectorAll<HTMLElement>("[data-island]")) {
+  void whenDue(el, el.dataset.islandLoad as IslandLoad).then(async () => {
+    (await import("./hydrate")).hydrateIsland(el);
   });
-
-const run = Effect.forEach(
-  Array.from(document.querySelectorAll<HTMLElement>("[data-island]")),
-  (el) =>
-    Effect.promise(() => whenDue(el, el.dataset.islandLoad as IslandLoad)).pipe(
-      Effect.andThen(hydrateIsland(el)),
-    ),
-  { concurrency: "unbounded", discard: true },
-).pipe(Effect.scoped, Effect.provide(Layer.mergeAll(browserLayer)));
-
-Effect.runFork(run as Effect.Effect<never>);
+}

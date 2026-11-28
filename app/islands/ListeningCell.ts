@@ -1,6 +1,6 @@
 import { Html } from "@effect/ui/html";
 import { Schema } from "effect";
-import { ListeningCell, ListeningEmpty } from "../ui/home-grid";
+import { ListeningCell, ListeningEmpty } from "../ui/listening-cell";
 
 /** A root for the home page's last-plays cell; see `StatusTile.ts`. */
 export const island = Html.component({
