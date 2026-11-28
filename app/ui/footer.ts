@@ -77,7 +77,7 @@ const ChangelogCell = <M>(h: Html.H<M>) => {
     span: "w2",
     tone: "white",
     label: h.text("Changelog"),
-    style: { gap: "0", md: { gridColumn: "span 3" }, xl: { gridColumn: "span 5" } },
+    style: css.raw({ gap: "0", md: { gridColumn: "span 3" }, xl: { gridColumn: "span 5" } }),
     children: [
       h.ol
         .class(
@@ -207,7 +207,11 @@ export const Footer = <M>(h: Html.H<M>) =>
         ChangelogCell(h),
         Cell(h, {
           tone: "pink",
-          style: { justifyContent: "space-between", gap: "4", mdDown: { gridColumn: "span 2" } },
+          style: css.raw({
+            justifyContent: "space-between",
+            gap: "4",
+            mdDown: { gridColumn: "span 2" },
+          }),
           children: [
             h.p
               .class(css({ fz: "sm", color: "pink.950/65" }))

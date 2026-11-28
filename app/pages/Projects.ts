@@ -31,7 +31,7 @@ const ProjectShelf = <M>(h: HtmlNs.H<M>, group: Group) => [
   Cell(h, {
     as: "header",
     tone: group.tone,
-    style: { justifyContent: "space-between" },
+    style: css.raw({ justifyContent: "space-between" }),
     children: [
       // The shelf's three latest projects, fanned out like cards in a hand.
       h.div
@@ -80,7 +80,7 @@ const ProjectShelf = <M>(h: HtmlNs.H<M>, group: Group) => [
         .attr("href", `/projects/${project.slug}`)
         .class(css(stretched))
         .children(project.date.slice(0, 4)),
-      style: { "&:hover .project-title": { color: "pink.600" } },
+      style: css.raw({ "&:hover .project-title": { color: "pink.600" } }),
       children: [
         ProjectMark(h, { slug: project.slug, title: project.title }),
         h.div.class(css({ mt: "auto", minWidth: "0" })).children(

@@ -76,7 +76,7 @@ export const Posts = Html.component({
       Cell(h, {
         span: "w4",
         label: h.text("Find a post"),
-        style: { gap: "2.5", py: "3", md: { py: "4" } },
+        style: css.raw({ gap: "2.5", py: "3", md: { py: "4" } }),
         children: [
           h.div.class(css({ position: "relative" })).children(
             h.input
@@ -176,7 +176,7 @@ export const Posts = Html.component({
         ? Cell(h, {
             span: "w4",
             tone: "hatch",
-            style: { alignItems: "center", justifyContent: "center", textAlign: "center" },
+            style: css.raw({ alignItems: "center", justifyContent: "center", textAlign: "center" }),
             children: [
               h.p
                 .class(css({ fontFamily: "mono", fz: "sm", color: "pink.700" }))

@@ -16,7 +16,7 @@ export const PageHead = <M, K extends View.Children<M>, A extends View.Children<
     Cell(h, {
       as: "header",
       span: "w3",
-      style: { justifyContent: "flex-end", gap: "2", py: "8", md: { py: "10" } },
+      style: css.raw({ justifyContent: "flex-end", gap: "2", py: "8", md: { py: "10" } }),
       children: [
         h.h1
           .class(
@@ -53,10 +53,10 @@ export const PageHead = <M, K extends View.Children<M>, A extends View.Children<
     Cell(h, {
       as: "aside",
       tone: toneName,
-      style: {
+      style: css.raw({
         gridColumn: { base: "span 2", md: "span 1" },
         justifyContent: "space-between",
-      },
+      }),
       children: aside,
     }),
   ];

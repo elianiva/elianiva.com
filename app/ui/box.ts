@@ -2,6 +2,7 @@ import type { View } from "@effect/ui";
 import type { Html } from "@effect/ui/html";
 import { css, cx } from "../../styled-system/css";
 import type { SystemStyleObject } from "../../styled-system/types";
+import { Icon } from "./icons";
 
 /**
  * The site's one layout: a bento box. Every page is a `Box` of `Cell`s on a
@@ -47,63 +48,77 @@ export const stretched: Style = {
  * pattern (see `.pat-*` in `panda/global.ts`).
  */
 export const TONES = {
-  paper: {},
-  white: { bg: "color-mix(in oklab, white 70%, transparent)" },
-  graph: {
-    className: "pat-graph",
-    bg: "color-mix(in oklab, white 60%, transparent)",
-    "--pat-ink": "rgb(251 207 232 / 0.35)",
+  paper: { pat: undefined, style: css.raw({}) },
+  white: {
+    pat: undefined,
+    style: css.raw({ backgroundColor: "color-mix(in oklab, white 70%, transparent)" }),
   },
-  dots: { className: "pat-dither", "--pat-ink": "rgb(244 114 182 / 0.1)" },
+  graph: {
+    pat: "pat-graph",
+    style: css.raw({
+      backgroundColor: "color-mix(in oklab, white 60%, transparent)",
+      "--pat-ink": "rgb(251 207 232 / 0.35)",
+    }),
+  },
+  dots: { pat: "pat-dither", style: css.raw({ "--pat-ink": "rgb(244 114 182 / 0.1)" }) },
   yellow: {
-    className: "pat-dither",
-    bg: "color-mix(in oklab, var(--colors-yellow-50) 40%, transparent)",
-    "--pat-ink": "rgb(250 204 21 / 0.14)",
+    pat: "pat-dither",
+    style: css.raw({
+      backgroundColor: "color-mix(in oklab, var(--colors-yellow-50) 40%, transparent)",
+      "--pat-ink": "rgb(250 204 21 / 0.14)",
+    }),
   },
   sky: {
-    className: "pat-lines",
-    bg: "color-mix(in oklab, var(--colors-sky-50) 40%, transparent)",
-    "--pat-ink": "rgb(125 211 252 / 0.14)",
+    pat: "pat-lines",
+    style: css.raw({
+      backgroundColor: "color-mix(in oklab, var(--colors-sky-50) 40%, transparent)",
+      "--pat-ink": "rgb(125 211 252 / 0.14)",
+    }),
   },
   pink: {
-    className: "pat-fade",
-    bg: "color-mix(in oklab, var(--colors-pink-50) 40%, transparent)",
-    "--pat-ink": "rgb(236 72 153 / 0.08)",
+    pat: "pat-fade",
+    style: css.raw({
+      backgroundColor: "color-mix(in oklab, var(--colors-pink-50) 40%, transparent)",
+      "--pat-ink": "rgb(236 72 153 / 0.08)",
+    }),
   },
   lilac: {
-    className: "pat-diag",
-    bg: "color-mix(in oklab, var(--colors-purple-50) 40%, transparent)",
-    "--pat-ink": "rgb(192 132 252 / 0.1)",
+    pat: "pat-diag",
+    style: css.raw({
+      backgroundColor: "color-mix(in oklab, var(--colors-purple-50) 40%, transparent)",
+      "--pat-ink": "rgb(192 132 252 / 0.1)",
+    }),
   },
   ink: {
-    className: "pat-graph",
-    bg: "pink.950",
-    color: "pink.50",
-    "--pat-ink": "rgb(255 255 255 / 0.04)",
+    pat: "pat-graph",
+    style: css.raw({
+      backgroundColor: "pink.950",
+      color: "pink.50",
+      "--pat-ink": "rgb(255 255 255 / 0.04)",
+    }),
   },
   hot: {
-    className: "pat-fade",
-    bg: "pink.600",
-    color: "white",
-    "--pat-ink": "rgb(255 255 255 / 0.16)",
+    pat: "pat-fade",
+    style: css.raw({
+      backgroundColor: "pink.600",
+      color: "white",
+      "--pat-ink": "rgb(255 255 255 / 0.16)",
+    }),
   },
-  /** hot's dotted fade, in a quiet plum. */
   dusk: {
-    className: "pat-fade",
-    bg: "#4a1630",
-    color: "pink.50",
-    "--pat-ink": "rgb(244 114 182 / 0.2)",
+    pat: "pat-fade",
+    style: css.raw({
+      backgroundColor: "#4a1630",
+      color: "pink.50",
+      "--pat-ink": "rgb(244 114 182 / 0.2)",
+    }),
   },
-  /** An empty compartment: diagonal pencil hatching instead of a blank hole. */
-  hatch: { className: "pat-diag", "--pat-ink": "rgb(251 207 232 / 0.4)" },
+  hatch: { pat: "pat-diag", style: css.raw({ "--pat-ink": "rgb(251 207 232 / 0.4)" }) },
 } as const;
 export type Tone = keyof typeof TONES;
 
 /** A tone's classes: its pattern class plus its Panda styles. */
-export const tone = (name: Tone): string => {
-  const { className, ...style } = TONES[name] as { className?: string } & Style;
-  return cx(className, css(style));
-};
+export const tone = (name: Tone): string => cx(TONES[name].pat, css(TONES[name].style));
 
 const SPANS = {
   "1": {},
@@ -116,6 +131,13 @@ const SPANS = {
   t2: { gridRow: "span 2" },
 } as const satisfies Record<string, Style>;
 export type Span = keyof typeof SPANS;
+
+/** Panda needs literals: the content-sized rows of a box that opens with a `PageHead`. */
+const HEAD_ROWS = [
+  css.raw({ gridTemplateRows: { base: "repeat(2, auto)", md: "repeat(1, auto)" } }),
+  css.raw({ gridTemplateRows: { base: "repeat(3, auto)", md: "repeat(2, auto)" } }),
+  css.raw({ gridTemplateRows: { base: "repeat(4, auto)", md: "repeat(3, auto)" } }),
+];
 
 /** A hairline-bordered grid. Children are `Cell`s. */
 export const Box = <M>(
@@ -149,12 +171,7 @@ export const Box = <M>(
         },
         dense && { gridAutoFlow: "row dense" },
         // PageHead stacks into two rows on mobile and sits on one row from md up.
-        head !== undefined && {
-          gridTemplateRows: {
-            base: `repeat(${2 + head}, auto)`,
-            md: `repeat(${1 + head}, auto)`,
-          },
-        },
+        head !== undefined && HEAD_ROWS[head],
         square && {
           gridAutoRows: {
             base: "minmax(50cqw, auto)",
@@ -229,7 +246,19 @@ export const Cell = <M, C extends View.Children<M>>(
                   .children(caption)
               : h.span,
             linked
-              ? h.span.class(css({ color: dark ? "currentColor" : "pink.400" })).children("↗")
+              ? h.span.class(css({ display: "flex", alignItems: "center", gap: "2" })).children(
+                  Icon(h, "arrow-up-right", {
+                    className: dark
+                      ? css({ width: "3.5", height: "3.5", transition: "transform 200ms" })
+                      : css({
+                          width: "3.5",
+                          height: "3.5",
+                          color: "pink.400",
+                          transition: "transform 200ms",
+                          _groupHover: { color: "pink.600" },
+                        }),
+                  }),
+                )
               : null,
           )
       : null;
@@ -263,7 +292,7 @@ export const Cell = <M, C extends View.Children<M>>(
       style,
     ),
     tone(toneName),
-    linked && "pat-live",
+    linked && "pat-live group",
   );
   return children === undefined ? cell.children(head) : cell.children(head, children);
 };

@@ -23,14 +23,21 @@ const gray = {
 } as const;
 
 const guard = ':not(:where([class~="not-prose"], [class~="not-prose"] *))';
-/** A `>` selector is relative to `.prose` itself, so it goes inside the `:where`. */
+/**
+ * A `>` selector is relative to `.prose` itself, so it goes inside the `:where`.
+ * A pseudo-element cannot sit inside `:where`, so it goes after the guard, one
+ * selector per pseudo-element as the typography plugin writes them.
+ */
 const where = (selector: string) =>
-  selector.startsWith(">")
-    ? `:where(${selector
-        .split(", ")
-        .map((part) => `.prose ${part}`)
-        .join(", ")})${guard}`
-    : `.prose :where(${selector})${guard}`;
+  selector
+    .split(", ")
+    .map((part) => {
+      const [element = part, pseudo = ""] = part.split(/(?=::)/);
+      return element.startsWith(">")
+        ? `:where(.prose ${element})${guard}${pseudo}`
+        : `.prose :where(${element})${guard}${pseudo}`;
+    })
+    .join(", ");
 
 type Rules = Record<string, Record<string, unknown>>;
 
@@ -197,8 +204,13 @@ const site = rules([
       borderColor: "pink.400",
     },
   ],
+  // A glossary term: the old hover popover's dashed pink underline.
+  [
+    'a[href^="#term-"]',
+    { color: "pink.700", fontWeight: "500", borderBottomStyle: "dashed", cursor: "help" },
+  ],
   ["strong", { color: "pink.600" }],
-  ["code", { color: "pink.500", fontWeight: "400" }],
+  ["code", { color: "pink.500", fontWeight: "400", fontFamily: "mono" }],
   ["pre code", { color: "#575279" }],
   [
     "pre",

@@ -27,7 +27,7 @@ const Segments = <M>(h: Html.H<M>, segments: ReadonlyArray<Segment>) =>
     segment._tag === "text"
       ? segment.text
       : segment._tag === "code"
-        ? h.code.class(css({ fontFamily: "mono", fz: "sm" })).children(segment.text)
+        ? h.code.class(css({ fontFamily: "mono", fontSize: "sm" })).children(segment.text)
         : h.br,
   );
 
@@ -86,7 +86,7 @@ export const Quiz = Html.component({
               fontFamily: "display",
               fontWeight: "semibold",
               color: "pink.950",
-              mb: "4 !important",
+              mb: "6 !important",
             }),
           )
           .children(Segments(h, quiz.question)),

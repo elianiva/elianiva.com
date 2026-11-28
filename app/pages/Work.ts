@@ -2,7 +2,7 @@ import type { Html as HtmlNs } from "@effect/ui/html";
 import { Html } from "@effect/ui/html";
 import { View } from "@effect/ui";
 import { Schema } from "effect";
-import { css } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 import siteData from "../data/sites";
 import { openSource, prUrl } from "../data/open-source";
 import { engagement, place, work, yearRange } from "../data/work-experience";
@@ -55,18 +55,18 @@ const Role = <M>(h: HtmlNs.H<M>, role: (typeof work)[number]) => {
     as: "article",
     span: "w2",
     tone: current ? "white" : "paper",
-    style: { gap: "4" },
+    style: css.raw({ gap: "4" }),
     children: [
       current
         ? Postmark(h, {
-            style: {
+            style: css.raw({
               position: "absolute",
               top: "3",
               right: "14",
               width: "11",
               height: "11",
               fontSize: "8px",
-            },
+            }),
             children: ["now"],
           })
         : null,
@@ -201,8 +201,8 @@ const Role = <M>(h: HtmlNs.H<M>, role: (typeof work)[number]) => {
           h.div.class(
             css({ borderTopWidth: "2px", borderStyle: "dashed", borderColor: "pink.200" }),
           ),
-          h.span.class(notch({ left: "-2" })),
-          h.span.class(notch({ right: "-2" })),
+          h.span.class(notch("left")),
+          h.span.class(notch("right")),
         ),
       h.ul.class(css({ display: "grid", gap: "1.5" })).children(
         role.details.map((detail) =>
@@ -254,9 +254,9 @@ const Role = <M>(h: HtmlNs.H<M>, role: (typeof work)[number]) => {
   });
 };
 
-const notch = (side: { left: "-2" } | { right: "-2" }) =>
-  css(
-    {
+const notch = (side: "left" | "right") =>
+  cx(
+    css({
       position: "absolute",
       top: "50%",
       translate: "0 -50%",
@@ -266,8 +266,8 @@ const notch = (side: { left: "-2" } | { right: "-2" }) =>
       border: "1px solid",
       borderColor: "pink.200",
       bg: "pink.50",
-    },
-    side,
+    }),
+    side === "left" ? css({ left: "-2" }) : css({ right: "-2" }),
   );
 
 export const Work = Html.component({
@@ -349,14 +349,14 @@ export const Work = Html.component({
         as: "header",
         span: "w4",
         tone: "lilac",
-        style: {
+        style: css.raw({
           flexDirection: "row",
           flexWrap: "wrap",
           alignItems: "flex-end",
           justifyContent: "space-between",
           gap: "3",
           py: "6",
-        },
+        }),
         children: [
           h.h2
             .attr("id", "open-source")
@@ -382,7 +382,7 @@ export const Work = Html.component({
         Cell(h, {
           span: "w2",
           label: View.text(entry.about),
-          style: { gap: "3" },
+          style: css.raw({ gap: "3" }),
           children: [
             h.a
               .attrs({

@@ -396,12 +396,12 @@ export const ListeningCellNoDeps = Html.component({
       linked: true,
       tone: "pink",
       label: LabelLink(h, "/music", track.nowPlaying ? "Listening now" : "Last played"),
-      style: {
+      style: css.raw({
         overflow: "hidden",
         xl: { gap: "4", ...LISTENING.xl },
         "& > :first-child": { position: "relative", zIndex: "10" },
         xlDown: { "& h2": { color: "rgb(255 255 255 / 0.8)" } },
-      },
+      }),
       // The cover keeps its own square: last.fm art is only 300px, so it never
       // stretches. On wide screens it sits in a jewel case with the disc
       // peeking out behind it, spinning while the track plays.
@@ -635,7 +635,7 @@ const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null) => {
   return GCell(h, {
     linked: true,
     span: "w2",
-    style: { xl: { gridColumn: "1 / 3", gridRow: "3" } },
+    style: css.raw({ xl: { gridColumn: "1 / 3", gridRow: "3" } }),
     label: h.a
       .class(css(stretched))
       .attrs({ href: siteData.github, ...ext })
@@ -731,7 +731,7 @@ const WritingCell = <M>(h: Html.H<M>) =>
     linked: true,
     span: "w2",
     tone: "yellow",
-    style: { xl: { gridColumn: "4 / 6", gridRow: "2" } },
+    style: css.raw({ xl: { gridColumn: "4 / 6", gridRow: "2" } }),
     label: LabelLink(h, "/posts", "Writing"),
     children: [
       h.ul
@@ -859,7 +859,7 @@ const ExperienceCell = <M>(h: Html.H<M>) => {
   return GCell(h, {
     linked: true,
     span: "w2",
-    style: { xl: { gridColumn: "2 / 4", gridRow: "4" } },
+    style: css.raw({ xl: { gridColumn: "2 / 4", gridRow: "4" } }),
     label: LabelLink(h, "/work", "Experience"),
     children: [
       h.div
@@ -977,13 +977,13 @@ const ProjectCells = <M>(h: Html.H<M>) => {
           ProjectMark(h, {
             slug: project.slug,
             title: project.title,
-            style: {
+            style: css.raw({
               aspectRatio: "1",
               height: "auto",
               width: "34%",
               p: "5%",
               boxShadow: "0 4px 0 rgba(190,24,93,0.13)",
-            },
+            }),
           }),
           h.div.class(css({ mt: "auto", minWidth: "0" })).children(
             h.p
@@ -1021,7 +1021,7 @@ const ProjectCells = <M>(h: Html.H<M>) => {
     GCell(h, {
       linked: true,
       tone: "hot",
-      style: { xl: { gridColumn: "6", gridRow: "3" } },
+      style: css.raw({ xl: { gridColumn: "6", gridRow: "3" } }),
       label: LabelLink(h, "/projects", "All projects"),
       children: [
         h.p
@@ -1054,7 +1054,7 @@ const OpenSourceCell = <M>(h: Html.H<M>) =>
     linked: true,
     span: "w2",
     tone: "lilac",
-    style: { xl: { gridColumn: "4 / 6", gridRow: "4" } },
+    style: css.raw({ xl: { gridColumn: "4 / 6", gridRow: "4" } }),
     label: LabelLink(h, "/work#open-source", "Open source"),
     children: [
       h.ol
@@ -1177,7 +1177,7 @@ const OpenSourceCell = <M>(h: Html.H<M>) =>
                             .children(
                               Stamp(h, {
                                 tone: PR_TONES[i % 4] ?? "yellow",
-                                style: { filter: "none" },
+                                style: css.raw({ filter: "none" }),
                                 children: [
                                   h.span
                                     .class(
@@ -1226,7 +1226,7 @@ const UsesCell = <M>(h: Html.H<M>) => {
   return GCell(h, {
     linked: true,
     tone: "white",
-    style: { containerType: "inline-size", xl: { gridColumn: "1", gridRow: "4" } },
+    style: css.raw({ containerType: "inline-size", xl: { gridColumn: "1", gridRow: "4" } }),
     label: LabelLink(h, "/uses", "Uses"),
     children: [
       h.div
@@ -1365,7 +1365,10 @@ const NeighboursCell = <M>(h: Html.H<M>) => {
   return GCell(h, {
     linked: true,
     tone: "sky",
-    style: { gridColumn: { base: "span 2", md: "span 1" }, xl: { gridColumn: "6", gridRow: "4" } },
+    style: css.raw({
+      gridColumn: { base: "span 2", md: "span 1" },
+      xl: { gridColumn: "6", gridRow: "4" },
+    }),
     label: LabelLink(h, "/neighbours", "Neighbours"),
     // A square sky inside the cell, as the SVG's own box was.
     children: [

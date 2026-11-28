@@ -190,13 +190,13 @@ export const NavigationStrip = <M>(h: Html.H<M>, options: { path: string }) => {
     Box(h, { square: false }).children(
       Cell(h, {
         tone: "yellow",
-        style: {
+        style: css.raw({
           justifyContent: "center",
           px: "2.5",
           py: "2",
           gridColumn: "span 2",
-          md: { gridColumn: "span 1", px: "3" },
-        },
+          md: { gridColumn: "span 1", px: "3", py: "2" },
+        }),
         children: [
           h.a
             .attrs({ href: "/", "aria-label": "elianiva, home", "data-stub-link": "" })
@@ -304,7 +304,7 @@ export const NavigationStrip = <M>(h: Html.H<M>, options: { path: string }) => {
       Cell(h, {
         as: "nav",
         span: "w3",
-        style: { justifyContent: "center", p: "0", md: { p: "0" } },
+        style: css.raw({ justifyContent: "center", p: "0", md: { p: "0" } }),
         // The strip is the query container for the route codes: they print
         // once every ticket has room for one. Keeping the container here
         // rather than on each ticket lets the tickets size to their labels

@@ -11,16 +11,16 @@ const SECTION_TONES: Tone[] = ["yellow", "sky", "pink", "lilac"];
 
 /** A group's spine spans as many rows as it has items (Panda needs literals). */
 const SPINE_ROWS: Record<number, Style> = {
-  1: { md: { gridRow: "span 1" } },
-  2: { md: { gridRow: "span 2" } },
-  3: { md: { gridRow: "span 3" } },
-  4: { md: { gridRow: "span 4" } },
-  5: { md: { gridRow: "span 5" } },
-  6: { md: { gridRow: "span 6" } },
-  7: { md: { gridRow: "span 7" } },
-  8: { md: { gridRow: "span 8" } },
-  9: { md: { gridRow: "span 9" } },
-  10: { md: { gridRow: "span 10" } },
+  1: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 1" } }),
+  2: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 2" } }),
+  3: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 3" } }),
+  4: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 4" } }),
+  5: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 5" } }),
+  6: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 6" } }),
+  7: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 7" } }),
+  8: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 8" } }),
+  9: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 9" } }),
+  10: css.raw({ gridColumn: { base: "span 2", md: "span 1" }, md: { gridRow: "span 10" } }),
 };
 
 const ItemName = <M>(h: HtmlNs.H<M>, item: UsesItem) =>
@@ -58,7 +58,7 @@ const Item = <M>(h: HtmlNs.H<M>, item: UsesItem) =>
   Cell(h, {
     as: "article",
     span: "w3",
-    style: { gap: "4", md: { flexDirection: "row", gap: "8" } },
+    style: css.raw({ gap: "4", md: { flexDirection: "row", gap: "8" } }),
     children: [
       h.div.class(css({ md: { width: "56", flexShrink: "0" } })).children(
         h.h3
@@ -142,10 +142,7 @@ const Section = <M>(h: HtmlNs.H<M>, section: UsesSection, index: number) => [
   Cell(h, {
     as: "header",
     tone: SECTION_TONES[index % 4] ?? "yellow",
-    style: {
-      gridColumn: { base: "span 2", md: "span 1" },
-      ...SPINE_ROWS[section.items.length],
-    },
+    style: SPINE_ROWS[section.items.length],
     children: [
       h.div.class(css({ md: { position: "sticky", top: "6" } })).children(
         h.h2

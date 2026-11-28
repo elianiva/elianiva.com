@@ -119,7 +119,7 @@ const ProjectNoDeps = Html.component({
             linked: true,
             span: "w2",
             tone: (dir === "Next" ? "pink" : "paper") satisfies Tone,
-            style: { xl: { gridColumn: "span 3" } },
+            style: css.raw({ xl: { gridColumn: "span 3" } }),
             label: h.a.attr("href", `/projects/${other.slug}`).class(css(stretched)).children(dir),
             children: [
               h.p
@@ -132,7 +132,7 @@ const ProjectNoDeps = Html.component({
         : Cell(h, {
             span: "w2",
             tone: "hatch",
-            style: { display: { base: "none", md: "flex" }, xl: { gridColumn: "span 3" } },
+            style: css.raw({ display: { base: "none", md: "flex" }, xl: { gridColumn: "span 3" } }),
           });
 
     return Box(h, { square: false }).children(
@@ -141,7 +141,7 @@ const ProjectNoDeps = Html.component({
         span: "w3",
         tone: "white",
         label: View.text(`Project · ${project.date.slice(0, 4)}`),
-        style: { gap: "5", py: "8", md: { p: "10" } },
+        style: css.raw({ gap: "5", py: "8", md: { p: "10" } }),
         children: [
           ProjectMark(h, { slug: project.slug, title: project.title }),
           h.h1
@@ -169,11 +169,11 @@ const ProjectNoDeps = Html.component({
       Cell(h, {
         as: "aside",
         tone: "yellow",
-        style: {
+        style: css.raw({
           gridColumn: { base: "span 2", md: "span 1" },
           justifyContent: "flex-end",
           gap: "2",
-        },
+        }),
         children: buttons.map(({ label, href, icon }, i) =>
           h.a
             .key(label)
@@ -211,7 +211,7 @@ const ProjectNoDeps = Html.component({
       project.image
         ? Cell(h, {
             span: "w4",
-            style: { p: "0" },
+            style: css.raw({ p: "0" }),
             children: [
               h.img
                 .attrs({
@@ -227,7 +227,7 @@ const ProjectNoDeps = Html.component({
       Cell(h, {
         as: "div",
         span: "w3",
-        style: { p: "4", py: "8", md: { p: "10" } },
+        style: css.raw({ p: "4", py: "8", md: { p: "10" } }),
         children: [
           h.article
             .class(
@@ -246,7 +246,7 @@ const ProjectNoDeps = Html.component({
       Cell(h, {
         as: "aside",
         label: View.text("Built with"),
-        style: { gridColumn: { base: "span 2", md: "span 1" } },
+        style: css.raw({ gridColumn: { base: "span 2", md: "span 1" } }),
         children: [
           h.ul
             .class(css({ display: "grid", gap: "2", md: { position: "sticky", top: "6" } }))

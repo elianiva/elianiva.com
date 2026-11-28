@@ -68,7 +68,7 @@ const PostNoDeps = Html.component({
         span: "w3",
         tone: "white",
         label: View.text("Post"),
-        style: { gap: "4", py: "8", md: { p: "10" } },
+        style: css.raw({ gap: "4", py: "8", md: { p: "10" } }),
         children: [
           h.h1
             .class(
@@ -91,14 +91,14 @@ const PostNoDeps = Html.component({
       Cell(h, {
         as: "aside",
         tone: "yellow",
-        style: {
+        style: css.raw({
           gridColumn: { base: "span 2", md: "span 1" },
           justifyContent: "space-between",
           gap: "5",
-        },
+        }),
         children: [
           Postmark(h, {
-            style: { width: "24", height: "24", alignSelf: "flex-end", fontSize: "11px" },
+            style: css.raw({ width: "24", height: "24", alignSelf: "flex-end", fontSize: "11px" }),
             children: [h.text(longDate.format(new Date(post.date)))],
           }),
           h.dl
@@ -150,7 +150,7 @@ const PostNoDeps = Html.component({
       Cell(h, {
         as: "div",
         span: "w3",
-        style: { p: "4", py: "8", md: { p: "10" } },
+        style: css.raw({ p: "4", py: "8", md: { p: "10" } }),
         children: [
           h.article
             .attr("id", "post-body")
@@ -170,7 +170,7 @@ const PostNoDeps = Html.component({
       }),
       Cell(h, {
         as: "aside",
-        style: { display: "none", md: { display: "flex" } },
+        style: css.raw({ display: "none", md: { display: "flex" } }),
         children: [
           AsyncResult.match(h.queries.body, {
             onInitial: () => null,
@@ -189,10 +189,10 @@ const PostNoDeps = Html.component({
               span: "w2",
               tone: dir === "Next" ? "pink" : "paper",
               label: h.a.attr("href", `/posts/${other.slug}`).class(css(stretched)).children(dir),
-              style: {
+              style: css.raw({
                 xl: { gridColumn: "span 3" },
                 ...(dir === "Next" ? { md: { alignItems: "flex-end", textAlign: "right" } } : {}),
-              },
+              }),
               children: [
                 h.p
                   .class(
@@ -210,7 +210,11 @@ const PostNoDeps = Html.component({
           : Cell(h, {
               span: "w2",
               tone: "hatch",
-              style: { display: "none", md: { display: "flex" }, xl: { gridColumn: "span 3" } },
+              style: css.raw({
+                display: "none",
+                md: { display: "flex" },
+                xl: { gridColumn: "span 3" },
+              }),
             }).key(dir),
       ),
     );

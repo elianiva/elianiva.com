@@ -1,5 +1,5 @@
 import type { Html } from "@effect/ui/html";
-import { css, cx } from "../../styled-system/css";
+import { css } from "../../styled-system/css";
 import type { PostSummary } from "../lib/posts";
 import { Cell, stretched } from "./box";
 import { Postmark } from "./pagehead";
@@ -27,7 +27,7 @@ export const PostCell = <M>(h: Html.H<M>, post: PostSummary, featured: boolean) 
     linked: true,
     span: featured ? "s2" : "w2",
     tone: featured ? "graph" : "paper",
-    style: { "&:hover .post-title": { color: "pink.600" } },
+    style: css.raw({ "&:hover .post-title": { color: "pink.600" } }),
     label: h.a
       .attr("href", `/posts/${post.slug}`)
       .class(css(stretched))
@@ -35,14 +35,14 @@ export const PostCell = <M>(h: Html.H<M>, post: PostSummary, featured: boolean) 
     children: [
       featured
         ? Postmark(h, {
-            style: {
+            style: css.raw({
               position: "absolute",
               top: "12",
               right: "6",
               width: "20",
               height: "20",
               fontSize: "10px",
-            },
+            }),
             children: [h.text("latest post")],
           })
         : null,
@@ -52,16 +52,16 @@ export const PostCell = <M>(h: Html.H<M>, post: PostSummary, featured: boolean) 
           h.h3
             .class(
               "post-title",
-              cx(
-                css({
+              css(
+                {
                   fontFamily: "display",
                   lineHeight: "1.1",
                   fontWeight: "extrabold",
                   color: "pink.950",
                   textWrap: "balance",
                   transition: "color 150ms",
-                }),
-                featured ? css({ fz: "4xl", md: { fz: "5xl" } }) : css({ fz: "2xl" }),
+                },
+                featured ? { fontSize: "4xl", md: { fontSize: "5xl" } } : { fontSize: "2xl" },
               ),
             )
             .children(post.title),

@@ -28,9 +28,12 @@ export const LostPage = <M>(
     Cell(h, {
       span: "s2",
       tone: "white",
-      style: { justifyContent: "space-between" },
+      style: css.raw({ justifyContent: "space-between" }),
       children: [
-        Postmark(h, { style: { alignSelf: "flex-end" }, children: [h.text("return to sender")] }),
+        Postmark(h, {
+          style: css.raw({ alignSelf: "flex-end" }),
+          children: [h.text("return to sender")],
+        }),
         h.p
           .class(
             css({
@@ -48,7 +51,7 @@ export const LostPage = <M>(
     Cell(h, {
       span: "w2",
       label: h.text("Lost in the blush"),
-      style: { justifyContent: "flex-end", xl: { gridColumn: "span 4" } },
+      style: css.raw({ justifyContent: "flex-end", xl: { gridColumn: "span 4" } }),
       children: [
         h.h1
           .class(
@@ -67,14 +70,14 @@ export const LostPage = <M>(
     Cell(h, {
       linked: true,
       tone: "yellow",
-      style: { xl: { gridColumn: "span 2" } },
+      style: css.raw({ xl: { gridColumn: "span 2" } }),
       label: h.a.attr("href", "/").class(css(stretched)).children("Home"),
       children: [h.p.class(hint).children("Start from the top")],
     }),
     Cell(h, {
       linked: true,
       tone: "sky",
-      style: { xl: { gridColumn: "span 2" } },
+      style: css.raw({ xl: { gridColumn: "span 2" } }),
       label: h.a
         .attr("href", to)
         .class(css(stretched))

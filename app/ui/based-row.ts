@@ -185,11 +185,11 @@ export const StatusBoard = <M>(
   return Cell(h, {
     tone: "dusk",
     label: View.text("Status"),
-    style: {
+    style: css.raw({
       containerType: "inline-size",
       gridColumn: { base: "span 2", xl: "4 / 6" },
       gridRow: { xl: "1" },
-    },
+    }),
     children: [
       h.div.class(css({ display: "flex", flex: "1", flexDirection: "column", gap: "3" })).children(
         h.ul.class(css({ mt: "auto" })).children(

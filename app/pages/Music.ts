@@ -132,7 +132,7 @@ const TopLists = (
     Cell(h, {
       tone: "white",
       label: View.text("Charts"),
-      style: { justifyContent: "space-between" },
+      style: css.raw({ justifyContent: "space-between" }),
       children: [
         h.div
           .attrs({ role: "radiogroup", "aria-label": "Period" })
@@ -196,7 +196,7 @@ const Sleeve = <M>(h: Html.H<M>, track: LastFmTrack, big: boolean) =>
   Cell(h, {
     span: big ? "s2" : "1",
     tone: "ink",
-    style: { overflow: "hidden", p: "0", md: { p: "0" } },
+    style: css.raw({ overflow: "hidden", p: "0", md: { p: "0" } }),
     children: [
       h.a
         .attrs({ href: track.url, ...ext })
@@ -292,7 +292,7 @@ const Recent = <M>(h: Html.H<M>, tracks: ReadonlyArray<LastFmTrack>) => {
       Cell(h, {
         span: "w4",
         tone: "hatch",
-        style: { alignItems: "center", justifyContent: "center", textAlign: "center" },
+        style: css.raw({ alignItems: "center", justifyContent: "center", textAlign: "center" }),
         children: [
           h.p.class(css({ fz: "sm", color: "pink.950/70" })).children(
             "last.fm did not answer. The full history is on ",
@@ -351,7 +351,7 @@ const Loading = <M>(h: Html.H<M>) =>
   Cell(h, {
     span: "w4",
     tone: "hatch",
-    style: { alignItems: "center", justifyContent: "center" },
+    style: css.raw({ alignItems: "center", justifyContent: "center" }),
     children: [h.p.class(css(label)).children("Tuning in…")],
   });
 
