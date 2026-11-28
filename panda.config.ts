@@ -1,6 +1,8 @@
 import { defineConfig } from "@pandacss/dev";
 import { globalCss, globalVars, keyframes } from "./panda/global";
 import { palette } from "./panda/palette";
+import { highlightStyles } from "./panda/highlight";
+import { proseStyles } from "./panda/prose";
 
 /**
  * Tailwind's `text-*` sets size and line height together; Panda's `fontSize`
@@ -26,12 +28,12 @@ export default defineConfig({
   include: ["./app/**/*.{ts,tsx}", "./panda/**/*.ts"],
   exclude: [],
   outdir: "styled-system",
-  globalCss,
+  globalCss: { ...globalCss, ...highlightStyles, ...proseStyles },
   globalVars,
   // Hover motion only for a mouse or trackpad: a tap would leave it stuck on.
   conditions: {
     extend: {
-      hover: "@media (hover: hover) and (pointer: fine) { &:hover { @slot } }",
+      hover: { "@media (hover: hover) and (pointer: fine)": { "&:hover": "@slot" } },
     },
   },
   utilities: {

@@ -1,18 +1,17 @@
 import * as Alchemy from "alchemy";
 import * as Cloudflare from "@alchemy.run/cloudflare";
 import * as Effect from "effect/Effect";
-import Api from "./src/api/worker";
+import Api from "./worker/worker";
 
 /**
  * Two Workers.
  *
- * `Website` serves the prerendered site from static assets. TanStack Start's
- * `spa.enabled` + `prerender.crawlLinks` in `vite.config.ts` emit one HTML file
- * per route plus the `_shell.html` fallback and `sitemap.xml` into
- * `dist/client`; `emitStaticAssets` adds `robots.txt`, `rss.xml`, and the OG
- * images. Its only code is the `/api/*` forward to `Api`.
+ * `Website` serves the prerendered site from static assets. Effect UI's
+ * `HtmlServerVite` plugin writes one HTML file per page into `dist`, plus
+ * `404.html`; `emitStaticAssets` adds `sitemap.xml`, `robots.txt`, `rss.xml`,
+ * and the OG images. Its only code is the `/api/*` forward to `Api`.
  *
- * `Api` (`src/api/worker.ts`) holds `GH_TOKEN` / `LASTFM_API_KEY` as secrets and
+ * `Api` (`worker/worker.ts`) holds `GH_TOKEN` / `LASTFM_API_KEY` as secrets and
  * answers the GitHub and Last.fm reads from the `Cache` KV namespace. A visit
  * reads the last good copy immediately and revalidates stale entries in the
  * background, so an upstream outage never blocks the page.
@@ -20,17 +19,20 @@ import Api from "./src/api/worker";
  * `pnpm build` needs no secrets; `alchemy deploy` reads them from the deploy
  * environment (see `deploy.yml`).
  */
-class Website extends Cloudflare.Website.Vite<Website>()(
+class Website extends Cloudflare.Website.StaticSite<Website>()(
   "elianiva-com",
   Effect.gen(function* () {
     // The data API is its own Worker; this one forwards `/api/*` to it.
     const api = yield* Api;
 
     return {
-      compatibility: { flags: ["nodejs_compat"] },
+      // `vp build` prerenders every page into `dist`; `main` only forwards `/api/*`.
+      command: "pnpm exec vp build",
+      outdir: "dist",
+      main: "app/worker.ts",
       assets: {
         runWorkerFirst: ["/api/*"],
-        notFoundHandling: "single-page-application",
+        notFoundHandling: "404-page",
       },
       env: { API: api },
       dev: {

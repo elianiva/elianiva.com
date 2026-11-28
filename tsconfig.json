@@ -1,5 +1,12 @@
 {
-  "include": ["app/**/*.ts", "panda/**/*.ts", "scripts/**/*.ts", "*.ts", "styled-system/**/*.ts"],
+  "include": [
+    "worker/**/*.ts",
+    "app/**/*.ts",
+    "panda/**/*.ts",
+    "scripts/**/*.ts",
+    "*.ts",
+    "styled-system/**/*.ts"
+  ],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",

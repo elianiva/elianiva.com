@@ -184,8 +184,8 @@ export function sitemapPaths(
   projects: ContentMeta[],
 ): string[] {
   const entry = readFileSync(path.join(root, "app/entry.server.ts"), "utf8");
-  const list = /export const prerender\s*=\s*\[([^\]]*)\]/.exec(entry);
-  if (!list) throw new Error("app/entry.server.ts has no `prerender` list");
+  const list = /export const pages\s*=\s*\[([^\]]*)\]/.exec(entry);
+  if (!list) throw new Error("app/entry.server.ts has no `pages` list");
   const fixed = [...list[1]!.matchAll(/"([^"]+)"/g)].map((m) => m[1]!);
   return [
     ...new Set([

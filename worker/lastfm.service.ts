@@ -1,6 +1,6 @@
 import { Context, Duration, Effect, Layer } from "effect";
 import { HttpClient, HttpClientResponse } from "effect/http";
-import { KvCache } from "~/lib/cache";
+import { KvCache } from "./cache";
 import type {
   LastFmTrack,
   MusicData,
@@ -9,7 +9,7 @@ import type {
   TopArtistItem,
   TopListsData,
   TopTrackItem,
-} from "./types";
+} from "./music-types";
 
 const LASTFM_USER = "elianiva";
 const API_BASE = "https://ws.audioscrobbler.com/2.0/";

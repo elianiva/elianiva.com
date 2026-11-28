@@ -1,9 +1,9 @@
 import { Effect, Layer } from "effect";
 import { FetchHttpClient, HttpRouter, HttpServerResponse } from "effect/http";
 import type { KVNamespace } from "@cloudflare/workers-types";
-import { KvCache, type CacheScheduler } from "~/lib/cache";
-import { GitHubService } from "~/features/github/lib/github.service";
-import { LastFM } from "~/features/music/lib/lastfm.service";
+import { KvCache, type CacheScheduler } from "./cache";
+import { GitHubService } from "./github.service";
+import { LastFM } from "./lastfm.service";
 
 /** What one request needs to answer: secrets, the KV cache, and background work. */
 export type ApiRuntime = {

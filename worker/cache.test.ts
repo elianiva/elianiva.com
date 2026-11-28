@@ -5,7 +5,7 @@ import type { KVNamespace } from "@cloudflare/workers-types";
 
 function fakeKv() {
   const store = new Map<string, string>();
-  const puts: { key: string; expirationTtl?: number }[] = [];
+  const puts: { key: string; expirationTtl?: number | undefined }[] = [];
   return {
     ns: {
       get: async (k: string) => store.get(k) ?? null,

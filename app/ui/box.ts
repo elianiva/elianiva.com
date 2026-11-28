@@ -132,7 +132,7 @@ export const Box = <M>(
   } = {},
 ) => {
   const { dense = false, square = true, head, label: aria, style } = options;
-  const inner = h.div
+  const grid = h.div
     .class(
       css(
         {
@@ -166,21 +166,21 @@ export const Box = <M>(
       "cells-enter",
     )
     .attr("aria-label", aria);
-  return h.div
-    .class(
-      css(
-        {
-          containerType: "inline-size",
-          mx: "auto",
-          width: "100%",
-          maxWidth: "1920px",
-          mdDown: { overflow: "hidden" },
-          md: { px: "4" },
-        },
-        style,
-      ),
-    )
-    .forward((box) => inner.children(box));
+  const frame = h.div.class(
+    css(
+      {
+        containerType: "inline-size",
+        mx: "auto",
+        width: "100%",
+        maxWidth: "1920px",
+        mdDown: { overflow: "hidden" },
+        md: { px: "4" },
+      },
+      style,
+    ),
+  );
+  // The caller's children land on the grid, which sits inside the container frame.
+  return grid.forward((cells) => frame.children(cells));
 };
 
 type CellTag = "section" | "article" | "div" | "header" | "aside" | "nav" | "li";
@@ -267,3 +267,23 @@ export const Cell = <M, C extends View.Children<M>>(
   );
   return children === undefined ? cell.children(head) : cell.children(head, children);
 };
+
+/**
+ * A mask that punches round holes: each `[radius, "x y"]` removes one circle,
+ * as on a punched or perforated ticket. Pass the result to `.style(...)`.
+ */
+export const cutouts = (...holes: [number, string][]) => {
+  const layers = holes
+    .map(([r, at]) => `radial-gradient(circle ${r}px at ${at}, #0000 97%, #000)`)
+    .join(", ");
+  return {
+    maskImage: layers,
+    WebkitMaskImage: layers,
+    maskComposite: "intersect",
+    WebkitMaskComposite: "source-in",
+  };
+};
+
+/** Irregular bars, so a strip reads as a barcode and not as stripes. */
+export const BARCODE =
+  "repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 3px, currentColor 3px 5px, transparent 5px 6px, currentColor 6px 7px, transparent 7px 9px, currentColor 9px 9.5px, transparent 9.5px 11px)";

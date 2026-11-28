@@ -1,6 +1,6 @@
 import { Context, Duration, Effect, Layer } from "effect";
 import { Octokit } from "octokit";
-import { KvCache } from "~/lib/cache";
+import { KvCache } from "./cache";
 import type {
   GitHubPullRequest,
   GroupedPRs,
@@ -8,7 +8,7 @@ import type {
   PRContributionsResponse,
   GitHubContributionsResponse,
   ContributionDay,
-} from "./types";
+} from "./github-types";
 
 const PR_CONTRIBUTIONS_QUERY = `
   query($username: String!, $from: DateTime!, $to: DateTime!) {
