@@ -170,7 +170,7 @@ export const globalCss = {
 
   // Floating background shapes. Only transform and opacity animate.
   // The nav strip opens on the current page's ticket (static pages; `app/static.ts` covers browsers without this).
-  "[data-center-current] > li:has([aria-current=page])": { scrollStartTarget: "auto" },
+  "[data-center-current] > li:has([aria-current=page])": { scrollInitialTarget: "nearest" },
   ".floating-shapes": {
     position: "fixed",
     inset: "0",

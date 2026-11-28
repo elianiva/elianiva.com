@@ -14,7 +14,7 @@ export const runStatic = () => {
     idle(
       () => {
         stampBuildDate();
-        if (!CSS.supports("scroll-start-target", "auto")) centerCurrentTicket();
+        if (!CSS.supports("scroll-initial-target", "nearest")) centerCurrentTicket();
         drawShapes();
       },
       { timeout: 2000 },
