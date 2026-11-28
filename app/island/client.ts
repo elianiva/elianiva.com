@@ -6,6 +6,15 @@ import type { Load } from "./define";
  * islands are all off screen loads none of it.
  */
 
+/**
+ * The wrapper is `display: contents`, and so can be what the island draws first,
+ * so neither has a box to observe: take the first element that has one.
+ */
+const boxOf = (el: HTMLElement): Element =>
+  [...el.querySelectorAll("*")].find((child) => child.getClientRects().length > 0) ??
+  el.firstElementChild ??
+  el;
+
 /** Resolves when the island's content is in the viewport, or the main thread is idle. */
 const whenDue = (el: HTMLElement, load: Load) =>
   new Promise<void>((resolve) => {
@@ -24,8 +33,7 @@ const whenDue = (el: HTMLElement, load: Load) =>
       },
       { rootMargin: "0px" },
     );
-    // The wrapper is `display: contents`, so it has no box to observe.
-    observer.observe(el.firstElementChild ?? el);
+    observer.observe(boxOf(el));
   });
 
 for (const el of document.querySelectorAll<HTMLElement>("[data-island]")) {
