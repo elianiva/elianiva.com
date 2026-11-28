@@ -8,4 +8,4 @@ import { runStatic } from "./static";
  */
 listenForCopies();
 runStatic();
-if (document.querySelector("[data-island]")) void import("./islands/client");
+if (document.querySelector("[data-island]")) void import("./island/client");

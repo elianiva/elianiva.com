@@ -6,7 +6,7 @@ import { regexPresets } from "../content/regex-presets";
 import { highlighter } from "../lib/highlight";
 import { CodeCopy } from "./code-copy";
 import { headingIds, proseHeading } from "./prose";
-import { Island } from "../islands/island";
+import { Quiz } from "../islands/Quiz";
 import { formatUtcDate } from "../lib/date";
 
 const longDate = {
@@ -182,8 +182,7 @@ export const renderMarkdown = <M>(h: Html.H<M>, encoded: unknown) => {
             }),
           )
           .children(content),
-      Quiz: (h, { id }, _content, occurrence) =>
-        Island(h, { name: "Quiz", id: `quiz-${occurrence}`, load: "visible", props: { id } }),
+      Quiz: (h, { id }) => Quiz(h, { props: { id } }),
     }),
   });
 };

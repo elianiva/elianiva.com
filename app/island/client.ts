@@ -1,4 +1,4 @@
-import type { IslandLoad } from "./island";
+import type { Load } from "./define";
 
 /**
  * Decides when each island is due. It imports no Effect code: the runtime
@@ -6,8 +6,8 @@ import type { IslandLoad } from "./island";
  * islands are all off screen loads none of it.
  */
 
-/** Resolves when the island's content is near the viewport, or the main thread is idle. */
-const whenDue = (el: HTMLElement, load: IslandLoad) =>
+/** Resolves when the island's content is in the viewport, or the main thread is idle. */
+const whenDue = (el: HTMLElement, load: Load) =>
   new Promise<void>((resolve) => {
     if (load === "idle") {
       (window.requestIdleCallback ?? ((run: () => void) => setTimeout(run, 200)))(() => resolve(), {
@@ -29,7 +29,7 @@ const whenDue = (el: HTMLElement, load: IslandLoad) =>
   });
 
 for (const el of document.querySelectorAll<HTMLElement>("[data-island]")) {
-  void whenDue(el, el.dataset.islandLoad as IslandLoad).then(async () => {
+  void whenDue(el, el.dataset.islandLoad as Load).then(async () => {
     (await import("./hydrate")).hydrateIsland(el);
   });
 }

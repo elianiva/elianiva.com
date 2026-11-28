@@ -7,7 +7,7 @@ import { css } from "../../styled-system/css";
 import { getPost } from "../lib/posts";
 import { postSeoHead } from "../lib/seo";
 import { Box, Cell, stretched } from "../ui/box";
-import { Island } from "../islands/island";
+import { Comments } from "../islands/Comments";
 import { Icon } from "../ui/icons";
 import { LostPage } from "../ui/lost-page";
 import { renderMarkdown } from "../ui/markdown";
@@ -163,7 +163,7 @@ const PostNoDeps = Html.component({
                 onFailure: () => null,
                 onSuccess: ({ value }) => (value === undefined ? null : renderMarkdown(h, value)),
               }),
-              Island(h, { name: "Comments", id: "comments", load: "visible" }),
+              Comments(h),
             ),
         ],
       }),

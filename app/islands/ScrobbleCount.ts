@@ -1,18 +1,11 @@
-import { Html } from "@effect/ui/html";
 import { Schema } from "effect";
-import { countStyle, ScrobbleCount } from "../ui/music-body";
+import { Island } from "../island";
+import { sharedApi } from "../island/api";
+import { countStyle } from "../ui/music-body";
 
-export const api = true;
-
-/** A root for the scrobble count on the music page; see `StatusTile.ts`. */
-export const island = Html.component({
-  name: "ScrobbleCountIsland",
+export const ScrobbleCount = Island.define({
+  component: () => import("../ui/music-body").then((m) => m.ScrobbleCount),
   props: Schema.Struct({}),
-  model: Schema.Struct({}),
-  message: Schema.Never,
-}).make({
-  init: () => ({}),
-  update: ($) => $.model,
-  view: (h) =>
-    ScrobbleCount(h, { key: "count", fallback: () => h.p.class(countStyle).children("…") }),
+  layers: [sharedApi],
+  fallback: (h) => h.p.class(countStyle).children("…"),
 });

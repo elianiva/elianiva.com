@@ -1,7 +1,8 @@
 import { Html } from "@effect/ui/html";
 import { Schema } from "effect";
 import { ogPageImageUrl, seoHead } from "../lib/seo";
-import { Island } from "../islands/island";
+import { MusicBody } from "../islands/MusicBody";
+import { ScrobbleCount } from "../islands/ScrobbleCount";
 import { Box } from "../ui/box";
 import { LASTFM_PROFILE_URL, ext, textLink } from "../ui/music-body";
 import { PageHead } from "../ui/pagehead";
@@ -35,8 +36,8 @@ export const Music = Html.component({
             .children("last.fm"),
           ".",
         ],
-        aside: [Island(h, { name: "ScrobbleCount", id: "count", load: "visible" })],
+        aside: [ScrobbleCount(h)],
       }),
-      Island(h, { name: "MusicBody", id: "body", load: "visible" }),
+      MusicBody(h),
     ),
 });

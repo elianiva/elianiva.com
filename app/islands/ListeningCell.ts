@@ -1,18 +1,11 @@
-export const api = true;
-
-import { Html } from "@effect/ui/html";
 import { Schema } from "effect";
-import { ListeningCell, ListeningEmpty } from "../ui/listening-cell";
+import { Island } from "../island";
+import { sharedApi } from "../island/api";
+import { ListeningEmpty } from "../ui/listening-cell";
 
-/** A root for the home page's last-plays cell; see `StatusTile.ts`. */
-export const island = Html.component({
-  name: "ListeningCellIsland",
+export const ListeningCell = Island.define({
+  component: () => import("../ui/listening-cell").then((m) => m.ListeningCell),
   props: Schema.Struct({}),
-  model: Schema.Struct({}),
-  message: Schema.Never,
-}).make({
-  init: () => ({}),
-  update: ($) => $.model,
-  view: (h) =>
-    ListeningCell(h, { key: "listening", fallback: () => ListeningEmpty(h, undefined, false) }),
+  layers: [sharedApi],
+  fallback: (h) => ListeningEmpty(h, undefined, false),
 });

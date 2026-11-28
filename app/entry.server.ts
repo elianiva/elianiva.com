@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { document } from "virtual:@effect/ui/document";
 import { Layer } from "effect";
 import { serverLayer } from "./queries/server";
-import { layerHttp } from "./islands/server";
+import { layerHttp } from "./island/server";
 
 export default layerHttp({ budget: "300 millis", document }).pipe(Layer.provide(serverLayer));
 

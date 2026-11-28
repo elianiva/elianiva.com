@@ -13,7 +13,9 @@ import { AppPill } from "./app-pill";
 import { statusBoardData } from "./status-data";
 import { GCell, LabelLink, trunc } from "./gcell";
 import { Box, label, ruleColor, stretched, type Style } from "./box";
-import { Island } from "../islands/island";
+import { LastPushTag } from "../islands/LastPushTag";
+import { ListeningCell } from "../islands/ListeningCell";
+import { StatusTile } from "../islands/StatusTile";
 import { Stamp, type StampTone } from "./pagehead";
 import { ProjectMark } from "./project-mark";
 import { formatUtcDate } from "../lib/date";
@@ -370,7 +372,7 @@ const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null) => {
           css({ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "3" }),
         )
         .children(
-          Island(h, { name: "LastPushTag", id: "last-push", load: "visible" }),
+          LastPushTag(h),
           data
             ? h.span
                 .class(
@@ -1188,13 +1190,8 @@ export const HomeGrid = <M>(
 ) =>
   Box(h, { dense: true }).children(
     IntroCell(h),
-    Island(h, {
-      name: "StatusTile",
-      id: "status",
-      load: "visible",
-      props: { board: statusBoardData() },
-    }),
-    Island(h, { name: "ListeningCell", id: "listening", load: "visible" }),
+    StatusTile(h, { props: { board: statusBoardData() } }),
+    ListeningCell(h),
     UsesCell(h),
     // On four columns, git, writing, and neighbours share one row at 3:3:1.
     // On two and six columns the wrapper drops out and they sit in the grid.
