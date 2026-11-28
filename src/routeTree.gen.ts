@@ -14,6 +14,7 @@ import { Route as MusicRouteImport } from './routes/music'
 import { Route as NeighboursRouteImport } from './routes/neighbours'
 import { Route as UsesRouteImport } from './routes/uses'
 import { Route as WorkRouteImport } from './routes/work'
+import { Route as ApiSplatRouteImport } from './routes/api.$'
 import { Route as PostsIndexRouteImport } from './routes/posts.index'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -44,6 +45,11 @@ const WorkRoute = WorkRouteImport.update({
   path: '/work',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PostsIndexRoute = PostsIndexRouteImport.update({
   id: '/posts/',
   path: '/posts/',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
   '/work': typeof WorkRoute
+  '/api/$': typeof ApiSplatRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts/': typeof PostsIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
   '/work': typeof WorkRoute
+  '/api/$': typeof ApiSplatRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts': typeof PostsIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/neighbours': typeof NeighboursRoute
   '/uses': typeof UsesRoute
   '/work': typeof WorkRoute
+  '/api/$': typeof ApiSplatRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/posts/': typeof PostsIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/neighbours'
     | '/uses'
     | '/work'
+    | '/api/$'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts/'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/neighbours'
     | '/uses'
     | '/work'
+    | '/api/$'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/neighbours'
     | '/uses'
     | '/work'
+    | '/api/$'
     | '/posts/$slug'
     | '/projects/$slug'
     | '/posts/'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   NeighboursRoute: typeof NeighboursRoute
   UsesRoute: typeof UsesRoute
   WorkRoute: typeof WorkRoute
+  ApiSplatRoute: typeof ApiSplatRoute
   PostsSlugRoute: typeof PostsSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   PostsIndexRoute: typeof PostsIndexRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/posts/': {
       id: '/posts/'
       path: '/posts'
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   NeighboursRoute: NeighboursRoute,
   UsesRoute: UsesRoute,
   WorkRoute: WorkRoute,
+  ApiSplatRoute: ApiSplatRoute,
   PostsSlugRoute: PostsSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   PostsIndexRoute: PostsIndexRoute,

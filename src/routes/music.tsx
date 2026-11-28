@@ -2,7 +2,7 @@ import { Suspense, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Box, Cell, Fill, LABEL, PageHead, type Tone } from "~/components/box";
-import { getRecentTracks, getTopListsData } from "~/features/music/lib/music-server";
+import { getRecentTracks, getTopListsData } from "~/features/music/lib/music-client";
 import type { LastFmTrack, TopListsData } from "~/features/music/lib/types";
 import { fmtRel } from "~/lib/fmt";
 import { cn } from "~/lib/utils";

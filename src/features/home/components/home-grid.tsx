@@ -10,7 +10,7 @@ import { uses } from "~/data/uses";
 import { neighbours } from "~/data/neighbours";
 import { getPosts } from "~/features/posts/lib/posts";
 import { getProjectBySlug, getProjects } from "~/features/projects/lib/projects";
-import { getRecentTracks } from "~/features/music/lib/music-server";
+import { getRecentTracks } from "~/features/music/lib/music-client";
 import type { ContributionsResponse } from "~/features/github/lib/github.service";
 import { emptyContributions } from "~/features/github/components/github-activity-section";
 import { cn } from "~/lib/utils";

@@ -1,57 +1,38 @@
 import * as Alchemy from "alchemy";
 import * as Cloudflare from "@alchemy.run/cloudflare";
 import * as Effect from "effect/Effect";
-import { Config } from "effect";
+import Api from "./src/api/worker";
 
 /**
- * Static SPA shell + server functions for the secret-backed data.
+ * Two Workers.
  *
- * TanStack Start's `spa.enabled` + `prerender.crawlLinks` in
- * `vite.config.ts` emits one static HTML file per route (dynamic slugs
- * included) plus the `_shell.html` fallback and `sitemap.xml` into
- * `dist/client`. `robots.txt`, `rss.xml`, and the OG images are emitted
- * alongside by `scripts/build-static-assets.ts` (`pnpm build` runs it after
- * `vp build`).
+ * `Website` serves the prerendered site from static assets. TanStack Start's
+ * `spa.enabled` + `prerender.crawlLinks` in `vite.config.ts` emit one HTML file
+ * per route plus the `_shell.html` fallback and `sitemap.xml` into
+ * `dist/client`; `emitStaticAssets` adds `robots.txt`, `rss.xml`, and the OG
+ * images. Its only code is the `/api/*` forward to `Api`.
  *
- * Home, posts, projects, uses, and neighbours stay fully static, so crawlers
- * read them without running JavaScript. The home GitHub sections and `/music`
- * prerender as shells — their queries run in the browser after hydration and
- * call server functions (`/_serverFn/*`, allow-listed below so they reach the
- * Worker instead of the static assets) that hold `GH_TOKEN` /
- * `LASTFM_API_KEY` as secrets. The browser never sees the tokens.
- *
- * Last.fm and GitHub responses live in the `CACHE` KV namespace. A visit reads
- * the last good copy immediately and revalidates stale entries in the
+ * `Api` (`src/api/worker.ts`) holds `GH_TOKEN` / `LASTFM_API_KEY` as secrets and
+ * answers the GitHub and Last.fm reads from the `Cache` KV namespace. A visit
+ * reads the last good copy immediately and revalidates stale entries in the
  * background, so an upstream outage never blocks the page.
  *
- * `pnpm build` needs no secrets; `alchemy deploy` reads `GH_TOKEN` /
- * `LASTFM_API_KEY` from the deploy environment (see `deploy.yml`) and binds
- * them as `secret_text` on the Worker.
+ * `pnpm build` needs no secrets; `alchemy deploy` reads them from the deploy
+ * environment (see `deploy.yml`).
  */
 class Website extends Cloudflare.Website.Vite<Website>()(
   "elianiva-com",
   Effect.gen(function* () {
-    const cache = yield* Cloudflare.KV.Namespace("Cache", {
-      // Adopt the namespace the pre-Alchemy deployment created.
-      title: "elianiva-com-cache",
-    });
+    // The data API is its own Worker; this one forwards `/api/*` to it.
+    const api = yield* Api;
 
     return {
-      compatibility: {
-        // `nodejs_compat_populate_process_env` exposes Worker env (GH_TOKEN,
-        // LASTFM_API_KEY) through `process.env` inside server functions — without
-        // it the handlers read empty and every section degrades to its fallback.
-        flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
-      },
+      compatibility: { flags: ["nodejs_compat"] },
       assets: {
-        runWorkerFirst: ["/_serverFn/*"],
+        runWorkerFirst: ["/api/*"],
         notFoundHandling: "single-page-application",
       },
-      env: {
-        GH_TOKEN: Config.Redacted("GH_TOKEN"),
-        LASTFM_API_KEY: Config.Redacted("LASTFM_API_KEY"),
-        CACHE: cache,
-      },
+      env: { API: api },
       dev: {
         port: 3000,
         strictPort: true,

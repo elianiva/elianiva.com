@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HomeGrid } from "~/features/home/components/home-grid";
-import { getGitHubContributions } from "~/features/github/lib/github-server";
+import { getGitHubContributions } from "~/features/github/lib/github-client";
 import { homeSeo } from "~/lib/seo";
 
 export const Route = createFileRoute("/")({

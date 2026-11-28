@@ -10,26 +10,6 @@ const RETENTION_SECONDS = 7 * 24 * 60 * 60;
 export type CacheScheduler = (promise: Promise<unknown>) => void;
 
 /**
- * Reads the `CACHE` KV binding and the request scheduler. Plain `vite dev`
- * runs on Node, where `cloudflare:workers` does not exist, so the import is
- * guarded.
- */
-export async function getCacheBindings(): Promise<{
-  namespace?: KVNamespace;
-  waitUntil?: CacheScheduler;
-}> {
-  try {
-    const { env, waitUntil } = await import("cloudflare:workers");
-    return {
-      namespace: (env as { CACHE?: KVNamespace }).CACHE,
-      waitUntil: (promise) => waitUntil(promise),
-    };
-  } catch {
-    return {};
-  }
-}
-
-/**
  * Stale-while-revalidate cache over Cloudflare KV.
  *
  * A fresh entry is returned directly. A stale entry is returned immediately,

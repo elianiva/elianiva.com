@@ -48,8 +48,12 @@ describe("root query wiring", () => {
     expect(home).toMatch(/loader:\s*async\s*\(\)\s*=>\s*\(await getGitHubContributions\(\)\)/);
   });
 
-  it("worker exposes env through process.env for server functions", async () => {
+  it("the site Worker forwards /api/* to the Api Worker, which holds the secrets", async () => {
     const runSource = await readFile("alchemy.run.ts", "utf8");
-    expect(runSource).toContain("nodejs_compat_populate_process_env");
+    expect(runSource).toMatch(/runWorkerFirst:\s*\[\s*"\/api\/\*"\s*\]/);
+    expect(runSource).toMatch(/env:\s*\{\s*API:/);
+    const worker = await readFile("src/api/worker.ts", "utf8");
+    expect(worker).toContain('Config.Redacted("GH_TOKEN")');
+    expect(worker).toContain('Config.Redacted("LASTFM_API_KEY")');
   });
 });

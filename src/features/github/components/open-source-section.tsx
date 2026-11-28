@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getGitHubPRs } from "../lib/github-server";
+import { getGitHubPRs } from "../lib/github-client";
 import { PRDropdown } from "./pr-dropdown";
 import { Heading } from "~/components/ui/heading";
 import { Skeleton } from "~/components/ui/skeleton";
