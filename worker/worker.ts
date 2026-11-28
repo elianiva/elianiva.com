@@ -19,10 +19,12 @@ export default class Api extends Cloudflare.Worker<Api>()(
     // Config is resolved in Construction so Alchemy binds it as `secret_text`.
     const githubToken = yield* Config.Redacted("GH_TOKEN");
     const lastfmKey = yield* Config.Redacted("LASTFM_API_KEY");
-    const execution = yield* Cloudflare.WorkerExecutionContext;
 
     const runtime = Effect.gen(function* () {
       const namespace = yield* kv.raw;
+      // The context belongs to the request, so it is read here and not in Construction, which
+      // runs once per isolate: its `waitUntil` throws outside the request that created it.
+      const execution = yield* Cloudflare.WorkerExecutionContext;
       return {
         githubToken: Redacted.value(githubToken),
         lastfmKey: Redacted.value(lastfmKey),
