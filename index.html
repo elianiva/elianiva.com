@@ -6,6 +6,14 @@
     <meta name="theme-color" content="#fff5f0" />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
     <link rel="alternate" href="/rss.xml" type="application/rss+xml" title="elianiva" />
+    <!-- The body font is otherwise only discovered after the CSS parses. -->
+    <link
+      rel="preload"
+      href="/app/assets/fonts/google-sans-subset.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="stylesheet" href="/app/styles.css" />
   </head>
   <body>
