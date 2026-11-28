@@ -5,14 +5,12 @@ dist-ssr
 *.local
 .env
 .nitro
-.tanstack
 .wrangler
 .output
 .vinxi
 __unconfig*
 .dev.vars
 .alchemy
-.content-collections
 cv/data.json
 .cache
 .references

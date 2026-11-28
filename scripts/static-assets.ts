@@ -1,11 +1,11 @@
 import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import yaml from "yaml";
-import sites from "../src/data/sites";
-import { profile } from "../src/data/profile";
-import { work } from "../src/data/work-experience";
-import { openSource, prUrl } from "../src/data/open-source";
-import { escapeXml } from "../src/lib/xml";
+import sites from "../app/data/sites";
+import { profile } from "../app/data/profile";
+import { work } from "../app/data/work-experience";
+import { openSource, prUrl } from "../app/data/open-source";
+import { escapeXml } from "../app/lib/xml";
 import { OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH, ogImage } from "../app/og/og-image";
 
 /**

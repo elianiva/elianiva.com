@@ -9,11 +9,9 @@
   ],
   "compilerOptions": {
     "target": "ES2022",
-    "jsx": "react-jsx",
     "module": "ESNext",
     "paths": {
-      "~/*": ["./src/*"],
-      "content-collections": ["./.content-collections/generated"]
+      "~/*": ["./src/*"]
     },
     "moduleResolution": "bundler",
     "strict": true,

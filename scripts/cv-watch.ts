@@ -17,7 +17,7 @@ import { writeCvData } from "./gen-cv-data";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const pdf = path.join(root, "public/assets/cv_dicha.pdf");
 
-const WATCHED = ["src/data", "src/types", "app/content/projects", "cv/main.typ"];
+const WATCHED = ["app/data", "app/content/projects", "cv/main.typ"];
 
 let queued: NodeJS.Timeout | undefined;
 

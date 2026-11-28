@@ -31,14 +31,9 @@ esac
 step "pnpm install"
 timed pnpm install --frozen-lockfile
 
-# --- 3. Generated content-collections output (gitignored; typecheck/lint need it) ---
-# `pnpm dev` / `pnpm build` generate this too, but lint and tsc need it present first.
-step "content-collections"
-if [ ! -d .content-collections/generated ]; then
-  timed pnpm gen:collections
-else
-  echo "content-collections output already present"
-fi
+# --- 3. Panda's generated styled-system (gitignored; typecheck/lint need it) ---
+step "panda codegen"
+timed pnpm exec panda codegen
 
 # --- 4. Local env template (never clobber; read by alchemy --env-file default .env) ---
 step "env template"

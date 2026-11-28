@@ -1,4 +1,4 @@
-import { work } from "../src/data/work-experience";
+import { work } from "../app/data/work-experience";
 import { describe, expect, it } from "vite-plus/test";
 import {
   buildLlmsTxt,

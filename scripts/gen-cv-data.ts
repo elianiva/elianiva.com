@@ -13,10 +13,10 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import yaml from "yaml";
 
-import { education } from "~/data/education";
-import { bareHost, profile } from "~/data/profile";
-import { engagement, place, work } from "~/data/work-experience";
-import { technologyLabel } from "~/types/technology";
+import { education } from "../app/data/education";
+import { bareHost, profile } from "../app/data/profile";
+import { engagement, place, work } from "../app/data/work-experience";
+import { technologyLabel } from "../app/data/types/technology";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const projectsDir = path.join(root, "app/content/projects");
