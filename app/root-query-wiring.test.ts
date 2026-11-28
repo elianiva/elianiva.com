@@ -2,12 +2,12 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vite-plus/test";
 
 describe("query wiring", () => {
-  it("the home heatmap is prerendered; open source, music and live GitHub rows are browser-only", async () => {
+  it("the home heatmap is prerendered; music, last plays and live GitHub rows are browser-only", async () => {
     const read = (f: string) => readFile(f, "utf8");
     // The heatmap's Layer is built on the server, so crawlers read it.
     expect(await read("app/pages/Home.ts")).not.toContain("server: false");
     // Everything secret-backed or live stays off the prerender, as before.
-    for (const f of ["app/pages/Music.ts", "app/ui/open-source.ts", "app/ui/based-row.ts"]) {
+    for (const f of ["app/ui/music-body.ts", "app/ui/based-row.ts", "app/ui/listening-cell.ts"]) {
       expect(await read(f), `${f} must opt out of the server render`).toContain("server: false");
     }
   });
