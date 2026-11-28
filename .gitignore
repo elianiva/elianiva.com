@@ -17,3 +17,4 @@ cv/data.json
 .cache
 .references
 .amp/portals/*
+styled-system

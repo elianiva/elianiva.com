@@ -19,7 +19,7 @@ import { engagement, place, work } from "~/data/work-experience";
 import { technologyLabel } from "~/types/technology";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const projectsDir = path.join(root, "src/content/projects");
+const projectsDir = path.join(root, "app/content/projects");
 const outFile = path.join(root, "cv/data.json");
 
 /** What `cv/main.typ` reads. Every field here is already display-ready. */
@@ -75,7 +75,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
  */
 function cvProjects() {
   const entries = readdirSync(projectsDir)
-    .filter((name) => name.endsWith(".mdx"))
+    .filter((name) => name.endsWith(".md"))
     .flatMap((name) => {
       const front = frontmatter(path.join(projectsDir, name));
       const cv = record(front.cv, `${name} cv`);

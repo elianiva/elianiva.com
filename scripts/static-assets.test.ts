@@ -4,6 +4,8 @@ import {
   buildLlmsTxt,
   buildRobots,
   buildRss,
+  buildSitemap,
+  sitemapPaths,
   ogSpecs,
   readContent,
   type ContentMeta,
@@ -121,5 +123,25 @@ describe("buildLlmsTxt", () => {
     expect(txt).toContain("pull/8499");
     expect(txt).toContain("Aerotalon");
     expect(txt).not.toContain("Cubix");
+  });
+});
+
+describe("buildSitemap", () => {
+  it("lists one escaped <loc> per path under the site url", () => {
+    const xml = buildSitemap("https://elianiva.com", ["/", "/posts", "/posts/a&b"], "2026-01-01");
+    expect(xml.match(/<loc>/g)).toHaveLength(3);
+    expect(xml).toContain("<loc>https://elianiva.com/</loc>");
+    expect(xml).toContain("<loc>https://elianiva.com/posts/a&amp;b</loc>");
+    expect(xml).toContain("<lastmod>2026-01-01</lastmod>");
+  });
+});
+
+describe("sitemapPaths", () => {
+  it("adds visible posts and projects to the prerender list without duplicates", () => {
+    const paths = sitemapPaths(process.cwd(), [post], [project]);
+    expect(paths).toContain("/");
+    expect(paths).toContain("/posts/hello-world");
+    expect(paths).toContain("/projects/demo");
+    expect(new Set(paths).size).toBe(paths.length);
   });
 });

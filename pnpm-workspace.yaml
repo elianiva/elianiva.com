@@ -1,4 +1,5 @@
 allowBuilds:
+  "@parcel/watcher": true
   esbuild: true
   lightningcss: true
   msw: true

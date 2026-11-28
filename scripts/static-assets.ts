@@ -6,29 +6,28 @@ import { profile } from "../src/data/profile";
 import { work } from "../src/data/work-experience";
 import { openSource, prUrl } from "../src/data/open-source";
 import { escapeXml } from "../src/lib/xml";
-import { OgImage } from "../src/features/og-image/lib/og-image";
+import { OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH, ogImage } from "../app/og/og-image";
 
 /**
  * Build-time static assets for the prerendered site.
  *
- * TanStack Start owns the HTML: `spa.enabled` + `prerender.crawlLinks`
- * emits one static page per route (dynamic slugs included) plus the
- * `_shell.html` fallback and `sitemap.xml`. What Start cannot emit lives
- * here instead — `/robots.txt`, `/rss.xml`, and the OG images — as plain
- * file builders run from `scripts/build-static-assets.ts` after
- * `vp build`, writing straight into `dist/client`.
+ * The Effect UI plugin owns the HTML: it prerenders each path in
+ * `app/entry.server.ts` into the client `outDir`. What it does not emit lives
+ * here instead: `/robots.txt`, `/llms.txt`, `/rss.xml`, `/sitemap.xml`, and the
+ * OG images. `emitStaticAssets` in `vite.config.ts` runs this after the
+ * prerender, writing into the same `outDir`.
  *
- * Content metadata comes straight from the MDX frontmatter in
- * `src/content/{posts,projects}` — the same directories
- * `content-collections.config.ts` reads — parsed with `yaml`. The OG cards
- * reuse the real `OgImage` components rendered with `takumi-js/node` and
- * the brand fonts in `public/assets/fonts`, so the cards cannot drift from
- * the components.
+ * Content metadata comes straight from the Markdown frontmatter in
+ * `CONTENT_DIR/{posts,projects}`, parsed with `yaml`. The OG cards are Takumi
+ * node trees from `app/og` rendered with the brand fonts in
+ * `public/assets/fonts`.
  *
- * Import discipline matters here: `scripts/build-static-assets.ts` runs
- * under `tsx` with the `~/*` path alias, while this module keeps relative
- * imports so the pure builders stay importable from tests.
+ * Imports stay relative so the pure builders stay importable from tests and
+ * from the Vite config.
  */
+
+/** Where the Markdown content lives, relative to the project root. */
+export const CONTENT_DIR = "app/content";
 
 export type ContentMeta = {
   slug: string;
@@ -37,9 +36,9 @@ export type ContentMeta = {
   description: string;
   tags: string[];
   hidden: boolean;
-  type?: string;
-  featured?: boolean;
-  stack?: string[][];
+  type?: string | undefined;
+  featured?: boolean | undefined;
+  stack?: string[][] | undefined;
 };
 
 const FEED_LIMIT = 20;
@@ -61,12 +60,12 @@ export function readContent(root: string): {
   projects: ContentMeta[];
 } {
   const read = (dir: string, extra: (fm: Record<string, unknown>) => Partial<ContentMeta>) => {
-    const dirPath = path.join(root, "src/content", dir);
+    const dirPath = path.join(root, CONTENT_DIR, dir);
     return readdirSync(dirPath)
-      .filter((f) => f.endsWith(".mdx"))
+      .filter((f) => f.endsWith(".md"))
       .map((f) => {
         const fm = parseFrontmatter<Record<string, unknown>>(path.join(dirPath, f));
-        const slug = f.replace(/\.mdx$/, "");
+        const slug = f.replace(/\.md$/, "");
         return {
           slug,
           title: frontmatterString(fm.title, slug),
@@ -158,6 +157,46 @@ export function buildLlmsTxt(
     `- [All posts](${siteUrl}/posts)`,
     "",
   ].join("\n");
+}
+
+/**
+ * `/sitemap.xml`: one `<url>` per page, the shape TanStack Start emitted
+ * before. `lastmod` is the build date.
+ */
+export function buildSitemap(siteUrl: string, paths: string[], lastmod: string): string {
+  const urls = paths
+    .map(
+      (p) =>
+        `  <url>\n    <loc>${escapeXml(siteUrl + (p === "/" ? "/" : p))}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`,
+    )
+    .join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
+/**
+ * The pages the site prerenders: the `prerender` list in `app/entry.server.ts`
+ * plus a page per non-hidden post and per project. Posts join the list by slug
+ * so the sitemap stays complete before their pages prerender.
+ */
+export function sitemapPaths(
+  root: string,
+  posts: ContentMeta[],
+  projects: ContentMeta[],
+): string[] {
+  const entry = readFileSync(path.join(root, "app/entry.server.ts"), "utf8");
+  const list = /export const prerender\s*=\s*\[([^\]]*)\]/.exec(entry);
+  if (!list) throw new Error("app/entry.server.ts has no `prerender` list");
+  const fixed = [...list[1]!.matchAll(/"([^"]+)"/g)].map((m) => m[1]!);
+  return [
+    ...new Set([
+      ...fixed,
+      // Linked from every page, so the old crawl listed them too.
+      sites.cv,
+      "/rss.xml",
+      ...posts.map((p) => `/posts/${p.slug}`),
+      ...projects.map((p) => `/projects/${p.slug}`),
+    ]),
+  ];
 }
 
 export type FeedItem = {
@@ -262,11 +301,8 @@ export function ogSpecs(
  * Renders every OG card with Takumi in this same process.
  */
 export async function renderOgImages(root: string, outDir: string, specs: OgSpec[]) {
-  const [{ Renderer }, { fromJsx }, React] = await Promise.all([
-    import("takumi-js/node"),
-    import("takumi-js/helpers/jsx"),
-    import("react"),
-  ]);
+  const { Renderer } = await import("takumi-js/node");
+  const domain = new URL(sites.siteUrl).hostname;
   const renderer = new Renderer();
   const fontsDir = path.join(root, "public/assets/fonts");
   const fonts = [
@@ -277,12 +313,9 @@ export async function renderOgImages(root: string, outDir: string, specs: OgSpec
   mkdirSync(ogDir, { recursive: true });
   for (const spec of specs) {
     const { file, ...imageSpec } = spec;
-    const element = React.createElement(OgImage, { spec: imageSpec });
-    const { node, css } = await fromJsx(element);
-    const png = await renderer.render(node, {
-      width: 1200,
-      height: 630,
-      css,
+    const png = await renderer.render(ogImage(imageSpec, domain), {
+      width: OG_IMAGE_WIDTH,
+      height: OG_IMAGE_HEIGHT,
       fonts,
       format: "png",
     });
@@ -304,7 +337,7 @@ export const OG_PAGES = [
 
 /**
  * Emits the non-Start static assets into the client outDir:
- * `robots.txt`, `llms.txt`, `rss.xml`, and the OG images.
+ * `robots.txt`, `llms.txt`, `rss.xml`, `sitemap.xml`, and the OG images.
  */
 export async function emitStaticAssets(root: string, outDir: string) {
   const { posts, ogPosts, projects } = readContent(root);
@@ -313,6 +346,15 @@ export async function emitStaticAssets(root: string, outDir: string) {
   writeFileSync(
     path.join(outDir, "rss.xml"),
     buildRss(sites.siteName, sites.siteUrl, sites.description, posts, projects),
+  );
+  writeFileSync(
+    path.join(outDir, "sitemap.xml"),
+    // oxlint-disable-next-line efx-no-native-date
+    buildSitemap(
+      sites.siteUrl,
+      sitemapPaths(root, posts, projects),
+      new Date().toISOString().slice(0, 10),
+    ),
   );
   await renderOgImages(root, outDir, ogSpecs(ogPosts, projects, OG_PAGES));
 }

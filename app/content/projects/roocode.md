@@ -1,0 +1,26 @@
+---
+title: RooCode
+date: 2025-05-24
+description: An open-source, AI-powered coding assistant that runs in VS Code.
+source: https://github.com/RooCodeInc/Roo-Code
+type: open-source
+featured: false
+stack:
+  - ["TypeScript", "https://typescriptlang.org/"]
+  - ["React", "https://react.dev/"]
+  - ["VSCode Extension API", "https://code.visualstudio.com/api"]
+cv:
+  period: ["2025-05", "2025-12"]
+  details:
+    - Merged 13+ PRs to Roo Code, an open-source AI coding agent for VS Code, focused on UI polish and bug fixes
+    - Rebuilt context-mention UI with cleaner layout, fuzzy search, and keyboard navigation, and built the initial Marketplace UI
+---
+
+## Background
+
+Roo Code is an open-source, AI-powered coding assistant that runs in VS Code.
+It goes beyond simple autocompletion by reading and writing across multiple files, executing commands, and adapting to your workflow.
+
+## What It Is
+
+It is like having a whole dev team right inside your editor. See [roocode.com](https://roocode.com) for more information.
