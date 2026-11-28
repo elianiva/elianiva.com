@@ -29,6 +29,7 @@
     "@tanstack/highlight": "^1.2.12",
     "alchemy": "2.0.0-beta.87",
     "effect": "4.1.7",
+    "js.foresight": "^4.2.1",
     "octokit": "^5.0.5",
     "takumi-js": "^2.20.0",
     "zod": "^4.6.7"
