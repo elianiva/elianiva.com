@@ -22,7 +22,7 @@ const whenDue = (el: HTMLElement, load: IslandLoad) =>
           resolve();
         }
       },
-      { rootMargin: "300px" },
+      { rootMargin: "0px" },
     );
     // The wrapper is `display: contents`, so it has no box to observe.
     observer.observe(el.firstElementChild ?? el);

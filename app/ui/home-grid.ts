@@ -370,7 +370,7 @@ const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null) => {
           css({ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "3" }),
         )
         .children(
-          Island(h, { name: "LastPushTag", id: "last-push", load: "idle" }),
+          Island(h, { name: "LastPushTag", id: "last-push", load: "visible" }),
           data
             ? h.span
                 .class(
@@ -1191,10 +1191,10 @@ export const HomeGrid = <M>(
     Island(h, {
       name: "StatusTile",
       id: "status",
-      load: "idle",
+      load: "visible",
       props: { board: statusBoardData() },
     }),
-    Island(h, { name: "ListeningCell", id: "listening", load: "idle" }),
+    Island(h, { name: "ListeningCell", id: "listening", load: "visible" }),
     UsesCell(h),
     // On four columns, git, writing, and neighbours share one row at 3:3:1.
     // On two and six columns the wrapper drops out and they sit in the grid.

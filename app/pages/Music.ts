@@ -35,8 +35,8 @@ export const Music = Html.component({
             .children("last.fm"),
           ".",
         ],
-        aside: [Island(h, { name: "ScrobbleCount", id: "count", load: "idle" })],
+        aside: [Island(h, { name: "ScrobbleCount", id: "count", load: "visible" })],
       }),
-      Island(h, { name: "MusicBody", id: "body", load: "idle" }),
+      Island(h, { name: "MusicBody", id: "body", load: "visible" }),
     ),
 });
