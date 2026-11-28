@@ -116,6 +116,11 @@ export function content(): Plugin {
           )};`,
           `export const postBodies = ${loaders("posts", posts)};`,
           `export const projectBodies = ${loaders("projects", projects)};`,
+          `export const logoFiles = ${JSON.stringify(
+            readdirSync(path.join(root, "public/assets/logo"))
+              .filter((f) => f.endsWith(".webp"))
+              .map((f) => f.slice(0, -".webp".length)),
+          )};`,
         ].join("\n");
       }
       if (id.endsWith(`.md${BODY}`)) {

@@ -3,7 +3,7 @@ import { Html } from "@effect/ui/html";
 import { Component } from "@effect/ui";
 import { Effect, Schema } from "effect";
 import { AsyncResult } from "effect/reactivity";
-import { allProjects, projectBodies } from "virtual:content";
+import { allProjects, logoFiles, projectBodies } from "virtual:content";
 import { css } from "../../styled-system/css";
 import { getProject, type ProjectDetail } from "../lib/projects";
 import { projectSeoHead } from "../lib/seo";
@@ -32,7 +32,10 @@ export const ProjectMessage = UiSchema.TaggedEnum({
 const ProjectNoDeps = Html.component({
   name: "Project",
   props: Schema.Struct({ slug: Schema.String }),
-  /** Stack names whose logo file failed to load; they show their first letter. */
+  /**
+   * Stack names whose logo file failed to load; they show their first letter,
+   * as do names with no file at all (`logoFiles`), which the prerender knows.
+   */
   model: Schema.Struct({ broken: Schema.Array(Schema.String) }),
   message: ProjectMessage,
   queries: { body: { query: ProjectBody, args: ({ props }) => ({ slug: props.slug }) } },
@@ -80,7 +83,7 @@ const ProjectNoDeps = Html.component({
           }),
         )
         .children(
-          model.broken.includes(name)
+          model.broken.includes(name) || !logoFiles.includes(file)
             ? h.span
                 .class(
                   css({

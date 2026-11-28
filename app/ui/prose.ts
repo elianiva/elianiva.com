@@ -58,14 +58,32 @@ const HEADING = {
   },
 } as const;
 
+type HeadingBlock = { _tag: string; level?: number; content?: ReadonlyArray<Inline> };
+
+/**
+ * The id of each top-level heading, in document order. A heading that repeats
+ * an earlier one gets `-1`, `-2` and so on, so ids stay unique and the
+ * contents list reaches each section.
+ */
+export const headingIds = (blocks: ReadonlyArray<HeadingBlock>): string[] => {
+  const seen = new Map<string, number>();
+  return blocks.flatMap((block) => {
+    if (block._tag !== "Heading" || !block.content) return [];
+    const base = slugify(textOf(block.content));
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    return [count === 0 ? base : `${base}-${count}`];
+  });
+};
+
 /** A heading with an id and a `#` link that shows on hover, so the contents list and shared links can point at it. */
 export const proseHeading = <M>(
   h: Html.H<M>,
   level: 1 | 2 | 3 | 4 | 5 | 6,
   content: ReadonlyArray<Inline>,
   rendered: InlineContent<M>,
+  id: string = slugify(textOf(content)),
 ) => {
-  const id = slugify(textOf(content));
   const tag = h[`h${level}`] as typeof h.h2;
   const style = HEADING[level === 1 ? "h2" : (`h${level}` as keyof typeof HEADING)];
   return tag
@@ -110,14 +128,17 @@ export const proseHeading = <M>(
 export type ContentsEntry = { id: string; text: string; depth: 2 | 3 };
 
 /** The h2 and h3 headings of an encoded document, for the contents list. */
-export const contentsOf = (
-  blocks: ReadonlyArray<{ _tag: string; level?: number; content?: ReadonlyArray<Inline> }>,
-): ContentsEntry[] =>
-  blocks.flatMap((block) =>
-    block._tag === "Heading" && (block.level === 2 || block.level === 3) && block.content
-      ? [{ id: slugify(textOf(block.content)), text: textOf(block.content), depth: block.level }]
-      : [],
-  );
+export const contentsOf = (blocks: ReadonlyArray<HeadingBlock>): ContentsEntry[] => {
+  const ids = headingIds(blocks);
+  let next = 0;
+  return blocks.flatMap((block) => {
+    if (block._tag !== "Heading" || !block.content) return [];
+    const id = ids[next++]!;
+    return block.level === 2 || block.level === 3
+      ? [{ id, text: textOf(block.content), depth: block.level }]
+      : [];
+  });
+};
 
 /** "On this page". Unlike the old one it is built from the document, so it is in the prerendered HTML. */
 export const Contents = <M>(h: Html.H<M>, entries: ReadonlyArray<ContentsEntry>) =>

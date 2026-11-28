@@ -38,4 +38,6 @@ declare module "virtual:content" {
   /** One lazy chunk per body, keyed by slug. */
   export const postBodies: Bodies;
   export const projectBodies: Bodies;
+  /** Names of the stack logos in `public/assets/logo`, without the extension. */
+  export const logoFiles: string[];
 }

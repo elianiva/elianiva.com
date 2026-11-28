@@ -85,7 +85,6 @@ export const App = Html.component({
     HtmlHead.meta({ name: "viewport", content: "width=device-width, initial-scale=1" }),
     HtmlHead.meta({ name: "theme-color", content: "#fff5f0" }),
     HtmlHead.link({ rel: "icon", href: "/favicon.png", type: "image/png", sizes: "32x32" }),
-    HtmlHead.link({ rel: "alternate", href: "/rss.xml", type: "application/rss+xml" }),
   ],
   view: (h, { route }) => {
     const key = AppRoute.printPath(route);

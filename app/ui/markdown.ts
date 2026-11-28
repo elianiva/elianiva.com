@@ -5,7 +5,7 @@ import { Islands } from "../content/islands";
 import { regexPresets } from "../content/regex-presets";
 import { highlighter } from "../lib/highlight";
 import { CodeCopy } from "./code-copy";
-import { proseHeading } from "./prose";
+import { headingIds, proseHeading } from "./prose";
 import { Quiz } from "./quiz";
 import { formatUtcDate } from "../lib/date";
 
@@ -104,10 +104,17 @@ const note = {
  * syntax highlighting and islands. Put the result in an element with the
  * `prose` class: the typography is in `panda/prose.ts`.
  */
-export const renderMarkdown = <M>(h: Html.H<M>, encoded: unknown) =>
-  Markdown.view(h, Markdown.decodeDocument(encoded), {
+export const renderMarkdown = <M>(h: Html.H<M>, encoded: unknown) => {
+  const document = Markdown.decodeDocument(encoded);
+  const ids = headingIds(document.blocks as never);
+  const idOf = new WeakMap<object, string>();
+  document.blocks
+    .filter((block) => block._tag === "Heading")
+    .forEach((block, index) => idOf.set((block as { content: object }).content, ids[index]!));
+  return Markdown.view(h, document, {
     views: {
-      Heading: (h, { level, content }, rendered) => proseHeading(h, level, content, rendered),
+      Heading: (h, { level, content }, rendered) =>
+        proseHeading(h, level, content, rendered, idOf.get(content)),
       CodeBlock: (h, { language, value }) => {
         const name = language._tag === "Some" ? language.value : undefined;
         const preset = name === undefined ? undefined : regexPresets[name];
@@ -179,3 +186,4 @@ export const renderMarkdown = <M>(h: Html.H<M>, encoded: unknown) =>
         Quiz(h, { key: `quiz-${occurrence}`, props: { id } }),
     }),
   });
+};
