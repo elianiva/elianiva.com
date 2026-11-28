@@ -5,14 +5,15 @@ import { drawShapes } from "./lib/shapes";
  * the hero word's pointer replay and the floating shapes, all in plain DOM.
  */
 export const runStatic = () => {
-  stampBuildDate();
   replayDelightful();
-  // Decoration waits until the page has settled, and a scroll before the first paint
-  // makes Chrome drop the page's Largest Contentful Paint, so neither runs early.
+  // Decoration waits until the page has settled: the clock's first `Intl` call is slow enough to
+  // delay the first paint, and a scroll before the first paint makes Chrome drop the page's
+  // Largest Contentful Paint.
   setTimeout(() => {
     const idle = window.requestIdleCallback ?? ((run: () => void) => setTimeout(run, 0));
     idle(
       () => {
+        stampBuildDate();
         if (!CSS.supports("scroll-start-target", "auto")) centerCurrentTicket();
         drawShapes();
       },
