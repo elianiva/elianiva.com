@@ -1,6 +1,4 @@
 import { Html } from "@effect/ui/html";
-import { UiSchema } from "@effect/ui";
-import { Schema } from "effect";
 import { css } from "../../styled-system/css";
 import siteData from "../data/sites";
 import { currentRoles, pastRoles } from "../data/work-experience";
@@ -12,9 +10,8 @@ import { listPosts } from "../lib/posts";
 import { getProject, listProjects } from "../lib/projects";
 import { emptyContributions, type ContributionsResponse } from "../features/github/types";
 import { AppPill } from "./app-pill";
-import { LastPushTag, StatusBoard, StatusTile } from "./based-row";
+import { statusBoardData } from "./status-data";
 import { GCell, LabelLink, trunc } from "./gcell";
-import { ListeningCell, ListeningEmpty } from "./listening-cell";
 import { Box, label, ruleColor, stretched, type Style } from "./box";
 import { Island } from "../islands/island";
 import { Stamp, type StampTone } from "./pagehead";
@@ -50,25 +47,6 @@ const SPARKS = [
   { at: { left: "52%", top: "-0.45em" }, d: 200 },
   { at: { right: "-0.35em", top: "0.05em" }, d: 290 },
 ];
-
-const DelightfulMessage = UiSchema.TaggedEnum({ EnteredWord: {} });
-
-/**
- * The hero's accent word. The letters hop in a wave, the squiggle redraws, and
- * sparkles pop, on load and on every pointer entry (see `.delight-*` in
- * `panda/global.ts`). Counting the entries in `run` and keying the letters by
- * it remounts them, so each run plays in full.
- */
-export const Delightful = Html.component({
-  name: "Delightful",
-  props: Schema.Struct({}),
-  model: Schema.Struct({ run: Schema.Number }),
-  message: DelightfulMessage,
-}).make({
-  init: () => ({ run: 0 }),
-  update: ($) => $.evolve({ run: (n) => n + 1 }),
-  view: (h, { run }) => DelightfulWord(h, run).on("mouseenter", DelightfulMessage.EnteredWord()),
-});
 
 /**
  * The word as plain markup. On a static page `app/static.ts` replays the hop
@@ -144,7 +122,7 @@ export const DelightfulWord = <M>(h: Html.H<M>, run: number) =>
         ),
     );
 
-const IntroCell = <M>(h: Html.H<M>, islands: boolean) => {
+const IntroCell = <M>(h: Html.H<M>) => {
   const body = css({
     display: "flex",
     flex: "1",
@@ -237,11 +215,7 @@ const IntroCell = <M>(h: Html.H<M>, islands: boolean) => {
               textWrap: "pretty",
             }),
           )
-          .children(
-            "I care about making fast software that’s ",
-            islands ? DelightfulWord(h, 0) : Delightful(h, { key: "delightful" }),
-            " to use.",
-          ),
+          .children("I care about making fast software that’s ", DelightfulWord(h, 0), " to use."),
         h.div
           .class(
             css({
@@ -352,7 +326,7 @@ const BAR_EARLY = css(BAR_BASE, { display: { base: "none", md: "flex" } });
  * Hovering the cell runs a scan across, left to right. Phones get the last 26
  * weeks. Without data (`null`) every week is a flat stub and no count shows.
  */
-const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null, islands: boolean) => {
+const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null) => {
   const weeks = (data ?? emptyContributions()).weeks.slice(-53).map((week) => {
     const days = [...week.contributionDays].sort((x, y) => x.date.localeCompare(y.date));
     return { days, total: days.reduce((sum, day) => sum + day.contributionCount, 0) };
@@ -396,9 +370,7 @@ const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null, islands: b
           css({ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "3" }),
         )
         .children(
-          islands
-            ? Island(h, { name: "LastPushTag", id: "last-push", load: "visible" })
-            : LastPushTag(h, { key: "last-push", fallback: () => h.span }),
+          Island(h, { name: "LastPushTag", id: "last-push", load: "idle" }),
           data
             ? h.span
                 .class(
@@ -1212,19 +1184,17 @@ const NeighboursCell = <M>(h: Html.H<M>) => {
  */
 export const HomeGrid = <M>(
   h: Html.H<M>,
-  options: { contributions: ContributionsResponse | null; islands: boolean },
+  options: { contributions: ContributionsResponse | null },
 ) =>
   Box(h, { dense: true }).children(
-    IntroCell(h, options.islands),
-    options.islands
-      ? Island(h, { name: "StatusTile", id: "status", load: "visible" })
-      : StatusTile(h, {
-          key: "status",
-          fallback: () => StatusBoard(h, { activity: null, now: null }),
-        }),
-    options.islands
-      ? Island(h, { name: "ListeningCell", id: "listening", load: "visible" })
-      : ListeningCell(h, { key: "listening", fallback: () => ListeningEmpty(h, undefined, false) }),
+    IntroCell(h),
+    Island(h, {
+      name: "StatusTile",
+      id: "status",
+      load: "idle",
+      props: { board: statusBoardData() },
+    }),
+    Island(h, { name: "ListeningCell", id: "listening", load: "idle" }),
     UsesCell(h),
     // On four columns, git, writing, and neighbours share one row at 3:3:1.
     // On two and six columns the wrapper drops out and they sit in the grid.
@@ -1241,11 +1211,7 @@ export const HomeGrid = <M>(
           xl: { display: "contents" },
         }),
       )
-      .children(
-        GitCell(h, options.contributions, options.islands),
-        WritingCell(h),
-        NeighboursCell(h),
-      ),
+      .children(GitCell(h, options.contributions), WritingCell(h), NeighboursCell(h)),
     ProjectCells(h),
     ExperienceCell(h),
     OpenSourceCell(h),

@@ -9,15 +9,9 @@ const monthYear = {
   format: (d: Date | string | number) => formatUtcDate(d, { month: "short", year: true }),
 };
 
-export const matches = (post: PostSummary, query: string): boolean => {
-  const q = query.toLowerCase();
-  return (
-    post.title.toLowerCase().includes(q) ||
-    post.description.toLowerCase().includes(q) ||
-    post.slug.toLowerCase().includes(q) ||
-    post.tags.some((t) => t.toLowerCase().includes(q))
-  );
-};
+/** The text a search looks in, lower-cased; the fields are told apart by a newline, which a query cannot hold. */
+export const postSearchText = (post: PostSummary): string =>
+  [post.title, post.description, post.slug, ...post.tags].join("\n").toLowerCase();
 
 /** One post as a compartment; the featured one is 2×2. */
 export const PostCell = <M>(h: Html.H<M>, post: PostSummary, featured: boolean) =>

@@ -7,7 +7,6 @@ import { css } from "../../styled-system/css";
 import { getPost } from "../lib/posts";
 import { postSeoHead } from "../lib/seo";
 import { Box, Cell, stretched } from "../ui/box";
-import { Comments } from "../ui/comments";
 import { Island } from "../islands/island";
 import { Icon } from "../ui/icons";
 import { LostPage } from "../ui/lost-page";
@@ -38,7 +37,7 @@ const longDate = {
 
 const PostNoDeps = Html.component({
   name: "Post",
-  props: Schema.Struct({ slug: Schema.String, islands: Schema.optional(Schema.Boolean) }),
+  props: Schema.Struct({ slug: Schema.String }),
   model: Schema.Struct({}),
   message: Schema.Never,
   queries: { body: { query: PostBody, args: ({ props }) => ({ slug: props.slug }) } },
@@ -162,14 +161,9 @@ const PostNoDeps = Html.component({
               AsyncResult.match(h.queries.body, {
                 onInitial: () => null,
                 onFailure: () => null,
-                onSuccess: ({ value }) =>
-                  value === undefined
-                    ? null
-                    : renderMarkdown(h, value, { islands: h.props.islands === true }),
+                onSuccess: ({ value }) => (value === undefined ? null : renderMarkdown(h, value)),
               }),
-              h.props.islands === true
-                ? Island(h, { name: "Comments", id: "comments", load: "visible" })
-                : Comments(h, { key: "comments" }),
+              Island(h, { name: "Comments", id: "comments", load: "visible" }),
             ),
         ],
       }),

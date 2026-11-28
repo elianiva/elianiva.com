@@ -1,4 +1,4 @@
-import { Query, UiSchema, View } from "@effect/ui";
+import { Query, View } from "@effect/ui";
 import { Html } from "@effect/ui/html";
 import { Component } from "@effect/ui";
 import { Effect, Schema } from "effect";
@@ -25,27 +25,15 @@ class ProjectBody extends Query.Service<ProjectBody>()("projects/ProjectBody", {
   });
 }
 
-export const ProjectMessage = UiSchema.TaggedEnum({
-  BrokeLogo: { name: Schema.String },
-});
-
 const ProjectNoDeps = Html.component({
   name: "Project",
   props: Schema.Struct({ slug: Schema.String }),
-  /**
-   * Stack names whose logo file failed to load; they show their first letter,
-   * as do names with no file at all (`logoFiles`), which the prerender knows.
-   */
-  model: Schema.Struct({ broken: Schema.Array(Schema.String) }),
-  message: ProjectMessage,
+  model: Schema.Struct({}),
+  message: Schema.Never,
   queries: { body: { query: ProjectBody, args: ({ props }) => ({ slug: props.slug }) } },
 }).make({
-  init: () => ({ broken: [] }),
-  update: ($, message) =>
-    ProjectMessage.match(message, {
-      BrokeLogo: ({ name }) =>
-        $.evolve({ broken: (list) => (list.includes(name) ? list : [...list, name]) }),
-    }),
+  init: () => ({}),
+  update: ($) => $.model,
   head: ({ props }) => {
     const detail = getProject(allProjects, props.slug);
     return detail
@@ -59,7 +47,7 @@ const ProjectNoDeps = Html.component({
         })
       : [];
   },
-  view: (h, model) => {
+  view: (h) => {
     const detail = getProject(allProjects, h.props.slug);
     if (!detail) return LostPage(h, { section: "project", home: "/projects" });
     const { project } = detail;
@@ -83,17 +71,8 @@ const ProjectNoDeps = Html.component({
           }),
         )
         .children(
-          model.broken.includes(name) || !logoFiles.includes(file)
-            ? h.span
-                .class(
-                  css({
-                    fontFamily: "display",
-                    fz: "sm",
-                    fontWeight: "extrabold",
-                    color: "pink.500",
-                  }),
-                )
-                .children(name[0] ?? "")
+          !logoFiles.includes(file)
+            ? h.span.class("logo-letter").children(name[0] ?? "")
             : h.img
                 .class(
                   css({ width: "100%", height: "100%", objectFit: "contain" }),
@@ -101,11 +80,11 @@ const ProjectNoDeps = Html.component({
                 )
                 .attrs({
                   src: `/assets/logo/${file}.webp`,
+                  "data-logo": name[0] ?? "",
                   alt: "",
                   loading: "lazy",
                   decoding: "async",
-                })
-                .on("error", ProjectMessage.BrokeLogo({ name })),
+                }),
         );
     };
 

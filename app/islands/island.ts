@@ -6,7 +6,14 @@ import { css } from "../../styled-system/css";
  * component hydrated into a root of its own (`app/islands/client.ts`); the
  * page around it is never hydrated.
  */
-export type IslandName = "Quiz" | "Comments" | "StatusTile" | "ListeningCell" | "LastPushTag";
+export type IslandName =
+  | "Quiz"
+  | "Comments"
+  | "StatusTile"
+  | "ListeningCell"
+  | "LastPushTag"
+  | "MusicBody"
+  | "ScrobbleCount";
 
 /** When the browser hydrates the island: once it scrolls near, or once the main thread is idle. */
 export type IslandLoad = "visible" | "idle";

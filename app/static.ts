@@ -1,11 +1,15 @@
+import { runPostsFilter } from "./posts-filter";
 import { drawShapes } from "./lib/shapes";
 
 /**
- * What a static page does without an Effect runtime: the nav, the build date,
- * the hero word's pointer replay and the floating shapes, all in plain DOM.
+ * What every page does without an Effect runtime, in plain DOM: the nav, the
+ * build date, the hero word's pointer replay, the floating shapes, the archive
+ * filter and the stack logos that fail to load.
  */
 export const runStatic = () => {
   replayDelightful();
+  runPostsFilter();
+  fallBackLogos();
   // Decoration waits until the page has settled: the clock's first `Intl` call is slow enough to
   // delay the first paint, and a scroll before the first paint makes Chrome drop the page's
   // Largest Contentful Paint.
@@ -54,4 +58,27 @@ const replayDelightful = () => {
     const letters = word.querySelector("[aria-hidden]");
     letters?.replaceWith(letters.cloneNode(true));
   });
+};
+
+/** A stack logo that does not load shows the first letter of its name instead. */
+const fallBackLogos = () => {
+  const swap = (img: HTMLImageElement) => {
+    const letter = document.createElement("span");
+    letter.textContent = img.dataset.logo ?? "";
+    letter.className = "logo-letter";
+    img.replaceWith(letter);
+  };
+  // `error` does not bubble, so listen while it travels down.
+  document.addEventListener(
+    "error",
+    (event) => {
+      const img = event.target;
+      if (img instanceof HTMLImageElement && img.dataset.logo !== undefined) swap(img);
+    },
+    true,
+  );
+  // One that failed before this ran has already fired its event.
+  for (const img of document.querySelectorAll<HTMLImageElement>("img[data-logo]")) {
+    if (img.complete && img.naturalWidth === 0) swap(img);
+  }
 };

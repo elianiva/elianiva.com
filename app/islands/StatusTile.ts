@@ -1,6 +1,8 @@
 import { Html } from "@effect/ui/html";
 import { Schema } from "effect";
-import { StatusBoard, StatusTile } from "../ui/based-row";
+import { StatusBoard, StatusBoardData, StatusTile } from "../ui/based-row";
+
+export const api = true;
 
 /**
  * A root for the home page's status tile. The tile is a provided component
@@ -9,12 +11,16 @@ import { StatusBoard, StatusTile } from "../ui/based-row";
  */
 export const island = Html.component({
   name: "StatusTileIsland",
-  props: Schema.Struct({}),
+  props: Schema.Struct({ board: StatusBoardData }),
   model: Schema.Struct({}),
   message: Schema.Never,
 }).make({
   init: () => ({}),
   update: ($) => $.model,
   view: (h) =>
-    StatusTile(h, { key: "status", fallback: () => StatusBoard(h, { activity: null, now: null }) }),
+    StatusTile(h, {
+      key: "status",
+      props: { board: h.props.board },
+      fallback: () => StatusBoard(h, { activity: null, now: null, board: h.props.board }),
+    }),
 });

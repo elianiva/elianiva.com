@@ -1,28 +1,21 @@
-import { Head, Router, UiSchema } from "@effect/ui";
+import { Head } from "@effect/ui";
 import { Html, HtmlHead } from "@effect/ui/html";
 import { Schema } from "effect";
 import { css } from "../styled-system/css";
-import {
-  Home,
-  Music,
-  Neighbours,
-  Post,
-  Posts,
-  Project,
-  Projects,
-  Uses,
-  Work,
-} from "./pages/lazy.ts";
+import { Home } from "./pages/Home.ts";
+import { Music } from "./pages/Music.ts";
+import { Neighbours } from "./pages/Neighbours.ts";
+import { Post } from "./pages/Post.ts";
+import { Posts } from "./pages/Posts.ts";
+import { Project } from "./pages/Project.ts";
+import { Projects } from "./pages/Projects.ts";
+import { Uses } from "./pages/Uses.ts";
+import { Work } from "./pages/Work.ts";
 import { AppRoute } from "./routes";
 import { Footer } from "./ui/footer";
-import { FloatingShapes } from "./ui/floating-shapes";
 import { Frame } from "./ui/frame";
 import { LostPage } from "./ui/lost-page";
 import { NavigationStrip } from "./ui/navigation";
-
-export const AppMessage = UiSchema.TaggedEnum({
-  ChangedRoute: { route: AppRoute },
-});
 
 /** The 404. It sets its own head, since no page owns it. */
 const NotFound = Html.component({
@@ -78,27 +71,26 @@ const appHead = () => [
 ];
 
 /**
- * The frame around every page. With `islands` it is a static page: no
- * floating-shapes component, nav or footer behaviour (`app/static.ts` does
- * those with plain DOM), and the page body draws its interactive parts as
- * `Island` placeholders.
+ * The frame around every page, as a plain view. A page is rendered once, to a
+ * string, and the browser never hydrates it: the parts that need the Effect
+ * runtime are `Island` placeholders (`app/islands/`), and the rest of the
+ * behaviour is plain DOM (`app/static.ts`, `app/live/`).
  */
-const shell = <M>(h: Html.H<M>, route: typeof AppRoute.Type, islands: boolean) => {
+const shell = <M>(h: Html.H<M>, route: typeof AppRoute.Type) => {
   const key = AppRoute.printPath(route);
   return h.div.class(css({ display: "contents" })).children(
     h.a.attr("href", "#main-content").class(skipLink).children("Skip to main content"),
-    islands ? null : FloatingShapes(h, {}),
     Frame(h),
-    NavigationStrip(h, { path: key, static: islands }),
+    NavigationStrip(h, { path: key }),
     h.main
       .attrs({ id: "main-content", role: "main" })
       .class(css({ position: "relative", zIndex: "0", md: { mt: "-1px" } }))
       .children(
         AppRoute.match(route, {
-          Home: () => Home(h, { key, props: { islands }, fallback: () => h.div }),
+          Home: () => Home(h, { key, fallback: () => h.div }),
           Posts: () => Posts(h, { key, fallback: () => h.div }),
           Post: ({ params }) =>
-            Post(h, { key, props: { slug: params.slug, islands }, fallback: () => h.div }),
+            Post(h, { key, props: { slug: params.slug }, fallback: () => h.div }),
           Projects: () => Projects(h, { key, fallback: () => h.div }),
           Project: ({ params }) =>
             Project(h, { key, props: { slug: params.slug }, fallback: () => h.div }),
@@ -109,32 +101,13 @@ const shell = <M>(h: Html.H<M>, route: typeof AppRoute.Type, islands: boolean) =
           NotFound: () => NotFound(h, { key }),
         }),
       ),
-    Footer(h, { static: islands }),
+    Footer(h),
   );
 };
 
+/** The root the server renders for every route. It has no Model and no messages. */
 export const App = Html.component({
   name: "App",
-  props: Schema.Struct({ route: AppRoute }),
-  model: Schema.Struct({ route: AppRoute }),
-  message: AppMessage,
-}).make({
-  init: ($) => ({ route: $.props.route }),
-  update: (_$, message) => AppMessage.match(message, { ChangedRoute: ({ route }) => ({ route }) }),
-  subscriptions: ({ model }) => [
-    Router.subscription(AppRoute, model.route, (route) => AppMessage.ChangedRoute({ route })),
-  ],
-  head: appHead,
-  view: (h, { route }) => shell(h, route, false),
-});
-
-/**
- * The root of a page that ships no Effect runtime. The server renders it once
- * to a string and the browser never hydrates it: only the islands inside it
- * run (`app/islands/`). It has no Router subscription, Model or messages.
- */
-export const StaticApp = Html.component({
-  name: "StaticApp",
   props: Schema.Struct({ route: AppRoute }),
   model: Schema.Struct({}),
   message: Schema.Never,
@@ -142,5 +115,5 @@ export const StaticApp = Html.component({
   init: () => ({}),
   update: ($) => $.model,
   head: appHead,
-  view: (h) => shell(h, h.props.route, true),
+  view: (h) => shell(h, h.props.route),
 });

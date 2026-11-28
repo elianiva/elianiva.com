@@ -7,7 +7,6 @@ import { highlighter } from "../lib/highlight";
 import { CodeCopy } from "./code-copy";
 import { headingIds, proseHeading } from "./prose";
 import { Island } from "../islands/island";
-import { Quiz } from "./quiz";
 import { formatUtcDate } from "../lib/date";
 
 const longDate = {
@@ -105,11 +104,7 @@ const note = {
  * syntax highlighting and islands. Put the result in an element with the
  * `prose` class: the typography is in `panda/prose.ts`.
  */
-export const renderMarkdown = <M>(
-  h: Html.H<M>,
-  encoded: unknown,
-  options: { islands?: boolean } = {},
-) => {
+export const renderMarkdown = <M>(h: Html.H<M>, encoded: unknown) => {
   const document = Markdown.decodeDocument(encoded);
   const ids = headingIds(document.blocks as never);
   const idOf = new WeakMap<object, string>();
@@ -188,9 +183,7 @@ export const renderMarkdown = <M>(
           )
           .children(content),
       Quiz: (h, { id }, _content, occurrence) =>
-        options.islands
-          ? Island(h, { name: "Quiz", id: `quiz-${occurrence}`, load: "visible", props: { id } })
-          : Quiz(h, { key: `quiz-${occurrence}`, props: { id } }),
+        Island(h, { name: "Quiz", id: `quiz-${occurrence}`, load: "visible", props: { id } }),
     }),
   });
 };

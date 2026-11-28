@@ -17,7 +17,7 @@ import { HomeGrid } from "../ui/home-grid";
  */
 export const HomeNoDeps = Html.component({
   name: "Home",
-  props: Schema.Struct({ islands: Schema.optional(Schema.Boolean) }),
+  props: Schema.Struct({}),
   model: Schema.Struct({}),
   message: Schema.Never,
   queries: { contributions: { query: GetContributions, args: () => ({}) } },
@@ -29,7 +29,6 @@ export const HomeNoDeps = Html.component({
     const result = h.queries.contributions;
     return HomeGrid(h, {
       contributions: AsyncResult.isSuccess(result) ? result.value : null,
-      islands: h.props.islands === true,
     });
   },
 });

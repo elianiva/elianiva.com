@@ -3,13 +3,33 @@ import { Html } from "@effect/ui/html";
 import { Clock, Schedule, Schema, Stream } from "effect";
 import { AsyncResult } from "effect/reactivity";
 import { css } from "../../styled-system/css";
-import { currentRoles } from "../data/work-experience";
-import { allPosts, allProjects } from "virtual:content";
-import { listPosts } from "../lib/posts";
-import { listProjects } from "../lib/projects";
 import type { GitHubActivity } from "../features/github/activity";
 import { GetGitHubActivity } from "../queries/GetGitHubActivity";
 import { Cell, type Style } from "./box";
+
+/** What the board shows that is known at build time; see `status-data.ts`. */
+export const StatusBoardData = Schema.Struct({
+  role: Schema.NullOr(
+    Schema.Struct({
+      company: Schema.String,
+      href: Schema.NullOr(Schema.String),
+      position: Schema.String,
+      time: Schema.String,
+    }),
+  ),
+  post: Schema.NullOr(
+    Schema.Struct({ slug: Schema.String, title: Schema.String, date: Schema.String }),
+  ),
+  project: Schema.NullOr(
+    Schema.Struct({
+      slug: Schema.String,
+      title: Schema.String,
+      description: Schema.String,
+      date: Schema.String,
+    }),
+  ),
+});
+export type StatusBoardData = typeof StatusBoardData.Type;
 
 const INLINE_LINK: Style = {
   color: "pink.800",
@@ -174,12 +194,10 @@ const last = (repo: string) => repo.split("/").pop() ?? repo;
  */
 export const StatusBoard = <M>(
   h: Html.H<M>,
-  options: { activity: GitHubActivity | null; now: number | null },
+  options: { activity: GitHubActivity | null; now: number | null; board: StatusBoardData },
 ) => {
   const { activity, now } = options;
-  const role = currentRoles()[0];
-  const post = listPosts(allPosts, { limit: 1 })[0];
-  const project = listProjects(allProjects)[0];
+  const { role, post, project } = options.board;
   const ago = (at: string | number) => (now === null ? undefined : timeAgo(at, now));
 
   return Cell(h, {
@@ -221,7 +239,7 @@ export const StatusBoard = <M>(
                 { code: "Work", when: role.time },
                 h.a
                   .class(PLAIN_LINK)
-                  .attrs(role.website?.href ? { href: role.website.href, ...ext } : ext)
+                  .attrs(role.href ? { href: role.href, ...ext } : ext)
                   .children(role.company),
                 h.span.class(DIM).children(role.position),
               )
@@ -301,7 +319,7 @@ export const StatusBoard = <M>(
  */
 export const StatusTileNoDeps = Html.component({
   name: "StatusTile",
-  props: Schema.Struct({}),
+  props: Schema.Struct({ board: StatusBoardData }),
   model: ClockModel,
   message: ClockMessage,
   queries: { activity: { query: GetGitHubActivity, args: () => ({}) } },
@@ -309,7 +327,8 @@ export const StatusTileNoDeps = Html.component({
   init: () => ({ now: null }),
   update: (_$, message) => clockUpdate(message),
   subscriptions: () => [ticks],
-  view: (h, { now }) => StatusBoard(h, { activity: activityOf(h.queries.activity), now }),
+  view: (h, { now }) =>
+    StatusBoard(h, { activity: activityOf(h.queries.activity), now, board: h.props.board }),
 });
 export const StatusTile = StatusTileNoDeps.pipe(
   Component.provide(GetGitHubActivity.layer, { server: false }),
