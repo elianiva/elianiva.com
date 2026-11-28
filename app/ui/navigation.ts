@@ -184,7 +184,7 @@ const Ticket = <M>(
  * current page's ticket is torn off, punched, and postmarked. On phones the
  * strip scrolls sideways and keeps it in view.
  */
-export const NavigationStrip = <M>(h: Html.H<M>, options: { path: string }) => {
+export const NavigationStrip = <M>(h: Html.H<M>, options: { path: string; static?: boolean }) => {
   const { path } = options;
   return h.header.class(css({ md: { pt: "4" } })).children(
     Box(h, { square: false }).children(
@@ -310,9 +310,11 @@ export const NavigationStrip = <M>(h: Html.H<M>, options: { path: string }) => {
         // rather than on each ticket lets the tickets size to their labels
         // and scroll on narrow screens instead of collapsing.
         children: [
-          h.ul
-            .attr("aria-label", "Main")
-            .onMount(CenterCurrent({ path }))
+          // A static page has no runtime to centre the ticket; `app/static.ts` does it.
+          (options.static
+            ? h.ul.attr("aria-label", "Main").attr("data-center-current", "")
+            : h.ul.attr("aria-label", "Main").onMount(CenterCurrent({ path }))
+          )
             .class(
               css({
                 containerType: "inline-size",

@@ -18,6 +18,7 @@ import { AsyncResult } from "effect/reactivity";
 import { AppPill } from "./app-pill";
 import { LastPushTag, StatusBoard, StatusTile, timeAgo } from "./based-row";
 import { Box, Cell, label, ruleColor, stretched, type Style } from "./box";
+import { Island } from "../islands/island";
 import { Stamp, type StampTone } from "./pagehead";
 import { ProjectMark } from "./project-mark";
 import { formatUtcDate } from "../lib/date";
@@ -71,78 +72,84 @@ export const Delightful = Html.component({
 }).make({
   init: () => ({ run: 0 }),
   update: ($) => $.evolve({ run: (n) => n + 1 }),
-  view: (h, { run }) =>
-    h.em
-      .class(css({ position: "relative", fontStyle: "normal", color: "pink.600" }))
-      .on("mouseenter", DelightfulMessage.EnteredWord())
-      .children(
-        h.span
-          .class(
-            css({
-              position: "absolute",
-              width: "1px",
-              height: "1px",
-              overflow: "hidden",
-              clip: "rect(0 0 0 0)",
-              whiteSpace: "nowrap",
-            }),
-          )
-          .children("delightful"),
-        h.span
-          .key(String(run))
-          .class(css({ whiteSpace: "nowrap" }))
-          .attr("aria-hidden", "true")
-          .children(
-            "delightful".split("").map((letter, i) =>
-              h.span
-                .key(String(i))
-                .class("delight-letter")
-                .style({ "--d": `${i * 30}ms`, "--tilt": `${i % 2 ? 6 : -6}deg` })
-                .children(letter),
-            ),
-            SPARKS.map(({ at, d }) =>
-              h.span
-                .key(`spark-${d}`)
-                .class(
-                  "delight-spark",
-                  css({
-                    pointerEvents: "none",
-                    position: "absolute",
-                    fontSize: "0.32em",
-                    lineHeight: "none",
-                    color: "pink.400",
-                  }),
-                )
-                .style({ ...at, "--d": `${d}ms` })
-                .children("✦"),
-            ),
-            h.svg
-              .class(
-                css({
-                  position: "absolute",
-                  bottom: "-1.5",
-                  left: "0",
-                  height: "2.5",
-                  width: "full",
-                  color: "pink.300",
-                }),
-              )
-              .attrs({ viewBox: "0 0 200 12", preserveAspectRatio: "none" })
-              .children(
-                h.path.class("delight-line").attrs({
-                  d: "M2 8 Q 50 1 100 6 T 198 4",
-                  pathLength: "1",
-                  fill: "none",
-                  stroke: "currentColor",
-                  "stroke-width": "4",
-                  "stroke-linecap": "round",
-                }),
-              ),
-          ),
-      ),
+  view: (h, { run }) => DelightfulWord(h, run).on("mouseenter", DelightfulMessage.EnteredWord()),
 });
 
-const IntroCell = <M>(h: Html.H<M>) => {
+/**
+ * The word as plain markup. On a static page `app/static.ts` replays the hop
+ * on pointer entry by swapping the `[data-delight]` node for a clone.
+ */
+export const DelightfulWord = <M>(h: Html.H<M>, run: number) =>
+  h.em
+    .attr("data-delight", "")
+    .class(css({ position: "relative", fontStyle: "normal", color: "pink.600" }))
+    .children(
+      h.span
+        .class(
+          css({
+            position: "absolute",
+            width: "1px",
+            height: "1px",
+            overflow: "hidden",
+            clip: "rect(0 0 0 0)",
+            whiteSpace: "nowrap",
+          }),
+        )
+        .children("delightful"),
+      h.span
+        .key(String(run))
+        .class(css({ whiteSpace: "nowrap" }))
+        .attr("aria-hidden", "true")
+        .children(
+          "delightful".split("").map((letter, i) =>
+            h.span
+              .key(String(i))
+              .class("delight-letter")
+              .style({ "--d": `${i * 30}ms`, "--tilt": `${i % 2 ? 6 : -6}deg` })
+              .children(letter),
+          ),
+          SPARKS.map(({ at, d }) =>
+            h.span
+              .key(`spark-${d}`)
+              .class(
+                "delight-spark",
+                css({
+                  pointerEvents: "none",
+                  position: "absolute",
+                  fontSize: "0.32em",
+                  lineHeight: "none",
+                  color: "pink.400",
+                }),
+              )
+              .style({ ...at, "--d": `${d}ms` })
+              .children("✦"),
+          ),
+          h.svg
+            .class(
+              css({
+                position: "absolute",
+                bottom: "-1.5",
+                left: "0",
+                height: "2.5",
+                width: "full",
+                color: "pink.300",
+              }),
+            )
+            .attrs({ viewBox: "0 0 200 12", preserveAspectRatio: "none" })
+            .children(
+              h.path.class("delight-line").attrs({
+                d: "M2 8 Q 50 1 100 6 T 198 4",
+                pathLength: "1",
+                fill: "none",
+                stroke: "currentColor",
+                "stroke-width": "4",
+                "stroke-linecap": "round",
+              }),
+            ),
+        ),
+    );
+
+const IntroCell = <M>(h: Html.H<M>, islands: boolean) => {
   const body = css({
     display: "flex",
     flex: "1",
@@ -237,7 +244,7 @@ const IntroCell = <M>(h: Html.H<M>) => {
           )
           .children(
             "I care about making fast software that’s ",
-            Delightful(h, { key: "delightful" }),
+            islands ? DelightfulWord(h, 0) : Delightful(h, { key: "delightful" }),
             " to use.",
           ),
         h.div
@@ -625,7 +632,7 @@ const BAR_EARLY = css(BAR_BASE, { display: { base: "none", md: "flex" } });
  * Hovering the cell runs a scan across, left to right. Phones get the last 26
  * weeks. Without data (`null`) every week is a flat stub and no count shows.
  */
-const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null) => {
+const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null, islands: boolean) => {
   const weeks = (data ?? emptyContributions()).weeks.slice(-53).map((week) => {
     const days = [...week.contributionDays].sort((x, y) => x.date.localeCompare(y.date));
     return { days, total: days.reduce((sum, day) => sum + day.contributionCount, 0) };
@@ -669,7 +676,9 @@ const GitCell = <M>(h: Html.H<M>, data: ContributionsResponse | null) => {
           css({ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "3" }),
         )
         .children(
-          LastPushTag(h, { key: "last-push", fallback: () => h.span }),
+          islands
+            ? Island(h, { name: "LastPushTag", id: "last-push", load: "visible" })
+            : LastPushTag(h, { key: "last-push", fallback: () => h.span }),
           data
             ? h.span
                 .class(
@@ -1483,12 +1492,19 @@ const NeighboursCell = <M>(h: Html.H<M>) => {
  */
 export const HomeGrid = <M>(
   h: Html.H<M>,
-  options: { contributions: ContributionsResponse | null },
+  options: { contributions: ContributionsResponse | null; islands: boolean },
 ) =>
   Box(h, { dense: true }).children(
-    IntroCell(h),
-    StatusTile(h, { key: "status", fallback: () => StatusBoard(h, { activity: null, now: null }) }),
-    ListeningCell(h, { key: "listening", fallback: () => ListeningEmpty(h, undefined, false) }),
+    IntroCell(h, options.islands),
+    options.islands
+      ? Island(h, { name: "StatusTile", id: "status", load: "visible" })
+      : StatusTile(h, {
+          key: "status",
+          fallback: () => StatusBoard(h, { activity: null, now: null }),
+        }),
+    options.islands
+      ? Island(h, { name: "ListeningCell", id: "listening", load: "visible" })
+      : ListeningCell(h, { key: "listening", fallback: () => ListeningEmpty(h, undefined, false) }),
     UsesCell(h),
     // On four columns, git, writing, and neighbours share one row at 3:3:1.
     // On two and six columns the wrapper drops out and they sit in the grid.
@@ -1505,7 +1521,11 @@ export const HomeGrid = <M>(
           xl: { display: "contents" },
         }),
       )
-      .children(GitCell(h, options.contributions), WritingCell(h), NeighboursCell(h)),
+      .children(
+        GitCell(h, options.contributions, options.islands),
+        WritingCell(h),
+        NeighboursCell(h),
+      ),
     ProjectCells(h),
     ExperienceCell(h),
     OpenSourceCell(h),

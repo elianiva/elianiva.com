@@ -66,6 +66,53 @@ const skipLink = css({
   },
 });
 
+/** The tags every page shares, whichever way it is hydrated. */
+const appHead = () => [
+  Head.titleTemplate((title) => `${title} · elianiva`),
+  HtmlHead.lang("en"),
+  HtmlHead.htmlClass(css({ height: "100%" })),
+  HtmlHead.bodyClass(css({ height: "100%", display: "flex", flexDirection: "column" })),
+  HtmlHead.meta({ name: "viewport", content: "width=device-width, initial-scale=1" }),
+  HtmlHead.meta({ name: "theme-color", content: "#fff5f0" }),
+  HtmlHead.link({ rel: "icon", href: "/favicon.png", type: "image/png", sizes: "32x32" }),
+];
+
+/**
+ * The frame around every page. With `islands` it is a static page: no
+ * floating-shapes component, nav or footer behaviour (`app/static.ts` does
+ * those with plain DOM), and the page body draws its interactive parts as
+ * `Island` placeholders.
+ */
+const shell = <M>(h: Html.H<M>, route: typeof AppRoute.Type, islands: boolean) => {
+  const key = AppRoute.printPath(route);
+  return h.div.class(css({ display: "contents" })).children(
+    h.a.attr("href", "#main-content").class(skipLink).children("Skip to main content"),
+    islands ? null : FloatingShapes(h, {}),
+    Frame(h),
+    NavigationStrip(h, { path: key, static: islands }),
+    h.main
+      .attrs({ id: "main-content", role: "main" })
+      .class(css({ position: "relative", zIndex: "0", md: { mt: "-1px" } }))
+      .children(
+        AppRoute.match(route, {
+          Home: () => Home(h, { key, props: { islands }, fallback: () => h.div }),
+          Posts: () => Posts(h, { key, fallback: () => h.div }),
+          Post: ({ params }) =>
+            Post(h, { key, props: { slug: params.slug, islands }, fallback: () => h.div }),
+          Projects: () => Projects(h, { key, fallback: () => h.div }),
+          Project: ({ params }) =>
+            Project(h, { key, props: { slug: params.slug }, fallback: () => h.div }),
+          Work: () => Work(h, { key, fallback: () => h.div }),
+          Uses: () => Uses(h, { key, fallback: () => h.div }),
+          Neighbours: () => Neighbours(h, { key, fallback: () => h.div }),
+          Music: () => Music(h, { key, fallback: () => h.div }),
+          NotFound: () => NotFound(h, { key }),
+        }),
+      ),
+    Footer(h, { static: islands }),
+  );
+};
+
 export const App = Html.component({
   name: "App",
   props: Schema.Struct({ route: AppRoute }),
@@ -77,42 +124,23 @@ export const App = Html.component({
   subscriptions: ({ model }) => [
     Router.subscription(AppRoute, model.route, (route) => AppMessage.ChangedRoute({ route })),
   ],
-  head: () => [
-    Head.titleTemplate((title) => `${title} · elianiva`),
-    HtmlHead.lang("en"),
-    HtmlHead.htmlClass(css({ height: "100%" })),
-    HtmlHead.bodyClass(css({ height: "100%", display: "flex", flexDirection: "column" })),
-    HtmlHead.meta({ name: "viewport", content: "width=device-width, initial-scale=1" }),
-    HtmlHead.meta({ name: "theme-color", content: "#fff5f0" }),
-    HtmlHead.link({ rel: "icon", href: "/favicon.png", type: "image/png", sizes: "32x32" }),
-  ],
-  view: (h, { route }) => {
-    const key = AppRoute.printPath(route);
-    return h.div.class(css({ display: "contents" })).children(
-      h.a.attr("href", "#main-content").class(skipLink).children("Skip to main content"),
-      FloatingShapes(h, {}),
-      Frame(h),
-      NavigationStrip(h, { path: key }),
-      h.main
-        .attrs({ id: "main-content", role: "main" })
-        .class(css({ position: "relative", zIndex: "0", md: { mt: "-1px" } }))
-        .children(
-          AppRoute.match(route, {
-            Home: () => Home(h, { key, fallback: () => h.div }),
-            Posts: () => Posts(h, { key, fallback: () => h.div }),
-            Post: ({ params }) =>
-              Post(h, { key, props: { slug: params.slug }, fallback: () => h.div }),
-            Projects: () => Projects(h, { key, fallback: () => h.div }),
-            Project: ({ params }) =>
-              Project(h, { key, props: { slug: params.slug }, fallback: () => h.div }),
-            Work: () => Work(h, { key, fallback: () => h.div }),
-            Uses: () => Uses(h, { key, fallback: () => h.div }),
-            Neighbours: () => Neighbours(h, { key, fallback: () => h.div }),
-            Music: () => Music(h, { key, fallback: () => h.div }),
-            NotFound: () => NotFound(h, { key }),
-          }),
-        ),
-      Footer(h),
-    );
-  },
+  head: appHead,
+  view: (h, { route }) => shell(h, route, false),
+});
+
+/**
+ * The root of a page that ships no Effect runtime. The server renders it once
+ * to a string and the browser never hydrates it: only the islands inside it
+ * run (`app/islands/`). It has no Router subscription, Model or messages.
+ */
+export const StaticApp = Html.component({
+  name: "StaticApp",
+  props: Schema.Struct({ route: AppRoute }),
+  model: Schema.Struct({}),
+  message: Schema.Never,
+}).make({
+  init: () => ({}),
+  update: ($) => $.model,
+  head: appHead,
+  view: (h) => shell(h, h.props.route, true),
 });

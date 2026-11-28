@@ -1,4 +1,3 @@
-import { Effect } from "effect";
 import type { Html } from "@effect/ui/html";
 import { css } from "../../styled-system/css";
 
@@ -47,7 +46,7 @@ export const CodeCopy = <M>(h: Html.H<M>) =>
     );
 
 /** Copies the `pre` next to a clicked copy button, and shows a check mark for two seconds. */
-export const listenForCopies = Effect.sync(() => {
+export const listenForCopies = () => {
   document.addEventListener("click", (event) => {
     const button = (event.target as Element | null)?.closest<HTMLButtonElement>("[data-copy-code]");
     const code = button?.parentElement?.querySelector("pre")?.textContent;
@@ -65,4 +64,4 @@ export const listenForCopies = Effect.sync(() => {
       () => {},
     );
   });
-});
+};

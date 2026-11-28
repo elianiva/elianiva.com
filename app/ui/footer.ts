@@ -20,6 +20,19 @@ const StampBuildDate = Mount.make("StampBuildDate", {}, (_node: HTMLElement) =>
   ),
 );
 
+/** The date's markup alone, for a static page where `app/static.ts` fills in the clock. */
+export const BuildDateText = <M>(h: Html.H<M>, value = "") =>
+  h.span
+    .attr("data-build-date", "")
+    .class(
+      css({
+        fontFamily: "mono",
+        fontSize: "10px",
+        color: "color-mix(in oklab, var(--colors-pink-950) 45%, transparent)",
+      }),
+    )
+    .children(value || "\u00a0");
+
 /** The visitor's local date and time, filled in once the page is in the browser. */
 export const BuildDate = Html.component({
   name: "BuildDate",
@@ -29,16 +42,9 @@ export const BuildDate = Html.component({
   init: () => "",
   update: (_$, message) => BuildDateMessage.match(message, { Stamped: ({ value }) => value }),
   view: (h, value) =>
-    h.span
-      .class(
-        css({
-          fontFamily: "mono",
-          fontSize: "10px",
-          color: "color-mix(in oklab, var(--colors-pink-950) 45%, transparent)",
-        }),
-      )
-      .onMount(StampBuildDate().pipe(Mount.map((v) => BuildDateMessage.Stamped({ value: v }))))
-      .children(value || "\u00a0"),
+    BuildDateText(h, value).onMount(
+      StampBuildDate().pipe(Mount.map((v) => BuildDateMessage.Stamped({ value: v }))),
+    ),
 });
 
 const REPO = "https://github.com/elianiva/elianiva.com";
@@ -193,7 +199,7 @@ const ChangelogCell = <M>(h: Html.H<M>) => {
 };
 
 /** The bottom tray: the site's changelog and the colophon. */
-export const Footer = <M>(h: Html.H<M>) =>
+export const Footer = <M>(h: Html.H<M>, options: { static?: boolean } = {}) =>
   h.footer
     .class(
       css({
@@ -232,7 +238,7 @@ export const Footer = <M>(h: Html.H<M>) =>
                   }),
                 )
                 .children("effect ui · panda css"),
-              BuildDate(h, {}),
+              options.static ? BuildDateText(h) : BuildDate(h, {}),
               h.a
                 .attr("href", "/rss.xml")
                 .class(

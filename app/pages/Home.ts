@@ -17,7 +17,7 @@ import { HomeGrid } from "../ui/home-grid";
  */
 export const HomeNoDeps = Html.component({
   name: "Home",
-  props: Schema.Struct({}),
+  props: Schema.Struct({ islands: Schema.optional(Schema.Boolean) }),
   model: Schema.Struct({}),
   message: Schema.Never,
   queries: { contributions: { query: GetContributions, args: () => ({}) } },
@@ -27,7 +27,10 @@ export const HomeNoDeps = Html.component({
   head: () => [...homeSeoHead()],
   view: (h) => {
     const result = h.queries.contributions;
-    return HomeGrid(h, { contributions: AsyncResult.isSuccess(result) ? result.value : null });
+    return HomeGrid(h, {
+      contributions: AsyncResult.isSuccess(result) ? result.value : null,
+      islands: h.props.islands === true,
+    });
   },
 });
 export const Home = HomeNoDeps.pipe(Component.provide(GetContributions.layer));
