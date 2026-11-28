@@ -5,11 +5,20 @@ import { drawShapes } from "./lib/shapes";
  * the hero word's pointer replay and the floating shapes, all in plain DOM.
  */
 export const runStatic = () => {
-  centerCurrentTicket();
   stampBuildDate();
   replayDelightful();
-  const idle = window.requestIdleCallback ?? ((run: () => void) => setTimeout(run, 200));
-  idle(drawShapes, { timeout: 1500 });
+  // Decoration waits until the page has settled, and a scroll before the first paint
+  // makes Chrome drop the page's Largest Contentful Paint, so neither runs early.
+  setTimeout(() => {
+    const idle = window.requestIdleCallback ?? ((run: () => void) => setTimeout(run, 0));
+    idle(
+      () => {
+        if (!CSS.supports("scroll-start-target", "auto")) centerCurrentTicket();
+        drawShapes();
+      },
+      { timeout: 2000 },
+    );
+  }, 3000);
 };
 
 /** On phones the strip scrolls sideways: bring the current page's ticket to the middle of it. */
