@@ -1,10 +1,10 @@
 import { Html } from "@effect/ui/html";
-import { Context, Effect, Schema } from "effect";
+import { Context, Schema } from "effect";
 import { HttpRouter } from "effect/http";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { AppRoute } from "../routes";
 
-const mode = { throws: false };
+const mode = { throws: false, quizzes: false };
 
 vi.mock("../App", () => ({
   App: Html.component({
@@ -17,14 +17,20 @@ vi.mock("../App", () => ({
     update: ($) => $.model,
     view: (h) => {
       if (mode.throws) throw new Error("boom");
+      if (mode.quizzes) {
+        return h.div.children(
+          h.p("page"),
+          Quiz(h, { props: { id: "first" } }),
+          Quiz(h, { props: { id: "second" } }),
+        );
+      }
       return h.p("hello");
     },
   }),
 }));
 
-const { layerHttp, renderIslands } = await import("./server");
+const { layerHttp } = await import("./server");
 const { Island } = await import("./index");
-const { slots } = await import("./define");
 const { Quiz } = await import("../islands/Quiz");
 
 const get = async (path: string) => {
@@ -59,29 +65,38 @@ describe("island server", () => {
 });
 
 describe("islands", () => {
-  const slot = (token: string, id: string) => {
-    slots.set(token, { definition: Quiz, props: Quiz.encodeProps({ id }), load: "visible" });
-    return `<div class="d_contents" data-island-slot="${token}"></div>`;
-  };
-
-  it("fills each placeholder by its token, numbering islands of one name in page order", async () => {
-    const html = `<p>a</p>${slot("i9001", "jj-reflog")}<p>b</p>${slot("i9002", "jj-reflog")}<p>c</p>`;
-    const { html: out, states } = await Effect.runPromise(renderIslands(html, "50 millis"));
-    const ids = [...out.matchAll(/data-island-id="([^"]+)"/g)].map((m) => m[1]);
-    expect(ids).toEqual(["Quiz-0", "Quiz-1"]);
-    expect(Object.keys(states)).toEqual(["Quiz-0", "Quiz-1"]);
-    expect(out).toContain('data-island="Quiz"');
-    expect(out).toContain('data-island-props="{&#34;id&#34;:&#34;jj-reflog&#34;}"');
-    expect(out).toMatch(
-      /^<p>a<\/p><div class="d_contents" data-island="Quiz"[^>]*>.+<\/div><p>b<\/p>/s,
+  it("renders islands of one name inline, and keeps only their markers and state", async () => {
+    mode.quizzes = true;
+    let state: Record<string, unknown> = {};
+    const { handler, dispose } = HttpRouter.toWebHandler(
+      layerHttp({
+        budget: "50 millis",
+        document: (page) => {
+          state = page.state;
+          return `<main>${page.html}</main>`;
+        },
+      }),
+      { disableLogger: true },
     );
-    expect(out).not.toContain("data-island-slot");
-    expect(slots.has("i9001") || slots.has("i9002")).toBe(false);
-  });
+    const html = await handler(new Request("http://localhost/uses"), Context.empty() as never)
+      .then((response) => response.text())
+      .finally(() => dispose());
+    mode.quizzes = false;
 
-  it("fails on a token nobody registered", async () => {
-    const html = '<div class="d_contents" data-island-slot="i9999"></div>';
-    await expect(Effect.runPromise(renderIslands(html, "50 millis"))).rejects.toThrow(/i9999/);
+    expect([...html.matchAll(/data-island="(\w+)"/g)].map((m) => m[1])).toEqual(["Quiz", "Quiz"]);
+    const props = [...html.matchAll(/data-island-props="([^"]*)"/g)].map((m) => m[1]);
+    expect(props.map((p) => p!.replace(/&(?:#34|quot);/g, '"'))).toEqual([
+      '{"id":"first"}',
+      '{"id":"second"}',
+    ]);
+    // Only the islands' own markers and state are left: nothing of the page around them.
+    const opens = [...html.matchAll(/<!--\[([^>]*)-->/g)].map((m) => m[1]!);
+    expect(opens.filter((path) => /^\/App\/Island\[[^/]+\]$/.test(path))).toHaveLength(2);
+    expect(opens.every((path) => path.startsWith("/App/Island["))).toBe(true);
+    const paths = Object.keys(state).filter((key) => key.startsWith("/"));
+    expect(paths.length).toBeGreaterThanOrEqual(2);
+    expect(paths.every((path) => path.startsWith("/App/Island["))).toBe(true);
+    expect(state["~query"]).toEqual({});
   });
 
   it("round-trips props through their Schema", () => {
