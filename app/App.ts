@@ -2,15 +2,17 @@ import { Head, Router, UiSchema } from "@effect/ui";
 import { Html, HtmlHead } from "@effect/ui/html";
 import { Schema } from "effect";
 import { css } from "../styled-system/css";
-import { Home } from "./pages/Home.ts";
-import { Music } from "./pages/Music.ts";
-import { Neighbours } from "./pages/Neighbours.ts";
-import { Post } from "./pages/Post.ts";
-import { Posts } from "./pages/Posts.ts";
-import { Project } from "./pages/Project.ts";
-import { Projects } from "./pages/Projects.ts";
-import { Uses } from "./pages/Uses.ts";
-import { Work } from "./pages/Work.ts";
+import {
+  Home,
+  Music,
+  Neighbours,
+  Post,
+  Posts,
+  Project,
+  Projects,
+  Uses,
+  Work,
+} from "./pages/lazy.ts";
 import { AppRoute } from "./routes";
 import { Footer } from "./ui/footer";
 import { FloatingShapes } from "./ui/floating-shapes";
@@ -97,15 +99,17 @@ export const App = Html.component({
         .class(css({ position: "relative", zIndex: "0", md: { mt: "-1px" } }))
         .children(
           AppRoute.match(route, {
-            Home: () => Home(h, { key }),
-            Posts: () => Posts(h, { key }),
-            Post: ({ params }) => Post(h, { key, props: { slug: params.slug } }),
-            Projects: () => Projects(h, { key }),
-            Project: ({ params }) => Project(h, { key, props: { slug: params.slug } }),
-            Work: () => Work(h, { key }),
-            Uses: () => Uses(h, { key }),
-            Neighbours: () => Neighbours(h, { key }),
-            Music: () => Music(h, { key }),
+            Home: () => Home(h, { key, fallback: () => h.div }),
+            Posts: () => Posts(h, { key, fallback: () => h.div }),
+            Post: ({ params }) =>
+              Post(h, { key, props: { slug: params.slug }, fallback: () => h.div }),
+            Projects: () => Projects(h, { key, fallback: () => h.div }),
+            Project: ({ params }) =>
+              Project(h, { key, props: { slug: params.slug }, fallback: () => h.div }),
+            Work: () => Work(h, { key, fallback: () => h.div }),
+            Uses: () => Uses(h, { key, fallback: () => h.div }),
+            Neighbours: () => Neighbours(h, { key, fallback: () => h.div }),
+            Music: () => Music(h, { key, fallback: () => h.div }),
             NotFound: () => NotFound(h, { key }),
           }),
         ),

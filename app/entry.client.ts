@@ -4,9 +4,27 @@ import { Effect, Layer } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { JsonApi } from "./queries/JsonApi";
 import { App } from "./App";
+import * as Pages from "./pages/lazy.ts";
 import { AppRoute } from "./routes";
 
 const hydrate = Effect.gen(function* () {
+  // Load the current page's chunk first, so hydration adopts the prerendered
+  // nodes instead of swapping them for the fallback.
+  const route = yield* Router.currentRoute(AppRoute);
+  const page = (
+    {
+      Home: Pages.Home,
+      Posts: Pages.Posts,
+      Post: Pages.Post,
+      Projects: Pages.Projects,
+      Project: Pages.Project,
+      Work: Pages.Work,
+      Uses: Pages.Uses,
+      Neighbours: Pages.Neighbours,
+      Music: Pages.Music,
+    } as const
+  )[route._tag as never] as { preload?: () => Promise<unknown> } | undefined;
+  if (page) yield* Effect.promise(() => page.preload!());
   const state = JSON.parse(document.getElementById("state")!.textContent!);
   const root = yield* HtmlHydrate.hydrateEffect(
     App,
